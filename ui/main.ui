@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>353</width>
+    <height>223</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_4">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>353</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menusetting">
+    <property name="title">
+     <string>设置</string>
+    </property>
+    <addaction name="actionsetting"/>
+   </widget>
+   <widget class="QMenu" name="menuabout">
+    <property name="title">
+     <string>关于</string>
+    </property>
+    <addaction name="actionabout"/>
+   </widget>
+   <addaction name="menusetting"/>
+   <addaction name="menuabout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionsetting">
+   <property name="text">
+    <string>setting</string>
+   </property>
+  </action>
+  <action name="actionabout">
+   <property name="text">
+    <string>about</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

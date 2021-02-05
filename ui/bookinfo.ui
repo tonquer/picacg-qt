@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BookInfo</class>
+ <widget class="QWidget" name="BookInfo">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>542</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="QStackedWidget" name="stackedWidget">
+     <widget class="QWidget" name="page">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QLabel" name="picture">
+                 <property name="minimumSize">
+                  <size>
+                   <width>240</width>
+                   <height>320</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="title">
+                   <property name="text">
+                    <string>标题</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="autor">
+                   <property name="text">
+                    <string>作者</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="description">
+                   <property name="text">
+                    <string>描述</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="categories">
+                   <property name="maximumSize">
+                    <size>
+                     <width>500</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>分类</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="tags">
+                   <property name="text">
+                    <string>Tag</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="likes">
+                   <property name="text">
+                    <string>爱心数</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="views">
+                   <property name="text">
+                    <string>观看数</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <item>
+                    <widget class="QLabel" name="isFinished">
+                     <property name="text">
+                      <string>完本</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="download">
+                     <property name="text">
+                      <string>下载</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="favorites">
+                     <property name="text">
+                      <string>收藏</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QTabWidget" name="tabWidget">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="epsWidget">
+              <attribute name="title">
+               <string>章节</string>
+              </attribute>
+              <layout class="QGridLayout" name="epsLayout"/>
+             </widget>
+             <widget class="QWidget" name="commentWidget">
+              <attribute name="title">
+               <string>评论</string>
+              </attribute>
+              <layout class="QGridLayout" name="commentLayout"/>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>download</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddDownload()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>471</x>
+     <y>308</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>646</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>favorites</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddFavority()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>567</x>
+     <y>304</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>760</x>
+     <y>324</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>AddDownload()</slot>
+  <slot>AddFavority()</slot>
+ </slots>
+</ui>
