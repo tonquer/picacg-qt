@@ -15,13 +15,14 @@ class Log(object):
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
         ch.setFormatter(formatter)
+
         Log.logger.addHandler(ch)
 
         if not os.path.isdir("logs"):
             os.mkdir("logs")
         day = time.strftime('%Y%m%d', time.localtime(time.time()))
         logfile = os.path.join("logs", day+".log")
-        fh = logging.FileHandler(logfile, mode='a')
+        fh = logging.FileHandler(logfile, mode='a', encoding="utf-8")
         fh.setLevel(logging.WARN)
         formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
         fh.setFormatter(formatter)

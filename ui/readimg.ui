@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>402</width>
-    <height>509</height>
+    <width>158</width>
+    <height>253</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,46 +15,43 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QGraphicsView" name="graphicsView"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="epsLabel">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QVBoxLayout" name="verticalLayout">
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
        <item>
-        <widget class="QPushButton" name="lastPage">
+        <widget class="QLabel" name="epsLabel">
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>40</height>
+           <height>20</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>40</height>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="lastPage">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
           </size>
          </property>
          <property name="text">
@@ -63,40 +60,70 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="returePage">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>返回</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="nextPage">
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>40</height>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>40</height>
+           <height>16777215</height>
           </size>
          </property>
          <property name="text">
           <string>下一页</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>全屏</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="text">
+          <string>正常模式</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton_2">
+         <property name="text">
+          <string>条漫模式</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="returePage">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>返回</string>
          </property>
         </widget>
        </item>
@@ -106,6 +133,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>returePage</tabstop>
+  <tabstop>nextPage</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>radioButton</tabstop>
+  <tabstop>radioButton_2</tabstop>
+  <tabstop>lastPage</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -115,8 +150,8 @@
    <slot>LastPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>122</x>
-     <y>766</y>
+     <x>390</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>666</x>
@@ -131,8 +166,8 @@
    <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>545</x>
-     <y>766</y>
+     <x>390</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
      <x>594</x>
@@ -147,12 +182,44 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>365</x>
-     <y>766</y>
+     <x>390</x>
+     <y>454</y>
     </hint>
     <hint type="destinationlabel">
      <x>635</x>
      <y>455</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>SwitchPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>348</x>
+     <y>375</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>503</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>SwitchPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>322</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>485</x>
+     <y>309</y>
     </hint>
    </hints>
   </connection>
@@ -161,5 +228,9 @@
   <slot>LastPage()</slot>
   <slot>NextPage()</slot>
   <slot>ReturnPage()</slot>
+  <slot>SwitchPicture()</slot>
  </slots>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

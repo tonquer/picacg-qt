@@ -76,6 +76,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         info = self.history.get(bookId)
         if not info:
             info = QtHistoryData()
+            self.history[bookId] = info
         info.bookId = bookId
         info.name = name
         info.epsId = epsId

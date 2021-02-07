@@ -22,3 +22,6 @@ CachePathDir = "cache"        # cache目录
 # CacheExpired = 24 * 60 * 60    # cache过期时间24小时
 
 IsLoadingPicture = True
+
+UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
+UpdateVersion = "1.0.4"

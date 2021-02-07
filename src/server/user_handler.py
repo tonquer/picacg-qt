@@ -181,22 +181,17 @@ class DownloadBookReq(object):
                 if backData.bakParam:
                     QtTask().downloadBack.emit(backData.bakParam, 0, b"")
 
-                if backData.req.originalName and config.IsUseCache:
+                if backData.req.isSaveCache and config.IsUseCache:
                     path = backData.req.path
 
-                    a = hashlib.md5(path.encode("utf-8")).hexdigest()
-                    filePath = os.path.join(config.SavePath, config.CachePathDir)
+                    filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
+
                     if not os.path.isdir(filePath):
                         os.makedirs(filePath)
 
-                    nameByte = backData.req.originalName.encode("utf-8")
-                    nameSize = len(nameByte)
-                    data_byte1 = int(nameSize).to_bytes(length=2, byteorder='little')
-                    data_byte2 = int(time.time()).to_bytes(length=4, byteorder='little')
+                    a = hashlib.md5(path.encode("utf-8")).hexdigest()
+
                     with open(os.path.join(filePath, a), "wb+") as f:
-                        f.write(data_byte1)
-                        f.write(data_byte2)
-                        f.write(nameByte)
                         f.write(data)
             except Exception as es:
                 import sys
@@ -205,3 +200,10 @@ class DownloadBookReq(object):
                 Log.Error(cur_tb, e)
                 if backData.bakParam:
                     QtTask().downloadBack.emit(backData.bakParam, -1, b"")
+
+
+@handler(req.CheckUpdateReq)
+class CheckUpdateReq(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.url)

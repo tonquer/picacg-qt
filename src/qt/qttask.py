@@ -98,7 +98,7 @@ class QtTask(Singleton):
         func(self.taskId)
         return
 
-    def AddDownloadTask(self, url, path, originalName, downloadCallBack=None, completeCallBack=None, isSaveData=True, backParam=None, isSaveCache=True, cleanFlag=""):
+    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, isSaveData=True, backParam=None, isSaveCache=True, cleanFlag=""):
         self.taskId += 1
         data = QtDownloadTask(self.taskId)
         data.downloadCallBack = downloadCallBack
@@ -107,14 +107,13 @@ class QtTask(Singleton):
         data.backParam = backParam
         data.url = url
         data.path = path
-        data.originalName = originalName
         self.downloadTask[self.taskId] = data
         if cleanFlag:
             data.cleanFlag = cleanFlag
             taskIds = self.flagToIds.setdefault(cleanFlag, set())
             taskIds.add(self.taskId)
 
-        data = self.LoadCachePicture(url, path, originalName)
+        data = self.LoadCachePicture(url, path)
         if data:
             self.HandlerDownloadTask(self.taskId, 0, data, isCallBack=False)
             self.HandlerDownloadTask(self.taskId, 0, b"", isCallBack=False)
@@ -122,10 +121,7 @@ class QtTask(Singleton):
 
         from src.server import Server
         from src.server import req
-        if isSaveCache:
-            Server().Download(req.DownloadBookReq(url, path, originalName), bakParams=self.taskId)
-        else:
-            Server().Download(req.DownloadBookReq(url, path), bakParams=self.taskId)
+        Server().Download(req.DownloadBookReq(url, path, isSaveCache), bakParams=self.taskId)
         return self.taskId
 
     def HandlerTask2(self, taskId, data):
@@ -209,23 +205,18 @@ class QtTask(Singleton):
         del info.saveData
         del self.downloadTask[downlodaId]
 
-    def LoadCachePicture(self, url, path, originalName):
+    def LoadCachePicture(self, url, path):
         try:
             md5Str = path
             a = hashlib.md5(md5Str.encode("utf-8")).hexdigest()
-            filePath = os.path.join(config.SavePath, config.CachePathDir)
+            filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
+            if not os.path.isdir(filePath):
+                os.makedirs(filePath)
 
             if not os.path.isfile(os.path.join(filePath, a)):
                 return None
             with open(os.path.join(filePath, a), "rb") as f:
-                nameSize = int().from_bytes(f.read(2), byteorder='little')
-                timeTick = int().from_bytes(f.read(4), byteorder='little')
-                # if int(time.time()) - timeTick >= config.CacheExpired:
-                #     return None
-                name = f.read(nameSize).decode("utf-8")
                 data = f.read()
-                if name != originalName:
-                    return None
                 return data
         except Exception as es:
             import sys

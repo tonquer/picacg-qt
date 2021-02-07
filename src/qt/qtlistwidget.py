@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayo
 from conf import config
 from resources import resources
 from src.qt.qttask import QtTask
+from src.util import ToolUtil
 from src.util.status import Status
 
 
@@ -211,7 +212,7 @@ class QtBookList(QListWidget):
         self.setItemWidget(item, iwidget)
         iwidget.picIcon.setText("图片加载中...")
         if url and path and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(url, path, originalName, None, self.LoadingPictureComplete, True, index, True, self.GetName())
+            QtTask().AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True, self.GetName())
             pass
 
     def AddUserItem(self, content, name, createdTime, floor, url="", path="", originalName=""):
@@ -219,11 +220,7 @@ class QtBookList(QListWidget):
         iwidget = UserItemWidget(self)
         iwidget.commentLabel.setText(content)
         iwidget.label.setText(name)
-
-        timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%fZ")
-        tick = int(time.mktime(timeArray))
-        now = int(time.time())
-        day = int((int(now - time.timezone) / 86400) - (int(tick - time.timezone) / 86400))
+        timeArray, day = ToolUtil.GetDateStr(createdTime)
         if day >= 1:
             iwidget.timeLabel.setText("{}天前".format(str(day)))
         else:
@@ -236,7 +233,7 @@ class QtBookList(QListWidget):
         item.setSizeHint(iwidget.sizeHint())
         self.setItemWidget(item, iwidget)
         if url and path and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(url, path, originalName, None, self.LoadingPictureComplete, True, index, True, self.GetName())
+            QtTask().AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True, self.GetName())
             pass
 
     def LoadingPictureComplete(self, data, status, index):

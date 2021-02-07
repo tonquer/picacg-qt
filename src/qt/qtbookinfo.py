@@ -13,8 +13,7 @@ from src.index.book import BookMgr
 from src.qt.qtbubblelabel import QtBubbleLabel
 from src.qt.qtlistwidget import QtBookList
 from src.qt.qtloading import QtLoading
-from src.qt.qtreadimg import QtReadImg
-from src.server import req, Log, Server, QtTask
+from src.server import req, Log, Server, QtTask, ToolUtil
 from src.user.user import User
 from src.util.status import Status
 from ui.bookinfo import Ui_BookInfo
@@ -69,8 +68,7 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
 
         self.commentLayout.addWidget(self.listWidget)
 
-        self.qtReadImg = QtReadImg(self, owner)
-        self.stackedWidget.addWidget(self.qtReadImg)
+        # self.stackedWidget.addWidget(self.qtReadImg)
         self.epsListWidget.clicked.connect(self.OpenReadImg)
 
         self.closeFlag = self.__class__.__name__ + "-close"         # 切换book时，取消加载
@@ -78,7 +76,7 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         if self.stackedWidget.currentIndex() == 1:
             self.stackedWidget.setCurrentIndex(0)
-            self.qtReadImg.AddHistory()
+            self.owner().qtReadImg.AddHistory()
             self.LoadHistory()
             a0.ignore()
         else:
@@ -111,7 +109,7 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
             self.download.setEnabled(True)
 
         self.owner().qtTask.CancelTasks(self.closeFlag)
-        self.stackedWidget.setCurrentIndex(0)
+        # self.stackedWidget.setCurrentIndex(0)
         self.show()
         self.loadingForm.show()
         self.owner().qtTask.AddHttpTask(lambda x: BookMgr().AddBookById(bookId, x), self.OpenBookBack)
@@ -126,15 +124,15 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         self.listWidget.UpdateState()
         info = BookMgr().books.get(self.bookId)
         if msg == Status.Ok and info:
-            self.autor.setText("作者：" + info.author)
-            self.title.setText("标题：" + info.title)
+            self.autor.setText(info.author)
+            self.title.setText(info.title)
             self.bookName = info.title
-            self.description.setText("描述：" + info.description)
+            self.description.setText(info.description)
             self.isFinished.setText("完本" if info.finished else "未完本")
-            self.categories.setText("分类：" + ','.join(info.categories))
-            self.tags.setText("TAG：" + ','.join(info.tags))
-            self.likes.setText("爱心数：" + str(info.totalLikes))
-            self.views.setText("观看数：" + str(info.totalViews))
+            self.categories.setText(','.join(info.categories))
+            self.tags.setText(','.join(info.tags))
+            self.likes.setText(str(info.totalLikes))
+            self.views.setText(str(info.totalViews))
 
             if info.isFavourite:
                 self.favorites.setEnabled(False)
@@ -146,13 +144,16 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
             name = info.thumb.get("originalName")
             self.url = fileServer
             self.path = path
+            timeArray, day = ToolUtil.GetDateStr(info.updated_at)
+            self.updateTick.setText(str(day) + "天前更新")
             if config.IsLoadingPicture:
 
-                self.owner().qtTask.AddDownloadTask(fileServer, path, name, completeCallBack=self.UpdatePicture, cleanFlag=self.closeFlag)
+                self.owner().qtTask.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture, cleanFlag=self.closeFlag)
             self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetComments(self.bookId), bakParam=x),
                                             self.GetCommnetBack, cleanFlag=self.closeFlag)
 
             self.owner().qtTask.AddHttpTask(lambda x: BookMgr().AddBookEpsInfo(self.bookId, x), self.GetEpsBack, cleanFlag=self.closeFlag)
+            self.startRead.setEnabled(False)
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             self.msgForm.ShowError(msg)
@@ -214,12 +215,14 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         info = BookMgr().books.get(self.bookId)
         if not info:
             return
+        self.startRead.setEnabled(True)
         for epsInfo in info.eps:
             label = QLabel(epsInfo.title)
             label.setContentsMargins(20, 10, 20, 10)
             item = QListWidgetItem(self.epsListWidget)
             item.setSizeHint(label.sizeHint())
             self.epsListWidget.setItemWidget(item, label)
+        self.tabWidget.setTabText(0, "章节({})".format(str(len(info.eps))))
         return
 
     def AddDownload(self):
@@ -243,6 +246,9 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
 
     def OpenReadImg(self, modelIndex):
         index = modelIndex.row()
+        self.OpenReadIndex(index)
+
+    def OpenReadIndex(self, index):
         item = self.epsListWidget.item(index)
         if not item:
             return
@@ -250,14 +256,24 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         if not widget:
             return
         name = widget.text()
-        self.qtReadImg.OpenPage(self.bookId, index, name)
-        self.stackedWidget.setCurrentIndex(1)
+        self.hide()
+        self.owner().qtReadImg.OpenPage(self.bookId, index, name)
+        # self.stackedWidget.setCurrentIndex(1)
+
+    def StartRead(self):
+        if self.lastEpsId >= 0:
+            self.OpenReadIndex(self.lastEpsId)
+        else:
+            self.OpenReadIndex(0)
+        return
 
     def LoadHistory(self):
         info = self.owner().historyForm.GetHistory(self.bookId)
         if not info:
+            self.startRead.setText("观看第{}章".format(str(1)))
             return
         if self.lastEpsId == info.epsId:
+            self.startRead.setText("观看第{}章".format(str(self.lastEpsId + 1)))
             return
 
         if self.lastEpsId >= 0:
@@ -271,4 +287,4 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         item.setBackground(QColor(238, 162, 164))
         self.epsListWidget.update()
         self.lastEpsId = info.epsId
-
+        self.startRead.setText("观看第{}章".format(str(self.lastEpsId+1)))

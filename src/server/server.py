@@ -146,7 +146,7 @@ class Server(Singleton, threading.Thread):
 
 
         r = self.session.post(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=task.timeout, verify=False)
-        task.res = res.BaseRes(r)
+        task.res = res.BaseRes(r, request.isParseRes)
         return task
 
     def Get(self, task):
@@ -158,7 +158,7 @@ class Server(Singleton, threading.Thread):
             request.headers = {}
 
         r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout, verify=False)
-        task.res = res.BaseRes(r)
+        task.res = res.BaseRes(r, request.isParseRes)
         return task
 
     def Download(self, request, token="", bakParams="", isASync=True):

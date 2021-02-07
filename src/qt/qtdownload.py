@@ -353,7 +353,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
 
         if st == Status.Ok:
             task.saveName = picInfo.originalName
-            self.owner().qtTask.AddDownloadTask(picInfo.fileServer, picInfo.path, picInfo.originalName,
+            self.owner().qtTask.AddDownloadTask(picInfo.fileServer, picInfo.path,
                                                 downloadCallBack=self.DownloadCallBack,
                                                 completeCallBack=self.CompleteDownloadPic, backParam=task.bookId,
                                                 isSaveCache=False)

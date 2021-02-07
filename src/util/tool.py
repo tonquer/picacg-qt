@@ -133,3 +133,11 @@ class ToolUtil(object):
         host = host.replace("http://", "")
         host = host.split("/")[0]
         return host
+
+    @staticmethod
+    def GetDateStr(createdTime):
+        timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%fZ")
+        tick = int(time.mktime(timeArray))
+        now = int(time.time())
+        day = int((int(now - time.timezone) / 86400) - (int(tick - time.timezone) / 86400))
+        return timeArray, day

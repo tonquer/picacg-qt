@@ -9,6 +9,7 @@ class ServerReq(object):
         self.headers = header
         self.params = params
         self.method = method
+        self.isParseRes = True
         self.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
 
 
@@ -161,12 +162,12 @@ class GetComicsBookOrderReq(ServerReq):
 
 # 下载图片
 class DownloadBookReq(ServerReq):
-    def __init__(self, url, path="", originalName=""):
+    def __init__(self, url, path="", isSaveCache=False):
         url = url + "/static/{}".format(path)
         method = "Download"
         self.url = url
         self.path = path
-        self.originalName = originalName
+        self.isSaveCache = isSaveCache
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
 
@@ -178,3 +179,12 @@ class GetComments(ServerReq):
         method = "GET"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
+
+
+# 检查更新
+class CheckUpdateReq(ServerReq):
+    def __init__(self):
+        url = config.UpdateUrl
+        method = "GET"
+        super(self.__class__, self).__init__(url, {}, {}, method)
+        self.isParseRes = False
