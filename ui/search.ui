@@ -159,7 +159,7 @@
    <slot>JumpPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>602</x>
+     <x>600</x>
      <y>306</y>
     </hint>
     <hint type="destinationlabel">
@@ -168,9 +168,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>search</receiver>
+   <slot>ChangeSort()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>637</x>
+     <y>175</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>Search()</slot>
   <slot>JumpPage()</slot>
+  <slot>ChangeSort()</slot>
  </slots>
 </ui>

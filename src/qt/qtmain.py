@@ -1,4 +1,5 @@
 import os
+import re
 import time
 
 from PyQt5 import QtWidgets, QtGui  # 导入PyQt5部件
@@ -27,6 +28,7 @@ from src.qt.qtuser import QtUser
 from src.server import Server, req
 from src.util import Log
 from ui.main import Ui_MainWindow
+import waifu2x
 
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -117,6 +119,10 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def Init(self):
         # self.ClearExpiredCache()
+        waifu2x.Set(config.Waifu2xThread, config.Encode, getattr(config, "Model"+str(config.Model)))
+        stat = waifu2x.Init()
+        if stat < 0:
+            self.msgForm.ShowError("waifu2x初始化错误")
         self.InitUpdate()
         self.loginForm.Init()
         return
@@ -134,10 +140,10 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def InitUpdateBack(self, data):
         try:
-            info = os.path.basename(data).split(".")
+            info = re.findall(r"\d+\d*", os.path.basename(data))
             version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
 
-            info2 = config.UpdateVersion.split(".")
+            info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
             curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
             if version > curversion:
                 r = QMessageBox.information(self, "更新", "当前版本{} ,检查到更新{}，是否前往更新".format(config.UpdateVersion,

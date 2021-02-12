@@ -20,8 +20,23 @@ ResetCnt = 5                  # 下载重试次数
 IsUseCache = True             # 是否使用cache
 CachePathDir = "cache"        # cache目录
 # CacheExpired = 24 * 60 * 60    # cache过期时间24小时
+PreLoading = 10    # 预加载10页
 
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
-UpdateVersion = "1.0.4"
+UpdateVersion = "v1.0.5"
+
+# waifu2x
+Encode = 0
+Waifu2xThread = 1
+Scale = 2
+Noise = 3
+Format = "jpg"
+Model = 1
+Waifu2xPath = "waifu2x"
+IsOpenWaifu = True
+
+Model1 = "models-upconv_7_anime_style_art_rgb"
+Model2 = "models-cunet"
+Model3 = "models-upconv_7_photo"

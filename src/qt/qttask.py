@@ -1,6 +1,8 @@
 import hashlib
 import os
+import threading
 import time
+import waifu2x
 import weakref
 from queue import Queue
 
@@ -9,11 +11,13 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from conf import config
 from src.util import Singleton, Log
 from src.util.status import Status
+from src.util.tool import time_me, CTime
 
 
 class QtTaskQObject(QObject):
     taskBack = pyqtSignal(int, str)
     downloadBack = pyqtSignal(int, int, bytes)
+    convertBack = pyqtSignal(int)
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -28,7 +32,7 @@ class QtHttpTask(object):
 
 
 class QtDownloadTask(object):
-    def __init__(self, downloadId):
+    def __init__(self, downloadId=0):
         self.downloadId = downloadId
         self.downloadCallBack = None       # addData, laveSize
         self.downloadCompleteBack = None   # data, status
@@ -40,24 +44,38 @@ class QtDownloadTask(object):
         self.originalName = ""
         self.backParam = None
         self.cleanFlag = ""
+        self.tick = 0
 
 
-class QtTask(Singleton):
+class QtTask(Singleton, threading.Thread):
 
     def __init__(self):
         Singleton.__init__(self)
+        threading.Thread.__init__(self)
         self._inQueue = Queue()
         self._owner = None
         self.taskObj = QtTaskQObject()
         self.taskObj.taskBack.connect(self.HandlerTask2)
         self.taskObj.downloadBack.connect(self.HandlerDownloadTask)
+        self.taskObj.convertBack.connect(self.HandlerConvertTask)
+
+        self.convertThread = threading.Thread(target=self.RunLoad)
+        self.convertThread.setDaemon(True)
+        self.convertThread.start()
 
         self.downloadTask = {}   # id: task
+        self.convertLoad = {}  # id: task
+        self.convertId = 1000000
 
         self.taskId = 0
         self.tasks = {}  # id: task
 
         self.flagToIds = {}  #
+        self.convertFlag = {}
+
+    @property
+    def convertBack(self):
+        return self.taskObj.convertBack
 
     @property
     def taskBack(self):
@@ -233,3 +251,97 @@ class QtTask(Singleton):
 
             if taskId in self.downloadTask:
                 del self.downloadTask[taskId]
+
+    def AddConvertTask(self, url, path, imgData, completeCallBack=None, backParam=None, cleanFlag=""):
+        info = QtDownloadTask()
+        info.downloadCompleteBack = completeCallBack
+        info.backParam = backParam
+        info.url = url
+        info.path = path
+        self.taskId += 1
+        self.convertLoad[self.taskId] = info
+        data = self.LoadConvertCachePicture(url, path)
+        if data:
+            info.saveData = data
+            self.HandlerConvertTask(self.taskId, isCallBack=False)
+            return self.taskId
+
+        converId = waifu2x.Add(imgData, config.Format, config.Noise, config.Scale, self.taskId)
+        if converId <= 0:
+            return 0
+        if cleanFlag:
+            info.cleanFlag = cleanFlag
+            taskIds = self.convertFlag.setdefault(cleanFlag, set())
+            taskIds.add(self.taskId)
+        return self.taskId
+
+    def LoadConvertCachePicture(self, url, path):
+        try:
+            md5Str = path
+            a = hashlib.md5(md5Str.encode("utf-8")).hexdigest()
+            filePath = os.path.join(os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath), os.path.dirname(path))
+            if not os.path.isdir(filePath):
+                os.makedirs(filePath)
+
+            if not os.path.isfile(os.path.join(filePath, a)):
+                return None
+            with open(os.path.join(filePath, a), "rb") as f:
+                data = f.read()
+                return data
+        except Exception as es:
+            import sys
+            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+            e = sys.exc_info()[1]
+            Log.Error(cur_tb, e)
+        return None
+
+    def HandlerConvertTask(self, taskId, isCallBack=True):
+        if taskId not in self.convertLoad:
+            return
+        t1 = CTime()
+        info = self.convertLoad[taskId]
+        assert isinstance(info, QtDownloadTask)
+
+        if info.cleanFlag:
+            taskIds = self.convertFlag.get(info.cleanFlag, set())
+            taskIds.discard(info.downloadId)
+        info.downloadCompleteBack(info.saveData, taskId, info.backParam, info.tick)
+        del self.convertLoad[taskId]
+        t1.Refresh("RunLoad")
+
+    def LoadData(self):
+        return waifu2x.Load(10)
+
+    def RunLoad(self):
+        while True:
+            time.sleep(0.1)
+            info = self.LoadData()
+            if not info:
+                continue
+            t1 = CTime()
+            data, convertId, taskId, tick = info
+            if taskId not in self.convertLoad:
+                continue
+            info = self.convertLoad[taskId]
+            assert isinstance(info, QtDownloadTask)
+            info.saveData = data
+            info.tick = tick
+
+            filePath = os.path.join(os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath), os.path.dirname(info.path))
+            if not os.path.isdir(filePath):
+                os.makedirs(filePath)
+
+            a = hashlib.md5(info.path.encode("utf-8")).hexdigest()
+            if data:
+                with open(os.path.join(filePath, a), "wb+") as f:
+                    f.write(data)
+            else:
+                pass
+            self.convertBack.emit(taskId)
+            t1.Refresh("RunLoad")
+
+    def CancelConver(self, cleanFlag):
+        taskIds = self.convertFlag.get(cleanFlag, set())
+        for taskId in taskIds:
+            if taskId in self.convertLoad:
+                del self.convertLoad[taskId]

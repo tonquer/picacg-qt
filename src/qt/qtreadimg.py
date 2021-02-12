@@ -1,8 +1,8 @@
 import weakref
-
+import waifu2x
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
-from PyQt5.QtGui import QPixmap, QPainter, QColor
+from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QTimer, QSize
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QPalette
 from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsScene, QApplication, QFrame, QVBoxLayout, QLabel
 
 from conf import config
@@ -10,11 +10,39 @@ from src.index.book import BookMgr
 from src.qt.qtbubblelabel import QtBubbleLabel
 from src.qt.qtloading import QtLoading
 from src.qt.qttask import QtTask
+from src.util import ToolUtil
 from src.util.status import Status
+from src.util.tool import time_me, CTime
 from ui.readimg import Ui_ReadImg
 
 
+class FileData(object):
+    Downloading = "开始下载"
+    DownloadSuc = "下载完成"
+    DownloadError = "下载错误"
+    DownloadReset = "重新下载"
+
+    WaifuStateStart = "解码开始"
+    WaifuStateCancle = "不解码"
+    WaifuStateEnd = "解码完成"
+    WaifuStateFail = "解码失败"
+
+    def __init__(self):
+        self.pData = None
+        self.size = 0
+        self.state = ""
+        self.tick = 0
+
+    def SetData(self, data):
+        if not data:
+            return
+        self.pData = QPixmap()
+        self.pData.loadFromData(data)
+        self.size = len(data)
+
+
 class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
+
     def __init__(self, parent, *args, **kwargs):
         super(QtImgTool, self).__init__(*args, **kwargs)
         Ui_ReadImg.__init__(self)
@@ -26,7 +54,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 8, 8, 16)
         layout.addWidget(QLabel("test"))
-        self.pushButton.setText("未开放")
         self.radioButton.installEventFilter(self)
         self.radioButton_2.installEventFilter(self)
 
@@ -76,8 +103,11 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         if self.curIndex >= self.maxPic-1:
             QtBubbleLabel.ShowMsgEx(self.parent(), "已经最后一页")
             return
+        t = CTime()
         self.curIndex += 1
+        self.SetData(isInit=True)
         self.parent().ShowImg()
+        t.Refresh(self.__class__.__name__)
         return
 
     def LastPage(self):
@@ -85,6 +115,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             QtBubbleLabel.ShowMsgEx(self.parent(), "已经是第一页")
             return
         self.curIndex -= 1
+        self.SetData(isInit=True)
         self.parent().ShowImg()
         return
 
@@ -100,6 +131,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
     def ReturnPage(self):
         self.parent().hide()
         self.hide()
+        self.parent().Clear()
         self.parent().owner().bookInfoForm.show()
         self.parent().AddHistory()
         self.parent().owner().bookInfoForm.LoadHistory()
@@ -110,6 +142,65 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             return True
         else:
             return super(self.__class__, self).eventFilter(obj, ev)
+
+    def SetData(self, pSize=None, dataLen=0, state="", waifuSize=None, waifuDataLen=0, waifuState="", waifuTick=0, isInit=False):
+        self.epsLabel.setText("位置：{}/{}".format(self.parent().curIndex+1, self.parent().maxPic))
+        if pSize or isInit:
+            if not pSize:
+                pSize = QSize(0, 0)
+            self.resolutionLabel.setText("分辨率：{}x{}".format(str(pSize.width()), str(pSize.height())))
+
+        if dataLen or isInit:
+            self.sizeLabel.setText("大小: " + ToolUtil.GetDownloadSize(dataLen))
+
+        if waifuSize or isInit:
+            if not waifuSize:
+                waifuSize = QSize(0, 0)
+            self.resolutionWaifu.setText("分辨率：{}x{}".format(str(waifuSize.width()), str(waifuSize.height())))
+        if waifuDataLen or isInit:
+            self.sizeWaifu.setText("大小：" + ToolUtil.GetDownloadSize(waifuDataLen))
+
+        if state or isInit:
+            self.stateLable.setText("状态：" + state)
+
+        if waifuState or isInit:
+            self.stateWaifu.setText("状态：" + waifuState)
+        if waifuTick or isInit:
+            self.tickLabel.setText("耗时：" + str(waifuTick) + "s")
+
+        self.parent().MoveTool()
+
+    def CopyPicture(self):
+        clipboard = QApplication.clipboard()
+        owner = self.parent()
+
+        if self.checkBox.isChecked():
+            data = owner.convertData.get(owner.indexToWaifu2xId.get(owner.curIndex))
+            if not data or not data.pData:
+                QtBubbleLabel.ShowErrorEx(owner, "解码还未完成")
+                return
+            clipboard.setPixmap(data.pData)
+            QtBubbleLabel.ShowMsgEx(owner, "复制成功")
+
+        else:
+            data2 = self.pictureData.get(self.curIndex)
+            if not data2 or not data2.pData:
+                QtBubbleLabel.ShowErrorEx(owner, "下载未完成")
+                return
+            clipboard.setPixmap(data2.pData)
+            QtBubbleLabel.ShowMsgEx(owner, "复制成功")
+        return
+
+    def OpenWaifu(self):
+        if self.checkBox.isChecked():
+            config.IsOpenWaifu = True
+            self.parent().ShowImg(True)
+        else:
+            config.IsOpenWaifu = False
+            self.parent().ShowImg(False)
+
+        return
+
 
 class QtReadImg(QtWidgets.QWidget):
     def __init__(self, owner):
@@ -126,12 +217,14 @@ class QtReadImg(QtWidgets.QWidget):
         self.maxPic = 0
 
         self.curPreLoadIndex = 0
-        self.maxPreLoad = 10
+        self.maxPreLoad = config.PreLoading
 
         self.gridLayout = QtWidgets.QGridLayout(self)
         self.qtTool = QtImgTool(self)
 
         self.graphicsView = QtWidgets.QGraphicsView(self)
+        self.graphicsView.setTransformationAnchor(self.graphicsView.AnchorUnderMouse)
+        self.graphicsView.setResizeAnchor(self.graphicsView.AnchorUnderMouse)
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
         self.graphicsView.setObjectName("graphicsView")
 
@@ -169,20 +262,48 @@ class QtReadImg(QtWidgets.QWidget):
         # self.resize(1200, 1080)
         self.closeFlag = self.__class__.__name__   # 防止切换时异步加载图片错位
 
+        # self.timer = QTimer(self)
+        # self.timer.setInterval(100)
+        self.convertData = {}   # (state, tick, data)
+        self.waifu2xIdToIndex = {}
+        self.indexToWaifu2xId = {}
+        # self.timer.timeout.connect(self.LoadWaifu2x)
+        # self.timer.start()
+
     def closeEvent(self, a0) -> None:
         self.ReturnPage()
         self.owner().bookInfoForm.show()
         self.qtTool.hide()
+        self.Clear()
         a0.accept()
 
-    def OpenPage(self, bookId, epsId, name):
-        self.bookId = bookId
-        self.epsId = epsId
-        self.pictureData.clear()
+    def Clear(self):
+        self.qtTool.label_2.setText("去噪等级：" + str(config.Noise))
+        self.qtTool.label_3.setText("放大倍数：" + str(config.Scale))
+        self.qtTool.label_9.setText("转码模式：" + ("CPU" if config.Encode == -1 else "GPU"))
+        self.bookId = ""
+        self.epsId = 0
         self.maxPic = 0
         self.curIndex = 0
         self.curPreLoadIndex = 0
         self.scaleCnt = 0
+        self.pictureData.clear()
+        self.waifu2xIdToIndex.clear()
+        self.indexToWaifu2xId.clear()
+        self.convertData.clear()
+        waifu2x.Clear()
+        QtTask().CancelTasks(self.closeFlag)
+        QtTask().CancelConver(self.closeFlag)
+
+    def OpenPage(self, bookId, epsId, name):
+        self.Clear()
+        self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
+        self.qtTool.SetData(isInit=True)
+        self.graphicsItem.setPixmap(QPixmap())
+        self.qtTool.SetData()
+        self.qtTool.show()
+        self.bookId = bookId
+        self.epsId = epsId
         self.graphicsItem.setPos(0, 0)
 
         # historyInfo = self.owner().historyForm.GetHistory(bookId)
@@ -192,7 +313,6 @@ class QtReadImg(QtWidgets.QWidget):
         #     self.AddHistory()
         # self.AddHistory()
 
-        QtTask().CancelTasks(self.closeFlag)
         self.loadingForm.show()
         self.StartLoadPicUrl()
         self.setWindowTitle(name)
@@ -242,37 +362,58 @@ class QtReadImg(QtWidgets.QWidget):
 
     def CompleteDownloadPic(self, data, st, index):
         self.loadingForm.close()
+        p = FileData()
+        bookInfo = BookMgr().books.get(self.bookId)
+        epsInfo = bookInfo.eps[self.epsId]
+        picInfo = epsInfo.pics[index]
         if st != Status.Ok:
-            bookInfo = BookMgr().books.get(self.bookId)
-            epsInfo = bookInfo.eps[self.epsId]
-            picInfo = epsInfo.pics[index]
+            p.state = p.DownloadReset
             QtTask().AddDownloadTask(picInfo.fileServer, picInfo.path,
                                                 completeCallBack=self.CompleteDownloadPic, backParam=index,
                                                 isSaveCache=True, cleanFlag=self.closeFlag)
         else:
-            self.pictureData[index] = data
+            p.SetData(data)
+            p.state = p.DownloadSuc
+            self.pictureData[index] = p
+            if config.IsOpenWaifu:
+                waifu2xId = QtTask().AddConvertTask(picInfo.fileServer, picInfo.path, data, self.Waifu2xBack, index, self.closeFlag)
             if index == self.curIndex:
                 self.ShowImg()
             return
 
-    def ShowImg(self):
-        self.qtTool.epsLabel.setText("页：{}/{}".format(self.curIndex+1, self.maxPic))
-        self.qtTool.epsLabel.setAlignment(Qt.AlignCenter)
-        data = self.pictureData.get(self.curIndex)
-        if not data:
-            a = QPixmap("加载失败")
-            QtBubbleLabel.ShowMsgEx(self, "正在努力加载中")
-            self.graphicsItem.setPixmap(a)
-            return False
-        else:
-            self.pixMap = QPixmap()
-            self.pixMap.loadFromData(data)
-            self.graphicsItem.setPixmap(self.pixMap)
-            self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
-            self.ScalePicture()
+    def ShowImg(self, isShowWaifu=True):
+        data = self.convertData.get(self.indexToWaifu2xId.get(self.curIndex))
+        data2 = self.pictureData.get(self.curIndex)
 
-            self.CheckLoadPicture()
-            return True
+        if not data2:
+            self.qtTool.SetData(state=FileData.Downloading)
+            return
+
+        if not isShowWaifu:
+            p2 = data2.pData
+            self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0, waifuState=FileData.WaifuStateCancle)
+        elif not data:
+            p2 = data2.pData
+            self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0, waifuState=FileData.WaifuStateStart)
+        else:
+            p2 = data.pData
+            if p2:
+                self.qtTool.SetData(waifuSize=p2.size(), waifuDataLen=data.size, waifuState=FileData.WaifuStateEnd, waifuTick=data.tick)
+            else:
+                p2 = data2.pData
+                self.qtTool.SetData(waifuSize=p2.size(), waifuDataLen=data.size, waifuState=FileData.WaifuStateFail,
+                                    waifuTick=data.tick)
+
+        if not p2:
+            return
+
+        self.qtTool.SetData(pSize=data2.pData.size(), dataLen=data2.size, state=FileData.DownloadSuc)
+        self.pixMap = p2
+        self.graphicsItem.setPixmap(self.pixMap)
+        self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
+        self.ScalePicture()
+        self.CheckLoadPicture()
+        return True
 
     def ScalePicture(self):
         if self.isStripModel:
@@ -331,10 +472,20 @@ class QtReadImg(QtWidgets.QWidget):
             return super(self.__class__, self).eventFilter(obj, ev)
 
     def wheelEvent(self, event):
-        if event.angleDelta().y() > 0:
-            self.zoomIn()
+        if event.modifiers() == Qt.ControlModifier:
+            if event.angleDelta().y() > 0:
+                self.zoomIn()
+            else:
+                self.zoomOut()
         else:
-            self.zoomOut()
+            if event.angleDelta().y() > 0:
+                # self.zoomIn()
+                point = self.graphicsItem.pos()
+                self.graphicsItem.setPos(point.x(), point.y()+100)
+            else:
+                # self.zoomOut()
+                point = self.graphicsItem.pos()
+                self.graphicsItem.setPos(point.x(), point.y()-100)
 
     def zoomIn(self):
         """放大"""
@@ -388,8 +539,8 @@ class QtReadImg(QtWidgets.QWidget):
 
     def ShowAndCloseTool(self):
         if self.qtTool.isHidden():
-            self.MoveTool()
             self.qtTool.show()
+            self.MoveTool()
         else:
             self.qtTool.hide()
 
@@ -397,4 +548,18 @@ class QtReadImg(QtWidgets.QWidget):
         size1 = self.geometry()
         # size2 = self.graphicsView.pos()
         h = self.width()
-        self.qtTool.move(size1.x() + h - 100, size1.y())
+        self.qtTool.move(size1.x() + h - self.qtTool.width(), size1.y())
+
+    def Waifu2xBack(self, data, waifu2xId, index, tick):
+        if waifu2xId > 0:
+            self.waifu2xIdToIndex[waifu2xId] = index
+            self.indexToWaifu2xId[index] = waifu2xId
+        if waifu2xId not in self.waifu2xIdToIndex:
+            return
+        p = FileData()
+        p.SetData(data)
+        p.tick = round(tick, 2)
+        self.convertData[waifu2xId] = p
+        index = self.waifu2xIdToIndex.get(waifu2xId)
+        if index == self.curIndex:
+            self.ShowImg()

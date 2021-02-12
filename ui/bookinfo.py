@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BookInfo(object):
     def setupUi(self, BookInfo):
         BookInfo.setObjectName("BookInfo")
-        BookInfo.resize(480, 542)
+        BookInfo.resize(999, 808)
         self.gridLayout_2 = QtWidgets.QGridLayout(BookInfo)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.stackedWidget = QtWidgets.QStackedWidget(BookInfo)

@@ -63,6 +63,7 @@ class Ui_search(object):
         self.retranslateUi(search)
         self.searchButton.clicked.connect(search.Search)
         self.jumpPage.clicked.connect(search.JumpPage)
+        self.comboBox.currentIndexChanged['int'].connect(search.ChangeSort)
         QtCore.QMetaObject.connectSlotsByName(search)
 
     def retranslateUi(self, search):

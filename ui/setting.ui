@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>456</width>
-    <height>154</height>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,13 +16,6 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QDialogButtonBox" name="buttonBox">
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="3" column="0">
@@ -32,11 +25,127 @@
          </property>
         </widget>
        </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>线程数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>模型</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>解码器</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QComboBox" name="encodeSelect">
+         <item>
+          <property name="text">
+           <string>GPU（快）</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CPU（慢）</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="httpEdit">
+         <property name="placeholderText">
+          <string>http://127.0.0.1:10809</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QComboBox" name="scaleSelect">
+         <item>
+          <property name="text">
+           <string>2倍</string>
+          </property>
+         </item>
+        </widget>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>http代理</string>
          </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>画质选择</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>缩放大小</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QComboBox" name="threadSelect">
+         <item>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>5</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QComboBox" name="noiseSelect">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>3（最佳去噪）</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="2" column="2">
@@ -83,6 +192,67 @@
          </item>
         </layout>
        </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>waifu2x设置</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>去噪等级</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLineEdit" name="saveEdit"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="text">
+          <string>下载线程数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QComboBox" name="modelSelect">
+         <item>
+          <property name="text">
+           <string>models-upconv_7_anime_style_art_rgb（快速）</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>models-cunet（最佳）</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>models-upconv_7_photo</string>
+          </property>
+         </item>
+        </widget>
+       </item>
        <item row="0" column="2">
         <widget class="QComboBox" name="comboBox">
          <property name="placeholderText">
@@ -115,49 +285,21 @@
          </item>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
+       <item row="4" column="2">
+        <widget class="QCheckBox" name="checkBox">
          <property name="text">
-          <string>下载线程数</string>
+          <string>是否启用（修改设置后，请重新启动）</string>
          </property>
         </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>画质选择</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="httpEdit">
-         <property name="placeholderText">
-          <string>http://127.0.0.1:10809</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <item>
-            <widget class="QLineEdit" name="saveEdit"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButton">
-             <property name="text">
-              <string>...</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
        </item>
       </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -172,8 +314,8 @@
    <slot>SaveSetting()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>324</x>
-     <y>157</y>
+     <x>336</x>
+     <y>351</y>
     </hint>
     <hint type="destinationlabel">
      <x>242</x>
@@ -188,8 +330,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>205</x>
-     <y>150</y>
+     <x>217</x>
+     <y>351</y>
     </hint>
     <hint type="destinationlabel">
      <x>137</x>
@@ -208,7 +350,7 @@
      <y>120</y>
     </hint>
     <hint type="destinationlabel">
-     <x>472</x>
+     <x>455</x>
      <y>132</y>
     </hint>
    </hints>

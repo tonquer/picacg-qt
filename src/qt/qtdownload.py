@@ -157,24 +157,12 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
     def SwitchCurrent(self):
         pass
 
-    def GetDownloadSize(self, downloadLen):
-        kb = downloadLen / 1024.0
-        if kb <= 0.1:
-            size = str(downloadLen) + "bytes"
-        else:
-            mb = kb / 1024.0
-            if mb <= 0.1:
-                size = str(round(kb, 2)) + "kb"
-            else:
-                size = str(round(mb, 2)) + "mb"
-        return size
-
     def UpdateTable(self):
         for task in self.downloadingList:
             assert isinstance(task, DownloadInfo)
             downloadLen = task.speedDownloadLen
-            size = self.GetDownloadSize(downloadLen)
-            allSize = self.GetDownloadSize(task.downloadLen)
+            size = ToolUtil.GetDownloadSize(downloadLen)
+            allSize = ToolUtil.GetDownloadSize(task.downloadLen)
             task.speed = size + "/s"
             task.downSize = allSize
             self.UpdateTableItem(task)

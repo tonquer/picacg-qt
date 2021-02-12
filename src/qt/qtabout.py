@@ -15,6 +15,7 @@ class QtAbout(QtWidgets.QWidget, Ui_AboutForm):
         self.setupUi(self)
         self.setWindowTitle("关于")
         self.owner = weakref.ref(owner)
+        self.label.setText("哔咔漫画{}".format(config.UpdateVersion))
         self.label_3.linkActivated.connect(self.OpenUrl)
 
     def OpenUrl(self):

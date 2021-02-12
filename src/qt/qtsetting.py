@@ -46,6 +46,39 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         if x and y:
             self.bookSize = QSize(int(x), int(y))
 
+        v = self.settings.value("Waifu2x/Encode")
+        if v:
+            config.Encode = int(v)
+        if config.Encode == -1:
+            self.encodeSelect.setCurrentIndex(1)
+        else:
+            self.encodeSelect.setCurrentIndex(0)
+
+        v = self.settings.value("Waifu2x/Thread")
+        if v:
+            config.Waifu2xThread = int(v)
+        self.threadSelect.setCurrentIndex(config.Waifu2xThread-1)
+
+        v = self.settings.value("Waifu2x/Scale")
+        if v:
+            config.Scale = int(v)
+        self.scaleSelect.setCurrentIndex(0)
+
+        v = self.settings.value("Waifu2x/Noise")
+        if v:
+            config.Noise = int(v)
+        self.noiseSelect.setCurrentIndex(3-config.Noise)
+
+        v = self.settings.value("Waifu2x/Model")
+        if v:
+            config.Model = int(v)
+        self.noiseSelect.setCurrentIndex(config.Model-1)
+
+        v = self.settings.value("Waifu2x/Open")
+        if v:
+            config.IsOpenWaifu = False if v == "false" else True
+        self.checkBox.setChecked(config.IsOpenWaifu)
+
         self.userId = self.settings.value("UserId")
         self.passwd = self.settings.value("Passwd")
         return
@@ -57,6 +90,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("BookSize_y", bookQsize.height())
         self.settings.setValue("UserId", userId)
         self.settings.setValue("Passwd", passwd)
+        self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)
 
     def SaveSetting(self):
         config.DownloadThreadNum = int(self.comboBox.currentText())
@@ -70,6 +104,20 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("Proxy/Http", config.HttpProxy)
 
         self.settings.setValue("SavePath", config.SavePath)
+
+        config.Encode = 0 if self.encodeSelect.currentIndex() == 0 else -1
+        config.Waifu2xThread = int(self.threadSelect.currentIndex()) + 1
+        config.Scale = int(self.scaleSelect.currentIndex()) + 2
+        config.Noise = 3 - int(self.noiseSelect.currentIndex())
+        config.Model = int(self.modelSelect.currentIndex()) + 1
+        config.IsOpenWaifu = self.checkBox.isChecked()
+        self.settings.setValue("Waifu2x/Encode", config.Encode)
+        self.settings.setValue("Waifu2x/Thread", config.Waifu2xThread)
+        self.settings.setValue("Waifu2x/Scale", config.Scale)
+        self.settings.setValue("Waifu2x/Noise", config.Noise)
+        self.settings.setValue("Waifu2x/Model", config.Model)
+        self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)
+
         # QtWidgets.QMessageBox.information(self, '保存成功', "成功", QtWidgets.QMessageBox.Yes)
         QtBubbleLabel.ShowMsgEx(self, "保存成功")
 

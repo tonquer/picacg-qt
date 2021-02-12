@@ -1,0 +1,61 @@
+7767517
+59 71
+Input                    input                    0 1 Input1 0=312 1=312 2=3
+Convolution              Convolution1             1 1 Input1 Convolution1_ReLU1 0=32 1=3 5=1 6=864 9=2 -23310=1,0.100000
+Convolution              Convolution2             1 1 Convolution1_ReLU1 Convolution2_ReLU2 0=64 1=3 5=1 6=18432 9=2 -23310=1,0.100000
+Split                    splitncnn_0              1 2 Convolution2_ReLU2 Convolution2_ReLU2_splitncnn_0 Convolution2_ReLU2_splitncnn_1
+Convolution              Convolution3             1 1 Convolution2_ReLU2_splitncnn_1 Convolution3_ReLU3 0=64 1=2 3=2 5=1 6=16384 9=2 -23310=1,0.100000
+Convolution              Convolution4             1 1 Convolution3_ReLU3 Convolution4_ReLU4 0=128 1=3 5=1 6=73728 9=2 -23310=1,0.100000
+Convolution              Convolution5             1 1 Convolution4_ReLU4 Convolution5_ReLU5 0=64 1=3 5=1 6=73728 9=2 -23310=1,0.100000
+Split                    splitncnn_1              1 2 Convolution5_ReLU5 Convolution5_ReLU5_splitncnn_0 Convolution5_ReLU5_splitncnn_1
+Pooling                  Pooling1                 1 1 Convolution5_ReLU5_splitncnn_1 Pooling1 0=1 4=1
+InnerProduct             Convolution6             1 1 Pooling1 Convolution6_ReLU6 0=8 1=1 2=512 9=1
+InnerProduct             Convolution7             1 1 Convolution6_ReLU6 Flatten1 0=64 1=1 2=512 9=4
+Scale                    Scale1                   2 1 Convolution5_ReLU5_splitncnn_0 Flatten1 Scale1 0=-233
+Deconvolution            Deconvolution1           1 1 Scale1 Deconvolution1_ReLU7 0=64 1=2 3=2 5=1 6=16384 9=2 -23310=1,0.100000
+Split                    splitncnn_2              1 2 Deconvolution1_ReLU7 Deconvolution1_ReLU7_splitncnn_0 Deconvolution1_ReLU7_splitncnn_1
+Crop                     Crop1                    2 1 Convolution2_ReLU2_splitncnn_0 Deconvolution1_ReLU7_splitncnn_1 Crop1 0=4 1=4
+Eltwise                  Eltwise1                 2 1 Crop1 Deconvolution1_ReLU7_splitncnn_0 Eltwise1 0=1
+Convolution              Convolution8             1 1 Eltwise1 Convolution8_ReLU8 0=64 1=3 5=1 6=36864 9=2 -23310=1,0.100000
+Convolution              Convolution9             1 1 Convolution8_ReLU8 Convolution9 0=3 1=3 5=1 6=1728
+Split                    splitncnn_3              1 2 Convolution9 Convolution9_splitncnn_0 Convolution9_splitncnn_1
+Convolution              Convolution10            1 1 Convolution9_splitncnn_1 Convolution10_ReLU9 0=32 1=3 5=1 6=864 9=2 -23310=1,0.100000
+Convolution              Convolution11            1 1 Convolution10_ReLU9 Convolution11_ReLU10 0=64 1=3 5=1 6=18432 9=2 -23310=1,0.100000
+Split                    splitncnn_4              1 2 Convolution11_ReLU10 Convolution11_ReLU10_splitncnn_0 Convolution11_ReLU10_splitncnn_1
+Convolution              Convolution12            1 1 Convolution11_ReLU10_splitncnn_1 Convolution12_ReLU11 0=64 1=2 3=2 5=1 6=16384 9=2 -23310=1,0.100000
+Convolution              Convolution13            1 1 Convolution12_ReLU11 Convolution13_ReLU12 0=64 1=3 5=1 6=36864 9=2 -23310=1,0.100000
+Convolution              Convolution14            1 1 Convolution13_ReLU12 Convolution14_ReLU13 0=128 1=3 5=1 6=73728 9=2 -23310=1,0.100000
+Split                    splitncnn_5              1 2 Convolution14_ReLU13 Convolution14_ReLU13_splitncnn_0 Convolution14_ReLU13_splitncnn_1
+Pooling                  Pooling2                 1 1 Convolution14_ReLU13_splitncnn_1 Pooling2 0=1 4=1
+InnerProduct             Convolution15            1 1 Pooling2 Convolution15_ReLU14 0=16 1=1 2=2048 9=1
+InnerProduct             Convolution16            1 1 Convolution15_ReLU14 Flatten2 0=128 1=1 2=2048 9=4
+Scale                    Scale2                   2 1 Convolution14_ReLU13_splitncnn_0 Flatten2 Scale2 0=-233
+Split                    splitncnn_6              1 2 Scale2 Scale2_splitncnn_0 Scale2_splitncnn_1
+Convolution              Convolution17            1 1 Scale2_splitncnn_1 Convolution17_ReLU15 0=128 1=2 3=2 5=1 6=65536 9=2 -23310=1,0.100000
+Convolution              Convolution18            1 1 Convolution17_ReLU15 Convolution18_ReLU16 0=256 1=3 5=1 6=294912 9=2 -23310=1,0.100000
+Convolution              Convolution19            1 1 Convolution18_ReLU16 Convolution19_ReLU17 0=128 1=3 5=1 6=294912 9=2 -23310=1,0.100000
+Split                    splitncnn_7              1 2 Convolution19_ReLU17 Convolution19_ReLU17_splitncnn_0 Convolution19_ReLU17_splitncnn_1
+Pooling                  Pooling3                 1 1 Convolution19_ReLU17_splitncnn_1 Pooling3 0=1 4=1
+InnerProduct             Convolution20            1 1 Pooling3 Convolution20_ReLU18 0=16 1=1 2=2048 9=1
+InnerProduct             Convolution21            1 1 Convolution20_ReLU18 Flatten3 0=128 1=1 2=2048 9=4
+Scale                    Scale3                   2 1 Convolution19_ReLU17_splitncnn_0 Flatten3 Scale3 0=-233
+Deconvolution            Deconvolution2           1 1 Scale3 Deconvolution2_ReLU19 0=128 1=2 3=2 5=1 6=65536 9=2 -23310=1,0.100000
+Split                    splitncnn_8              1 2 Deconvolution2_ReLU19 Deconvolution2_ReLU19_splitncnn_0 Deconvolution2_ReLU19_splitncnn_1
+Crop                     Crop2                    2 1 Scale2_splitncnn_0 Deconvolution2_ReLU19_splitncnn_1 Crop2 0=4 1=4
+Eltwise                  Eltwise2                 2 1 Crop2 Deconvolution2_ReLU19_splitncnn_0 Eltwise2 0=1
+Convolution              Convolution22            1 1 Eltwise2 Convolution22_ReLU20 0=64 1=3 5=1 6=73728 9=2 -23310=1,0.100000
+Convolution              Convolution23            1 1 Convolution22_ReLU20 Convolution23_ReLU21 0=64 1=3 5=1 6=36864 9=2 -23310=1,0.100000
+Split                    splitncnn_9              1 2 Convolution23_ReLU21 Convolution23_ReLU21_splitncnn_0 Convolution23_ReLU21_splitncnn_1
+Pooling                  Pooling4                 1 1 Convolution23_ReLU21_splitncnn_1 Pooling4 0=1 4=1
+InnerProduct             Convolution24            1 1 Pooling4 Convolution24_ReLU22 0=8 1=1 2=512 9=1
+InnerProduct             Convolution25            1 1 Convolution24_ReLU22 Flatten4 0=64 1=1 2=512 9=4
+Scale                    Scale4                   2 1 Convolution23_ReLU21_splitncnn_0 Flatten4 Scale4 0=-233
+Deconvolution            Deconvolution3           1 1 Scale4 Deconvolution3_ReLU23 0=64 1=2 3=2 5=1 6=16384 9=2 -23310=1,0.100000
+Split                    splitncnn_10             1 2 Deconvolution3_ReLU23 Deconvolution3_ReLU23_splitncnn_0 Deconvolution3_ReLU23_splitncnn_1
+Crop                     Crop3                    2 1 Convolution11_ReLU10_splitncnn_0 Deconvolution3_ReLU23_splitncnn_1 Crop3 0=16 1=16
+Eltwise                  Eltwise3                 2 1 Crop3 Deconvolution3_ReLU23_splitncnn_0 Eltwise3 0=1
+Convolution              Convolution26            1 1 Eltwise3 Convolution26_ReLU24 0=64 1=3 5=1 6=36864 9=2 -23310=1,0.100000
+Convolution              Convolution27            1 1 Convolution26_ReLU24 Convolution27 0=3 1=3 5=1 6=1728
+Split                    splitncnn_11             1 2 Convolution27 Convolution27_splitncnn_0 Convolution27_splitncnn_1
+Crop                     Crop4                    2 1 Convolution9_splitncnn_0 Convolution27_splitncnn_1 Crop4 0=20 1=20
+Eltwise                  Eltwise4                 2 1 Crop4 Convolution27_splitncnn_0 Eltwise4 0=1

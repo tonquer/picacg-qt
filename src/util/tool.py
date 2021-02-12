@@ -9,6 +9,37 @@ from src.util import Log
 from conf import config
 
 
+
+
+class CTime(object):
+    def __init__(self):
+        self._t1 = time.time()
+
+    def Refresh(self, clsName, des='', checkTime=100):
+        t2 = time.time()
+        diff = int((t2 - self._t1) * 1000)
+        if diff >= checkTime:
+            text = 'CTime2 consume:{} ms, {}.{}'.format(diff, clsName, des)
+            Log.Warn(text)
+            # 超过0.5秒超时写入数据库
+        self._t1 = t2
+        return diff
+
+
+def time_me(fn):
+    def _wrapper(*args, **kwargs):
+        start = time.time()
+        rt = fn(*args, **kwargs)
+        diff = int((time.time() - start) * 1000)
+        if diff >= 100:
+            clsName = args[0]
+            strLog = 'time_me consume,{} ms, {}.{}'.format(diff, clsName, fn.__name__)
+            # Log.w(strLog)
+            Log.Warn(strLog)
+        return rt
+    return _wrapper
+
+
 class ToolUtil(object):
     @classmethod
     def GetHeader(cls, _url: str, method: str) -> dict:
@@ -141,3 +172,16 @@ class ToolUtil(object):
         now = int(time.time())
         day = int((int(now - time.timezone) / 86400) - (int(tick - time.timezone) / 86400))
         return timeArray, day
+
+    @staticmethod
+    def GetDownloadSize(downloadLen):
+        kb = downloadLen / 1024.0
+        if kb <= 0.1:
+            size = str(downloadLen) + "bytes"
+        else:
+            mb = kb / 1024.0
+            if mb <= 0.1:
+                size = str(round(kb, 2)) + "kb"
+            else:
+                size = str(round(mb, 2)) + "mb"
+        return size

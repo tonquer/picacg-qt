@@ -49,6 +49,8 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
     def Search(self, categories=None):
         data = self.searchEdit.text()
         self.data = data
+        if not data:
+            return
         if not categories:
             self.categories = []
         else:
@@ -57,6 +59,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.bookList.clear()
         self.bookList.UpdatePage(1, 1)
         self.bookList.UpdateState()
+        self.searchEdit.setPlaceholderText("")
         self.SendSearch(self.data, 1)
 
     def SendSearch(self, data, page):
@@ -69,6 +72,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
     def OpenSearchCategories(self, categories):
         self.bookList.clear()
         self.categories = categories
+        self.searchEdit.setPlaceholderText(categories)
         self.bookList.UpdatePage(1, 1)
         self.bookList.UpdateState()
         self.SendSearchCategories(1)
@@ -146,3 +150,11 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         else:
             self.SendSearchCategories(self.bookList.page + 1)
         return
+
+    def ChangeSort(self, pos):
+        self.bookList.page = 1
+        self.bookList.clear()
+        if not self.categories:
+            self.SendSearch(self.data, 1)
+        else:
+            self.SendSearchCategories(1)

@@ -5,6 +5,7 @@ import weakref
 
 from PyQt5 import QtWidgets, QtCore, QtGui  # 导入PyQt5部件
 import sys
+import waifu2x
 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
@@ -21,3 +22,4 @@ if __name__ == "__main__":
     main.show()  # 显示窗体
     main.Init()
     sys.exit(app.exec())  # 运行程序
+    waifu2x.Stop()

@@ -157,7 +157,7 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             self.msgForm.ShowError(msg)
-            self.close()
+            self.hide()
         return
 
     def UpdatePicture(self, data, status):
@@ -227,14 +227,14 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
 
     def AddDownload(self):
         if self.owner().downloadForm.AddDownload(self.bookId):
-            self.owner().msgForm.ShowMsg("添加下载成功")
+            QtBubbleLabel.ShowMsgEx(self, "添加下载成功")
         else:
-            self.owner().msgForm.ShowMsg("已在下载列表")
+            QtBubbleLabel.ShowMsgEx(self, "已在下载列表")
         self.download.setEnabled(False)
 
     def AddFavority(self):
         User().AddAndDelFavorites(self.bookId)
-        self.owner().msgForm.ShowMsg("添加收藏成功")
+        QtBubbleLabel.ShowMsgEx(self, "添加收藏成功")
         self.favorites.setEnabled(False)
 
     def LoadNextPage(self):

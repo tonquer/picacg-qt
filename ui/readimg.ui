@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>158</width>
-    <height>253</height>
+    <width>223</width>
+    <height>786</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,6 +21,89 @@
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
+       <item>
+        <widget class="QLabel" name="label_5">
+         <property name="styleSheet">
+          <string notr="true">color: #ee2a24</string>
+         </property>
+         <property name="text">
+          <string>点击右键打开关闭</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_6">
+         <property name="styleSheet">
+          <string notr="true">color: #ee2a24</string>
+         </property>
+         <property name="text">
+          <string>按住左Alt+滚轮放大</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="text">
+          <string>铺满高度（还原图片）</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButton_2">
+         <property name="text">
+          <string>铺满宽度（还原图片）</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_4">
+         <property name="styleSheet">
+          <string notr="true">color: #ee2a24</string>
+         </property>
+         <property name="text">
+          <string>图片信息</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="resolutionLabel">
+         <property name="text">
+          <string>分辨率：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="sizeLabel">
+         <property name="text">
+          <string>大小：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="stateLable">
+         <property name="text">
+          <string>状态：</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QLabel" name="epsLabel">
          <property name="minimumSize">
@@ -36,7 +119,79 @@
           </size>
          </property>
          <property name="text">
-          <string>TextLabel</string>
+          <string>位置：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="styleSheet">
+          <string notr="true">color: #ee2a24</string>
+         </property>
+         <property name="text">
+          <string>Waifu2x参数</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBox">
+         <property name="text">
+          <string>打开Waifu2x</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>噪点等级：3</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>放大倍数：2</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>转码模式：GPU</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="resolutionWaifu">
+         <property name="text">
+          <string>分辨率：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="sizeWaifu">
+         <property name="text">
+          <string>大小：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="tickLabel">
+         <property name="text">
+          <string>耗时：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="stateWaifu">
+         <property name="text">
+          <string>状态：</string>
          </property>
         </widget>
        </item>
@@ -79,33 +234,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="copyButton">
          <property name="text">
-          <string>全屏</string>
+          <string>复制图片</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton">
-         <property name="text">
-          <string>正常模式</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_2">
-         <property name="text">
-          <string>条漫模式</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
         </widget>
        </item>
        <item>
@@ -127,6 +259,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>隐藏</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
@@ -134,12 +273,8 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>returePage</tabstop>
-  <tabstop>nextPage</tabstop>
-  <tabstop>pushButton</tabstop>
   <tabstop>radioButton</tabstop>
   <tabstop>radioButton_2</tabstop>
-  <tabstop>lastPage</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -150,11 +285,11 @@
    <slot>LastPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>390</x>
-     <y>140</y>
+     <x>198</x>
+     <y>632</y>
     </hint>
     <hint type="destinationlabel">
-     <x>666</x>
+     <x>211</x>
      <y>488</y>
     </hint>
    </hints>
@@ -166,11 +301,11 @@
    <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>390</x>
-     <y>218</y>
+     <x>198</x>
+     <y>667</y>
     </hint>
     <hint type="destinationlabel">
-     <x>594</x>
+     <x>211</x>
      <y>479</y>
     </hint>
    </hints>
@@ -182,11 +317,11 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>390</x>
-     <y>454</y>
+     <x>198</x>
+     <y>737</y>
     </hint>
     <hint type="destinationlabel">
-     <x>635</x>
+     <x>211</x>
      <y>455</y>
     </hint>
    </hints>
@@ -198,11 +333,11 @@
    <slot>SwitchPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>348</x>
-     <y>375</y>
+     <x>198</x>
+     <y>92</y>
     </hint>
     <hint type="destinationlabel">
-     <x>503</x>
+     <x>211</x>
      <y>325</y>
     </hint>
    </hints>
@@ -214,12 +349,60 @@
    <slot>SwitchPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>322</x>
-     <y>323</y>
+     <x>198</x>
+     <y>66</y>
     </hint>
     <hint type="destinationlabel">
-     <x>485</x>
+     <x>211</x>
      <y>309</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>105</x>
+     <y>758</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>105</x>
+     <y>392</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>OpenWaifu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>22</x>
+     <y>303</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>424</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>copyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>CopyPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>688</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>364</x>
+     <y>571</y>
     </hint>
    </hints>
   </connection>
@@ -229,6 +412,9 @@
   <slot>NextPage()</slot>
   <slot>ReturnPage()</slot>
   <slot>SwitchPicture()</slot>
+  <slot>CopyPicture()</slot>
+  <slot>SwitchWaifu()</slot>
+  <slot>OpenWaifu()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>
