@@ -31,8 +31,11 @@ class CateGoryMgr(Singleton):
 
     def UpdateCateGoryBack(self, backData):
         for info in backData.res.data.get("categories", {}):
-            if not info.get('_id'):
+            if info.get("isWeb"):
                 continue
+            # 兼容下图片加载失败
+            if info.get("thumb").get('fileServer') == "https://wikawika.xyz/static/":
+                info["thumb"]["fileServer"] = 'https://storage1.picacomic.com'
             newInfo = CateGoryBase()
             ToolUtil.ParseFromData(newInfo, info)
             self.idToCateGoryBase.append(newInfo)

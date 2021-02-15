@@ -267,6 +267,8 @@ class QtTask(Singleton, threading.Thread):
             return self.taskId
 
         converId = waifu2x.Add(imgData, config.Format, config.Noise, config.Scale, self.taskId)
+        Log.Info("add convert info, taskId: {}, converId:{} backParam:{}".format(str(self.taskId), str(self.convertId),
+                                                                               backParam))
         if converId <= 0:
             return 0
         if cleanFlag:

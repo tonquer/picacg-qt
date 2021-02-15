@@ -23,10 +23,11 @@ class Log(object):
         day = time.strftime('%Y%m%d', time.localtime(time.time()))
         logfile = os.path.join("logs", day+".log")
         fh = logging.FileHandler(logfile, mode='a', encoding="utf-8")
-        fh.setLevel(logging.WARN)
+        fh.setLevel(logging.INFO)
         formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
         fh.setFormatter(formatter)
         Log.logger.addHandler(fh)
+
         return
 
     @staticmethod

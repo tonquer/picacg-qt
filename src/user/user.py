@@ -39,6 +39,7 @@ class User(Singleton):
         self.title = ""     # 称号
         self.gender = ""    # 性别
         self.isPunched = False  # 是否签到
+        self.avatar = {}
 
         self.addresss = []  # 列表
 
@@ -146,6 +147,7 @@ class User(Singleton):
                 self.title = backData.res.data["user"]["title"]
                 self.title = backData.res.data["user"]["title"]
                 self.isPunched = backData.res.data["user"]["isPunched"]
+                self.avatar = backData.res.data["user"].get("avatar")
         except Exception as es:
             import sys
             cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)

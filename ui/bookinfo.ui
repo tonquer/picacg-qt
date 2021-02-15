@@ -66,28 +66,7 @@
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_4">
-                   <item>
-                    <widget class="QLabel" name="label_2">
-                     <property name="maximumSize">
-                      <size>
-                       <width>40</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>作者：</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="autor">
-                     <property name="text">
-                      <string>作者</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4"/>
                  </item>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -114,58 +93,10 @@
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_6">
-                   <item>
-                    <widget class="QLabel" name="label_4">
-                     <property name="maximumSize">
-                      <size>
-                       <width>40</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>分类：</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="categories">
-                     <property name="maximumSize">
-                      <size>
-                       <width>500</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>分类</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <layout class="QHBoxLayout" name="horizontalLayout_6"/>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_7">
-                   <item>
-                    <widget class="QLabel" name="label_5">
-                     <property name="maximumSize">
-                      <size>
-                       <width>40</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>Tag：</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="tags">
-                     <property name="text">
-                      <string>Tag</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <layout class="QHBoxLayout" name="horizontalLayout_7"/>
                  </item>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_8">

@@ -125,7 +125,6 @@ class RankReq(object):
 @handler(req.GetComments)
 class GetComments(object):
     def __call__(self, backData):
-        from src.index.category import CateGoryMgr
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
 
@@ -170,7 +169,11 @@ class DownloadBookReq(object):
         else:
             r = backData.res
             try:
-                fileSize = int(r.headers.get('Content-Length'))
+                if r.status_code != 200:
+                    if backData.bakParam:
+                        QtTask().downloadBack.emit(backData.bakParam, -1, b"")
+                    return
+                fileSize = int(r.headers.get('Content-Length', 0))
                 getSize = 0
                 data = b""
                 for chunk in r.iter_content(chunk_size=1024):
@@ -181,7 +184,7 @@ class DownloadBookReq(object):
                 if backData.bakParam:
                     QtTask().downloadBack.emit(backData.bakParam, 0, b"")
 
-                if backData.req.isSaveCache and config.IsUseCache:
+                if backData.req.isSaveCache and config.IsUseCache and len(data) > 0:
                     path = backData.req.path
 
                     filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
@@ -207,3 +210,10 @@ class CheckUpdateReq(object):
     def __call__(self, backData):
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, backData.res.raw.url)
+
+
+@handler(req.GetKeywords)
+class GetKeywordsHandler(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)

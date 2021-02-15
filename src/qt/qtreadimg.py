@@ -183,7 +183,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             QtBubbleLabel.ShowMsgEx(owner, "复制成功")
 
         else:
-            data2 = self.pictureData.get(self.curIndex)
+            data2 = owner.pictureData.get(owner.curIndex)
             if not data2 or not data2.pData:
                 QtBubbleLabel.ShowErrorEx(owner, "下载未完成")
                 return
@@ -214,10 +214,12 @@ class QtReadImg(QtWidgets.QWidget):
         self.curIndex = 0
 
         self.pictureData = {}
+        self.waitPicData = set()
         self.maxPic = 0
 
         self.curPreLoadIndex = 0
         self.maxPreLoad = config.PreLoading
+
 
         self.gridLayout = QtWidgets.QGridLayout(self)
         self.qtTool = QtImgTool(self)
@@ -267,6 +269,7 @@ class QtReadImg(QtWidgets.QWidget):
         self.convertData = {}   # (state, tick, data)
         self.waifu2xIdToIndex = {}
         self.indexToWaifu2xId = {}
+        self.waitWaifuPicData = set()
         # self.timer.timeout.connect(self.LoadWaifu2x)
         # self.timer.start()
 
@@ -280,7 +283,7 @@ class QtReadImg(QtWidgets.QWidget):
     def Clear(self):
         self.qtTool.label_2.setText("去噪等级：" + str(config.Noise))
         self.qtTool.label_3.setText("放大倍数：" + str(config.Scale))
-        self.qtTool.label_9.setText("转码模式：" + ("CPU" if config.Encode == -1 else "GPU"))
+        self.qtTool.label_9.setText("转码模式：" + self.owner().settingForm.GetGpuName())
         self.bookId = ""
         self.epsId = 0
         self.maxPic = 0
@@ -291,6 +294,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.waifu2xIdToIndex.clear()
         self.indexToWaifu2xId.clear()
         self.convertData.clear()
+        self.waitWaifuPicData.clear()
+        self.waitPicData.clear()
         waifu2x.Clear()
         QtTask().CancelTasks(self.closeFlag)
         QtTask().CancelConver(self.closeFlag)
@@ -340,13 +345,22 @@ class QtReadImg(QtWidgets.QWidget):
                 continue
             if i < self.curPreLoadIndex:
                 continue
+
+            bookInfo = BookMgr().books.get(self.bookId)
+            epsInfo = bookInfo.eps[self.epsId]
+            picInfo = epsInfo.pics[i]
             if i not in self.pictureData:
-                bookInfo = BookMgr().books.get(self.bookId)
-                epsInfo = bookInfo.eps[self.epsId]
-                picInfo = epsInfo.pics[i]
-                QtTask().AddDownloadTask(picInfo.fileServer, picInfo.path,
-                                                    completeCallBack=self.CompleteDownloadPic, backParam=i,
-                                                    isSaveCache=True, cleanFlag=self.closeFlag)
+                # 防止重复请求
+                if i not in self.waitPicData:
+                    QtTask().AddDownloadTask(picInfo.fileServer, picInfo.path,
+                                                        completeCallBack=self.CompleteDownloadPic, backParam=i,
+                                                        isSaveCache=True, cleanFlag=self.closeFlag)
+                    self.waitPicData.add(i)
+            elif config.IsOpenWaifu and i not in self.waitWaifuPicData:
+                if self.indexToWaifu2xId.get(self.curIndex) not in self.convertData:
+                    data = self.pictureData[i]
+                    QtTask().AddConvertTask(picInfo.fileServer, picInfo.path, data, self.Waifu2xBack, i, self.closeFlag)
+                    self.waitWaifuPicData.add(i)
         self.curPreLoadIndex = max(i, self.curPreLoadIndex)
         pass
 
@@ -366,17 +380,20 @@ class QtReadImg(QtWidgets.QWidget):
         bookInfo = BookMgr().books.get(self.bookId)
         epsInfo = bookInfo.eps[self.epsId]
         picInfo = epsInfo.pics[index]
+        self.waitPicData.discard(index)
         if st != Status.Ok:
             p.state = p.DownloadReset
             QtTask().AddDownloadTask(picInfo.fileServer, picInfo.path,
                                                 completeCallBack=self.CompleteDownloadPic, backParam=index,
                                                 isSaveCache=True, cleanFlag=self.closeFlag)
+            self.waitPicData.add(index)
         else:
             p.SetData(data)
             p.state = p.DownloadSuc
             self.pictureData[index] = p
             if config.IsOpenWaifu:
                 waifu2xId = QtTask().AddConvertTask(picInfo.fileServer, picInfo.path, data, self.Waifu2xBack, index, self.closeFlag)
+                self.waitWaifuPicData.add(index)
             if index == self.curIndex:
                 self.ShowImg()
             return
@@ -551,6 +568,7 @@ class QtReadImg(QtWidgets.QWidget):
         self.qtTool.move(size1.x() + h - self.qtTool.width(), size1.y())
 
     def Waifu2xBack(self, data, waifu2xId, index, tick):
+        self.waitWaifuPicData.discard(index)
         if waifu2xId > 0:
             self.waifu2xIdToIndex[waifu2xId] = index
             self.indexToWaifu2xId[index] = waifu2xId

@@ -1,11 +1,13 @@
 from PyQt5 import QtWidgets, QtGui
 import weakref
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
-from PyQt5.QtWidgets import QCheckBox, QGroupBox, QAbstractSlider
+from PyQt5.QtWidgets import QCheckBox, QGroupBox, QAbstractSlider, QListWidget, QScroller, QListWidgetItem, QLabel
 
 from src.index.category import CateGoryMgr
-from src.qt.qtlistwidget import QtBookList, QtIntLimit
+from src.qt.qtbubblelabel import QtBubbleLabel
+from src.qt.qtlistwidget import QtBookList, QtIntLimit, QtCategoryList
 from src.server import Server, req, Log, json, Status
 from ui.search import Ui_search
 
@@ -25,6 +27,22 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.bookList.doubleClicked.connect(self.OpenSearch)
         self.categories = ""
         self.jumpLine.setValidator(QtIntLimit(1, 1, self))
+
+        self.categoryList = QtCategoryList(self)
+        layouy = QtWidgets.QHBoxLayout()
+        layouy.addWidget(QLabel("屏蔽："))
+        layouy.addWidget(self.categoryList)
+        self.bookLayout.addLayout(layouy, 1, 0)
+        for name in ["耽美", "偽娘", "禁書", "扶她", "重口", "生肉", "純愛", "WEBTOON"]:
+            self.categoryList.AddItem(name)
+        self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
+
+        self.keywordList = QtCategoryList(self)
+        layouy = QtWidgets.QHBoxLayout()
+        layouy.addWidget(QLabel("大家都在搜："))
+        layouy.addWidget(self.keywordList)
+        self.bookLayout.addLayout(layouy, 2, 0)
+        self.keywordList.itemClicked.connect(self.ClickKeywordListItem)
 
     def SwitchCurrent(self):
         pass
@@ -86,6 +104,10 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             lambda x: Server().Send(req.CategoriesSearchReq(page, self.categories, sortId), bakParam=x),
             self.SendSearchBack)
 
+    def InitKeyWord(self):
+        self.owner().qtTask.AddHttpTask(
+            lambda x: Server().Send(req.GetKeywords(), bakParam=x), self.SendKeywordBack)
+
     def SendSearchBack(self, raw):
         self.owner().loadingForm.close()
         try:
@@ -107,11 +129,29 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
                     originalName = v.get("thumb", {}).get("originalName")
                     info2 = "完本," if v.get("finished") else ""
                     info2 += "{}E/{}P".format(str(v.get("epsCount")), str(v.get("pagesCount")))
-                    self.bookList.AddBookItem(_id, title, info2, url, path, originalName)
-
+                    param = ",".join(v.get("categories"))
+                    self.bookList.AddBookItem(_id, title, info2, url, path, param)
+                self.CheckCategoryShowItem()
             else:
                 # QtWidgets.QMessageBox.information(self, '未搜索到结果', "未搜索到结果", QtWidgets.QMessageBox.Yes)
                 self.owner().msgForm.ShowError("未搜索到结果")
+        except Exception as es:
+            import sys
+            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+            e = sys.exc_info()[1]
+            Log.Error(cur_tb, e)
+        pass
+
+    def SendKeywordBack(self, raw):
+        try:
+            data = json.loads(raw)
+            if data.get("code") == 200:
+                self.keywordList.clear()
+                for keyword in data.get('data', {}).get("keywords", []):
+                    self.keywordList.AddItem(keyword)
+                pass
+            else:
+                pass
         except Exception as es:
             import sys
             cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
@@ -158,3 +198,31 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             self.SendSearch(self.data, 1)
         else:
             self.SendSearchCategories(1)
+
+    def ClickCategoryListItem(self, item):
+        isClick = self.categoryList.ClickItem(item)
+        data = item.text()
+        if isClick:
+            self.owner().msgForm.ShowMsg("屏蔽" + data)
+        else:
+            self.owner().msgForm.ShowMsg("取消屏蔽" + data)
+        self.CheckCategoryShowItem()
+
+    def CheckCategoryShowItem(self):
+        data = self.categoryList.GetAllSelectItem()
+        for i in range(self.bookList.count()):
+            item = self.bookList.item(i)
+            widget = self.bookList.itemWidget(item)
+            isHidden = False
+            for name in data:
+                if name in widget.param:
+                    item.setHidden(True)
+                    isHidden = True
+                    break
+            if not isHidden:
+                item.setHidden(False)
+
+    def ClickKeywordListItem(self, item):
+        data = item.text()
+        self.searchEdit.setText(data)
+        self.Search()

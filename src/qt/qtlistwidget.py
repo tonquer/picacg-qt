@@ -2,11 +2,11 @@ import time
 import weakref
 
 from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap, QPainter, QLinearGradient, QGradient, QColor, QBrush, QFont, QIntValidator
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, \
-    QListWidgetItem, QAbstractSlider
+    QListWidgetItem, QAbstractSlider, QScroller
 
 from conf import config
 from resources import resources
@@ -26,8 +26,8 @@ class QtIntLimit(QIntValidator):
 class UserItemWidget(QWidget):
     def __init__(self, *args, **kwargs):
         super(UserItemWidget, self).__init__(*args, **kwargs)
-        self.setMinimumSize(0, 160)
-        self.setMaximumSize(16777215, 160)
+        self.setMinimumSize(0, 180)
+        self.setMaximumSize(16777215, 180)
         hboxLayout = QHBoxLayout(self)
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -80,9 +80,10 @@ class UserItemWidget(QWidget):
 
 
 class ItemWidget(QWidget):
-    def __init__(self, _id, title, index, info, *args, **kwargs):
+    def __init__(self, _id, title, index, info, param, *args, **kwargs):
         super(ItemWidget, self).__init__(*args, **kwargs)
         self.id = _id
+        self.param = param
         self.setMaximumSize(220, 300)
         self.setMaximumSize(220, 300)
         layout = QVBoxLayout(self)
@@ -204,9 +205,9 @@ class QtBookList(QListWidget):
     def UpdateState(self, isLoading=False):
         self.isLoadingPage = isLoading
 
-    def AddBookItem(self, _id, title, info="", url="", path="", originalName=""):
+    def AddBookItem(self, _id, title, info="", url="", path="", param="", originalName=""):
         index = self.count()
-        iwidget = ItemWidget(_id, title, str(index+1), info, self)
+        iwidget = ItemWidget(_id, title, str(index+1), info, param, self)
         item = QListWidgetItem(self)
         item.setSizeHint(iwidget.sizeHint())
         self.setItemWidget(item, iwidget)
@@ -253,3 +254,42 @@ class QtBookList(QListWidget):
 
         # 防止异步加载时，信息错乱
         QtTask().CancelTasks(self.GetName())
+
+
+class QtCategoryList(QListWidget):
+    def __init__(self, parent):
+        QListWidget.__init__(self, parent)
+        self.setViewMode(self.ListMode)
+        self.setFlow(self.LeftToRight)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollMode(self.ScrollPerItem)
+        QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
+        self.setMaximumHeight(30)
+        self.setFocusPolicy(Qt.NoFocus)
+
+    def AddItem(self, name):
+        item = QListWidgetItem(name)
+        item.setTextAlignment(Qt.AlignCenter)
+        # item.setBackground(QColor(87, 195, 194))
+        item.setBackground(QColor(0, 0, 0, 0))
+        item.setSizeHint(QSize(90, 30))
+        item.setFlags(item.flags() & (~Qt.ItemIsSelectable))
+
+        self.addItem(item)
+
+    def ClickItem(self, item):
+        if item.background().color() == QColor(0, 0, 0, 0):
+            item.setBackground(QColor(87, 195, 194))
+            return True
+        else:
+            item.setBackground(QColor(0, 0, 0, 0))
+            return False
+
+    def GetAllSelectItem(self):
+        data = set()
+        for i in range(self.count()):
+            item = self.item(i)
+            if item.background().color() == QColor(87, 195, 194):
+                data.add(item.text())
+        return data

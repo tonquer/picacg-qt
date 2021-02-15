@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>456</width>
+    <width>482</width>
     <height>364</height>
    </rect>
   </property>
@@ -42,23 +42,12 @@
        <item row="5" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>解码器</string>
+          <string>解码器（需重启）</string>
          </property>
         </widget>
        </item>
        <item row="5" column="2">
-        <widget class="QComboBox" name="encodeSelect">
-         <item>
-          <property name="text">
-           <string>GPU（快）</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>CPU（慢）</string>
-          </property>
-         </item>
-        </widget>
+        <widget class="QComboBox" name="encodeSelect"/>
        </item>
        <item row="1" column="2">
         <widget class="QLineEdit" name="httpEdit">
@@ -101,27 +90,7 @@
         <widget class="QComboBox" name="threadSelect">
          <item>
           <property name="text">
-           <string>1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>3</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>5</string>
           </property>
          </item>
         </widget>
@@ -238,17 +207,7 @@
         <widget class="QComboBox" name="modelSelect">
          <item>
           <property name="text">
-           <string>models-upconv_7_anime_style_art_rgb（快速）</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>models-cunet（最佳）</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>models-upconv_7_photo</string>
+           <string>models-cunet</string>
           </property>
          </item>
         </widget>
@@ -288,7 +247,7 @@
        <item row="4" column="2">
         <widget class="QCheckBox" name="checkBox">
          <property name="text">
-          <string>是否启用（修改设置后，请重新启动）</string>
+          <string>是否启用</string>
          </property>
         </widget>
        </item>

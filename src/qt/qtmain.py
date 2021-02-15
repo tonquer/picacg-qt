@@ -123,6 +123,11 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         stat = waifu2x.Init()
         if stat < 0:
             self.msgForm.ShowError("waifu2x初始化错误")
+
+        Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode))
+        gpuInfo = waifu2x.GetGpuInfo()
+        self.settingForm.SetGpuInfos(gpuInfo)
+
         self.InitUpdate()
         self.loginForm.Init()
         return
@@ -150,7 +155,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                                         info),
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
                 if r == QMessageBox.Yes:
-                    QDesktopServices.openUrl(QUrl(config.UpdateUrl))
+                    QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacg-windows/releases"))
         except Exception as Es:
             import sys
             cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)

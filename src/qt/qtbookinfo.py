@@ -11,7 +11,7 @@ from conf import config
 from resources import resources
 from src.index.book import BookMgr
 from src.qt.qtbubblelabel import QtBubbleLabel
-from src.qt.qtlistwidget import QtBookList
+from src.qt.qtlistwidget import QtBookList, QtCategoryList
 from src.qt.qtloading import QtLoading
 from src.server import req, Log, Server, QtTask, ToolUtil
 from src.user.user import User
@@ -19,7 +19,7 @@ from src.util.status import Status
 from ui.bookinfo import Ui_BookInfo
 
 
-class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
+class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def __init__(self, owner):
         super(self.__class__, self).__init__()
         Ui_BookInfo.__init__(self)
@@ -33,13 +33,22 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         self.lastEpsId = -1
 
         self.msgForm = QtBubbleLabel(self)
+
         self.title.setGeometry(QRect(328, 240, 329, 27 * 4))
         self.title.setWordWrap(True)
         self.title.setAlignment(Qt.AlignTop)
         self.title.setContextMenuPolicy(Qt.CustomContextMenu)
         self.title.customContextMenuRequested.connect(self.CopyTitle)
-        self.autor.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.autor.customContextMenuRequested.connect(self.CopyAutor)
+
+        # self.autor.setContextMenuPolicy(Qt.CustomContextMenu)
+        # self.autor.customContextMenuRequested.connect(self.OpenAutor)
+
+        layouy = self.horizontalLayout_4
+        self.autorList = QtCategoryList(self)
+        layouy.addWidget(QLabel("作者："))
+        layouy.addWidget(self.autorList)
+        self.autorList.itemClicked.connect(self.ClickTagsItem)
+
         self.description.setContextMenuPolicy(Qt.CustomContextMenu)
         self.description.customContextMenuRequested.connect(self.CopyDescription)
 
@@ -47,13 +56,25 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         self.description.setWordWrap(True)
         self.description.setAlignment(Qt.AlignTop)
 
-        self.categories.setGeometry(QRect(328, 240, 329, 27 * 4))
-        self.categories.setWordWrap(True)
-        self.categories.setAlignment(Qt.AlignTop)
+        # self.categories.setGeometry(QRect(328, 240, 329, 27 * 4))
+        # self.categories.setWordWrap(True)
+        # self.categories.setAlignment(Qt.AlignTop)
 
-        self.tags.setGeometry(QRect(328, 240, 329, 27 * 4))
-        self.tags.setWordWrap(True)
-        self.tags.setAlignment(Qt.AlignTop)
+        layouy = self.horizontalLayout_6
+        self.categoriesList = QtCategoryList(self)
+        layouy.addWidget(QLabel("分类："))
+        layouy.addWidget(self.categoriesList)
+        self.categoriesList.itemClicked.connect(self.ClickCategoriesItem)
+
+        # self.tags.setGeometry(QRect(328, 240, 329, 27 * 4))
+        # self.tags.setWordWrap(True)
+        # self.tags.setAlignment(Qt.AlignTop)
+
+        layouy = self.horizontalLayout_7
+        self.tagsList = QtCategoryList(self)
+        layouy.addWidget(QLabel("Tags："))
+        layouy.addWidget(self.tagsList)
+        self.tagsList.itemClicked.connect(self.ClickTagsItem)
 
         self.epsListWidget = QListWidget(self)
         self.epsListWidget.setFlow(self.epsListWidget.LeftToRight)
@@ -88,11 +109,12 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         self.msgForm.ShowMsg("复制标题")
         return
 
-    def CopyAutor(self):
-        clipboard = QApplication.clipboard()
-        clipboard.setText(self.autor.text())
-        self.msgForm.ShowMsg("复制作者")
-        return
+    # def OpenAutor(self):
+    #     text = self.autor.text()
+    #     self.owner().userForm.listWidget.setCurrentRow(0)
+    #     self.owner().searchForm.searchEdit.setText(text)
+    #     self.owner().searchForm.Search()
+    #     return
 
     def CopyDescription(self):
         clipboard = QApplication.clipboard()
@@ -122,15 +144,23 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         self.listWidget.clear()
         self.listWidget.UpdatePage(1, 1)
         self.listWidget.UpdateState()
+        self.categoriesList.clear()
+        self.tagsList.clear()
+        self.autorList.clear()
         info = BookMgr().books.get(self.bookId)
         if msg == Status.Ok and info:
-            self.autor.setText(info.author)
+            # self.autor.setText(info.author)
+            self.autorList.AddItem(info.author)
             self.title.setText(info.title)
             self.bookName = info.title
             self.description.setText(info.description)
             self.isFinished.setText("完本" if info.finished else "未完本")
-            self.categories.setText(','.join(info.categories))
-            self.tags.setText(','.join(info.tags))
+            for name in info.categories:
+                self.categoriesList.AddItem(name)
+            # self.categories.setText(','.join(info.categories))
+            # self.tags.setText(','.join(info.tags))
+            for name in info.tags:
+                self.tagsList.AddItem(name)
             self.likes.setText(str(info.totalLikes))
             self.views.setText(str(info.totalViews))
 
@@ -288,3 +318,17 @@ class QtBookInfo(QtWidgets.QDialog, Ui_BookInfo):
         self.epsListWidget.update()
         self.lastEpsId = info.epsId
         self.startRead.setText("观看第{}章".format(str(self.lastEpsId+1)))
+
+    def ClickCategoriesItem(self, item):
+        text = item.text()
+        self.owner().userForm.listWidget.setCurrentRow(0)
+        self.owner().searchForm.searchEdit.setText("")
+        self.owner().searchForm.OpenSearchCategories(text)
+        return
+
+    def ClickTagsItem(self, item):
+        text = item.text()
+        self.owner().userForm.listWidget.setCurrentRow(0)
+        self.owner().searchForm.searchEdit.setText(text)
+        self.owner().searchForm.Search()
+        return

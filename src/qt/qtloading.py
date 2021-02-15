@@ -39,10 +39,13 @@ class QtLoading(QtWidgets.QDialog, Ui_Loading):
         self.timer = QTimer(self.label)
         self.timer.setInterval(100)
 
+        self.cnt = 0
+        self.closeCnt = 50
         self.timer.timeout.connect(self.UpdatePic)
 
     def show(self) -> None:
         self.timer.start()
+        self.cnt = 0
         super(self.__class__, self).show()
 
     def close(self):
@@ -55,5 +58,8 @@ class QtLoading(QtWidgets.QDialog, Ui_Loading):
             self.index = 0
         # self.label.setPixmap(QPixmap("resources/loading_{}_big.png".format(self.index)))
         self.label.setPixmap(QPixmap.fromImage(self.qMapList[self.index]))
+        self.cnt += 1
+        if self.cnt >= self.closeCnt:
+            self.close()
         pass
 

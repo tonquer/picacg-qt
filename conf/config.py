@@ -25,18 +25,16 @@ PreLoading = 10    # 预加载10页
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
-UpdateVersion = "v1.0.5"
+UpdateVersion = "v1.0.6"
 
 # waifu2x
 Encode = 0
-Waifu2xThread = 1
+Waifu2xThread = 2
 Scale = 2
 Noise = 3
 Format = "jpg"
-Model = 1
+Model = 2
 Waifu2xPath = "waifu2x"
 IsOpenWaifu = True
 
-Model1 = "models-upconv_7_anime_style_art_rgb"
 Model2 = "models-cunet"
-Model3 = "models-upconv_7_photo"

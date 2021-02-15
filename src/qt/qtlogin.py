@@ -1,6 +1,8 @@
 import time
 import weakref
 
+from PyQt5.QtGui import QPixmap
+
 from src.qt.qttask import QtTask
 from src.user.user import User
 from src.util.status import Status
@@ -36,12 +38,23 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
             # self.close()
             self.owner().stackedWidget.setCurrentIndex(1)
             self.owner().qtTask.AddHttpTask(lambda x: User().UpdateUserInfo(x), self.UpdateUserBack)
+            self.owner().searchForm.InitKeyWord()
         else:
             # QtWidgets.QMessageBox.information(self, '登陆失败', msg, QtWidgets.QMessageBox.Yes)
             self.owner().msgForm.ShowError("登陆失败, " + msg)
 
     def UpdateUserBack(self, msg):
         self.owner().userForm.UpdateLabel(User().name, User().level, User().exp, User().isPunched)
+        url = User().avatar.get("fileServer")
+        path = User().avatar.get("path")
+        if url and path:
+            self.owner().qtTask.AddDownloadTask(url, path, None, self.ShowUserImg)
+
+    def ShowUserImg(self, data, st):
+        if st == Status.Ok:
+            a = QPixmap()
+            a.loadFromData(data)
+            self.owner().userForm.icon.setPixmap(a)
 
     def OpenRegister(self):
         self.SetSelectIp()

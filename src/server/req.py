@@ -188,3 +188,12 @@ class CheckUpdateReq(ServerReq):
         method = "GET"
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
+
+
+# 热词
+class GetKeywords(ServerReq):
+    def __init__(self):
+        url = config.Url + "keywords"
+        method = "GET"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
