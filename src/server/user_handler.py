@@ -2,10 +2,8 @@ import hashlib
 import os
 import time
 
-import requests
-
 from conf import config
-from src.qt.qttask import QtTask
+from src.qt.util.qttask import QtTask
 from .server import handler
 from src.server import req, Status, Log
 
@@ -100,7 +98,6 @@ class CategoryReq(object):
 @handler(req.AdvancedSearchReq)
 class AdvancedSearchReq(object):
     def __call__(self, backData):
-        from src.index.category import CateGoryMgr
         if backData.res.code == 200:
             for data in backData.res.data['comics']["docs"]:
                 pass

@@ -1,30 +1,30 @@
 import os
 import re
-import time
 
 from PyQt5 import QtWidgets, QtGui  # 导入PyQt5部件
-from PyQt5.QtCore import QTimer, pyqtSignal, QSettings, QUrl
+from PyQt5.QtCore import QTimer, QUrl
 from PyQt5.QtGui import QIcon, QPixmap, QDesktopServices
 from PyQt5.QtWidgets import QMessageBox
 
 from conf import config
 from resources import resources
-from src.qt.qtabout import QtAbout
-from src.qt.qtbookinfo import QtBookInfo
-from src.qt.qtbubblelabel import QtBubbleLabel
-from src.qt.qtcategory import QtCategory
-from src.qt.qtdownload import QtDownload
-from src.qt.qtfavorite import QtFavorite
-from src.qt.qthistory import QtHistory
-from src.qt.qtloading import QtLoading
-from src.qt.qtlogin import QtLogin
-from src.qt.qtrank import QtRank
-from src.qt.qtreadimg import QtReadImg
-from src.qt.qtregister import QtRegister
-from src.qt.qtsearch import QtSearch
-from src.qt.qtsetting import QtSetting
-from src.qt.qttask import QtTask
-from src.qt.qtuser import QtUser
+from src.qt.menu.qtabout import QtAbout
+from src.qt.read.qtbookinfo import QtBookInfo
+from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.main.qtcategory import QtCategory
+from src.qt.download.qtdownload import QtDownload
+from src.qt.read.qtepsinfo import QtEpsInfo
+from src.qt.user.qtfavorite import QtFavorite
+from src.qt.user.qthistory import QtHistory
+from src.qt.com.qtloading import QtLoading
+from src.qt.user.qtlogin import QtLogin
+from src.qt.main.qtrank import QtRank
+from src.qt.read.qtreadimg import QtReadImg
+from src.qt.user.qtregister import QtRegister
+from src.qt.main.qtsearch import QtSearch
+from src.qt.menu.qtsetting import QtSetting
+from src.qt.util.qttask import QtTask
+from src.qt.user.qtuser import QtUser
 from src.server import Server, req
 from src.util import Log
 from ui.main import Ui_MainWindow
@@ -65,6 +65,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.userForm = QtUser(self)
         self.bookInfoForm = QtBookInfo(self)
+
+        self.epsInfoForm = QtEpsInfo(self)
 
         self.task = QtTask()
         self.task.SetOwner(self)

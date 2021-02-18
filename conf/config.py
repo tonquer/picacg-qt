@@ -29,7 +29,7 @@ UpdateVersion = "v1.0.6"
 
 # waifu2x
 Encode = 0
-Waifu2xThread = 2
+Waifu2xThread = 1
 Scale = 2
 Noise = 3
 Format = "jpg"

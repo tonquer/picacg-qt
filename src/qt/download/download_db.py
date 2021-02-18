@@ -1,0 +1,146 @@
+import json
+
+from PyQt5.QtSql import QSqlDatabase, QSqlQuery
+
+from src.qt.download.download_info import DownloadInfo, DownloadEpsInfo
+from src.util.log import Log
+
+
+class DownloadDb(object):
+    def __init__(self):
+        self.db = QSqlDatabase.addDatabase("QSQLITE", "download")
+        self.db.setDatabaseName("download.db")
+        if not self.db.open():
+            Log.Warn(self.db.lastError().text())
+
+        query = QSqlQuery(self.db)
+        sql = """\
+            create table if not exists download(\
+            bookId varchar primary key,\
+            downloadEpsIds varchar,\
+            curDownloadEpsId int,\
+            curConvertEpsId int,\
+            title varchar,\
+            savePath varchar,\
+            convertPath varchar,\
+            status varchar,\
+            convertStatus varchar\
+            )\
+            """
+        suc = query.exec(sql)
+        if not suc:
+            a = query.lastError().text()
+            Log.Warn(a)
+
+        query = QSqlQuery(self.db)
+        sql = """\
+            create table if not exists download_eps(\
+            bookId varchar,\
+            epsId int,\
+            epsTitle varchar,\
+            picCnt int,\
+            curPreDownloadIndex int,\
+            curPreConvertId int,\
+            primary key (bookId,epsId)\
+            )\
+            """
+        suc = query.exec(sql)
+        if not suc:
+            a = query.lastError().text()
+            Log.Warn(a)
+        # self.LoadDownload()
+
+    def DelDownloadDB(self, bookId):
+        query = QSqlQuery(self.db)
+        sql = "delete from download where bookId='{}'".format(bookId)
+        suc = query.exec(sql)
+        if not suc:
+            Log.Warn(query.lastError().text())
+
+        sql = "delete from download_eps where bookId='{}'".format(bookId)
+        suc = query.exec(sql)
+        if not suc:
+            Log.Warn(query.lastError().text())
+        return
+
+    def AddDownloadDB(self, task):
+        assert isinstance(task, DownloadInfo)
+
+        query = QSqlQuery(self.db)
+        sql = "INSERT INTO download(bookId, downloadEpsIds, curDownloadEpsId, curConvertEpsId, title, " \
+              "savePath, convertPath, status, convertStatus) " \
+              "VALUES ('{0}', '{1}', {2}, {3}, '{4}', '{5}', '{6}', '{7}', '{8}') " \
+              "ON CONFLICT(bookId) DO UPDATE SET downloadEpsIds='{1}', curDownloadEpsId={2}, curConvertEpsId={3}, " \
+              "title = '{4}', savePath = '{5}', convertPath= '{6}', status = '{7}', convertStatus = '{8}'".\
+            format(task.bookId, json.dumps(task.downloadEpsIds), task.curDownloadEpsId, task.curConvertEpsId, task.title,
+                   task.savePath, task.convertPath, task.status, task.convertStatus)
+
+        suc = query.exec(sql)
+        if not suc:
+            Log.Warn(query.lastError().text())
+        return
+
+    def AddDownloadEpsDB(self, info):
+        assert isinstance(info, DownloadEpsInfo)
+        query = QSqlQuery(self.db)
+        sql = "INSERT INTO download_eps(bookId, epsId, epsTitle, picCnt, curPreDownloadIndex, curPreConvertId) " \
+              "VALUES ('{0}', {1}, '{2}', {3}, {4}, {5}) " \
+              "ON CONFLICT(bookId, epsId) DO UPDATE SET epsTitle='{2}', picCnt={3}, curPreDownloadIndex={4}, " \
+              "curPreConvertId = {5}".\
+            format(info.parent.bookId, info.epsId, info.epsTitle, info.picCnt, info.curPreDownloadIndex,
+                   info.curPreConvertId)
+
+        suc = query.exec(sql)
+        if not suc:
+            Log.Warn(query.lastError().text())
+        return
+
+    def LoadDownload(self, owner):
+        query = QSqlQuery(self.db)
+        suc = query.exec(
+            """
+            select * from download
+            """
+        )
+        if not suc:
+            Log.Warn(query.lastError().text())
+        downloads = {}
+        while query.next():
+            # bookId, downloadEpsIds, curDownloadEpsId, curConvertEpsId, title, savePath, convertPath
+            info = DownloadInfo(owner)
+            info.bookId = query.value(0)
+            data = json.loads(query.value(1))
+            info.downloadEpsIds = [int(i) for i in data]
+            info.curDownloadEpsId = query.value(2)
+            info.curConvertEpsId = query.value(3)
+            info.title = query.value(4)
+            info.savePath = query.value(5)
+            info.convertPath = query.value(6)
+            info.status = query.value(7)
+            info.convertStatus = query.value(8)
+            downloads[info.bookId] = info
+
+        query = QSqlQuery(self.db)
+        suc = query.exec(
+            """
+            select * from download_eps
+            """
+        )
+        if not suc:
+            Log.Warn(query.lastError().text())
+        while query.next():
+            # bookId, epsId, epsTitle, picCnt, curPreDownloadIndex, curPreConvertId
+
+            bookId = query.value(0)
+            task = downloads.get(bookId)
+            if not task:
+                continue
+            info = DownloadEpsInfo(task)
+            info.epsId = query.value(1)
+            info.epsTitle = query.value(2)
+            info.picCnt = query.value(3)
+            info.curPreDownloadIndex = query.value(4)
+            info.curPreConvertId = query.value(5)
+            task.epsInfo[info.epsId] = info
+
+        return downloads

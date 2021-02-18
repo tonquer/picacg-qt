@@ -1,0 +1,365 @@
+import hashlib
+import os
+import threading
+import time
+import waifu2x
+import weakref
+from queue import Queue
+
+from PIL import Image
+from PyQt5.QtCore import pyqtSignal, QObject
+
+from conf import config
+from src.util import Singleton, Log
+from src.util.status import Status
+from src.util.tool import time_me, CTime, ToolUtil
+
+
+class QtTaskQObject(QObject):
+    taskBack = pyqtSignal(int, str)
+    downloadBack = pyqtSignal(int, int, bytes)
+    convertBack = pyqtSignal(int)
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+
+
+class QtHttpTask(object):
+    def __init__(self, taskId):
+        self.taskId = taskId
+        self.callBack = None
+        self.backParam = None
+        self.cleanFlag = ""
+
+
+class QtDownloadTask(object):
+    def __init__(self, downloadId=0):
+        self.downloadId = downloadId
+        self.downloadCallBack = None       # addData, laveSize
+        self.downloadCompleteBack = None   # data, status
+        self.fileSize = 0
+        self.isSaveData = True
+        self.saveData = b""
+        self.url = ""
+        self.path = ""
+        self.originalName = ""
+        self.backParam = None
+        self.cleanFlag = ""
+        self.tick = 0
+
+
+class QtTask(Singleton, threading.Thread):
+
+    def __init__(self):
+        Singleton.__init__(self)
+        threading.Thread.__init__(self)
+        self._inQueue = Queue()
+        self._owner = None
+        self.taskObj = QtTaskQObject()
+        self.taskObj.taskBack.connect(self.HandlerTask2)
+        self.taskObj.downloadBack.connect(self.HandlerDownloadTask)
+        self.taskObj.convertBack.connect(self.HandlerConvertTask)
+
+        self.convertThread = threading.Thread(target=self.RunLoad)
+        self.convertThread.setDaemon(True)
+        self.convertThread.start()
+
+        self.downloadTask = {}   # id: task
+        self.convertLoad = {}  # id: task
+        self.convertId = 1000000
+
+        self.taskId = 0
+        self.tasks = {}  # id: task
+
+        self.flagToIds = {}  #
+        self.convertFlag = {}
+
+    @property
+    def convertBack(self):
+        return self.taskObj.convertBack
+
+    @property
+    def taskBack(self):
+        return self.taskObj.taskBack
+
+    @property
+    def downloadBack(self):
+        return self.taskObj.downloadBack
+
+    @property
+    def owner(self):
+        from src.qt.qtmain import BikaQtMainWindow
+        assert isinstance(self._owner(), BikaQtMainWindow)
+        return self._owner()
+
+    def GetDownloadData(self, downloadId):
+        if downloadId not in self.downloadTask:
+            return b""
+        return self.downloadTask[downloadId].saveData
+
+    def SetOwner(self, owner):
+        self._owner = weakref.ref(owner)
+
+    # def PutTask(self, task):
+    #     self._inQueue.put(task)
+
+    def AddHttpTask(self, func, callBack=None, backParam=None, cleanFlag=""):
+        self.taskId += 1
+        info = QtHttpTask(self.taskId)
+        info.callBack = callBack
+        info.backParam = backParam
+        self.tasks[self.taskId] = info
+        if cleanFlag:
+            info.cleanFlag = cleanFlag
+            taskIds = self.flagToIds.setdefault(cleanFlag, set())
+            taskIds.add(self.taskId)
+
+        func(self.taskId)
+        return
+
+    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, isSaveData=True, backParam=None, isSaveCache=True, cleanFlag="", filePath=""):
+        self.taskId += 1
+        data = QtDownloadTask(self.taskId)
+        data.downloadCallBack = downloadCallBack
+        data.downloadCompleteBack = completeCallBack
+        data.isSaveData = isSaveData
+        data.backParam = backParam
+        data.url = url
+        data.path = path
+        self.downloadTask[self.taskId] = data
+        if cleanFlag:
+            data.cleanFlag = cleanFlag
+            taskIds = self.flagToIds.setdefault(cleanFlag, set())
+            taskIds.add(self.taskId)
+
+        if isSaveCache or filePath:
+            if isSaveCache:
+                a = hashlib.md5(path.encode("utf-8")).hexdigest()
+                filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
+                filePath = os.path.join(filePath, a)
+            else:
+                filePath = filePath
+            data = self.LoadCachePicture(filePath)
+            if data:
+                self.HandlerDownloadTask(self.taskId, 0, data, isCallBack=False)
+                self.HandlerDownloadTask(self.taskId, 0, b"", isCallBack=False)
+                return 0
+
+        from src.server import Server
+        from src.server import req
+        Server().Download(req.DownloadBookReq(url, path, isSaveCache), bakParams=self.taskId)
+        return self.taskId
+
+    def HandlerTask2(self, taskId, data):
+        try:
+            info = self.tasks.get(taskId)
+            if not info:
+                Log.Warn("[Task] not find taskId:{}, {}".format(taskId, data))
+                return
+            assert isinstance(info, QtHttpTask)
+            if info.cleanFlag:
+                taskIds = self.flagToIds.get(info.cleanFlag, set())
+                taskIds.discard(info.taskId)
+
+            if info.backParam is None:
+                info.callBack(data)
+            else:
+                info.callBack(data, info.backParam)
+            del info.callBack
+            del self.tasks[taskId]
+        except Exception as es:
+            import sys
+            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+            e = sys.exc_info()[1]
+            Log.Error(cur_tb, e)
+
+    def HandlerDownloadTask(self, downlodaId, laveFileSize, data, isCallBack=True):
+        info = self.downloadTask.get(downlodaId)
+        if not info:
+            return
+        assert isinstance(info, QtDownloadTask)
+        if laveFileSize == -1 and data == b"":
+            try:
+                if info.downloadCompleteBack:
+                    if info.backParam is not None:
+                        info.downloadCompleteBack(self.GetDownloadData(downlodaId), Status.Error, info.backParam)
+                    else:
+                        info.downloadCompleteBack(self.GetDownloadData(downlodaId), Status.Error)
+            except Exception as es:
+                import sys
+                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+                e = sys.exc_info()[1]
+                Log.Error(cur_tb, e)
+            self.ClearDownloadTask(downlodaId)
+            return
+
+        if info.isSaveData:
+            info.saveData += data
+
+        if info.downloadCallBack:
+            try:
+                if info.backParam is not None:
+                    info.downloadCallBack(data, laveFileSize, info.backParam)
+                else:
+                    info.downloadCallBack(data, laveFileSize)
+            except Exception as es:
+                import sys
+                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+                e = sys.exc_info()[1]
+                Log.Error(cur_tb, e)
+        if laveFileSize == 0 and data == b"":
+            if info.downloadCompleteBack:
+                try:
+                    if info.cleanFlag:
+                        taskIds = self.flagToIds.get(info.cleanFlag, set())
+                        taskIds.discard(info.downloadId)
+                    if info.backParam is not None:
+                        info.downloadCompleteBack(self.GetDownloadData(downlodaId), Status.Ok, info.backParam)
+                    else:
+                        info.downloadCompleteBack(self.GetDownloadData(downlodaId), Status.Ok)
+                except Exception as es:
+                    import sys
+                    cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+                    e = sys.exc_info()[1]
+                    Log.Error(cur_tb, e)
+            self.ClearDownloadTask(downlodaId)
+
+    def ClearDownloadTask(self, downlodaId):
+        info = self.downloadTask.get(downlodaId)
+        if not info:
+            return
+        del info.saveData
+        del self.downloadTask[downlodaId]
+
+    def LoadCachePicture(self, filePath):
+        try:
+            if not os.path.isfile(filePath):
+                return None
+            with open(filePath, "rb") as f:
+                data = f.read()
+                return data
+        except Exception as es:
+            import sys
+            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+            e = sys.exc_info()[1]
+            Log.Error(cur_tb, e)
+        return None
+
+    def CancelTasks(self, cleanFlag):
+        taskIds = self.flagToIds.get(cleanFlag, set())
+        if not taskIds:
+            return
+        for taskId in taskIds:
+            if taskId in self.downloadTask:
+                del self.downloadTask[taskId]
+
+            if taskId in self.downloadTask:
+                del self.downloadTask[taskId]
+        self.flagToIds.pop(cleanFlag)
+
+    def AddConvertTask(self, path, imgData, scale, noise, format, completeCallBack, backParam=None, cleanFlag="", filePath=""):
+        info = QtDownloadTask()
+        info.downloadCompleteBack = completeCallBack
+        info.backParam = backParam
+        self.taskId += 1
+        self.convertLoad[self.taskId] = info
+        if filePath:
+            data = self.LoadConvertCachePicture(filePath)
+            if data:
+                info.saveData = data
+                self.HandlerConvertTask(self.taskId, isCallBack=False)
+                return self.taskId
+
+        elif path:
+            a = hashlib.md5(path.encode("utf-8")).hexdigest()
+            filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
+            filePath = os.path.join(filePath, a)
+            data = self.LoadConvertCachePicture(filePath)
+            if data:
+                info.saveData = data
+                self.HandlerConvertTask(self.taskId, isCallBack=False)
+                return self.taskId
+
+        converId = waifu2x.Add(imgData, format, noise, scale, self.taskId)
+        Log.Info("add convert info, taskId: {}, converId:{} backParam:{}".format(str(self.taskId), str(self.convertId),
+                                                                               backParam))
+        if converId <= 0:
+            return 0
+        if cleanFlag:
+            info.cleanFlag = cleanFlag
+            taskIds = self.convertFlag.setdefault(cleanFlag, set())
+            taskIds.add(self.taskId)
+        return self.taskId
+
+    def LoadConvertCachePicture(self, path):
+        try:
+            if not os.path.isfile(path):
+                return None
+            with open(path, "rb") as f:
+                data = f.read()
+                return data
+        except Exception as es:
+            import sys
+            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+            e = sys.exc_info()[1]
+            Log.Error(cur_tb, e)
+        return None
+
+    def HandlerConvertTask(self, taskId, isCallBack=True):
+        if taskId not in self.convertLoad:
+            return
+        t1 = CTime()
+        info = self.convertLoad[taskId]
+        assert isinstance(info, QtDownloadTask)
+
+        if info.cleanFlag:
+            taskIds = self.convertFlag.get(info.cleanFlag, set())
+            taskIds.discard(info.downloadId)
+        info.downloadCompleteBack(info.saveData, taskId, info.backParam, info.tick)
+        if info.cleanFlag:
+            taskIds = self.convertFlag.get(info.cleanFlag, set())
+            taskIds.discard(info.downloadId)
+        del self.convertLoad[taskId]
+        t1.Refresh("RunLoad")
+
+    def LoadData(self):
+        return waifu2x.Load(10)
+
+    def RunLoad(self):
+        while True:
+            time.sleep(0.1)
+            info = self.LoadData()
+            if not info:
+                continue
+            t1 = CTime()
+            data, convertId, taskId, tick = info
+            if taskId not in self.convertLoad:
+                continue
+            info = self.convertLoad[taskId]
+            assert isinstance(info, QtDownloadTask)
+            info.saveData = data
+            info.tick = tick
+
+            filePath = os.path.join(os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath), os.path.dirname(info.path))
+            if not os.path.isdir(filePath):
+                os.makedirs(filePath)
+
+            a = hashlib.md5(info.path.encode("utf-8")).hexdigest()
+            if data:
+                with open(os.path.join(filePath, a), "wb+") as f:
+                    f.write(data)
+            else:
+                pass
+            self.convertBack.emit(taskId)
+            t1.Refresh("RunLoad")
+
+    def CancelConver(self, cleanFlag):
+        taskIds = self.convertFlag.get(cleanFlag, set())
+        if not taskIds:
+            return
+        for taskId in taskIds:
+            if taskId in self.convertLoad:
+                del self.convertLoad[taskId]
+        Log.Info("cancel convert taskId, {}".format(taskIds))
+        self.convertFlag.pop(cleanFlag)
+        waifu2x.Delete(list(taskIds))

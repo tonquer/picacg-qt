@@ -185,3 +185,54 @@ class ToolUtil(object):
             else:
                 size = str(round(mb, 2)) + "mb"
         return size
+
+    @staticmethod
+    def GetScaleAndNoise(w, h):
+        dot = w * h
+        # 条漫不放大
+        if max(w, h) >= 3500:
+            return 1, 3
+        if dot >= 1920 * 1440:
+            return 2, 3
+        if dot >= 1920 * 1080:
+            return 2, 3
+        elif dot >= 720 * 1080:
+            return 2, 3
+        elif dot >= 240 * 720:
+            return 2, 3
+        else:
+            return 2, 3
+
+    @staticmethod
+    def GetCanSaveName(name):
+        return name.replace("/", "").replace("|", "").replace("*", "").\
+            replace("\\", "").replace("?", "").replace(":", "").replace("*", "").\
+            replace("<", "").replace(">", "").replace("\"", "").replace(" ", "")
+
+    @staticmethod
+    def GetSimpleArrayStr(array):
+        if not array:
+            return ""
+        start = None
+        end = None
+        data = ""
+        for i in array:
+            if start is None:
+                start = i
+                end = i
+                continue
+
+            if i == start + 1:
+                end = i
+                continue
+            if start == end:
+                data += str(start) + ','
+            else:
+                data += str(start) + '-' + str(start) + ','
+            start = i
+            end = i
+        if start == end:
+            data += str(start) + ','
+        else:
+            data += str(start) + '-' + str(start) + ','
+        return data
