@@ -1,3 +1,4 @@
+import os
 import threading
 import time
 import weakref
@@ -22,12 +23,14 @@ def handler(request):
 
 
 class Task(object):
-    def __init__(self, request, bakParam=""):
+    def __init__(self, request, bakParam="", cacheAndLoadPath="", loadPath=""):
         self.req = request
         self.res = None
         self.timeout = 5
         self.bakParam = bakParam
         self.status = Status.Ok
+        self.cacheAndLoadPath = cacheAndLoadPath
+        self.loadPath = loadPath
 
 
 class Server(Singleton, threading.Thread):
@@ -71,7 +74,6 @@ class Server(Singleton, threading.Thread):
                 cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
                 e = sys.exc_info()[1]
                 Log.Error(cur_tb, e)
-            time.sleep(1)
         pass
 
     def RunDownload(self):
@@ -85,7 +87,6 @@ class Server(Singleton, threading.Thread):
                 cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
                 e = sys.exc_info()[1]
                 Log.Error(cur_tb, e)
-            time.sleep(1)
         pass
 
     def __DealHeaders(self, request, token):
@@ -161,9 +162,9 @@ class Server(Singleton, threading.Thread):
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 
-    def Download(self, request, token="", bakParams="", isASync=True):
+    def Download(self, request, token="", bakParams="", cacheAndLoadPath="", loadPath= "", isASync=True):
         self.__DealHeaders(request, token)
-        task = Task(request, bakParams)
+        task = Task(request, bakParams, cacheAndLoadPath, loadPath)
         if isASync:
             self._downloadQueue.put(task)
         else:
@@ -171,6 +172,14 @@ class Server(Singleton, threading.Thread):
 
     def _Download(self, task):
         try:
+            for cachePath in [task.cacheAndLoadPath, task.loadPath]:
+                if cachePath and task.bakParam:
+                    data = ToolUtil.LoadCachePicture(cachePath)
+                    if data:
+                        from src.qt.util.qttask import QtTask
+                        QtTask().downloadBack.emit(task.bakParam, len(data), data)
+                        QtTask().downloadBack.emit(task.bakParam, 0, b"")
+                        return
             request = task.req
             if request.params == None:
                 request.params = {}

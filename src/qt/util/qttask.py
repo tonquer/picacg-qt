@@ -46,6 +46,13 @@ class QtDownloadTask(object):
         self.backParam = None
         self.cleanFlag = ""
         self.tick = 0
+        self.cacheAndLoadPath = ""   # 保存和加载
+        self.loadPath = ""  # 只加载
+
+        self.imgData = b""
+        self.scale = 0
+        self.noise = 0
+        self.format = ""
 
 
 class QtTask(Singleton, threading.Thread):
@@ -132,22 +139,17 @@ class QtTask(Singleton, threading.Thread):
             taskIds = self.flagToIds.setdefault(cleanFlag, set())
             taskIds.add(self.taskId)
 
-        if isSaveCache or filePath:
-            if isSaveCache:
-                a = hashlib.md5(path.encode("utf-8")).hexdigest()
-                filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
-                filePath = os.path.join(filePath, a)
-            else:
-                filePath = filePath
-            data = self.LoadCachePicture(filePath)
-            if data:
-                self.HandlerDownloadTask(self.taskId, 0, data, isCallBack=False)
-                self.HandlerDownloadTask(self.taskId, 0, b"", isCallBack=False)
-                return 0
+        if isSaveCache:
+            a = hashlib.md5(path.encode("utf-8")).hexdigest()
+            filePath2 = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
+            filePath2 = os.path.join(filePath2, a)
+            data.cacheAndLoadPath = filePath2
+        if filePath:
+            data.loadPath = filePath
 
         from src.server import Server
         from src.server import req
-        Server().Download(req.DownloadBookReq(url, path, isSaveCache), bakParams=self.taskId)
+        Server().Download(req.DownloadBookReq(url, path, isSaveCache), bakParams=self.taskId, cacheAndLoadPath=data.cacheAndLoadPath, loadPath=data.loadPath)
         return self.taskId
 
     def HandlerTask2(self, taskId, data):
@@ -231,20 +233,6 @@ class QtTask(Singleton, threading.Thread):
         del info.saveData
         del self.downloadTask[downlodaId]
 
-    def LoadCachePicture(self, filePath):
-        try:
-            if not os.path.isfile(filePath):
-                return None
-            with open(filePath, "rb") as f:
-                data = f.read()
-                return data
-        except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
-        return None
-
     def CancelTasks(self, cleanFlag):
         taskIds = self.flagToIds.get(cleanFlag, set())
         if not taskIds:
@@ -263,47 +251,26 @@ class QtTask(Singleton, threading.Thread):
         info.backParam = backParam
         self.taskId += 1
         self.convertLoad[self.taskId] = info
-        if filePath:
-            data = self.LoadConvertCachePicture(filePath)
-            if data:
-                info.saveData = data
-                self.HandlerConvertTask(self.taskId, isCallBack=False)
-                return self.taskId
-
-        elif path:
+        info.downloadId = self.taskId
+        info.imgData = imgData
+        info.scale = scale
+        info.noise = noise
+        info.format = format
+        if path:
             a = hashlib.md5(path.encode("utf-8")).hexdigest()
-            filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
-            filePath = os.path.join(filePath, a)
-            data = self.LoadConvertCachePicture(filePath)
-            if data:
-                info.saveData = data
-                self.HandlerConvertTask(self.taskId, isCallBack=False)
-                return self.taskId
-
-        converId = waifu2x.Add(imgData, format, noise, scale, self.taskId)
-        Log.Info("add convert info, taskId: {}, converId:{} backParam:{}".format(str(self.taskId), str(self.convertId),
-                                                                               backParam))
-        if converId <= 0:
-            return 0
+            path = os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath)
+            path = os.path.join(path, a)
+            info.cacheAndLoadPath = path
+        info.loadPath = filePath
         if cleanFlag:
             info.cleanFlag = cleanFlag
             taskIds = self.convertFlag.setdefault(cleanFlag, set())
             taskIds.add(self.taskId)
-        return self.taskId
 
-    def LoadConvertCachePicture(self, path):
-        try:
-            if not os.path.isfile(path):
-                return None
-            with open(path, "rb") as f:
-                data = f.read()
-                return data
-        except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
-        return None
+        self._inQueue.put(self.taskId)
+        Log.Info("add convert info, taskId: {}, converId:{} backParam:{}".format(str(self.taskId), str(self.convertId),
+                                                                               backParam))
+        return self.taskId
 
     def HandlerConvertTask(self, taskId, isCallBack=True):
         if taskId not in self.convertLoad:
@@ -328,6 +295,30 @@ class QtTask(Singleton, threading.Thread):
     def RunLoad(self):
         while True:
             time.sleep(0.1)
+            while True:
+                try:
+                    taskId = self._inQueue.get(False)
+                    if taskId not in self.convertLoad:
+                        continue
+                    task = self.convertLoad.get(taskId)
+                    isFind = False
+                    for cachePath in [task.cacheAndLoadPath, task.loadPath]:
+                        data = ToolUtil.LoadCachePicture(cachePath)
+                        if data:
+                            task.saveData = data
+                            self.convertBack.emit(taskId)
+                            isFind = True
+                            break
+                    if isFind:
+                        continue
+
+                    converId = waifu2x.Add(task.imgData, task.format, task.noise, task.scale, task.downloadId)
+                    if converId <= 0:
+                        self.convertBack.emit(taskId)
+                        continue
+                except Exception as es:
+                    break
+
             info = self.LoadData()
             if not info:
                 continue
@@ -339,14 +330,8 @@ class QtTask(Singleton, threading.Thread):
             assert isinstance(info, QtDownloadTask)
             info.saveData = data
             info.tick = tick
-
-            filePath = os.path.join(os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath), os.path.dirname(info.path))
-            if not os.path.isdir(filePath):
-                os.makedirs(filePath)
-
-            a = hashlib.md5(info.path.encode("utf-8")).hexdigest()
-            if data:
-                with open(os.path.join(filePath, a), "wb+") as f:
+            if info.cacheAndLoadPath and data:
+                with open(info.cacheAndLoadPath, "wb+") as f:
                     f.write(data)
             else:
                 pass

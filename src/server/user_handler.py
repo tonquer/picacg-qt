@@ -181,17 +181,13 @@ class DownloadBookReq(object):
                 if backData.bakParam:
                     QtTask().downloadBack.emit(backData.bakParam, 0, b"")
 
-                if backData.req.isSaveCache and config.IsUseCache and len(data) > 0:
-                    path = backData.req.path
+                if backData.cacheAndLoadPath and config.IsUseCache and len(data) > 0:
+                    filePath = backData.cacheAndLoadPath
+                    fileDir = os.path.dirname(filePath)
+                    if not os.path.isdir(fileDir):
+                        os.makedirs(fileDir)
 
-                    filePath = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
-
-                    if not os.path.isdir(filePath):
-                        os.makedirs(filePath)
-
-                    a = hashlib.md5(path.encode("utf-8")).hexdigest()
-
-                    with open(os.path.join(filePath, a), "wb+") as f:
+                    with open(filePath, "wb+") as f:
                         f.write(data)
             except Exception as es:
                 import sys

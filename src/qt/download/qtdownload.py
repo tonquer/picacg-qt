@@ -127,6 +127,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         for task in self.downloadingList:
             assert isinstance(task, DownloadInfo)
             self.UpdateTableItem(task)
+            task.speedStr = ToolUtil.GetDownloadSize(task.speed) + "/s"
             task.speed = 0
 
     def AddDownload(self, bookId, downloadIds):
@@ -217,7 +218,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
                                  QTableWidgetItem("{}/{}".format(str(info.curDownloadPic), str(info.maxDownloadPic))))
         self.tableWidget.setItem(info.tableRow, 4,
                                  QTableWidgetItem("{}/{}".format(str(info.curDownloadEps), str(info.epsCount))))
-        self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(ToolUtil.GetDownloadSize(info.speed) + "/s"))
+        self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(info.speedStr))
         self.tableWidget.setItem(info.tableRow, 6, QTableWidgetItem("{}/{}".format(str(info.curConvertCnt), str(info.convertCnt))))
         self.tableWidget.setItem(info.tableRow, 7, QTableWidgetItem("{}/{}".format(str(info.curConvertEps), str(info.convertEpsCnt))))
         self.tableWidget.setItem(info.tableRow, 8, QTableWidgetItem("{}".format(str(info.convertTick))))
@@ -328,6 +329,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
             if task in self.downloadingList:
                 self.downloadingList.remove(task)
             task.SetStatu(task.Pause)
+        self.HandlerDownloadList()
         return
 
     def ClickConvertPause(self):
@@ -348,6 +350,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
             if task in self.convertingList:
                 self.convertingList.remove(task)
             task.SetConvertStatu(task.Pause)
+        self.HandlerConvertList()
         return
 
     def ClickDownloadEps(self):
@@ -501,6 +504,8 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
             bookId = self.tableWidget.item(row, col).text()
             task = self.downloadDict.get(bookId)
             if not task:
+                continue
+            if task.status not in [DownloadInfo.Success]:
                 continue
             if task.convertStatus not in [DownloadInfo.Pause, DownloadInfo.Error]:
                 continue

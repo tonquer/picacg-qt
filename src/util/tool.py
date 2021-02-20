@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import uuid
 
@@ -190,7 +191,7 @@ class ToolUtil(object):
     def GetScaleAndNoise(w, h):
         dot = w * h
         # 条漫不放大
-        if max(w, h) >= 3500:
+        if max(w, h) >= 2561:
             return 1, 3
         if dot >= 1920 * 1440:
             return 2, 3
@@ -236,3 +237,20 @@ class ToolUtil(object):
         else:
             data += str(start) + '-' + str(start) + ','
         return data
+
+    @staticmethod
+    def LoadCachePicture(filePath):
+        try:
+            c = CTime()
+            if not os.path.isfile(filePath):
+                return None
+            with open(filePath, "rb") as f:
+                data = f.read()
+                c.Refresh("LoadCache", filePath)
+                return data
+        except Exception as es:
+            import sys
+            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
+            e = sys.exc_info()[1]
+            Log.Error(cur_tb, e)
+        return None

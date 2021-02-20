@@ -42,6 +42,7 @@ class DownloadInfo(object):
         self.convertStatus = self.Waiting
         self.curConvertEpsId = -1
         self.curConvertEpsInfo = None
+        self.speedStr = ""
 
     @property
     def db(self):
@@ -245,6 +246,7 @@ class DownloadInfo(object):
             self.db.AddDownloadEpsDB(self.curConvertEpsInfo)
         self.parent.HandlerConvertList()
         self.parent.UpdateTableItem(self)
+        self.db.AddDownloadDB(self)
 
     def SwithNextConvert(self):
         index = self.downloadEpsIds.index(self.curConvertEpsId)
@@ -386,9 +388,12 @@ class DownloadEpsInfo(object):
         f = open(filePath, "rb")
         data = f.read()
         f.close()
-        img = Image.open(BytesIO(data))
+        ioData = BytesIO(data)
+        img = Image.open(ioData)
         scale, noise = ToolUtil.GetScaleAndNoise(img.width, img.height)
-        QtTask().AddConvertTask("", data, scale, noise, img.format, self.AddConvertBack,
+        ioData.close()
+        format = img.format
+        QtTask().AddConvertTask("", data, scale, noise, format, self.AddConvertBack,
                                 cleanFlag="download_".format(self.parent.bookId))
         return
 

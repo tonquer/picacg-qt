@@ -2,7 +2,7 @@ import weakref
 import waifu2x
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QSize
-from PyQt5.QtGui import QPixmap, QPainter, QColor
+from PyQt5.QtGui import QPixmap, QPainter, QColor, QImage
 from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsScene, QApplication, QFrame, QVBoxLayout, QLabel
 
 from conf import config
@@ -152,18 +152,20 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         if self.checkBox.isChecked():
             p = owner.pictureData.get(owner.curIndex)
-            if not p or not p.waifuPData:
+            if not p or not p.waifuData:
                 QtBubbleLabel.ShowErrorEx(owner, "解码还未完成")
                 return
-            clipboard.setPixmap(p.waifuPData)
+            data = QPixmap(QImage(p.waifuData))
+            clipboard.setPixmap(data)
             QtBubbleLabel.ShowMsgEx(owner, "复制成功")
 
         else:
             p = owner.pictureData.get(owner.curIndex)
-            if not p or not p.pData:
+            if not p or not p.data:
                 QtBubbleLabel.ShowErrorEx(owner, "下载未完成")
                 return
-            clipboard.setPixmap(p.pData)
+            data = QPixmap(QImage(p.data))
+            clipboard.setPixmap(data)
             QtBubbleLabel.ShowMsgEx(owner, "复制成功")
         return
 
@@ -230,7 +232,7 @@ class QtReadImg(QtWidgets.QWidget):
         self.graphicsScene.addItem(self.graphicsItem)
         rect = QApplication.instance().desktop().availableGeometry(self)
         self.graphicsView.setMinimumSize(10, 10)
-        self.pixMap = QPixmap("加载中")
+        self.pixMap = QPixmap()
         self.graphicsItem.setPixmap(self.pixMap)
         self.scaleCnt = 0
 
@@ -279,7 +281,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.Clear()
         self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
         self.qtTool.SetData(isInit=True)
-        self.graphicsItem.setPixmap(QPixmap())
+        self.pixMap.convertFromImage(QImage("加载中"))
+        self.graphicsItem.setPixmap(self.pixMap)
         self.qtTool.SetData()
         self.qtTool.show()
         self.bookId = bookId
@@ -329,7 +332,7 @@ class QtReadImg(QtWidgets.QWidget):
                 if i not in self.waitPicData:
                     self.AddDownloadTask(i, picInfo)
             elif config.IsOpenWaifu and i not in self.waitWaifuPicData:
-                if not self.pictureData[i].waifuData and self.pictureData[i].waifuPData:
+                if not self.pictureData[i].waifuData:
                     self.AddCovertData(picInfo, i)
         self.curPreLoadIndex = max(i, self.curPreLoadIndex)
         pass
@@ -366,28 +369,30 @@ class QtReadImg(QtWidgets.QWidget):
     def ShowImg(self, isShowWaifu=True):
         p = self.pictureData.get(self.curIndex)
 
-        if not p or (not p.data and not p.pData):
+        if not p or (not p.data):
             self.qtTool.SetData(state=QtFileData.Downloading)
             self.pixMap = QPixmap()
+            self.pixMap.convertFromImage(QImage())
             self.graphicsItem.setPixmap(self.pixMap)
             return
 
         assert isinstance(p, QtFileData)
         if not isShowWaifu:
-            p2 = p.GetPData()
+            p2 = p.data
             self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
-        elif p.GetWaifuPData():
-            p2 = p.GetWaifuPData()
-            self.qtTool.SetData(waifuSize=p2.size(), waifuDataLen=p.waifuDataSize,
+        elif p.waifuData:
+            p2 = p.waifuData
+            self.qtTool.SetData(waifuSize=p.waifuQSize, waifuDataLen=p.waifuDataSize,
                                 waifuTick=p.waifuTick)
         else:
-            p2 = p.GetPData()
+            p2 = p.data
 
-        self.qtTool.SetData(pSize=p.GetPData().size(), dataLen=p.size, state=p.state, waifuState=p.waifuState)
+        self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
         self.qtTool.label_2.setText("去噪等级：" + str(p.noise))
         self.qtTool.label_3.setText("放大倍数：" + str(p.scale))
 
-        self.pixMap = p2
+        self.pixMap = QPixmap()
+        self.pixMap.loadFromData(p2)
         self.graphicsItem.setPixmap(self.pixMap)
         self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
         self.ScalePicture()

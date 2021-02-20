@@ -5,6 +5,7 @@ import weakref
 
 from PyQt5 import QtWidgets, QtCore, QtGui  # 导入PyQt5部件
 import sys
+sys.path.append("lib")
 import waifu2x
 
 from PyQt5.QtGui import QPixmap

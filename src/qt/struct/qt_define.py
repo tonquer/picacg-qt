@@ -1,7 +1,8 @@
 from io import BytesIO
 
 from PIL import Image
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QPixmap, QImage
 
 from src.util import ToolUtil
 
@@ -26,22 +27,30 @@ class QtFileData(object):
         self.noise = 0
         self.state = self.Downloading
         self.data = None
-        self.pData = None
         self.waifuState = self.WaifuStateStart
         self.waifuDataSize = 0
         self.waifuData = None
-        self.waifuPData = None
         self.waifuTick = 0
+
+    @property
+    def qSize(self):
+        return QSize(self.w, self.h)
+
+    @property
+    def waifuQSize(self):
+        return QSize(self.w*self.scale, self.h*self.scale)
 
     def SetData(self, data):
         if not data:
             self.state = self.DownloadError
             return
         self.data = data
-        img = Image.open(BytesIO(data))
+        imgIo = BytesIO(data)
+        img = Image.open(imgIo)
         self.format = img.format
         self.w = img.width
         self.h = img.height
+        imgIo.close()
         self.scale, self.noise = ToolUtil.GetScaleAndNoise(self.w, self.h)
         self.state = self.DownloadSuc
         self.size = len(data)
@@ -51,32 +60,9 @@ class QtFileData(object):
             self.waifuState = self.WaifuStateFail
             return
         self.waifuData = data
-        if self.data and self.pData:
-            self.data = None
         self.waifuState = self.WaifuStateEnd
         self.waifuDataSize = len(self.waifuData)
         self.waifuTick = tick
         return
 
-    def GetPData(self):
-        if self.pData:
-            return self.pData
-        if not self.data:
-            return None
-        self.pData = QPixmap()
-        self.pData.loadFromData(self.data)
-        if self.waifuData or self.waifuPData:
-            self.data = None
-
-        return self.pData
-
-    def GetWaifuPData(self):
-        if self.waifuPData:
-            return self.waifuPData
-        if not self.waifuData:
-            return None
-        self.waifuPData = QPixmap()
-        self.waifuPData.loadFromData(self.waifuData)
-        self.waifuData = None
-        return self.waifuPData
 
