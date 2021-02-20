@@ -3,13 +3,16 @@
 
 ## 功能介绍
 1. 登陆分流，还原安卓端的三个分流入口
+![image](https://github.com/tonquer/picacg-windows/blob/main/example/1.png)
 2. 分类，搜索，排行，收藏夹使用同一的逻辑，滚轮下滑自动加载下一页，双击打开
 3. 漫画详情，章节列表和评论列表
+![image](https://github.com/tonquer/picacg-windows/blob/main/example/4.png)
 4. 下载功能，目前按漫画名和章节建立目录，图片命名按数字递增
+![image](https://github.com/tonquer/picacg-windows/blob/main/example/2.png)
 5. 看图模式，右键打开关闭工具栏，左右键翻页，上下键移动图片，Alt+滚轮放大缩小，再次点击铺满高度或者铺满宽度可以还原图片
-6. waifu2x功能，可在设置中设置去噪、模型等，尽量使用GPU解码，如果显卡性能较差，建议关闭此功能。
-7. 历史记录使用sqlite数据库，保存在history.db文件，与登陆帐号无关系。
-8. 所有图片都会缓存到cache目录。
+7. waifu2x功能，可在设置中设置去噪、模型等，尽量使用GPU解码，如果显卡性能较差，建议关闭此功能，下图（关闭/开启效果）。
+![image](https://github.com/tonquer/picacg-windows/blob/main/example/5.png)![image](https://github.com/tonquer/picacg-windows/blob/main/example/6.png)
+
 
 ## waifu2x功能
 - waifu2x功能使用的是 ""https://github.com/nihui/waifu2x-ncnn-vulkan"" 改进而来，只保留了转码线程，加了个中间层打包成pyd给python使用，lib目录下的waifu2x.pyd。
