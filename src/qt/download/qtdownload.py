@@ -76,8 +76,12 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
 
         self.tableWidget.doubleClicked.connect(self.OpenBookInfo)
 
+        self.tableWidget.horizontalHeader().sectionClicked.connect(self.Sort)
+        self.order = {}
+
         self.autoConvert = True
         self.db = DownloadDb()
+
         datas = self.db.LoadDownload(self)
         for task in datas.values():
             self.downloadDict[task.bookId] = task
@@ -530,3 +534,13 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
 
     def SetAutoConvert(self):
         self.autoConvert = self.radioButton.isChecked()
+
+    def Sort(self, col):
+        order = self.order.get(col, 1)
+        if order == 1:
+            self.tableWidget.sortItems(col, Qt.AscendingOrder)
+            self.order[col] = 0
+        else:
+            self.tableWidget.sortItems(col, Qt.DescendingOrder)
+            self.order[col] = 1
+        self.UpdateTableRow()
