@@ -2,6 +2,7 @@ import weakref
 
 from PyQt5.QtGui import QPixmap
 
+from conf import config
 from src.qt.util.qttask import QtTask
 from src.user.user import User
 from src.util.status import Status
@@ -46,7 +47,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
         self.owner().userForm.UpdateLabel(User().name, User().level, User().exp, User().isPunched)
         url = User().avatar.get("fileServer")
         path = User().avatar.get("path")
-        if url and path:
+        if url and path and config.IsLoadingPicture:
             self.owner().qtTask.AddDownloadTask(url, path, None, self.ShowUserImg)
 
     def ShowUserImg(self, data, st):

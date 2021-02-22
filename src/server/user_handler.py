@@ -1,5 +1,6 @@
 import hashlib
 import os
+import re
 import time
 
 from conf import config
@@ -201,8 +202,21 @@ class DownloadBookReq(object):
 @handler(req.CheckUpdateReq)
 class CheckUpdateReq(object):
     def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.url)
+        updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", backData.res.raw.text)
+        if updateInfo:
+            data = updateInfo[0]
+        else:
+            data = ""
+
+        info = re.findall(r"\d+\d*", os.path.basename(backData.res.raw.url))
+        version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
+        info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
+        curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
+
+        data = "\n\nv" + ".".join(info) + "\n" + data
+        if version > curversion:
+            if backData.bakParam:
+                QtTask().taskBack.emit(backData.bakParam, data)
 
 
 @handler(req.GetKeywords)

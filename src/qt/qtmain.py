@@ -147,17 +147,11 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def InitUpdateBack(self, data):
         try:
-            info = re.findall(r"\d+\d*", os.path.basename(data))
-            version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
-
-            info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
-            curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
-            if version > curversion:
-                r = QMessageBox.information(self, "更新", "当前版本{} ,检查到更新{}，是否前往更新".format(config.UpdateVersion,
-                                                                                        info),
+            r = QMessageBox.information(self, "更新", "当前版本{} ,检查到更新，是否前往更新\n{}".format(config.UpdateVersion,
+                                                                                        data),
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-                if r == QMessageBox.Yes:
-                    QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacg-windows/releases"))
+            if r == QMessageBox.Yes:
+                QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacg-windows/releases"))
         except Exception as Es:
             import sys
             cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
