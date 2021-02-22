@@ -88,8 +88,8 @@ class CategoryReq(ServerReq):
 
 # 获得收藏
 class FavoritesReq(ServerReq):
-    def __init__(self, page=""):
-        url = config.Url + "users/favourite?s=da&page={}".format(page)
+    def __init__(self, page="", sort="da"):
+        url = config.Url + "users/favourite?s={}&page={}".format(sort, page)
         method = "GET"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)

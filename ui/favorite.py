@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_favorite(object):
     def setupUi(self, favorite):
         favorite.setObjectName("favorite")
-        favorite.resize(400, 292)
+        favorite.resize(451, 292)
         self.gridLayout_2 = QtWidgets.QGridLayout(favorite)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.gridLayout_4 = QtWidgets.QGridLayout()
@@ -27,6 +27,12 @@ class Ui_favorite(object):
         self.pages = QtWidgets.QLabel(favorite)
         self.pages.setObjectName("pages")
         self.horizontalLayout.addWidget(self.pages)
+        self.comboBox = QtWidgets.QComboBox(favorite)
+        self.comboBox.setMinimumSize(QtCore.QSize(75, 0))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.horizontalLayout.addWidget(self.comboBox)
         self.lineEdit = QtWidgets.QLineEdit(favorite)
         self.lineEdit.setObjectName("lineEdit")
         self.horizontalLayout.addWidget(self.lineEdit)
@@ -41,6 +47,7 @@ class Ui_favorite(object):
 
         self.retranslateUi(favorite)
         self.jumpButton.clicked.connect(favorite.JumpPage)
+        self.comboBox.currentIndexChanged['int'].connect(favorite.RefreshDataFocus)
         QtCore.QMetaObject.connectSlotsByName(favorite)
 
     def retranslateUi(self, favorite):
@@ -48,4 +55,6 @@ class Ui_favorite(object):
         favorite.setWindowTitle(_translate("favorite", "Form"))
         self.nums.setText(_translate("favorite", "收藏数："))
         self.pages.setText(_translate("favorite", "页"))
+        self.comboBox.setItemText(0, _translate("favorite", "从旧到新"))
+        self.comboBox.setItemText(1, _translate("favorite", "从新到旧"))
         self.jumpButton.setText(_translate("favorite", "跳转"))

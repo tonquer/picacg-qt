@@ -39,6 +39,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
         action.triggered.connect(self.DownloadHandler)
 
         self.lineEdit.setValidator(QtIntLimit(1, 1, self))
+        self.sortList = ["da", "dd"]
 
     def SwitchCurrent(self):
         self.RefreshDataFocus()
@@ -149,7 +150,8 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
         self.LoadPage(self.bookList.page+1)
 
     def LoadPage(self, page):
-        self.owner().qtTask.AddHttpTask(lambda x: User().UpdateFavorites(page, x), self.UpdatePagesBack)
+        sortKey = self.sortList[self.comboBox.currentIndex()]
+        self.owner().qtTask.AddHttpTask(lambda x: User().UpdateFavorites(page, sortKey, x), self.UpdatePagesBack)
         self.owner().loadingForm.show()
 
     def JumpPage(self):

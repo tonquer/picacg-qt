@@ -192,8 +192,8 @@ class User(Singleton):
     def AddAndDelFavorites(self, bookId, bakParam=0):
         self.server.Send(req.FavoritesAdd(bookId), bakParam=bakParam)
 
-    def UpdateFavorites(self, page=1, bakParam=0):
-        self.server.Send(req.FavoritesReq(page), bakParam=bakParam)
+    def UpdateFavorites(self, page=1, sort="da", bakParam=0):
+        self.server.Send(req.FavoritesReq(page, sort), bakParam=bakParam)
 
     def UpdateFavoritesBack(self, backData):
         try:

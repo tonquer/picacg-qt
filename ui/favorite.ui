@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>451</width>
     <height>292</height>
    </rect>
   </property>
@@ -30,6 +30,26 @@
          <property name="text">
           <string>页</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox">
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>0</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>从旧到新</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>从新到旧</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -60,17 +80,34 @@
    <slot>JumpPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>342</x>
-     <y>213</y>
+     <x>439</x>
+     <y>226</y>
     </hint>
     <hint type="destinationlabel">
      <x>361</x>
-     <y>352</y>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>favorite</receiver>
+   <slot>RefreshDataFocus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>118</x>
+     <y>214</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>118</x>
+     <y>338</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
   <slot>JumpPage()</slot>
+  <slot>RefreshDataFocus()</slot>
  </slots>
 </ui>

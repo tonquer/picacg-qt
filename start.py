@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 """第一个程序"""
-import socket
-import weakref
-
 from PyQt5 import QtWidgets, QtCore, QtGui  # 导入PyQt5部件
 import sys
 sys.path.append("lib")
 import waifu2x
-
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel
 
 from src.qt.qtmain import BikaQtMainWindow
 from src.util import Log
