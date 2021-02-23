@@ -153,11 +153,8 @@ class ToolUtil(object):
                 src = json.loads(src)
             for k, v in src.items():
                 setattr(desc, k, v)
-        except Exception as E:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+        except Exception as es:
+            Log.Error(es)
 
     @staticmethod
     def GetUrlHost(url):
@@ -249,8 +246,5 @@ class ToolUtil(object):
                 c.Refresh("LoadCache", filePath)
                 return data
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
         return None

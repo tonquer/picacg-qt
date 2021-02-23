@@ -39,6 +39,13 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.label_6)
 
+        self.line_4 = QFrame(ReadImg)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.HLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_4)
+
         self.radioButton = QRadioButton(ReadImg)
         self.buttonGroup = QButtonGroup(ReadImg)
         self.buttonGroup.setObjectName(u"buttonGroup")
@@ -53,6 +60,13 @@ class Ui_ReadImg(object):
         self.radioButton_2.setObjectName(u"radioButton_2")
 
         self.verticalLayout.addWidget(self.radioButton_2)
+
+        self.line_3 = QFrame(ReadImg)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_3)
 
         self.label_4 = QLabel(ReadImg)
         self.label_4.setObjectName(u"label_4")
@@ -82,6 +96,19 @@ class Ui_ReadImg(object):
         self.epsLabel.setMaximumSize(QSize(16777215, 20))
 
         self.verticalLayout.addWidget(self.epsLabel)
+
+        self.progressBar = QProgressBar(ReadImg)
+        self.progressBar.setObjectName(u"progressBar")
+        self.progressBar.setValue(24)
+
+        self.verticalLayout.addWidget(self.progressBar)
+
+        self.line = QFrame(ReadImg)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line)
 
         self.label = QLabel(ReadImg)
         self.label.setObjectName(u"label")
@@ -130,6 +157,13 @@ class Ui_ReadImg(object):
         self.stateWaifu.setObjectName(u"stateWaifu")
 
         self.verticalLayout.addWidget(self.stateWaifu)
+
+        self.line_2 = QFrame(ReadImg)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_2)
 
         self.lastPage = QPushButton(ReadImg)
         self.lastPage.setObjectName(u"lastPage")

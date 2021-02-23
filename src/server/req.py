@@ -197,3 +197,12 @@ class GetKeywords(ServerReq):
         method = "GET"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
+
+
+# 发送评论
+class SendComment(ServerReq):
+    def __init__(self, bookId="", content=""):
+        url = config.Url + "comics/{}/comments".format(bookId)
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {"content": content}, method)

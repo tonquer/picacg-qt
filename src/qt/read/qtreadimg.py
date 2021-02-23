@@ -32,6 +32,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         layout.addWidget(QLabel("test"))
         self.radioButton.installEventFilter(self)
         self.radioButton_2.installEventFilter(self)
+        self.downloadMaxSize = 0
+        self.downloadSize = 0
+        self.progressBar.setMinimum(0)
 
     @property
     def graphicsItem(self):
@@ -82,6 +85,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         t = CTime()
         self.curIndex += 1
         self.SetData(isInit=True)
+        self.downloadMaxSize = 0
+        self.downloadSize = 0
+        self.progressBar.setValue(0)
         self.parent().ShowImg()
         t.Refresh(self.__class__.__name__)
         return
@@ -91,6 +97,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             QtBubbleLabel.ShowMsgEx(self.parent(), "已经是第一页")
             return
         self.curIndex -= 1
+        self.downloadMaxSize = 0
+        self.downloadSize = 0
+        self.progressBar.setValue(0)
         self.SetData(isInit=True)
         self.parent().ShowImg()
         return
@@ -263,6 +272,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.qtTool.label_2.setText("去噪等级：" + str(config.Noise))
         self.qtTool.label_3.setText("放大倍数：" + str(config.Scale))
         self.qtTool.label_9.setText("转码模式：" + self.owner().settingForm.GetGpuName())
+        self.qtTool.downloadMaxSize = 0
+        self.qtTool.downloadSize = 0
         self.bookId = ""
         self.epsId = 0
         self.maxPic = 0
@@ -348,6 +359,20 @@ class QtReadImg(QtWidgets.QWidget):
             self.maxPic = len(epsInfo.pics)
             self.CheckLoadPicture()
         return
+
+    def UpdateProcessBar(self, data, laveFileSize):
+        if laveFileSize < 0:
+            self.qtTool.downloadMaxSize = 0
+            self.qtTool.progressBar.setValue(0)
+            self.qtTool.downloadSize = 0
+            return
+        if self.qtTool.downloadMaxSize <= 0:
+            self.qtTool.downloadMaxSize = laveFileSize
+            self.qtTool.progressBar.setMaximum(laveFileSize)
+            self.qtTool.progressBar.setValue(0)
+            self.qtTool.downloadSize = 0
+        self.qtTool.downloadSize += len(data)
+        self.qtTool.progressBar.setValue(self.qtTool.downloadSize)
 
     def CompleteDownloadPic(self, data, st, index):
         self.loadingForm.close()
@@ -556,6 +581,7 @@ class QtReadImg(QtWidgets.QWidget):
     def AddDownloadTask(self, i, picInfo):
         path = self.owner().downloadForm.GetDonwloadFilePath(self.bookId, self.epsId, i)
         QtTask().AddDownloadTask(picInfo.fileServer, picInfo.path,
+                                 downloadCallBack=self.UpdateProcessBar,
                                  completeCallBack=self.CompleteDownloadPic, backParam=i,
                                  isSaveCache=False, cleanFlag=self.closeFlag, filePath=path)
         self.waitPicData.add(i)

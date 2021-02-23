@@ -45,6 +45,9 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
 
     def UpdateUserBack(self, msg):
         self.owner().userForm.UpdateLabel(User().name, User().level, User().exp, User().isPunched)
+        if not User().avatar:
+            return
+
         url = User().avatar.get("fileServer")
         path = User().avatar.get("path")
         if url and path and config.IsLoadingPicture:

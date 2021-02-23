@@ -75,10 +75,7 @@ class User(Singleton):
                 Log.Info("初始化失败, info:{}".format(backData.res))
                 return Status.Error
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.Error
 
     def InitImageServer(self, backData):
@@ -93,10 +90,7 @@ class User(Singleton):
             else:
                 return Status.Error
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.Error
 
     def SetUserInfo(self, userId, passwd):
@@ -124,10 +118,7 @@ class User(Singleton):
                 Log.Info("登陆失败！！！, userId:{}, msg:{}".format(self.userId, backData.res.message))
                 return Status.UserError + backData.res.message
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.NetError
 
     def Logout(self):
@@ -149,10 +140,7 @@ class User(Singleton):
                 self.isPunched = backData.res.data["user"]["isPunched"]
                 self.avatar = backData.res.data["user"].get("avatar")
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.NetError
 
     # 签到
@@ -183,10 +171,7 @@ class User(Singleton):
                 Log.Info("注册失败！！！, userId:{}, msg:{}".format(self.userId, backData.res.message))
                 return Status.RegisterError + backData.res.message
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.NetError
 
     def AddAndDelFavorites(self, bookId, bakParam=0):
@@ -213,9 +198,6 @@ class User(Singleton):
                 return Status.Ok, self.page
             else:
                 return Status.Error + backData.res.message, self.page
-        except Exception as e:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
-            return Status.Error + e, self.page
+        except Exception as es:
+            Log.Error(es)
+            return Status.Error, self.page

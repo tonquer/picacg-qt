@@ -191,10 +191,7 @@ class DownloadBookReq(object):
                     with open(filePath, "wb+") as f:
                         f.write(data)
             except Exception as es:
-                import sys
-                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-                e = sys.exc_info()[1]
-                Log.Error(cur_tb, e)
+                Log.Error(es)
                 if backData.bakParam:
                     QtTask().downloadBack.emit(backData.bakParam, -1, b"")
 
@@ -220,6 +217,13 @@ class CheckUpdateReq(object):
 
 
 @handler(req.GetKeywords)
+class GetKeywordsHandler(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
+@handler(req.SendComment)
 class GetKeywordsHandler(object):
     def __call__(self, backData):
         if backData.bakParam:

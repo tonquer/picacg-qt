@@ -359,10 +359,7 @@ class DownloadEpsInfo(object):
                 self.curPreDownloadIndex += 1
                 self.StartDownload()
             except Exception as es:
-                import sys
-                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-                e = sys.exc_info()[1]
-                Log.Error(cur_tb, e)
+                Log.Error(es)
         return
 
     def StartConvert(self):
@@ -410,10 +407,7 @@ class DownloadEpsInfo(object):
                 self.curPreConvertId += 1
                 self.StartConvert()
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             self.status = DownloadInfo.Error
             self.parent.SetConvertStatu(DownloadInfo.Error)
         return

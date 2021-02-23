@@ -151,9 +151,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                                         data),
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if r == QMessageBox.Yes:
-                QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacg-windows/releases"))
-        except Exception as Es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+                QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacomic-windows/releases"))
+        except Exception as es:
+            Log.Error(es)

@@ -424,7 +424,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
             selectRows.add(index.row())
         if not selectRows:
             return
-        for row in selectRows:
+        for row in sorted(selectRows, reverse=True):
             col = 0
             bookId = self.tableWidget.item(row, col).text()
             self.RemoveRecord(bookId)
@@ -438,9 +438,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         if not selectRows:
             return
         try:
-            selectRows = list(selectRows)
-            selectRows.sort(reverse=True)
-            for row in selectRows:
+            for row in sorted(selectRows, reverse=True):
                 col = 0
                 bookId = self.tableWidget.item(row, col).text()
                 bookInfo = self.downloadDict.get(bookId)
@@ -452,10 +450,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
                     shutil.rmtree(path, True)
 
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
         self.UpdateTableRow()
 
     def OpenBookInfo(self):

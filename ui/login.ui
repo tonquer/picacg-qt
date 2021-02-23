@@ -50,6 +50,9 @@
            <property name="text">
             <string>登陆</string>
            </property>
+           <property name="shortcut">
+            <string>Return</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -225,8 +228,8 @@
    <slot>Login()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>300</x>
-     <y>187</y>
+     <x>198</x>
+     <y>176</y>
     </hint>
     <hint type="destinationlabel">
      <x>203</x>
@@ -241,8 +244,8 @@
    <slot>OpenRegister()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>456</x>
-     <y>187</y>
+     <x>354</x>
+     <y>176</y>
     </hint>
     <hint type="destinationlabel">
      <x>145</x>

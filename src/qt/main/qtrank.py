@@ -68,10 +68,7 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
                     info += "{}E/{}P".format(str(v.get("epsCount")), str(v.get("pagesCount")))
                     bookList.AddBookItem(_id, title, info, url, path, originalName)
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             self.isInit = False
 
     def OpenSearch(self, modelIndex):

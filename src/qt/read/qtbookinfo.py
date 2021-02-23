@@ -4,7 +4,7 @@ import weakref
 from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import QRect, Qt
 from PySide2.QtGui import QColor
-from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication
+from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton
 
 from conf import config
 from src.index.book import BookMgr
@@ -86,6 +86,13 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.listWidget.InitUser(self.LoadNextPage)
 
         self.commentLayout.addWidget(self.listWidget)
+        layout = QHBoxLayout()
+        self.commentLine = QLineEdit()
+        layout.addWidget(self.commentLine)
+        self.commentButton = QPushButton("发送评论")
+        layout.addWidget(self.commentButton)
+        self.commentLayout.addLayout(layout, 1, 0)
+        self.commentButton.clicked.connect(self.SendComment)
 
         # self.stackedWidget.addWidget(self.qtReadImg)
         self.epsListWidget.clicked.connect(self.OpenReadImg)
@@ -212,12 +219,23 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
             msg = json.loads(data)
             if msg.get("code") == 200:
                 comments = msg.get("data", {}).get("comments", {})
+                topComments = msg.get("data", {}).get("topComments", [])
                 page = int(comments.get("page", 1))
                 pages = int(comments.get("pages", 1))
                 limit = int(comments.get("limit", 1))
                 self.listWidget.UpdatePage(page, pages)
                 total = comments.get("total", 0)
                 self.tabWidget.setTabText(1, "评论({})".format(str(total)))
+                if page == 1:
+                    for index, info in enumerate(topComments):
+                        floor = "置顶"
+                        content = info.get("content")
+                        name = info.get("_user", {}).get("name")
+                        avatar = info.get("_user", {}).get("avatar", {})
+                        createdTime = info.get("created_at")
+                        commentsCount = info.get("commentsCount")
+                        self.listWidget.AddUserItem(content, name, createdTime, floor, avatar.get("fileServer"),
+                                                    avatar.get("path"), avatar.get("originalName"))
 
                 for index, info in enumerate(comments.get("docs")):
                     floor = total - ((page - 1) * limit + index)
@@ -230,10 +248,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                                  avatar.get("path"), avatar.get("originalName"))
             return
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
 
     def GetEpsBack(self, st):
         if st == Status.Ok:
@@ -345,3 +360,25 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.owner().searchForm.searchEdit.setText(text)
         self.owner().searchForm.Search()
         return
+
+    def SendComment(self):
+        data = self.commentLine.text()
+        if not data:
+            return
+        self.loadingForm.show()
+        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SendComment(self.bookId, data), bakParam=x), callBack=self.SendCommentBack)
+
+    def SendCommentBack(self, msg):
+        try:
+            data = json.loads(msg)
+            if data.get("code") == 200:
+                self.listWidget.clear()
+                self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetComments(self.bookId), bakParam=x),
+                                                self.GetCommnetBack, cleanFlag=self.closeFlag)
+            else:
+                self.loadingForm.close()
+                QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
+            self.commentLine.setText("")
+        except Exception as es:
+            self.loadingForm.close()
+            Log.Error(es)

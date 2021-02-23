@@ -39,14 +39,18 @@ class Log(object):
         Log.logger.warning(data)
 
     @staticmethod
-    def Error(cur_tb, e):
-        message = ''
-        message += 'Exception: {}\n'.format(e)
-        message += '  Traceback info: \n'
-        while cur_tb is not None:
-            frame = cur_tb.tb_frame
-            code = frame.f_code
-            message += '    File: {}, line: {}, in: {}\n'.format(code.co_filename, str(frame.f_lineno), code.co_name)
-            message += '         local params:{}\n'.format(frame.f_locals)
-            cur_tb = cur_tb.tb_next
-        Log.logger.error(message)
+    def Error(es):
+        # import traceback
+        # import sys
+        # traceback.print_exc(file=sys.stdout)
+        # message = ''
+        # message += 'Exception: {}\n'.format(e)
+        # message += '  Traceback info: \n'
+        # while cur_tb is not None:
+        #     frame = cur_tb.tb_frame
+        #     code = frame.f_code
+        #     message += '    File: {}, line: {}, in: {}\n'.format(code.co_filename, str(frame.f_lineno), code.co_name)
+        #     message += '         local params:{}\n'.format(frame.f_locals)
+        #     cur_tb = cur_tb.tb_next
+        # Log.logger.error(message)
+        Log.logger.error(es, exc_info=True)

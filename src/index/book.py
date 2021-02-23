@@ -68,10 +68,7 @@ class BookMgr(Singleton):
                 Log.Warn("未找到书籍, bookId:{}".format(backData))
                 return Status.NotFoundBook
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.NetError
 
     def AddBookEpsInfo(self, bookId, bakParam):
@@ -114,10 +111,7 @@ class BookMgr(Singleton):
                 return Status.WaitLoad
             return Status.Ok
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.Error
 
     def AddBookEpsPicInfo(self, bookId, index=1, bakParam=0):
@@ -162,10 +156,7 @@ class BookMgr(Singleton):
                 return Status.WaitLoad
             return Status.Ok
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
             return Status.Error
 
     def _DownloadBoos(self, bookId):

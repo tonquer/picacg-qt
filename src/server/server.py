@@ -70,10 +70,7 @@ class Server(Singleton, threading.Thread):
             try:
                 self._Send(task)
             except Exception as es:
-                import sys
-                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-                e = sys.exc_info()[1]
-                Log.Error(cur_tb, e)
+                Log.Error(es)
         pass
 
     def RunDownload(self):
@@ -83,10 +80,7 @@ class Server(Singleton, threading.Thread):
             try:
                 self._Download(task)
             except Exception as es:
-                import sys
-                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-                e = sys.exc_info()[1]
-                Log.Error(cur_tb, e)
+                Log.Error(es)
         pass
 
     def __DealHeaders(self, request, token):
@@ -123,19 +117,13 @@ class Server(Singleton, threading.Thread):
                 return
         except Exception as es:
             task.status = Status.NetError
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
         try:
             self.handler.get(task.req.__class__)(task)
             if task.res.raw:
                 task.res.raw.close()
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
 
     def Post(self, task):
         request = task.req

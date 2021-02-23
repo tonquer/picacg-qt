@@ -17,7 +17,7 @@ class Ui_Login(object):
     def setupUi(self, Login):
         if not Login.objectName():
             Login.setObjectName(u"Login")
-        Login.resize(657, 205)
+        Login.resize(455, 205)
         self.gridLayout = QGridLayout(Login)
         self.gridLayout.setObjectName(u"gridLayout")
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -137,6 +137,9 @@ class Ui_Login(object):
     def retranslateUi(self, Login):
         Login.setWindowTitle(QCoreApplication.translate("Login", u"Form", None))
         self.loginButton.setText(QCoreApplication.translate("Login", u"\u767b\u9646", None))
+#if QT_CONFIG(shortcut)
+        self.loginButton.setShortcut(QCoreApplication.translate("Login", u"Return", None))
+#endif // QT_CONFIG(shortcut)
         self.registerButton.setText(QCoreApplication.translate("Login", u"\u6ce8\u518c", None))
         self.label_2.setText(QCoreApplication.translate("Login", u"\u5bc6\u7801", None))
         self.passwdEdit.setText("")

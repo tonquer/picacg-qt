@@ -48,6 +48,13 @@
         </widget>
        </item>
        <item>
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QRadioButton" name="radioButton">
          <property name="text">
           <string>铺满高度（还原图片）</string>
@@ -68,6 +75,13 @@
          <attribute name="buttonGroup">
           <string notr="true">buttonGroup</string>
          </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
         </widget>
        </item>
        <item>
@@ -120,6 +134,20 @@
          </property>
          <property name="text">
           <string>位置：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>24</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -192,6 +220,13 @@
         <widget class="QLabel" name="stateWaifu">
          <property name="text">
           <string>状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>

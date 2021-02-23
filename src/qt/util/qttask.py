@@ -170,10 +170,7 @@ class QtTask(Singleton, threading.Thread):
             del info.callBack
             del self.tasks[taskId]
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
 
     def HandlerDownloadTask(self, downlodaId, laveFileSize, data, isCallBack=True):
         info = self.downloadTask.get(downlodaId)
@@ -188,10 +185,7 @@ class QtTask(Singleton, threading.Thread):
                     else:
                         info.downloadCompleteBack(self.GetDownloadData(downlodaId), Status.Error)
             except Exception as es:
-                import sys
-                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-                e = sys.exc_info()[1]
-                Log.Error(cur_tb, e)
+                Log.Error(es)
             self.ClearDownloadTask(downlodaId)
             return
 
@@ -205,10 +199,7 @@ class QtTask(Singleton, threading.Thread):
                 else:
                     info.downloadCallBack(data, laveFileSize)
             except Exception as es:
-                import sys
-                cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-                e = sys.exc_info()[1]
-                Log.Error(cur_tb, e)
+                Log.Error(es)
         if laveFileSize == 0 and data == b"":
             if info.downloadCompleteBack:
                 try:
@@ -220,10 +211,7 @@ class QtTask(Singleton, threading.Thread):
                     else:
                         info.downloadCompleteBack(self.GetDownloadData(downlodaId), Status.Ok)
                 except Exception as es:
-                    import sys
-                    cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-                    e = sys.exc_info()[1]
-                    Log.Error(cur_tb, e)
+                    Log.Error(es)
             self.ClearDownloadTask(downlodaId)
 
     def ClearDownloadTask(self, downlodaId):

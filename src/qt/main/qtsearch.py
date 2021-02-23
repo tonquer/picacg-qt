@@ -133,10 +133,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
                 # QtWidgets.QMessageBox.information(self, '未搜索到结果', "未搜索到结果", QtWidgets.QMessageBox.Yes)
                 self.owner().msgForm.ShowError("未搜索到结果")
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
         pass
 
     def SendKeywordBack(self, raw):
@@ -150,10 +147,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             else:
                 pass
         except Exception as es:
-            import sys
-            cur_tb = sys.exc_info()[2]  # return (exc_type, exc_value, traceback)
-            e = sys.exc_info()[1]
-            Log.Error(cur_tb, e)
+            Log.Error(es)
         pass
 
     def OpenSearch(self, modelIndex):

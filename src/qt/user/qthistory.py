@@ -63,7 +63,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
     def SwitchCurrent(self):
         self.bookList.clear()
         self.bookList.page = 1
-        self.bookList.pages = len(self.bookList) / self.pageNums + 1
+        self.bookList.pages = self.bookList.count() / self.pageNums + 1
         self.lineEdit.setValidator(QtIntLimit(1, self.bookList.pages, self))
         self.RefreshData(self.bookList.page)
 
