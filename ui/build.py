@@ -6,12 +6,13 @@ for root, dirs, filenames in os.walk("./"):
         if name[-2:] != "ui":
             continue
         outName = name[:-3]
-        proc = subprocess.Popen(["python.exe -mPyQt5.uic.pyuic {}.ui -o {}.py".format(outName, outName)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        while True:
-            buff = proc.stdout.readline()
-            buff = buff.decode("gbk", "ignore")
-            if buff == '' and proc.poll() != None :
-                break
-            elif buff != '':
-                print(buff)
+        sts = os.system("pyside2-uic.exe {}.ui -o {}.py".format(outName, outName))
+        # proc = subprocess.Popen(["pyside2-uic.exe {}.ui -o {}.py".format(outName, outName)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # while True:
+        #     buff = proc.stdout.readline()
+        #     buff = buff.decode("gbk", "ignore")
+        #     if buff == '' and proc.poll() != None :
+        #         break
+        #     elif buff != '':
+        #         print(buff)
         pass

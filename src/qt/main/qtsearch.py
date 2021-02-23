@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets
+from PySide2 import QtWidgets
 import weakref
 
-from PyQt5.QtWidgets import QCheckBox, QLabel
+from PySide2.QtWidgets import QCheckBox, QLabel
 
 from src.index.category import CateGoryMgr
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit, QtCategoryList

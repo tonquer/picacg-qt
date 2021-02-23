@@ -1,8 +1,8 @@
 import weakref
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QRegExp, Qt
-from PyQt5.QtGui import QRegExpValidator
+from PySide2 import QtWidgets
+from PySide2.QtCore import QRegExp, Qt
+from PySide2.QtGui import QRegExpValidator
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtloading import QtLoading

@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QRectF, pyqtProperty
-from PyQt5.QtGui import QPen, QPainterPath, QPainter, QColor
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication
+from PySide2.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QRectF, Property
+from PySide2.QtGui import QPen, QPainterPath, QPainter, QColor
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication
 
 
 class QtBubbleLabel(QWidget):
@@ -89,7 +89,7 @@ class QtBubbleLabel(QWidget):
     def setWindowOpacity(self, opacity):
         super(QtBubbleLabel, self).setWindowOpacity(opacity)
 
-    opacity = pyqtProperty(float, windowOpacity, setWindowOpacity)
+    opacity = Property(float, windowOpacity, setWindowOpacity)
 
     def ShowMsg(self, text):
         self.stop()

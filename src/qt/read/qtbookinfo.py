@@ -1,10 +1,10 @@
 import json
 import weakref
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QRect, Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication
+from PySide2 import QtWidgets, QtCore, QtGui
+from PySide2.QtCore import QRect, Qt
+from PySide2.QtGui import QColor
+from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication
 
 from conf import config
 from src.index.book import BookMgr
@@ -114,6 +114,12 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     #     self.owner().searchForm.Search()
     #     return
 
+    def Clear(self):
+        self.stackedWidget.setCurrentIndex(0)
+        self.owner().qtTask.CancelTasks(self.closeFlag)
+        self.epsListWidget.clear()
+        self.listWidget.clear()
+
     def CopyDescription(self):
         clipboard = QApplication.clipboard()
         clipboard.setText(self.description.text())
@@ -128,8 +134,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         else:
             self.download.setEnabled(True)
 
-        self.owner().qtTask.CancelTasks(self.closeFlag)
-        # self.stackedWidget.setCurrentIndex(0)
+        self.Clear()
         self.show()
         self.loadingForm.show()
         self.owner().qtTask.AddHttpTask(lambda x: BookMgr().AddBookById(bookId, x), self.OpenBookBack)
@@ -139,7 +144,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
     def OpenBookBack(self, msg):
         self.loadingForm.close()
-        self.listWidget.clear()
         self.listWidget.UpdatePage(1, 1)
         self.listWidget.UpdateState()
         self.categoriesList.clear()

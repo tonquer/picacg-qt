@@ -1,9 +1,9 @@
 import weakref
 
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtCore import QPoint, QTimer
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtWidgets import QDesktopWidget
+from PySide2 import QtWidgets, QtCore, QtGui
+from PySide2.QtCore import QPoint, QTimer
+from PySide2.QtGui import QPixmap, QImage
+from PySide2.QtWidgets import QDesktopWidget
 
 from resources import resources
 from ui.loading import Ui_Loading

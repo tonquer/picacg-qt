@@ -7,7 +7,7 @@ import weakref
 from queue import Queue
 
 from PIL import Image
-from PyQt5.QtCore import pyqtSignal, QObject
+from PySide2.QtCore import Signal, QObject
 
 from conf import config
 from src.util import Singleton, Log
@@ -16,9 +16,9 @@ from src.util.tool import time_me, CTime, ToolUtil
 
 
 class QtTaskQObject(QObject):
-    taskBack = pyqtSignal(int, str)
-    downloadBack = pyqtSignal(int, int, bytes)
-    convertBack = pyqtSignal(int)
+    taskBack = Signal(int, str)
+    downloadBack = Signal(int, int, bytes)
+    convertBack = Signal(int)
 
     def __init__(self):
         super(self.__class__, self).__init__()

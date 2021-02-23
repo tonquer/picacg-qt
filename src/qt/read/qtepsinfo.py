@@ -1,8 +1,8 @@
 import weakref
 
-from PyQt5 import QtWidgets
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QListWidget, QLabel, QListWidgetItem
+from PySide2 import QtWidgets
+from PySide2.QtGui import QColor
+from PySide2.QtWidgets import QListWidget, QLabel, QListWidgetItem
 
 from src.index.book import BookMgr
 from src.qt.com.qtloading import QtLoading

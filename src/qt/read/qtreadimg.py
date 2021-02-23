@@ -1,9 +1,9 @@
 import weakref
 import waifu2x
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QSize
-from PyQt5.QtGui import QPixmap, QPainter, QColor, QImage
-from PyQt5.QtWidgets import QGraphicsPixmapItem, QGraphicsScene, QApplication, QFrame, QVBoxLayout, QLabel
+from PySide2 import QtWidgets
+from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QSize, QMimeData
+from PySide2.QtGui import QPixmap, QPainter, QColor, QImage
+from PySide2.QtWidgets import QGraphicsPixmapItem, QGraphicsScene, QApplication, QFrame, QVBoxLayout, QLabel
 
 from conf import config
 from src.index.book import BookMgr
@@ -144,8 +144,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         if waifuTick or isInit:
             self.tickLabel.setText("耗时：" + str(waifuTick) + "s")
 
-        self.parent().MoveTool()
-
     def CopyPicture(self):
         clipboard = QApplication.clipboard()
         owner = self.parent()
@@ -155,8 +153,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             if not p or not p.waifuData:
                 QtBubbleLabel.ShowErrorEx(owner, "解码还未完成")
                 return
-            data = QPixmap(QImage(p.waifuData))
-            clipboard.setPixmap(data)
+            img = QImage()
+            img.loadFromData(p.waifuData)
+            clipboard.setImage(img)
             QtBubbleLabel.ShowMsgEx(owner, "复制成功")
 
         else:
@@ -164,8 +163,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             if not p or not p.data:
                 QtBubbleLabel.ShowErrorEx(owner, "下载未完成")
                 return
-            data = QPixmap(QImage(p.data))
-            clipboard.setPixmap(data)
+            img = QImage()
+            img.loadFromData(p.data)
+            clipboard.setImage(img)
             QtBubbleLabel.ShowMsgEx(owner, "复制成功")
         return
 
@@ -198,8 +198,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.curPreLoadIndex = 0
         self.maxPreLoad = config.PreLoading
 
-
         self.gridLayout = QtWidgets.QGridLayout(self)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.qtTool = QtImgTool(self)
 
         self.graphicsView = QtWidgets.QGraphicsView(self)
@@ -208,7 +208,9 @@ class QtReadImg(QtWidgets.QWidget):
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
         self.graphicsView.setObjectName("graphicsView")
 
-        self.gridLayout.addWidget(self.graphicsView)
+        self.gridLayout.addWidget(self.graphicsView, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.qtTool, 0, 1)
+
         self.graphicsView.setBackgroundBrush(QColor(Qt.white))
         self.graphicsView.setCursor(Qt.OpenHandCursor)
         self.graphicsView.setResizeAnchor(self.graphicsView.AnchorViewCenter)
@@ -249,11 +251,11 @@ class QtReadImg(QtWidgets.QWidget):
         self.waitWaifuPicData = set()
         # self.timer.timeout.connect(self.LoadWaifu2x)
         # self.timer.start()
+        self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
 
     def closeEvent(self, a0) -> None:
         self.ReturnPage()
         self.owner().bookInfoForm.show()
-        self.qtTool.hide()
         self.Clear()
         a0.accept()
 
@@ -392,7 +394,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.qtTool.label_3.setText("放大倍数：" + str(p.scale))
 
         self.pixMap = QPixmap()
-        self.pixMap.loadFromData(p2)
+        if config.IsLoadingPicture:
+            self.pixMap.loadFromData(p2)
         self.graphicsItem.setPixmap(self.pixMap)
         self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
         self.ScalePicture()
@@ -447,7 +450,6 @@ class QtReadImg(QtWidgets.QWidget):
     def resizeEvent(self, event) -> None:
         super(self.__class__, self).resizeEvent(event)
         self.ScalePicture()
-        self.MoveTool()
 
     def eventFilter(self, obj, ev):
         if ev.type() == QEvent.KeyPress:
@@ -524,15 +526,8 @@ class QtReadImg(QtWidgets.QWidget):
     def ShowAndCloseTool(self):
         if self.qtTool.isHidden():
             self.qtTool.show()
-            self.MoveTool()
         else:
             self.qtTool.hide()
-
-    def MoveTool(self):
-        size1 = self.geometry()
-        # size2 = self.graphicsView.pos()
-        h = self.width()
-        self.qtTool.move(size1.x() + h - self.qtTool.width(), size1.y())
 
     def Waifu2xBack(self, data, waifu2xId, index, tick):
         self.waitWaifuPicData.discard(index)

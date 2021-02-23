@@ -1,9 +1,9 @@
-from PyQt5 import QtWidgets
+from PySide2 import QtWidgets
 import weakref
 
-from PyQt5.QtGui import QCursor
-from PyQt5.QtWidgets import QMenu, QApplication
-from PyQt5.QtCore import Qt
+from PySide2.QtGui import QCursor
+from PySide2.QtWidgets import QMenu, QApplication
+from PySide2.QtCore import Qt
 
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
 from src.user.user import User

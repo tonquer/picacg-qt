@@ -1,8 +1,8 @@
 import weakref
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QDesktopServices
+from PySide2 import QtWidgets
+from PySide2.QtCore import QUrl
+from PySide2.QtGui import QDesktopServices
 
 from conf import config
 from ui.about import Ui_AboutForm

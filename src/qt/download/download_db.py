@@ -1,6 +1,6 @@
 import json
 
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery
+from PySide2.QtSql import QSqlDatabase, QSqlQuery
 
 from src.qt.download.download_info import DownloadInfo, DownloadEpsInfo
 from src.util.log import Log
@@ -27,7 +27,7 @@ class DownloadDb(object):
             convertStatus varchar\
             )\
             """
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             a = query.lastError().text()
             Log.Warn(a)
@@ -44,7 +44,7 @@ class DownloadDb(object):
             primary key (bookId,epsId)\
             )\
             """
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             a = query.lastError().text()
             Log.Warn(a)
@@ -53,12 +53,12 @@ class DownloadDb(object):
     def DelDownloadDB(self, bookId):
         query = QSqlQuery(self.db)
         sql = "delete from download where bookId='{}'".format(bookId)
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             Log.Warn(query.lastError().text())
 
         sql = "delete from download_eps where bookId='{}'".format(bookId)
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             Log.Warn(query.lastError().text())
         return
@@ -75,7 +75,7 @@ class DownloadDb(object):
             format(task.bookId, json.dumps(task.downloadEpsIds), task.curDownloadEpsId, task.curConvertEpsId, task.title,
                    task.savePath, task.convertPath, task.status, task.convertStatus)
 
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             Log.Warn(query.lastError().text())
         return
@@ -90,14 +90,14 @@ class DownloadDb(object):
             format(info.parent.bookId, info.epsId, info.epsTitle, info.picCnt, info.curPreDownloadIndex,
                    info.curPreConvertId)
 
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             Log.Warn(query.lastError().text())
         return
 
     def LoadDownload(self, owner):
         query = QSqlQuery(self.db)
-        suc = query.exec(
+        suc = query.exec_(
             """
             select * from download
             """
@@ -121,7 +121,7 @@ class DownloadDb(object):
             downloads[info.bookId] = info
 
         query = QSqlQuery(self.db)
-        suc = query.exec(
+        suc = query.exec_(
             """
             select * from download_eps
             """

@@ -1,8 +1,8 @@
 from io import BytesIO
 
 from PIL import Image
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QPixmap, QImage
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QPixmap, QImage
 
 from src.util import ToolUtil
 

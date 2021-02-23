@@ -1,6 +1,6 @@
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QPixmap, QColor, QIntValidator
-from PyQt5.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, QScroller
+from PySide2.QtCore import Qt, QSize
+from PySide2.QtGui import QPixmap, QColor, QIntValidator
+from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, QScroller
 
 from conf import config
 from resources import resources

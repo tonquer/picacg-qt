@@ -1,13 +1,13 @@
 import weakref
 
-from PyQt5.QtGui import QPixmap
+from PySide2.QtGui import QPixmap
 
 from conf import config
 from src.qt.util.qttask import QtTask
 from src.user.user import User
 from src.util.status import Status
 from ui.login import Ui_Login
-from PyQt5 import QtWidgets
+from PySide2 import QtWidgets
 
 
 class QtLogin(QtWidgets.QWidget, Ui_Login):

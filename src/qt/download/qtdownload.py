@@ -1,13 +1,13 @@
 import os
 import shutil
 
-from PyQt5 import QtWidgets
+from PySide2 import QtWidgets
 import weakref
 
-from PyQt5.QtCore import Qt, QTime, QTimer, QSettings, QUrl, QDir
-from PyQt5.QtGui import QCursor, QDesktopServices
-from PyQt5.QtSql import QSqlDatabase
-from PyQt5.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem, QAction
+from PySide2.QtCore import Qt, QTime, QTimer, QSettings, QUrl, QDir
+from PySide2.QtGui import QCursor, QDesktopServices
+from PySide2.QtSql import QSqlDatabase
+from PySide2.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem, QAction
 
 from conf import config
 from src.index.book import BookMgr

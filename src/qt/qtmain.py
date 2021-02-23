@@ -1,10 +1,10 @@
 import os
 import re
 
-from PyQt5 import QtWidgets, QtGui  # 导入PyQt5部件
-from PyQt5.QtCore import QTimer, QUrl
-from PyQt5.QtGui import QIcon, QPixmap, QDesktopServices
-from PyQt5.QtWidgets import QMessageBox
+from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
+from PySide2.QtCore import QTimer, QUrl
+from PySide2.QtGui import QIcon, QPixmap, QDesktopServices
+from PySide2.QtWidgets import QMessageBox
 
 from conf import config
 from resources import resources

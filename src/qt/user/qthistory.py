@@ -1,7 +1,7 @@
 import weakref
 
-from PyQt5 import QtWidgets
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery
+from PySide2 import QtWidgets
+from PySide2.QtSql import QSqlDatabase, QSqlQuery
 import time
 
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
@@ -54,7 +54,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
             tick int\
             )\
             """
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             a = query.lastError().text()
             Log.Warn(a)
@@ -91,14 +91,14 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
               "VALUES ('{0}', '{1}', {2}, {3}, '{4}', '{5}', {6}) " \
               "ON CONFLICT(bookId) DO UPDATE SET name='{1}', epsId={2}, picIndex={3}, url = '{4}', path='{5}', tick={6}".\
             format(bookId, name, epsId, index, url, path, tick)
-        suc = query.exec(sql)
+        suc = query.exec_(sql)
         if not suc:
             Log.Warn(query.lastError().text())
         return
 
     def LoadHistory(self):
         query = QSqlQuery(self.db)
-        query.exec(
+        query.exec_(
             """
             select * from history
             """

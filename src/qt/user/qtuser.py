@@ -1,9 +1,9 @@
 import weakref
 
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QListWidget, QListWidgetItem
+from PySide2 import QtWidgets, QtGui
+from PySide2.QtCore import Qt, QSize
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QListWidget, QListWidgetItem
 
 from resources import resources
 from src.user.user import User
@@ -26,9 +26,9 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.icon.setPixmap(pix)
 
         self.listWidget.currentRowChanged.connect(self.Switch)
-        self.listWidget.setFrameShape(QListWidget.NoFrame)
         self.listWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.listWidget.setFrameShape(self.listWidget.NoFrame)
         for name in ["搜索", "分类", "排行", "收藏", "历史记录", "下载"]:
             item = QListWidgetItem(
                 name,

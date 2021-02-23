@@ -1,6 +1,6 @@
 import json
 
-from PyQt5 import QtWidgets
+from PySide2 import QtWidgets
 import weakref
 
 from src.qt.com.qtlistwidget import QtBookList
