@@ -27,7 +27,7 @@
 
 ## 如何编译
 1. git clone https://github.com/tonquer/picacg-windows.git
-2. 安装Python3.7.9，pip安装pyqt5, requests, Pillow包
+2. 安装Python3.7.9，pip安装pyside2, requests, Pillow包
 3. 安装pycharm, 打开项目
 4. pycharm运行start.py调试
 5. 可使用pyinstaller -F -w start.py 打包成exe
