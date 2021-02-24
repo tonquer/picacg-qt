@@ -32,6 +32,8 @@ class QtFileData(object):
         self.waifuData = None
         self.waifuTick = 0
 
+        self.downloadSize = 0
+
     @property
     def qSize(self):
         return QSize(self.w, self.h)
