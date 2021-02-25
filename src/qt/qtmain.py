@@ -120,7 +120,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settingForm.ExitSaveSetting(self.size(), self.bookInfoForm.size(), userId, passwd)
 
     def Init(self):
-        # self.ClearExpiredCache()
         waifu2x.Set(config.Waifu2xThread, config.Encode, getattr(config, "Model"+str(config.Model)))
         stat = waifu2x.Init()
         if stat < 0:

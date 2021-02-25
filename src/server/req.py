@@ -206,3 +206,12 @@ class SendComment(ServerReq):
         method = "POST"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {"content": content}, method)
+
+
+# 下载图片
+class SpeedTestReq(ServerReq):
+    def __init__(self):
+        url = "https://storage1.picacomic.com/static/7e7d1320-9717-4702-883d-2899975283b2.jpg"
+        method = "Download"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)

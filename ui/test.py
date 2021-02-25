@@ -17,15 +17,23 @@ class Ui_Test(object):
     def setupUi(self, Test):
         if not Test.objectName():
             Test.setObjectName(u"Test")
-        Test.resize(400, 286)
+        Test.resize(411, 301)
         Test.setAcceptDrops(False)
         self.gridLayout = QGridLayout(Test)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.graphicsView = QGraphicsView(Test)
+        self.frame = QFrame(Test)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.graphicsView = QGraphicsView(self.frame)
         self.graphicsView.setObjectName(u"graphicsView")
+        self.graphicsView.setGeometry(QRect(10, 50, 256, 192))
+        self.label = QLabel(self.frame)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(250, 140, 54, 12))
 
-        self.gridLayout.addWidget(self.graphicsView, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.frame, 0, 0, 1, 1)
 
 
         self.retranslateUi(Test)
@@ -35,5 +43,6 @@ class Ui_Test(object):
 
     def retranslateUi(self, Test):
         Test.setWindowTitle(QCoreApplication.translate("Test", u"Form", None))
+        self.label.setText(QCoreApplication.translate("Test", u"TextLabel", None))
     # retranslateUi
 
