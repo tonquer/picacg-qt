@@ -181,7 +181,7 @@ class DownloadBookReq(object):
                     data += chunk
                 if backData.bakParam:
                     QtTask().downloadBack.emit(backData.bakParam, 0, b"")
-                # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
+
                 if backData.cacheAndLoadPath and config.IsUseCache and len(data) > 0:
                     filePath = backData.cacheAndLoadPath
                     fileDir = os.path.dirname(filePath)
@@ -230,20 +230,6 @@ class GetKeywordsHandler(object):
             QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
 
 
-@handler(req.SendCommentChildrenReq)
-class GetKeywordsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
-@handler(req.GetCommentsChildrenReq)
-class GetKeywordsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.SpeedTestReq)
 class SpeedTestReq(object):
     def __call__(self, backData):
@@ -262,7 +248,7 @@ class SpeedTestReq(object):
                 getSize = 0
                 now = time.time()
                 consume = 1
-                for chunk in r.iter_content(chunk_size=10240):
+                for chunk in r.iter_content(chunk_size=1024):
                     getSize += len(chunk)
                     consume = time.time() - now
                     if consume >= 2:
