@@ -63,8 +63,10 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
     def SwitchCurrent(self):
         self.bookList.clear()
         self.bookList.page = 1
-        self.bookList.pages = self.bookList.count() / self.pageNums + 1
+        self.bookList.pages = len(self.history) // self.pageNums + 1
         self.lineEdit.setValidator(QtIntLimit(1, self.bookList.pages, self))
+        self.bookList.UpdateState()
+        self.UpdatePageLabel()
         self.RefreshData(self.bookList.page)
 
     def GetHistory(self, bookId):
@@ -123,6 +125,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         self.bookList.page = page
         self.bookList.clear()
         self.RefreshData(page)
+        self.UpdatePageLabel()
 
     def OpenSearch(self, modelIndex):
         index = modelIndex.row()
@@ -137,11 +140,12 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
     def LoadNextPage(self):
         self.bookList.page += 1
         self.RefreshData(self.bookList.page)
+        self.UpdatePageLabel()
 
     def RefreshData(self, page):
         sortedList = list(self.history.values())
         sortedList.sort(key=lambda a: a.tick, reverse=True)
-        self.bookList.clear()
+        self.bookList.UpdateState()
         start = (page-1) * self.pageNums
         end = start + self.pageNums
         for info in sortedList[start:end]:
@@ -160,3 +164,6 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         if not bookId:
             return
         self.owner().bookInfoForm.OpenBook(bookId)
+
+    def UpdatePageLabel(self):
+        self.pages.setText("页：{}/{}".format(str(self.bookList.page), str(self.bookList.pages)))

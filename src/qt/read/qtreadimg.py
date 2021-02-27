@@ -6,6 +6,7 @@ from PySide2.QtGui import QPixmap, QPainter, QColor, QImage
 
 from conf import config
 from src.index.book import BookMgr
+from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtloading import QtLoading
 from src.qt.read.qtreadimg_frame import QtImgFrame
 from src.qt.util.qttask import QtTask
@@ -68,12 +69,11 @@ class QtReadImg(QtWidgets.QWidget):
 
     def Clear(self):
         self.qtTool.UpdateText(config.Noise, config.Scale, self.owner().settingForm.GetGpuName())
-        self.qtTool.UpdateProcessBar(0, 0)
+        self.qtTool.UpdateProcessBar(None)
         self.bookId = ""
         self.epsId = 0
         self.maxPic = 0
         self.curIndex = 0
-        self.curPreLoadIndex = 0
         self.frame.scaleCnt = 0
         self.pictureData.clear()
         self.waifu2xIdToIndex.clear()
@@ -95,6 +95,7 @@ class QtReadImg(QtWidgets.QWidget):
         self.bookId = bookId
         self.epsId = epsId
         self.graphicsItem.setPos(0, 0)
+
 
         # historyInfo = self.owner().historyForm.GetHistory(bookId)
         # if historyInfo and historyInfo.epsId == epsId:
@@ -123,8 +124,6 @@ class QtReadImg(QtWidgets.QWidget):
         for i in range(self.curIndex, self.curIndex + self.maxPreLoad):
             if i >= self.maxPic:
                 continue
-            if i < self.curPreLoadIndex:
-                continue
 
             bookInfo = BookMgr().books.get(self.bookId)
             epsInfo = bookInfo.eps[self.epsId]
@@ -138,7 +137,6 @@ class QtReadImg(QtWidgets.QWidget):
                     continue
                 if not self.pictureData[i].waifuData:
                     self.AddCovertData(picInfo, i)
-        self.curPreLoadIndex = max(i, self.curPreLoadIndex)
         pass
 
     def StartLoadPicUrlBack(self, msg, bookId):
@@ -149,6 +147,7 @@ class QtReadImg(QtWidgets.QWidget):
             epsInfo = bookInfo.eps[self.epsId]
             self.maxPic = len(epsInfo.pics)
             self.CheckLoadPicture()
+            self.qtTool.InitSlider(self.maxPic)
         return
 
     def UpdateProcessBar(self, data, laveFileSize, backParam):
@@ -162,7 +161,7 @@ class QtReadImg(QtWidgets.QWidget):
         info.downloadSize += len(data)
         if self.curIndex != backParam:
             return
-        self.qtTool.UpdateProcessBar(info.downloadSize, info.size)
+        self.qtTool.UpdateProcessBar(info)
 
     def CompleteDownloadPic(self, data, st, index):
         self.loadingForm.close()
@@ -256,8 +255,14 @@ class QtReadImg(QtWidgets.QWidget):
             # 防止过大过小
             return
         if factor >= 1:
+            if self.frame.scaleCnt >= 10:
+                QtBubbleLabel.ShowMsgEx(self, "已经最大")
+                return
             self.frame.scaleCnt += 1
         else:
+            if self.frame.scaleCnt <= -10:
+                QtBubbleLabel.ShowMsgEx(self, "已经最小")
+                return
             self.frame.scaleCnt -= 1
         self.graphicsView.scale(factor, factor)
 
@@ -323,7 +328,7 @@ class QtReadImg(QtWidgets.QWidget):
         QtTask().AddDownloadTask(picInfo.fileServer, picInfo.path,
                                  downloadCallBack=self.UpdateProcessBar,
                                  completeCallBack=self.CompleteDownloadPic, backParam=i,
-                                 isSaveCache=False, cleanFlag=self.closeFlag, filePath=path)
+                                 isSaveCache=True, cleanFlag=self.closeFlag, filePath=path)
         self.waitPicData.add(i)
         if i not in self.pictureData:
             data = QtFileData()

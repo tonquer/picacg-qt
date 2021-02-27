@@ -1,6 +1,7 @@
 from PySide2.QtCore import Qt, QSize
-from PySide2.QtGui import QPixmap, QColor, QIntValidator
-from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, QScroller
+from PySide2.QtGui import QPixmap, QColor, QIntValidator, QImage
+from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
+    QScroller, QGridLayout, QSpacerItem, QSizePolicy
 
 from conf import config
 from resources import resources
@@ -20,9 +21,14 @@ class QtIntLimit(QIntValidator):
 class UserItemWidget(QWidget):
     def __init__(self, *args, **kwargs):
         super(UserItemWidget, self).__init__(*args, **kwargs)
+        self.id = ""
         self.setMinimumSize(0, 180)
-        self.setMaximumSize(16777215, 180)
-        hboxLayout = QHBoxLayout(self)
+        self.setMaximumSize(16777215, 16777215)
+        self.gridLayout = QGridLayout(self)
+        hboxLayout = QHBoxLayout()
+        self.gridLayout.addLayout(hboxLayout, 0, 0, 1, 1)
+
+
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
@@ -30,12 +36,12 @@ class UserItemWidget(QWidget):
 
         self.indexLabel = QLabel("", self, styleSheet="color: #999999;")
         self.indexLabel.setMinimumSize(40, 0)
-        self.indexLabel.setMaximumSize(40, 16777215)
+        self.indexLabel.setMaximumSize(40, 30)
         self.indexLabel.setAlignment(Qt.AlignLeft)
 
         self.timeLabel = QLabel("", self, styleSheet="color: #999999;")
         self.timeLabel.setMinimumSize(60, 0)
-        self.timeLabel.setMaximumSize(60, 16777215)
+        self.timeLabel.setMaximumSize(60, 30)
         self.timeLabel.setAlignment(Qt.AlignRight)
 
         layout2.addWidget(self.indexLabel)
@@ -61,11 +67,46 @@ class UserItemWidget(QWidget):
         layout.addWidget(self.label)
         hboxLayout.addLayout(layout)
 
+        layout3 = QVBoxLayout()
         self.commentLabel = QLabel(self)
         # self.commentLabel.setGeometry(QRect(328, 240, 329, 27 * 4))
         self.commentLabel.setWordWrap(True)
+        layout3.addWidget(self.commentLabel)
+
+        self.likeNum = QLabel(self)
+        self.likeNum.setAlignment(Qt.AlignLeft)
+        self.likeNum.setMaximumSize(16777215, 30)
+        layout4 = QHBoxLayout()
+        label = QLabel()
+        label.setMaximumSize(30, 30)
+        label.setCursor(Qt.PointingHandCursor)
+        label.setScaledContents(True)
+        data = resources.DataMgr.GetData("icon_comment_like")
+        pixMap = QPixmap()
+        pixMap.loadFromData(data)
+        label.setPixmap(pixMap)
+
+        layout4.addWidget(label)
+        layout4.addWidget(self.likeNum)
+
+        self.commentNum = QLabel(self)
+        self.commentNum.setAlignment(Qt.AlignLeft)
+        self.commentNum.setMaximumSize(16777215, 30)
+        label = QLabel()
+        label.setMaximumSize(40, 30)
+        label.setCursor(Qt.PointingHandCursor)
+        label.setScaledContents(True)
+        data = resources.DataMgr.GetData("icon_comment_reply")
+        pixMap = QPixmap()
+        pixMap.loadFromData(data)
+        label.setPixmap(pixMap)
+        layout4.addWidget(label)
+        layout4.addWidget(self.commentNum)
+        space = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        layout4.addItem(space)
+        layout3.addLayout(layout4)
         # self.commentLabel.setAlignment(Qt.AlignTop)
-        hboxLayout.addWidget(self.commentLabel)
+        hboxLayout.addLayout(layout3)
 
     def SetPicture(self, data):
         pic = QPixmap()
@@ -166,6 +207,7 @@ class QtBookList(QListWidget):
         self.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
         self.isLoadingPage = False
         self.LoadCallBack = None
+        self.parentId = -1
 
     def GetName(self):
         return self.name + "-QtBookList"
@@ -210,11 +252,14 @@ class QtBookList(QListWidget):
             QtTask().AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True, self.GetName())
             pass
 
-    def AddUserItem(self, content, name, createdTime, floor, url="", path="", originalName=""):
+    def AddUserItem(self, commnetId, commentsCount, likesCount, content, name, createdTime, floor, url="", path="", originalName=""):
         index = self.count()
         iwidget = UserItemWidget(self)
+        iwidget.id = commnetId
         iwidget.commentLabel.setText(content)
         iwidget.label.setText(name)
+        iwidget.commentNum.setText("({})".format(commentsCount))
+        iwidget.likeNum.setText("({})".format(likesCount))
         timeArray, day = ToolUtil.GetDateStr(createdTime)
         if day >= 1:
             iwidget.timeLabel.setText("{}天前".format(str(day)))

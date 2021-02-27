@@ -44,6 +44,10 @@ class Ui_History(object):
 
         self.horizontalLayout.addWidget(self.jumpButton)
 
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
 
         self.gridLayout_4.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
@@ -67,5 +71,8 @@ class Ui_History(object):
         self.nums.setText(QCoreApplication.translate("History", u"\u6536\u85cf\u6570\uff1a", None))
         self.pages.setText(QCoreApplication.translate("History", u"\u9875", None))
         self.jumpButton.setText(QCoreApplication.translate("History", u"\u8df3\u8f6c", None))
+#if QT_CONFIG(shortcut)
+        self.jumpButton.setShortcut(QCoreApplication.translate("History", u"Return", None))
+#endif // QT_CONFIG(shortcut)
     # retranslateUi
 

@@ -83,6 +83,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.resize(self.settingForm.mainSize)
         self.bookInfoForm.resize(self.settingForm.bookSize)
+        self.qtReadImg.resize(self.settingForm.readSize)
+
         self.loginForm.userIdEdit.setText(self.settingForm.userId)
         self.loginForm.passwdEdit.setText(self.settingForm.passwd)
 
@@ -117,9 +119,10 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         userId = self.loginForm.userIdEdit.text()
         passwd = self.loginForm.passwdEdit.text()
         self.bookInfoForm.close()
-        self.settingForm.ExitSaveSetting(self.size(), self.bookInfoForm.size(), userId, passwd)
+        self.settingForm.ExitSaveSetting(self.size(), self.bookInfoForm.size(), self.qtReadImg.size(), userId, passwd)
 
     def Init(self):
+        # config.UpdateIos()
         # self.ClearExpiredCache()
         waifu2x.Set(config.Waifu2xThread, config.Encode, getattr(config, "Model"+str(config.Model)))
         stat = waifu2x.Init()
@@ -151,6 +154,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                                         data),
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if r == QMessageBox.Yes:
-                QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacomic-windows/releases"))
+                QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacg-windows/releases"))
         except Exception as es:
             Log.Error(es)

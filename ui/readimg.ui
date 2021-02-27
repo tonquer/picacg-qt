@@ -6,39 +6,76 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>223</width>
-    <height>786</height>
+    <width>182</width>
+    <height>639</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
-    <number>0</number>
+    <number>4</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>4</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>4</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>4</number>
    </property>
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <property name="spacing">
-      <number>0</number>
+      <number>6</number>
+     </property>
+     <property name="leftMargin">
+      <number>4</number>
+     </property>
+     <property name="topMargin">
+      <number>4</number>
+     </property>
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
+     <property name="bottomMargin">
+      <number>4</number>
      </property>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
-        <number>0</number>
+        <number>6</number>
        </property>
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
+       <property name="leftMargin">
+        <number>4</number>
+       </property>
+       <property name="topMargin">
+        <number>4</number>
+       </property>
+       <property name="rightMargin">
+        <number>4</number>
+       </property>
+       <property name="bottomMargin">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="Line" name="line_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QLabel" name="label_5">
          <property name="styleSheet">
@@ -63,36 +100,6 @@
          <property name="alignment">
           <set>Qt::AlignCenter</set>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="Line" name="line_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton">
-         <property name="text">
-          <string>铺满高度（还原图片）</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton_2">
-         <property name="text">
-          <string>铺满宽度（还原图片）</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
         </widget>
        </item>
        <item>
@@ -184,6 +191,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>打开Waifu2x</string>
          </property>
@@ -249,47 +259,61 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="lastPage">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>上一页</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QRadioButton" name="radioButton">
+           <property name="text">
+            <string>铺满高度</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_2">
+           <property name="text">
+            <string>铺满宽度</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QPushButton" name="nextPage">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>下一页</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>缩小</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_3">
+           <property name="text">
+            <string>放大</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QPushButton" name="copyButton">
          <property name="text">
           <string>复制图片</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>隐藏</string>
          </property>
         </widget>
        </item>
@@ -313,9 +337,86 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>隐藏</string>
+        <widget class="Line" name="line_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QPushButton" name="pushButton_4">
+           <property name="text">
+            <string>上一章</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_5">
+           <property name="text">
+            <string>下一章</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_7">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="lastPage">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>上一页</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="nextPage">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>下一页</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -325,25 +426,37 @@
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>radioButton</tabstop>
-  <tabstop>radioButton_2</tabstop>
- </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>lastPage</sender>
+   <sender>pushButton_2</sender>
    <signal>clicked()</signal>
    <receiver>ReadImg</receiver>
-   <slot>LastPage()</slot>
+   <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>198</x>
-     <y>632</y>
+     <x>117</x>
+     <y>580</y>
     </hint>
     <hint type="destinationlabel">
-     <x>211</x>
-     <y>488</y>
+     <x>105</x>
+     <y>392</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>OpenLastEps()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>44</x>
+     <y>465</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>287</x>
+     <y>437</y>
     </hint>
    </hints>
   </connection>
@@ -354,92 +467,12 @@
    <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>198</x>
-     <y>667</y>
+     <x>160</x>
+     <y>419</y>
     </hint>
     <hint type="destinationlabel">
-     <x>211</x>
+     <x>181</x>
      <y>479</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>returePage</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>ReturnPage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>198</x>
-     <y>737</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>211</x>
-     <y>455</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>SwitchPicture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>198</x>
-     <y>92</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>211</x>
-     <y>325</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>SwitchPicture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>198</x>
-     <y>66</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>211</x>
-     <y>309</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>105</x>
-     <y>758</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>105</x>
-     <y>392</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>OpenWaifu()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>22</x>
-     <y>303</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>424</x>
-     <y>318</y>
     </hint>
    </hints>
   </connection>
@@ -450,12 +483,140 @@
    <slot>CopyPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>688</y>
+     <x>145</x>
+     <y>522</y>
     </hint>
     <hint type="destinationlabel">
-     <x>364</x>
+     <x>181</x>
      <y>571</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>AddScalePic()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>441</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>433</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>returePage</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>ReturnPage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>154</x>
+     <y>551</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>455</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lastPage</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>LastPage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>419</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>488</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>ReduceScalePic()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>51</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>459</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>OpenWaifu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>34</x>
+     <y>232</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>SwitchPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>168</x>
+     <y>390</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_5</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>OpenNextEps()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>471</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>422</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>SwitchPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>390</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>309</y>
     </hint>
    </hints>
   </connection>
@@ -468,6 +629,10 @@
   <slot>CopyPicture()</slot>
   <slot>SwitchWaifu()</slot>
   <slot>OpenWaifu()</slot>
+  <slot>ReduceScalePic()</slot>
+  <slot>AddScalePic()</slot>
+  <slot>OpenLastEps()</slot>
+  <slot>OpenNextEps()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>

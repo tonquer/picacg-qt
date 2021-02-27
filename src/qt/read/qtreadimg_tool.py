@@ -2,14 +2,71 @@ import weakref
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import QSize, QEvent, Qt
-from PySide2.QtGui import QImage
+from PySide2.QtGui import QImage, QPalette
 from PySide2.QtWidgets import QApplication, QVBoxLayout, QLabel
 
 from conf import config
+from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.util import ToolUtil
 from src.util.tool import CTime
 from ui.readimg import Ui_ReadImg
+
+
+class QtCustomSlider(QtWidgets.QSlider):
+    def __init__(self, parent):
+        QtWidgets.QSlider.__init__(self)
+        self.label = QLabel(self)
+        self._qtTool = weakref.ref(parent)
+        self.label.setFixedSize(QSize(20, 20))
+        self.label.setAutoFillBackground(True)
+        self.label.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, Qt.white)
+        self.label.setPalette(palette)
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setVisible(False)
+        self.label.move(0, 3)
+        self.setMaximum(100)
+        self.setOrientation(Qt.Horizontal)
+        self.setPageStep(0)
+
+    @property
+    def qtTool(self):
+        return self._qtTool()
+
+    def mousePressEvent(self, event):
+        if not self.label.isVisible():
+            self.label.setVisible(True)
+        x = event.pos().x()
+        pos = x / self.width()
+
+        w = self.width()
+        size = int(w * self.value() / (self.maximum()))
+        x2 = self.sliderPosition()
+        print(x, x2, w, size)
+
+        if not (size-5 <= x <= size+5):
+            self.setValue(int(pos * (self.maximum()) + self.minimum()))
+            self.label.setText(str(self.value()))
+            size = int((self.width() - self.label.width()) * self.value() / (self.maximum()))
+            self.label.move(size, 3)
+        super(self.__class__, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if self.label.isVisible():
+            self.label.setVisible(False)
+            self.qtTool.SkipPicture()
+        super(self.__class__, self).mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, event):
+        self.label.setText(str(self.value()))
+        size = int((self.width() - self.label.width()) * self.value() / (self.maximum() - self.minimum()))
+        self.label.move(size, 3)
+        super(self.__class__, self).mouseMoveEvent(event)
+
+    def leaveEvent(self, event):
+        super(self.__class__, self).leaveEvent(event)
 
 
 class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
@@ -18,16 +75,23 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         QtWidgets.QWidget.__init__(self, imgFrame)
         Ui_ReadImg.__init__(self)
         self.setupUi(self)
-        self.resize(100, 300)
+        self.resize(100, 400)
         self._imgFrame = weakref.ref(imgFrame)
         # self.setWindowFlags(
         #     Qt.Window | Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint)
-        self.setStyleSheet("background-color:white;")
+        # self.setStyleSheet("background-color:white;")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        palette = QPalette(self.palette())
+        palette.setColor(QPalette.Background, Qt.white)
+        self.setAutoFillBackground(True)
+        self.setPalette(palette)
         self.radioButton.installEventFilter(self)
         self.radioButton_2.installEventFilter(self)
         self.downloadMaxSize = 0
         self.downloadSize = 0
         self.progressBar.setMinimum(0)
+        self.slider = QtCustomSlider(self)
+        self.horizontalLayout_7.addWidget(self.slider)
 
     @property
     def imgFrame(self):
@@ -69,11 +133,11 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
     @property
     def scaleCnt(self):
-        return self.readImg.scaleCnt
+        return self.imgFrame.scaleCnt
 
     @scaleCnt.setter
     def scaleCnt(self, value):
-        self.readImg.scaleCnt = value
+        self.imgFrame.scaleCnt = value
 
     def NextPage(self):
         if self.curIndex >= self.maxPic -1:
@@ -83,9 +147,8 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.curIndex += 1
         self.SetData(isInit=True)
         info = self.readImg.pictureData.get(self.curIndex)
-        if info:
-            self.UpdateProcessBar(info.downloadSize, info.size)
-
+        self.UpdateProcessBar(info)
+        self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
         t.Refresh(self.__class__.__name__)
         return
@@ -96,9 +159,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             return
         self.curIndex -= 1
         info = self.readImg.pictureData.get(self.curIndex)
-        if info:
-            self.UpdateProcessBar(info.downloadSize, info.size)
+        self.UpdateProcessBar(info)
         self.SetData(isInit=True)
+        self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
         return
 
@@ -127,6 +190,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             return super(self.__class__, self).eventFilter(obj, ev)
 
     def SetData(self, pSize=None, dataLen=0, state="", waifuSize=None, waifuDataLen=0, waifuState="", waifuTick=0, isInit=False):
+        self.UpdateSlider()
         self.epsLabel.setText("位置：{}/{}".format(self.readImg.curIndex + 1, self.readImg.maxPic))
         if pSize or isInit:
             if not pSize:
@@ -186,13 +250,85 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         return
 
-    def UpdateProcessBar(self, size, maxSize):
-        self.downloadSize = size
-        self.downloadMaxSize = maxSize
-        self.progressBar.setMaximum(maxSize)
+    def UpdateProcessBar(self, info):
+        if info:
+            self.downloadSize = info.downloadSize
+            self.downloadMaxSize = max(1, info.size)
+        else:
+            self.downloadSize = 0
+            self.downloadMaxSize = 1
+        self.progressBar.setMaximum(self.downloadMaxSize)
         self.progressBar.setValue(self.downloadSize)
 
     def UpdateText(self, noise, scale, model):
         self.label_2.setText("去噪等级：" + str(noise))
         self.label_3.setText("放大倍数：" + str(scale))
         self.label_9.setText("转码模式：" + model)
+
+    def ReduceScalePic(self):
+        self.readImg.zoom(1/1.1)
+        return
+
+    def AddScalePic(self):
+        self.readImg.zoom(1.1)
+        return
+
+    def OpenLastEps(self):
+        epsId = self.readImg.epsId
+        bookId = self.readImg.bookId
+        bookInfo = BookMgr().books.get(bookId)
+
+        epsId -= 1
+        if epsId <= 0:
+            QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一章")
+            return
+
+        if epsId >= len(bookInfo.eps):
+            return
+
+        epsInfo = bookInfo.eps[epsId]
+        self.readImg.AddHistory()
+        self.readImg.owner().bookInfoForm.LoadHistory()
+        self.readImg.OpenPage(bookId, epsId, epsInfo.title)
+        return
+
+    def OpenNextEps(self):
+        epsId = self.readImg.epsId
+        bookId = self.readImg.bookId
+        bookInfo = BookMgr().books.get(bookId)
+
+        epsId += 1
+        if epsId >= len(bookInfo.eps):
+            QtBubbleLabel.ShowMsgEx(self.readImg, "已经是最后一章")
+            return
+
+        if epsId >= len(bookInfo.eps):
+            return
+
+        epsInfo = bookInfo.eps[epsId]
+        self.readImg.AddHistory()
+        self.readImg.owner().bookInfoForm.LoadHistory()
+        self.readImg.OpenPage(bookId, epsId, epsInfo.title)
+        return
+
+    def SkipPicture(self, index=0):
+        value = self.slider.value()
+        if value <= 0:
+            return
+        if self.curIndex == value-1:
+            return
+        if value-1 > self.maxPic -1:
+            return
+        self.curIndex = value - 1
+        info = self.readImg.pictureData.get(self.curIndex)
+        self.UpdateProcessBar(info)
+        self.SetData(isInit=True)
+        self.readImg.CheckLoadPicture()
+        self.readImg.ShowImg()
+
+    def InitSlider(self, maxIndex):
+        self.slider.setMinimum(1)
+        self.slider.setMaximum(maxIndex)
+
+    def UpdateSlider(self):
+        self.slider.setValue(self.readImg.curIndex+1)

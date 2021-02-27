@@ -105,7 +105,7 @@
                      <property name="maximumSize">
                       <size>
                        <width>40</width>
-                       <height>16777215</height>
+                       <height>20</height>
                       </size>
                      </property>
                      <property name="text">
@@ -115,6 +115,12 @@
                    </item>
                    <item>
                     <widget class="QLabel" name="likes">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>20</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>爱心数</string>
                      </property>
@@ -129,7 +135,7 @@
                      <property name="maximumSize">
                       <size>
                        <width>40</width>
-                       <height>16777215</height>
+                       <height>20</height>
                       </size>
                      </property>
                      <property name="text">
@@ -139,6 +145,12 @@
                    </item>
                    <item>
                     <widget class="QLabel" name="views">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>20</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>观看数</string>
                      </property>
@@ -149,39 +161,20 @@
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_2">
                    <item>
-                    <widget class="QLabel" name="isFinished">
-                     <property name="text">
-                      <string>完本</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="download">
-                     <property name="text">
-                      <string>下载</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="favorites">
-                     <property name="text">
-                      <string>收藏</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_11">
-                   <item>
                     <widget class="QLabel" name="updateTick">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>80</width>
+                       <height>0</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>80</width>
-                       <height>16777215</height>
+                       <height>20</height>
                       </size>
                      </property>
                      <property name="text">
@@ -190,11 +183,81 @@
                     </widget>
                    </item>
                    <item>
+                    <widget class="QLabel" name="isFinished">
+                     <property name="minimumSize">
+                      <size>
+                       <width>80</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>80</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>完本</string>
+                     </property>
+                     <property name="textFormat">
+                      <enum>Qt::AutoText</enum>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="download">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>下载</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="favorites">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>收藏</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
                     <widget class="QPushButton" name="startRead">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>20</height>
+                      </size>
+                     </property>
                      <property name="text">
                       <string>开始阅读</string>
                      </property>
                     </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </item>

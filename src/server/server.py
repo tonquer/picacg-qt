@@ -160,14 +160,15 @@ class Server(Singleton, threading.Thread):
 
     def _Download(self, task):
         try:
-            for cachePath in [task.cacheAndLoadPath, task.loadPath]:
-                if cachePath and task.bakParam:
-                    data = ToolUtil.LoadCachePicture(cachePath)
-                    if data:
-                        from src.qt.util.qttask import QtTask
-                        QtTask().downloadBack.emit(task.bakParam, len(data), data)
-                        QtTask().downloadBack.emit(task.bakParam, 0, b"")
-                        return
+            if not isinstance(task.req, req.SpeedTestReq):
+                for cachePath in [task.cacheAndLoadPath, task.loadPath]:
+                    if cachePath and task.bakParam:
+                        data = ToolUtil.LoadCachePicture(cachePath)
+                        if data:
+                            from src.qt.util.qttask import QtTask
+                            QtTask().downloadBack.emit(task.bakParam, len(data), data)
+                            QtTask().downloadBack.emit(task.bakParam, 0, b"")
+                            return
             request = task.req
             if request.params == None:
                 request.params = {}
@@ -183,3 +184,14 @@ class Server(Singleton, threading.Thread):
         self.handler.get(task.req.__class__)(task)
         if task.res:
             task.res.close()
+
+    def TestSpeed(self, request, bakParams="", testAddress=""):
+        bakAddress = self.address
+        self.address = testAddress
+        if testAddress:
+            self.imageServer = "storage.wikawika.xyz"
+        self.__DealHeaders(request, "")
+        self.address = bakAddress
+        task = Task(request, bakParams)
+        task.timeout = 2
+        self._downloadQueue.put(task)

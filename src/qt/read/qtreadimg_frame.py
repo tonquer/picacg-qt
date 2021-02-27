@@ -58,7 +58,7 @@ class QtImgFrame(QFrame):
         h = size.height()
         self.graphicsView.setGeometry(0, 0, w, h)
 
-        h = min(600, h)
+        h = min(700, h)
         self.qtTool.setGeometry(w - 200, 0, 200, h)
         return
 

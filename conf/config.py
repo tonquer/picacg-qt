@@ -20,11 +20,11 @@ ResetCnt = 5                  # 下载重试次数
 IsUseCache = True             # 是否使用cache
 CachePathDir = "cache"        # cache目录
 # CacheExpired = 24 * 60 * 60    # cache过期时间24小时
-PreLoading = 10    # 预加载10页
+PreLoading = 5    # 预加载5页
 
 IsLoadingPicture = True
 
-UpdateUrl = "https://github.com/tonquer/picacomic-windows/releases/latest"
+UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
 UpdateVersion = "v1.0.8"
 
 # waifu2x

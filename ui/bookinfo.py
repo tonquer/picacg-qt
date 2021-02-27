@@ -93,12 +93,13 @@ class Ui_BookInfo(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_6 = QLabel(self.page)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setMaximumSize(QSize(40, 16777215))
+        self.label_6.setMaximumSize(QSize(40, 20))
 
         self.horizontalLayout_8.addWidget(self.label_6)
 
         self.likes = QLabel(self.page)
         self.likes.setObjectName(u"likes")
+        self.likes.setMaximumSize(QSize(16777215, 20))
 
         self.horizontalLayout_8.addWidget(self.likes)
 
@@ -109,12 +110,13 @@ class Ui_BookInfo(object):
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.label_7 = QLabel(self.page)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setMaximumSize(QSize(40, 16777215))
+        self.label_7.setMaximumSize(QSize(40, 20))
 
         self.horizontalLayout_9.addWidget(self.label_7)
 
         self.views = QLabel(self.page)
         self.views.setObjectName(u"views")
+        self.views.setMaximumSize(QSize(16777215, 20))
 
         self.horizontalLayout_9.addWidget(self.views)
 
@@ -123,40 +125,47 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.updateTick = QLabel(self.page)
+        self.updateTick.setObjectName(u"updateTick")
+        self.updateTick.setEnabled(True)
+        self.updateTick.setMinimumSize(QSize(80, 0))
+        self.updateTick.setMaximumSize(QSize(80, 20))
+
+        self.horizontalLayout_2.addWidget(self.updateTick)
+
         self.isFinished = QLabel(self.page)
         self.isFinished.setObjectName(u"isFinished")
+        self.isFinished.setMinimumSize(QSize(80, 0))
+        self.isFinished.setMaximumSize(QSize(80, 20))
+        self.isFinished.setTextFormat(Qt.AutoText)
+        self.isFinished.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_2.addWidget(self.isFinished)
 
         self.download = QPushButton(self.page)
         self.download.setObjectName(u"download")
+        self.download.setMaximumSize(QSize(16777215, 20))
 
         self.horizontalLayout_2.addWidget(self.download)
 
         self.favorites = QPushButton(self.page)
         self.favorites.setObjectName(u"favorites")
+        self.favorites.setMaximumSize(QSize(16777215, 20))
 
         self.horizontalLayout_2.addWidget(self.favorites)
 
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
-
-        self.horizontalLayout_11 = QHBoxLayout()
-        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
-        self.updateTick = QLabel(self.page)
-        self.updateTick.setObjectName(u"updateTick")
-        self.updateTick.setEnabled(True)
-        self.updateTick.setMaximumSize(QSize(80, 16777215))
-
-        self.horizontalLayout_11.addWidget(self.updateTick)
-
         self.startRead = QPushButton(self.page)
         self.startRead.setObjectName(u"startRead")
+        self.startRead.setMaximumSize(QSize(16777215, 20))
 
-        self.horizontalLayout_11.addWidget(self.startRead)
+        self.horizontalLayout_2.addWidget(self.startRead)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout_11)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
 
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
@@ -215,10 +224,10 @@ class Ui_BookInfo(object):
         self.likes.setText(QCoreApplication.translate("BookInfo", u"\u7231\u5fc3\u6570", None))
         self.label_7.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570\uff1a", None))
         self.views.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570", None))
+        self.updateTick.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.isFinished.setText(QCoreApplication.translate("BookInfo", u"\u5b8c\u672c", None))
         self.download.setText(QCoreApplication.translate("BookInfo", u"\u4e0b\u8f7d", None))
         self.favorites.setText(QCoreApplication.translate("BookInfo", u"\u6536\u85cf", None))
-        self.updateTick.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.epsWidget), QCoreApplication.translate("BookInfo", u"\u7ae0\u8282", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.commentWidget), QCoreApplication.translate("BookInfo", u"\u8bc4\u8bba", None))

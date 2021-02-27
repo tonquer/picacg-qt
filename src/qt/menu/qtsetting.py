@@ -17,6 +17,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.setWindowModality(Qt.ApplicationModal)
         self.mainSize = QSize(1500, 1100)
         self.bookSize = QSize(900, 1020)
+        self.readSize = QSize(1120, 1020)
         self.userId = ""
         self.passwd = ""
         self.gpuInfos = []
@@ -43,10 +44,16 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         y = self.settings.value("MainSize_y")
         if x and y:
             self.mainSize = QSize(int(x), int(y))
+
         x = self.settings.value("BookSize_x")
         y = self.settings.value("BookSize_y")
         if x and y:
             self.bookSize = QSize(int(x), int(y))
+
+        x = self.settings.value("ImgRead_x")
+        y = self.settings.value("ImgRead_y")
+        if x and y:
+            self.readSize = QSize(int(x), int(y))
 
         v = self.settings.value("Waifu2x/Encode")
         if v:
@@ -81,11 +88,13 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.passwd = self.settings.value("Passwd")
         return
 
-    def ExitSaveSetting(self, mainQsize, bookQsize, userId, passwd):
+    def ExitSaveSetting(self, mainQsize, bookQsize, imgQsize, userId, passwd):
         self.settings.setValue("MainSize_x", mainQsize.width())
         self.settings.setValue("MainSize_y", mainQsize.height())
         self.settings.setValue("BookSize_x", bookQsize.width())
         self.settings.setValue("BookSize_y", bookQsize.height())
+        self.settings.setValue("ImgRead_x", imgQsize.width())
+        self.settings.setValue("ImgRead_y", imgQsize.height())
         self.settings.setValue("UserId", userId)
         self.settings.setValue("Passwd", passwd)
         self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)

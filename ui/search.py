@@ -99,6 +99,9 @@ class Ui_search(object):
         self.comboBox.setItemText(3, QCoreApplication.translate("search", u"\u6700\u591a\u7ec5\u58eb\u6307\u6570", None))
 
         self.searchButton.setText(QCoreApplication.translate("search", u"\u641c\u7d22", None))
+#if QT_CONFIG(shortcut)
+        self.searchButton.setShortcut(QCoreApplication.translate("search", u"Return", None))
+#endif // QT_CONFIG(shortcut)
         self.label.setText(QCoreApplication.translate("search", u"\u9875\uff1a0/0", None))
         self.jumpPage.setText(QCoreApplication.translate("search", u"\u8df3\u8f6c", None))
         self.groupBox.setTitle(QCoreApplication.translate("search", u"GroupBox", None))

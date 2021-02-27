@@ -17,17 +17,28 @@ class Ui_ReadImg(object):
     def setupUi(self, ReadImg):
         if not ReadImg.objectName():
             ReadImg.setObjectName(u"ReadImg")
-        ReadImg.resize(223, 786)
+        ReadImg.resize(182, 639)
+        ReadImg.setAutoFillBackground(False)
+        ReadImg.setStyleSheet(u"")
         self.gridLayout_2 = QGridLayout(ReadImg)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_2.setContentsMargins(4, 4, 4, 4)
         self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setSpacing(0)
+        self.horizontalLayout_2.setSpacing(6)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(4, 4, 4, 4)
         self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.verticalLayout.setContentsMargins(4, 4, 4, 4)
+        self.line_6 = QFrame(ReadImg)
+        self.line_6.setObjectName(u"line_6")
+        self.line_6.setFrameShape(QFrame.HLine)
+        self.line_6.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_6)
+
         self.label_5 = QLabel(ReadImg)
         self.label_5.setObjectName(u"label_5")
         self.label_5.setStyleSheet(u"color: #ee2a24")
@@ -41,28 +52,6 @@ class Ui_ReadImg(object):
         self.label_6.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout.addWidget(self.label_6)
-
-        self.line_4 = QFrame(ReadImg)
-        self.line_4.setObjectName(u"line_4")
-        self.line_4.setFrameShape(QFrame.HLine)
-        self.line_4.setFrameShadow(QFrame.Sunken)
-
-        self.verticalLayout.addWidget(self.line_4)
-
-        self.radioButton = QRadioButton(ReadImg)
-        self.buttonGroup = QButtonGroup(ReadImg)
-        self.buttonGroup.setObjectName(u"buttonGroup")
-        self.buttonGroup.addButton(self.radioButton)
-        self.radioButton.setObjectName(u"radioButton")
-        self.radioButton.setChecked(True)
-
-        self.verticalLayout.addWidget(self.radioButton)
-
-        self.radioButton_2 = QRadioButton(ReadImg)
-        self.buttonGroup.addButton(self.radioButton_2)
-        self.radioButton_2.setObjectName(u"radioButton_2")
-
-        self.verticalLayout.addWidget(self.radioButton_2)
 
         self.line_3 = QFrame(ReadImg)
         self.line_3.setObjectName(u"line_3")
@@ -122,6 +111,7 @@ class Ui_ReadImg(object):
 
         self.checkBox = QCheckBox(ReadImg)
         self.checkBox.setObjectName(u"checkBox")
+        self.checkBox.setStyleSheet(u"")
         self.checkBox.setChecked(True)
 
         self.verticalLayout.addWidget(self.checkBox)
@@ -168,24 +158,50 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.line_2)
 
-        self.lastPage = QPushButton(ReadImg)
-        self.lastPage.setObjectName(u"lastPage")
-        self.lastPage.setMinimumSize(QSize(0, 0))
-        self.lastPage.setMaximumSize(QSize(16777215, 16777215))
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.radioButton = QRadioButton(ReadImg)
+        self.buttonGroup = QButtonGroup(ReadImg)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.radioButton)
+        self.radioButton.setObjectName(u"radioButton")
+        self.radioButton.setChecked(True)
 
-        self.verticalLayout.addWidget(self.lastPage)
+        self.horizontalLayout_4.addWidget(self.radioButton)
 
-        self.nextPage = QPushButton(ReadImg)
-        self.nextPage.setObjectName(u"nextPage")
-        self.nextPage.setMinimumSize(QSize(0, 0))
-        self.nextPage.setMaximumSize(QSize(16777215, 16777215))
+        self.radioButton_2 = QRadioButton(ReadImg)
+        self.buttonGroup.addButton(self.radioButton_2)
+        self.radioButton_2.setObjectName(u"radioButton_2")
 
-        self.verticalLayout.addWidget(self.nextPage)
+        self.horizontalLayout_4.addWidget(self.radioButton_2)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.pushButton = QPushButton(ReadImg)
+        self.pushButton.setObjectName(u"pushButton")
+
+        self.horizontalLayout_3.addWidget(self.pushButton)
+
+        self.pushButton_3 = QPushButton(ReadImg)
+        self.pushButton_3.setObjectName(u"pushButton_3")
+
+        self.horizontalLayout_3.addWidget(self.pushButton_3)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
 
         self.copyButton = QPushButton(ReadImg)
         self.copyButton.setObjectName(u"copyButton")
 
         self.verticalLayout.addWidget(self.copyButton)
+
+        self.pushButton_2 = QPushButton(ReadImg)
+        self.pushButton_2.setObjectName(u"pushButton_2")
+
+        self.verticalLayout.addWidget(self.pushButton_2)
 
         self.returePage = QPushButton(ReadImg)
         self.returePage.setObjectName(u"returePage")
@@ -194,10 +210,65 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.returePage)
 
-        self.pushButton_2 = QPushButton(ReadImg)
-        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.line_5 = QFrame(ReadImg)
+        self.line_5.setObjectName(u"line_5")
+        self.line_5.setFrameShape(QFrame.HLine)
+        self.line_5.setFrameShadow(QFrame.Sunken)
 
-        self.verticalLayout.addWidget(self.pushButton_2)
+        self.verticalLayout.addWidget(self.line_5)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+
+        self.verticalLayout.addLayout(self.horizontalLayout_7)
+
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.pushButton_4 = QPushButton(ReadImg)
+        self.pushButton_4.setObjectName(u"pushButton_4")
+
+        self.horizontalLayout_5.addWidget(self.pushButton_4)
+
+        self.pushButton_5 = QPushButton(ReadImg)
+        self.pushButton_5.setObjectName(u"pushButton_5")
+
+        self.horizontalLayout_5.addWidget(self.pushButton_5)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
+
+        self.line_7 = QFrame(ReadImg)
+        self.line_7.setObjectName(u"line_7")
+        self.line_7.setFrameShape(QFrame.HLine)
+        self.line_7.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_7)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.lastPage = QPushButton(ReadImg)
+        self.lastPage.setObjectName(u"lastPage")
+        self.lastPage.setMinimumSize(QSize(0, 0))
+        self.lastPage.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout.addWidget(self.lastPage)
+
+        self.nextPage = QPushButton(ReadImg)
+        self.nextPage.setObjectName(u"nextPage")
+        self.nextPage.setMinimumSize(QSize(0, 0))
+        self.nextPage.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout.addWidget(self.nextPage)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
+        self.line_4 = QFrame(ReadImg)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.HLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_4)
 
 
         self.horizontalLayout_2.addLayout(self.verticalLayout)
@@ -205,17 +276,20 @@ class Ui_ReadImg(object):
 
         self.gridLayout_2.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
 
-        QWidget.setTabOrder(self.radioButton, self.radioButton_2)
 
         self.retranslateUi(ReadImg)
-        self.lastPage.clicked.connect(ReadImg.LastPage)
-        self.nextPage.clicked.connect(ReadImg.NextPage)
-        self.returePage.clicked.connect(ReadImg.ReturnPage)
-        self.radioButton_2.clicked.connect(ReadImg.SwitchPicture)
-        self.radioButton.clicked.connect(ReadImg.SwitchPicture)
         self.pushButton_2.clicked.connect(ReadImg.hide)
-        self.checkBox.clicked.connect(ReadImg.OpenWaifu)
+        self.pushButton_4.clicked.connect(ReadImg.OpenLastEps)
+        self.nextPage.clicked.connect(ReadImg.NextPage)
         self.copyButton.clicked.connect(ReadImg.CopyPicture)
+        self.pushButton_3.clicked.connect(ReadImg.AddScalePic)
+        self.returePage.clicked.connect(ReadImg.ReturnPage)
+        self.lastPage.clicked.connect(ReadImg.LastPage)
+        self.pushButton.clicked.connect(ReadImg.ReduceScalePic)
+        self.checkBox.clicked.connect(ReadImg.OpenWaifu)
+        self.radioButton_2.clicked.connect(ReadImg.SwitchPicture)
+        self.pushButton_5.clicked.connect(ReadImg.OpenNextEps)
+        self.radioButton.clicked.connect(ReadImg.SwitchPicture)
 
         QMetaObject.connectSlotsByName(ReadImg)
     # setupUi
@@ -224,8 +298,6 @@ class Ui_ReadImg(object):
         ReadImg.setWindowTitle(QCoreApplication.translate("ReadImg", u"Form", None))
         self.label_5.setText(QCoreApplication.translate("ReadImg", u"\u70b9\u51fb\u53f3\u952e\u6253\u5f00\u5173\u95ed", None))
         self.label_6.setText(QCoreApplication.translate("ReadImg", u"\u6309\u4f4f\u5de6Alt+\u6eda\u8f6e\u653e\u5927", None))
-        self.radioButton.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u9ad8\u5ea6\uff08\u8fd8\u539f\u56fe\u7247\uff09", None))
-        self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u5bbd\u5ea6\uff08\u8fd8\u539f\u56fe\u7247\uff09", None))
         self.label_4.setText(QCoreApplication.translate("ReadImg", u"\u56fe\u7247\u4fe1\u606f", None))
         self.resolutionLabel.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
         self.sizeLabel.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
@@ -240,10 +312,16 @@ class Ui_ReadImg(object):
         self.sizeWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
         self.tickLabel.setText(QCoreApplication.translate("ReadImg", u"\u8017\u65f6\uff1a", None))
         self.stateWaifu.setText(QCoreApplication.translate("ReadImg", u"\u72b6\u6001\uff1a", None))
+        self.radioButton.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u9ad8\u5ea6", None))
+        self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u5bbd\u5ea6", None))
+        self.pushButton.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u5c0f", None))
+        self.pushButton_3.setText(QCoreApplication.translate("ReadImg", u"\u653e\u5927", None))
+        self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u590d\u5236\u56fe\u7247", None))
+        self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
+        self.returePage.setText(QCoreApplication.translate("ReadImg", u"\u8fd4\u56de", None))
+        self.pushButton_4.setText(QCoreApplication.translate("ReadImg", u"\u4e0a\u4e00\u7ae0", None))
+        self.pushButton_5.setText(QCoreApplication.translate("ReadImg", u"\u4e0b\u4e00\u7ae0", None))
         self.lastPage.setText(QCoreApplication.translate("ReadImg", u"\u4e0a\u4e00\u9875", None))
         self.nextPage.setText(QCoreApplication.translate("ReadImg", u"\u4e0b\u4e00\u9875", None))
-        self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u590d\u5236\u56fe\u7247", None))
-        self.returePage.setText(QCoreApplication.translate("ReadImg", u"\u8fd4\u56de", None))
-        self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
     # retranslateUi
 

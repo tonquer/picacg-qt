@@ -6,7 +6,7 @@ import time
 from conf import config
 from src.qt.util.qttask import QtTask
 from .server import handler
-from src.server import req, Status, Log
+from src.server import req, Status, Log, ToolUtil
 
 
 @handler(req.InitReq)
@@ -181,7 +181,7 @@ class DownloadBookReq(object):
                     data += chunk
                 if backData.bakParam:
                     QtTask().downloadBack.emit(backData.bakParam, 0, b"")
-
+                # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
                 if backData.cacheAndLoadPath and config.IsUseCache and len(data) > 0:
                     filePath = backData.cacheAndLoadPath
                     fileDir = os.path.dirname(filePath)
@@ -228,3 +228,52 @@ class GetKeywordsHandler(object):
     def __call__(self, backData):
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
+@handler(req.SendCommentChildrenReq)
+class GetKeywordsHandler(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
+@handler(req.GetCommentsChildrenReq)
+class GetKeywordsHandler(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
+@handler(req.SpeedTestReq)
+class SpeedTestReq(object):
+    def __call__(self, backData):
+        if backData.status != Status.Ok:
+            if backData.bakParam:
+                QtTask().taskBack.emit(backData.bakParam, "")
+        else:
+            r = backData.res
+            try:
+                if r.status_code != 200:
+                    if backData.bakParam:
+                        QtTask().taskBack.emit(backData.bakParam, "")
+                    return
+
+                fileSize = int(r.headers.get('Content-Length', 0))
+                getSize = 0
+                now = time.time()
+                consume = 1
+                for chunk in r.iter_content(chunk_size=10240):
+                    getSize += len(chunk)
+                    consume = time.time() - now
+                    if consume >= 2:
+                        break
+
+                downloadSize = getSize / consume
+                speed = ToolUtil.GetDownloadSize(downloadSize)
+                if backData.bakParam:
+                    QtTask().taskBack.emit(backData.bakParam, speed)
+
+            except Exception as es:
+                Log.Error(es)
+                if backData.bakParam:
+                    QtTask().taskBack.emit(backData.bakParam, "")

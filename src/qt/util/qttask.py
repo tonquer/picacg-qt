@@ -318,6 +318,8 @@ class QtTask(Singleton, threading.Thread):
             assert isinstance(info, QtDownloadTask)
             info.saveData = data
             info.tick = tick
+            if not os.path.isdir(os.path.dirname(info.cacheAndLoadPath)):
+                os.makedirs(os.path.dirname(info.cacheAndLoadPath))
             if info.cacheAndLoadPath and data:
                 with open(info.cacheAndLoadPath, "wb+") as f:
                     f.write(data)

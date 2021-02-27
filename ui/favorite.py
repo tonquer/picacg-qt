@@ -52,6 +52,10 @@ class Ui_favorite(object):
 
         self.horizontalLayout.addWidget(self.jumpButton)
 
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
 
         self.gridLayout_4.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
@@ -79,5 +83,8 @@ class Ui_favorite(object):
         self.comboBox.setItemText(1, QCoreApplication.translate("favorite", u"\u4ece\u65b0\u5230\u65e7", None))
 
         self.jumpButton.setText(QCoreApplication.translate("favorite", u"\u8df3\u8f6c", None))
+#if QT_CONFIG(shortcut)
+        self.jumpButton.setShortcut(QCoreApplication.translate("favorite", u"Return", None))
+#endif // QT_CONFIG(shortcut)
     # retranslateUi
 

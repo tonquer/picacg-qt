@@ -2,9 +2,10 @@ import json
 import weakref
 
 from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtCore import QRect, Qt
+from PySide2.QtCore import QRect, Qt, QSize
 from PySide2.QtGui import QColor
-from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton
+from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
+    QVBoxLayout
 
 from conf import config
 from src.index.book import BookMgr
@@ -84,6 +85,28 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
         self.listWidget = QtBookList(self, self.__class__.__name__)
         self.listWidget.InitUser(self.LoadNextPage)
+        self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
+
+        self.childrenListWidget = QtBookList(None, self.__class__.__name__)
+        self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
+
+        self.childrenWidget = QtWidgets.QWidget()
+        layout = QHBoxLayout(self.childrenWidget)
+
+        label = QLabel()
+        label.setMinimumWidth(100)
+        layout.addWidget(label)
+        layout3 = QVBoxLayout()
+
+        layout2 = QHBoxLayout()
+        self.commentLine2 = QLineEdit()
+        self.commentButton2 = QPushButton("回复")
+        self.commentButton2.clicked.connect(self.SendCommentChildren)
+        layout2.addWidget(self.commentLine2)
+        layout2.addWidget(self.commentButton2)
+        layout3.addLayout(layout2)
+        layout3.addWidget(self.childrenListWidget)
+        layout.addLayout(layout3)
 
         self.commentLayout.addWidget(self.listWidget)
         layout = QHBoxLayout()
@@ -125,7 +148,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.stackedWidget.setCurrentIndex(0)
         self.owner().qtTask.CancelTasks(self.closeFlag)
         self.epsListWidget.clear()
-        self.listWidget.clear()
+        self.ClearCommnetList()
 
     def CopyDescription(self):
         clipboard = QApplication.clipboard()
@@ -136,10 +159,10 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def OpenBook(self, bookId):
         self.bookId = bookId
         self.setWindowTitle(self.bookId)
-        if self.bookId in self.owner().downloadForm.downloadDict:
-            self.download.setEnabled(False)
-        else:
-            self.download.setEnabled(True)
+        # if self.bookId in self.owner().downloadForm.downloadDict:
+        #     self.download.setEnabled(False)
+        # else:
+        #     self.download.setEnabled(True)
 
         self.Clear()
         self.show()
@@ -152,6 +175,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def OpenBookBack(self, msg):
         self.loadingForm.close()
         self.listWidget.UpdatePage(1, 1)
+        self.childrenListWidget.UpdatePage(1, 1)
+        self.childrenListWidget.UpdateState()
         self.listWidget.UpdateState()
         self.categoriesList.clear()
         self.tagsList.clear()
@@ -234,7 +259,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                         avatar = info.get("_user", {}).get("avatar", {})
                         createdTime = info.get("created_at")
                         commentsCount = info.get("commentsCount")
-                        self.listWidget.AddUserItem(content, name, createdTime, floor, avatar.get("fileServer"),
+                        commnetId = info.get('_id')
+                        likesCount = info.get("likesCount")
+                        self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
                                                     avatar.get("path"), avatar.get("originalName"))
 
                 for index, info in enumerate(comments.get("docs")):
@@ -244,7 +271,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                     avatar = info.get("_user", {}).get("avatar", {})
                     createdTime = info.get("created_at")
                     commentsCount = info.get("commentsCount")
-                    self.listWidget.AddUserItem(content, name, createdTime, floor, avatar.get("fileServer"),
+                    commnetId = info.get('_id')
+                    likesCount = info.get("likesCount")
+                    self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
                                  avatar.get("path"), avatar.get("originalName"))
             return
         except Exception as es:
@@ -365,6 +394,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         data = self.commentLine.text()
         if not data:
             return
+        self.commentLine.setText("")
         self.loadingForm.show()
         self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SendComment(self.bookId, data), bakParam=x), callBack=self.SendCommentBack)
 
@@ -372,7 +402,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         try:
             data = json.loads(msg)
             if data.get("code") == 200:
-                self.listWidget.clear()
+                self.ClearCommnetList()
                 self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetComments(self.bookId), bakParam=x),
                                                 self.GetCommnetBack, cleanFlag=self.closeFlag)
             else:
@@ -382,3 +412,139 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         except Exception as es:
             self.loadingForm.close()
             Log.Error(es)
+
+    def OpenCommentInfo(self, modelIndex):
+        index = modelIndex.row()
+        item = self.listWidget.item(index)
+        if not item:
+            return
+        widget = self.listWidget.itemWidget(item)
+        if not widget:
+            return
+
+        self.childrenListWidget.clear()
+        self.childrenListWidget.UpdatePage(1, 1)
+        self.childrenListWidget.UpdateState()
+        if self.childrenListWidget.parentId == index:
+            # self.childrenWidget.hide()
+            self.childrenWidget.setParent(None)
+            widget.gridLayout.removeWidget(self.childrenWidget)
+            self.childrenListWidget.parentId = -1
+            item.setSizeHint(widget.sizeHint())
+            return
+        if self.childrenListWidget.parentId >= 0:
+            item2 = self.listWidget.item(self.childrenListWidget.parentId)
+            widget2 = self.listWidget.itemWidget(item2)
+            self.childrenWidget.setParent(None)
+            widget2.gridLayout.removeWidget(self.childrenWidget)
+            self.childrenListWidget.parentId = -1
+            item2.setSizeHint(widget2.sizeHint())
+
+        self.loadingForm.show()
+        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id), bakParam=x),
+                                        self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+
+    def LoadCommentInfoBack(self, msg, index):
+        try:
+            self.loadingForm.close()
+            item = self.listWidget.item(index)
+            if not item:
+                return
+            widget = self.listWidget.itemWidget(item)
+            if not widget:
+                return
+            self.childrenListWidget.UpdateState()
+            data = json.loads(msg)
+            self.childrenListWidget.parentId = index
+            widget.gridLayout.addWidget(self.childrenWidget, 1, 0, 1, 1)
+            if data.get("code") == 200:
+                comments = data.get("data", {}).get("comments", {})
+                page = int(comments.get("page", 1))
+                total = int(comments.get("total", 1))
+                pages = int(comments.get("pages", 1))
+                limit = int(comments.get("limit", 1))
+                self.childrenListWidget.UpdatePage(page, pages)
+                for index, info in enumerate(comments.get("docs")):
+                    floor = total - ((page - 1) * limit + index)
+                    content = info.get("content")
+                    name = info.get("_user", {}).get("name")
+                    avatar = info.get("_user", {}).get("avatar", {})
+                    createdTime = info.get("created_at")
+                    commentsCount = info.get("commentsCount")
+                    likesCount = info.get("likesCount")
+                    commnetId = info.get('_id')
+                    self.childrenListWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor,
+                                                avatar.get("fileServer"),
+                                                avatar.get("path"), avatar.get("originalName"))
+
+                pass
+            self.listWidget.scrollToItem(item, self.listWidget.ScrollHint.PositionAtTop)
+            size = self.listWidget.size()
+            item.setSizeHint(size)
+        except Exception as es:
+            Log.Error(es)
+
+    def SendCommentChildren(self):
+        data = self.commentLine2.text()
+        if not data:
+            return
+        index = self.childrenListWidget.parentId
+        item = self.listWidget.item(index)
+        if not item:
+            return
+        widget = self.listWidget.itemWidget(item)
+        if not widget:
+            return
+        self.commentLine2.setText("")
+        commentId = widget.id
+        self.loadingForm.show()
+        self.childrenListWidget.clear()
+        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SendCommentChildrenReq(commentId, data), bakParam=x), callBack=self.SendCommentChildrenBack, backParam=index)
+
+    def SendCommentChildrenBack(self, msg, index):
+        try:
+            item = self.listWidget.item(index)
+            if not item:
+                self.loadingForm.close()
+                return
+            widget = self.listWidget.itemWidget(item)
+            if not widget:
+                self.loadingForm.close()
+                return
+
+            data = json.loads(msg)
+            if data.get("code") == 200:
+                self.owner().qtTask.AddHttpTask(
+                    lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id), bakParam=x),
+                    self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+            else:
+                self.loadingForm.close()
+                QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
+            self.commentLine.setText("")
+        except Exception as es:
+            self.loadingForm.close()
+            Log.Error(es)
+
+    def LoadChildrenNextPage(self):
+        index = self.childrenListWidget.parentId
+        item = self.listWidget.item(index)
+        if not item:
+            return
+        widget = self.listWidget.itemWidget(item)
+        if not widget:
+            return
+        self.loadingForm.show()
+        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id, self.childrenListWidget.page + 1), bakParam=x),
+                                        self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+        return
+
+    def ClearCommnetList(self):
+        if self.childrenListWidget.parentId >= 0:
+            item2 = self.listWidget.item(self.childrenListWidget.parentId)
+            widget2 = self.listWidget.itemWidget(item2)
+            self.childrenWidget.setParent(None)
+            widget2.gridLayout.removeWidget(self.childrenWidget)
+            self.childrenListWidget.parentId = -1
+            item2.setSizeHint(widget2.sizeHint())
+        self.childrenListWidget.clear()
+        self.listWidget.clear()
