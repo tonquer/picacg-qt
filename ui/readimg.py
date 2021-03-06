@@ -126,6 +126,11 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.label_3)
 
+        self.modelLabel = QLabel(ReadImg)
+        self.modelLabel.setObjectName(u"modelLabel")
+
+        self.verticalLayout.addWidget(self.modelLabel)
+
         self.label_9 = QLabel(ReadImg)
         self.label_9.setObjectName(u"label_9")
 
@@ -307,6 +312,7 @@ class Ui_ReadImg(object):
         self.checkBox.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00Waifu2x", None))
         self.label_2.setText(QCoreApplication.translate("ReadImg", u"\u566a\u70b9\u7b49\u7ea7\uff1a3", None))
         self.label_3.setText(QCoreApplication.translate("ReadImg", u"\u653e\u5927\u500d\u6570\uff1a2", None))
+        self.modelLabel.setText(QCoreApplication.translate("ReadImg", u"\u6a21\u578b\uff1a", None))
         self.label_9.setText(QCoreApplication.translate("ReadImg", u"\u8f6c\u7801\u6a21\u5f0f\uff1aGPU", None))
         self.resolutionWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
         self.sizeWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))

@@ -49,6 +49,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.indexToWaifu2xId = {}
         self.waitWaifuPicData = set()
 
+        self.category = []
+
     @property
     def graphicsView(self):
         return self.frame.graphicsView
@@ -68,7 +70,7 @@ class QtReadImg(QtWidgets.QWidget):
         a0.accept()
 
     def Clear(self):
-        self.qtTool.UpdateText(config.Noise, config.Scale, self.owner().settingForm.GetGpuName())
+        self.qtTool.UpdateText("")
         self.qtTool.UpdateProcessBar(None)
         self.bookId = ""
         self.epsId = 0
@@ -87,6 +89,9 @@ class QtReadImg(QtWidgets.QWidget):
         if not bookId:
             return
         self.Clear()
+        info = BookMgr().books.get(bookId)
+        if info:
+            self.category = info.tags[:]
         self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
         self.qtTool.SetData(isInit=True)
         self.graphicsItem.setPixmap(QPixmap())
@@ -177,7 +182,7 @@ class QtReadImg(QtWidgets.QWidget):
             p.state = p.DownloadReset
             self.AddDownloadTask(index, picInfo)
         else:
-            p.SetData(data)
+            p.SetData(data, self.category)
             if config.IsOpenWaifu:
                 self.AddCovertData(picInfo, index)
             if index == self.curIndex:
@@ -204,7 +209,7 @@ class QtReadImg(QtWidgets.QWidget):
             p2 = p.data
 
         self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
-        self.qtTool.UpdateText(p.noise, p.scale, self.owner().settingForm.GetGpuName())
+        self.qtTool.UpdateText(p.model)
 
         self.frame.pixMap = QPixmap()
         if config.IsLoadingPicture:
@@ -317,10 +322,8 @@ class QtReadImg(QtWidgets.QWidget):
         if not info and info.data:
             return
         assert isinstance(info, QtFileData)
-        data = info.data
-
         path = self.owner().downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
-        QtTask().AddConvertTask(picInfo.path, data, info.scale, info.noise, info.format, self.Waifu2xBack, i, self.closeFlag, path)
+        QtTask().AddConvertTask(picInfo.path+info.model, info.data, info.model, self.Waifu2xBack, i, self.closeFlag, path)
         self.waitWaifuPicData.add(i)
 
     def AddDownloadTask(self, i, picInfo):

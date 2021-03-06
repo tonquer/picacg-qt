@@ -59,20 +59,19 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         if v:
             config.Encode = int(v)
 
-        # v = self.settings.value("Waifu2x/Thread")
-        # if v:
-        #     config.Waifu2xThread = int(v)
-        # self.threadSelect.setCurrentIndex(config.Waifu2xThread-1)
+        v = self.settings.value("Waifu2x/LookModel")
+        if v:
+            config.LookModel = int(v)
+        self.lookModel.setCurrentIndex(config.LookModel)
 
+        v = self.settings.value("Waifu2x/DownloadModel")
+        if v:
+            config.DownloadModel = int(v)
+        self.downloadModel.setCurrentIndex(config.DownloadModel)
         # v = self.settings.value("Waifu2x/Scale")
         # if v:
         #     config.Scale = int(v)
         # self.scaleSelect.setCurrentIndex(0)
-
-        v = self.settings.value("Waifu2x/Noise")
-        if v:
-            config.Noise = int(v)
-        self.noiseSelect.setCurrentIndex(3-config.Noise)
 
         # v = self.settings.value("Waifu2x/Model")
         # if v:
@@ -114,16 +113,16 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
         config.Encode = self.encodeSelect.currentIndex()
         config.Waifu2xThread = int(self.threadSelect.currentIndex()) + 1
-        config.Scale = int(self.scaleSelect.currentIndex()) + 2
-        config.Noise = 3 - int(self.noiseSelect.currentIndex())
-        config.Model = int(self.modelSelect.currentIndex()) + 1
         config.IsOpenWaifu = self.checkBox.isChecked()
+        config.LookModel = int(self.lookModel.currentIndex())
+        config.DownloadModel = int(self.downloadModel.currentIndex())
         self.settings.setValue("Waifu2x/Encode", config.Encode)
         # self.settings.setValue("Waifu2x/Thread", config.Waifu2xThread)
         # self.settings.setValue("Waifu2x/Scale", config.Scale)
-        self.settings.setValue("Waifu2x/Noise", config.Noise)
         # self.settings.setValue("Waifu2x/Model", config.Model)
         self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)
+        self.settings.setValue("Waifu2x/LookModel", config.LookModel)
+        self.settings.setValue("Waifu2x/DownloadModel", config.DownloadModel)
 
         # QtWidgets.QMessageBox.information(self, '保存成功', "成功", QtWidgets.QMessageBox.Yes)
         QtBubbleLabel.ShowMsgEx(self, "保存成功")

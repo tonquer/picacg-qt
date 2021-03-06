@@ -208,10 +208,45 @@ class SendComment(ServerReq):
                                              {"content": content}, method)
 
 
+# 发送评论
+class SendCommentChildrenReq(ServerReq):
+    def __init__(self, comentId="", content=""):
+        url = config.Url + "comments/{}".format(comentId)
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {"content": content}, method)
+
+
+# 查看子评论
+class GetCommentsChildrenReq(ServerReq):
+    def __init__(self, comentId="", page=1):
+        url = config.Url + "comments/{}/childrens?page={}".format(comentId, page)
+        method = "Get"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
 # 下载图片
 class SpeedTestReq(ServerReq):
+    Index = 0
+    URLS = [
+        "https://storage1.picacomic.com/static/fc75975a-af8e-40c5-8679-725d6f64d6f5.jpg",
+        # "https://storage1.picacomic.com/static/5aa5c52b-8fb5-4c16-866c-d6d92fb4a761.jpg",
+        # "https://storage1.picacomic.com/static/7e7d1320-9717-4702-883d-2899975283b2.jpg",
+        # "https://storage1.picacomic.com/static/91c3f41a-e6de-4de1-a80f-10af17aee5a8.jpg",
+        # "https://storage1.picacomic.com/static/60c852b9-e47d-400c-af9d-bee86ce20b6d.jpg",
+        # "https://storage1.picacomic.com/static/66541fe6-caaa-4965-ac1a-1b1b793e5677.jpg",
+    ]
+
     def __init__(self):
-        url = "https://storage1.picacomic.com/static/7e7d1320-9717-4702-883d-2899975283b2.jpg"
+        url = SpeedTestReq.URLS[SpeedTestReq.Index]
+        SpeedTestReq.Index += 1
+        if SpeedTestReq.Index >= len(SpeedTestReq.URLS):
+            SpeedTestReq.Index = 0
         method = "Download"
-        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+        header = ToolUtil.GetHeader(url, method)
+        header['cache-control'] = 'no-cache'
+        header['expires'] = '0'
+        header['pragma'] = 'no-cache'
+        super(self.__class__, self).__init__(url, header,
                                              {}, method)

@@ -217,6 +217,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="modelLabel">
+         <property name="text">
+          <string>模型：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="label_9">
          <property name="text">
           <string>转码模式：GPU</string>

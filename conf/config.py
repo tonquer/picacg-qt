@@ -1,3 +1,5 @@
+import sys
+
 BaseUrl = "http://68.183.234.72/"            # 获得ip列表接口
 Url = "https://picaapi.picacomic.com/"       # 域名
 ApiKey = "C69BAF41DA5ABD1FFEDC6D2FEA56B"     # apiKey
@@ -25,16 +27,20 @@ PreLoading = 5    # 预加载5页
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
-UpdateVersion = "v1.0.8"
+UpdateVersion = "v1.0.9"
 
 # waifu2x
 Encode = 0
 Waifu2xThread = 2
-Scale = 2
-Noise = 3
 Format = "jpg"
-Model = 2
 Waifu2xPath = "waifu2x"
 IsOpenWaifu = True
 
-Model2 = "models-cunet"
+LookModel = 0       # 默认值
+DownloadModel = 0   # 默认值
+
+
+Model1 = "cunet"     # 通用
+Model2 = "photo"     # 写真
+Model3 = "anime_style_art_rgb"  # 动漫
+

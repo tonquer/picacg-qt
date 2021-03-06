@@ -4,6 +4,7 @@ import weakref
 from io import BytesIO
 
 from PIL import Image
+from PySide2.QtGui import QImage
 
 from conf import config
 from src.index.book import BookMgr, Book
@@ -385,12 +386,10 @@ class DownloadEpsInfo(object):
         f = open(filePath, "rb")
         data = f.read()
         f.close()
-        ioData = BytesIO(data)
-        img = Image.open(ioData)
-        scale, noise = ToolUtil.GetScaleAndNoise(img.width, img.height)
-        ioData.close()
-        format = img.format
-        QtTask().AddConvertTask("", data, scale, noise, format, self.AddConvertBack,
+
+        w, h = ToolUtil.GetPictureSize(data)
+        model = ToolUtil.GetDownloadScaleModel(w, h)
+        QtTask().AddConvertTask("", data, model, self.AddConvertBack,
                                 cleanFlag="download_".format(self.parent.bookId))
         return
 

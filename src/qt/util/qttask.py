@@ -52,7 +52,7 @@ class QtDownloadTask(object):
         self.imgData = b""
         self.scale = 0
         self.noise = 0
-        self.format = ""
+        self.model = ""
 
 
 class QtTask(Singleton, threading.Thread):
@@ -233,7 +233,7 @@ class QtTask(Singleton, threading.Thread):
                 del self.downloadTask[taskId]
         self.flagToIds.pop(cleanFlag)
 
-    def AddConvertTask(self, path, imgData, scale, noise, format, completeCallBack, backParam=None, cleanFlag="", filePath=""):
+    def AddConvertTask(self, path, imgData, model, completeCallBack, backParam=None, cleanFlag="", filePath=""):
         info = QtDownloadTask()
         info.downloadCompleteBack = completeCallBack
         info.backParam = backParam
@@ -241,9 +241,7 @@ class QtTask(Singleton, threading.Thread):
         self.convertLoad[self.taskId] = info
         info.downloadId = self.taskId
         info.imgData = imgData
-        info.scale = scale
-        info.noise = noise
-        info.format = format
+        info.model = model
         if path:
             a = hashlib.md5(path.encode("utf-8")).hexdigest()
             path = os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath)
@@ -300,7 +298,7 @@ class QtTask(Singleton, threading.Thread):
                     if isFind:
                         continue
 
-                    converId = waifu2x.Add(task.imgData, task.format, task.noise, task.scale, task.downloadId)
+                    converId = waifu2x.Add(task.imgData, task.model, task.downloadId)
                     if converId <= 0:
                         self.convertBack.emit(taskId)
                         continue
@@ -318,7 +316,7 @@ class QtTask(Singleton, threading.Thread):
             assert isinstance(info, QtDownloadTask)
             info.saveData = data
             info.tick = tick
-            if not os.path.isdir(os.path.dirname(info.cacheAndLoadPath)):
+            if info.cacheAndLoadPath and not os.path.isdir(os.path.dirname(info.cacheAndLoadPath)):
                 os.makedirs(os.path.dirname(info.cacheAndLoadPath))
             if info.cacheAndLoadPath and data:
                 with open(info.cacheAndLoadPath, "wb+") as f:

@@ -202,38 +202,123 @@ class ToolUtil(object):
             return 2, 3
 
     @staticmethod
+    def GetLookScaleModel(w, h, category):
+        dot = w * h
+        # 条漫不放大
+
+        if max(w, h) >= 2561:
+            return "noscale"
+        return ToolUtil.GetLookModel(category)
+
+    @staticmethod
+    def GetDownloadScaleModel(w, h):
+        dot = w * h
+        # 条漫不放大
+
+        if max(w, h) >= 2561:
+            return "noscale"
+        return ToolUtil.GetDownloadModel()
+
+    @staticmethod
+    def GetPictureFormat(data):
+        if data[:8] == b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a":
+            return "png"
+        elif data[:2] == b"\xff\xd8":
+            return "jpg"
+        return "jpg"
+
+    @staticmethod
+    def GetPictureSize(data):
+        picFormat = ToolUtil.GetPictureFormat(data)
+        weight, height = 1, 1
+        if picFormat == "png":
+            # head = 8 + 4 + 4
+            data2 = data[16:24]
+            weight = int.from_bytes(data2[:4], byteorder='big', signed=False)
+            height = int.from_bytes(data2[5:], byteorder='big', signed=False)
+        elif picFormat == "jpg":
+            size = min(1000, len(data))
+
+            index = 0
+            while index < size:
+                if data[index] == 255:
+                    index += 1
+                    if 192 <= data[index] <= 206:
+                        index += 4
+                        if index + 4 >= size:
+                            continue
+                        height = int.from_bytes(data[index:index + 2], byteorder='big', signed=False)
+                        weight = int.from_bytes(data[index + 2:index + 4], byteorder='big', signed=False)
+                        break
+                    else:
+                        continue
+                index += 1
+        return weight, height
+
+    @staticmethod
+    def GetDataModel(data):
+        picFormat = ToolUtil.GetPictureFormat(data)
+        if picFormat == "png":
+            IDATEnd = 8 + 25
+            dataSize = int.from_bytes(data[IDATEnd:IDATEnd + 4], byteorder="big", signed=False)
+            if dataSize >= 10:
+                return ""
+            dataType = data[IDATEnd + 4:IDATEnd + 8]
+            if dataType == b"tEXt":
+                return data[IDATEnd + 8:IDATEnd + 8 + dataSize].decode("utf-8")
+            return ""
+        elif picFormat == "jpg":
+            if data[:4] != b"\xff\xd8\xff\xe0":
+                return ""
+            size = int.from_bytes(data[4:6], byteorder="big", signed=False)
+            if size >= 100:
+                return ""
+            if data[4 + size:4 + size + 2] != b"\xff\xfe":
+                return
+            size2 = int.from_bytes(data[4 + size + 2:4 + size + 2 + 2], byteorder="big", signed=False) - 2
+            if size2 >= 100:
+                return
+            return data[4 + size2 + 2 + 2:4 + size2 + 2 + 2 + size2].decode("utf-8")
+        return ""
+
+    @staticmethod
+    def GetLookModel(category):
+        if config.LookModel == 0:
+            if "Cosplay" in category or "cosplay" in category or "CosPlay" in category or "COSPLAY" in category:
+                return config.Model2
+            return config.Model3
+        else:
+            return getattr(config, "Model"+str(config.LookModel), config.Model3)
+
+    @staticmethod
+    def GetDownloadModel():
+        if config.DownloadModel == 0:
+            return config.Model1
+        return getattr(config, "Model"+str(config.DownloadModel), config.Model1)
+
+    @staticmethod
+    def GetScaleAndNoiseByModel(model):
+        if model == "noscale":
+            return "cunet", 1, 3
+        return model, 2, 3
+
+    @staticmethod
+    def GetModelAndScale(model):
+        if model == "noscale":
+            return "cunet（通用）", 3, 1
+        elif model == "cunet":
+            return "cunet（通用）", 3, 2
+        elif model == "photo":
+            return "photo（写真）", 3, 2
+        elif model == "anime_style_art_rgb":
+            return "anime_style_art_rgb（动漫）", 3, 2
+        return model, 1, 1
+
+    @staticmethod
     def GetCanSaveName(name):
         return name.replace("/", "").replace("|", "").replace("*", "").\
             replace("\\", "").replace("?", "").replace(":", "").replace("*", "").\
             replace("<", "").replace(">", "").replace("\"", "").replace(" ", "")
-
-    @staticmethod
-    def GetSimpleArrayStr(array):
-        if not array:
-            return ""
-        start = None
-        end = None
-        data = ""
-        for i in array:
-            if start is None:
-                start = i
-                end = i
-                continue
-
-            if i == start + 1:
-                end = i
-                continue
-            if start == end:
-                data += str(start) + ','
-            else:
-                data += str(start) + '-' + str(start) + ','
-            start = i
-            end = i
-        if start == end:
-            data += str(start) + ','
-        else:
-            data += str(start) + '-' + str(start) + ','
-        return data
 
     @staticmethod
     def LoadCachePicture(filePath):

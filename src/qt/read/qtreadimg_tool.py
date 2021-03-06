@@ -260,10 +260,12 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.progressBar.setMaximum(self.downloadMaxSize)
         self.progressBar.setValue(self.downloadSize)
 
-    def UpdateText(self, noise, scale, model):
+    def UpdateText(self, model):
+        model, noise, scale = ToolUtil.GetModelAndScale(model)
+        self.modelLabel.setText("模型：" + str(model))
         self.label_2.setText("去噪等级：" + str(noise))
         self.label_3.setText("放大倍数：" + str(scale))
-        self.label_9.setText("转码模式：" + model)
+        self.label_9.setText("转码模式：" + self.readImg.owner().settingForm.GetGpuName())
 
     def ReduceScalePic(self):
         self.readImg.zoom(1/1.1)

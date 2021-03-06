@@ -22,15 +22,15 @@ class QtFileData(object):
         self.size = 0
         self.w = 0
         self.h = 0
-        self.format = ""
-        self.scale = 0
-        self.noise = 0
+        self.scaleW = 0
+        self.scaleH = 0
         self.state = self.Downloading
         self.data = None
         self.waifuState = self.WaifuStateStart
         self.waifuDataSize = 0
         self.waifuData = None
         self.waifuTick = 0
+        self.model = ""
 
         self.downloadSize = 0
 
@@ -40,20 +40,15 @@ class QtFileData(object):
 
     @property
     def waifuQSize(self):
-        return QSize(self.w*self.scale, self.h*self.scale)
+        return QSize(self.scaleW, self.scaleH)
 
-    def SetData(self, data):
+    def SetData(self, data, category):
         if not data:
             self.state = self.DownloadError
             return
         self.data = data
-        imgIo = BytesIO(data)
-        img = Image.open(imgIo)
-        self.format = img.format
-        self.w = img.width
-        self.h = img.height
-        imgIo.close()
-        self.scale, self.noise = ToolUtil.GetScaleAndNoise(self.w, self.h)
+        self.w, self.h = ToolUtil.GetPictureSize(data)
+        self.model = ToolUtil.GetLookScaleModel(self.w, self.h, category)
         self.state = self.DownloadSuc
         self.size = len(data)
 
@@ -64,6 +59,7 @@ class QtFileData(object):
         self.waifuData = data
         self.waifuState = self.WaifuStateEnd
         self.waifuDataSize = len(self.waifuData)
+        self.scaleW, self.scaleH = ToolUtil.GetPictureSize(data)
         self.waifuTick = tick
         return
 
