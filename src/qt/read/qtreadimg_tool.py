@@ -78,6 +78,13 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.setupUi(self)
         self.resize(100, 400)
         self._imgFrame = weakref.ref(imgFrame)
+        self.modelBox.setToolTip(
+            """
+            cunet通用，效果好，速度慢。
+            photo写真，速度块。
+            anime_style_art_rgb动漫，速度块。
+            """
+        )
         # self.setWindowFlags(
         #     Qt.Window | Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint)
         # self.setStyleSheet("background-color:white;")

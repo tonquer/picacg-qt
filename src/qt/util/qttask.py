@@ -6,7 +6,6 @@ import waifu2x
 import weakref
 from queue import Queue
 
-from PIL import Image
 from PySide2.QtCore import Signal, QObject
 
 from conf import config

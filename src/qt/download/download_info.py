@@ -1,10 +1,7 @@
 import imghdr
 import os
 import weakref
-from io import BytesIO
 
-from PIL import Image
-from PySide2.QtGui import QImage
 
 from conf import config
 from src.index.book import BookMgr, Book
