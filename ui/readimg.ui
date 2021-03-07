@@ -217,11 +217,45 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="modelLabel">
-         <property name="text">
-          <string>模型：</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="maximumSize">
+            <size>
+             <width>35</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>模型：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="modelBox">
+           <item>
+            <property name="text">
+             <string extracomment="效果好，不放大">cunet（不放大）</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string extracomment="效果好，2倍放大">cunet</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string extracomment="写真，速度快，2倍放大">photo</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string extracomment="动漫，速度快，2倍放大">anime_style_art_rgb</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLabel" name="label_9">
@@ -442,8 +476,8 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>117</x>
-     <y>580</y>
+     <x>129</x>
+     <y>505</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
@@ -458,8 +492,8 @@
    <slot>OpenLastEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>44</x>
-     <y>465</y>
+     <x>57</x>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
      <x>287</x>
@@ -474,8 +508,8 @@
    <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>160</x>
-     <y>419</y>
+     <x>168</x>
+     <y>615</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -490,8 +524,8 @@
    <slot>CopyPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>145</x>
-     <y>522</y>
+     <x>157</x>
+     <y>476</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -522,8 +556,8 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>551</y>
+     <x>166</x>
+     <y>533</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -538,8 +572,8 @@
    <slot>LastPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>80</x>
-     <y>419</y>
+     <x>87</x>
+     <y>615</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -587,7 +621,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>168</x>
-     <y>390</y>
+     <y>418</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -602,8 +636,8 @@
    <slot>OpenNextEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>471</y>
+     <x>168</x>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
      <x>395</x>
@@ -619,11 +653,27 @@
    <hints>
     <hint type="sourcelabel">
      <x>87</x>
-     <y>390</y>
+     <y>418</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
      <y>309</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>modelBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>ReadImg</receiver>
+   <slot>SwitchModel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>305</x>
+     <y>241</y>
     </hint>
    </hints>
   </connection>
@@ -640,6 +690,7 @@
   <slot>AddScalePic()</slot>
   <slot>OpenLastEps()</slot>
   <slot>OpenNextEps()</slot>
+  <slot>SwitchModel()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>

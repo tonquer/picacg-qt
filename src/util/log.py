@@ -31,6 +31,10 @@ class Log(object):
         return
 
     @staticmethod
+    def Debug(data):
+        Log.logger.debug(data)
+
+    @staticmethod
     def Info(data):
         Log.logger.info(data)
 

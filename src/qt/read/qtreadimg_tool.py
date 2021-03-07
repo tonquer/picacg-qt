@@ -8,6 +8,7 @@ from PySide2.QtWidgets import QApplication, QVBoxLayout, QLabel
 from conf import config
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.struct.qt_define import QtFileData
 from src.util import ToolUtil
 from src.util.tool import CTime
 from ui.readimg import Ui_ReadImg
@@ -211,6 +212,14 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             self.stateLable.setText("状态：" + state)
 
         if waifuState or isInit:
+            if waifuState == QtFileData.WaifuStateStart:
+                self.stateWaifu.setStyleSheet("color:red;")
+            elif waifuState == QtFileData.WaifuStateEnd:
+                self.stateWaifu.setStyleSheet("color:green;")
+            elif waifuState == QtFileData.WaifuStateFail:
+                self.stateWaifu.setStyleSheet("color:red;")
+            else:
+                self.stateWaifu.setStyleSheet("color:dark;")
             self.stateWaifu.setText("状态：" + waifuState)
         if waifuTick or isInit:
             self.tickLabel.setText("耗时：" + str(waifuTick) + "s")
@@ -261,8 +270,8 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.progressBar.setValue(self.downloadSize)
 
     def UpdateText(self, model):
-        model, noise, scale = ToolUtil.GetModelAndScale(model)
-        self.modelLabel.setText("模型：" + str(model))
+        index, noise, scale = ToolUtil.GetModelAndScale(model)
+        self.modelBox.setCurrentIndex(index)
         self.label_2.setText("去噪等级：" + str(noise))
         self.label_3.setText("放大倍数：" + str(scale))
         self.label_9.setText("转码模式：" + self.readImg.owner().settingForm.GetGpuName())
@@ -334,3 +343,27 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def UpdateSlider(self):
         self.slider.setValue(self.readImg.curIndex+1)
+
+    def SwitchModel(self, index):
+        data = self.readImg.pictureData.get(self.readImg.curIndex)
+        if not data:
+            return
+        if not data.model:
+            return
+        if not data.data:
+            return
+        index2, _, _ = ToolUtil.GetModelAndScale(data.model)
+        if index2 == index:
+            return
+        data.model = ToolUtil.GetModelByIndex(index)
+        data.waifuData = None
+        data.waifuState = data.WaifuStateStart
+        data.waifuDataSize = 0
+        data.scaleW, data.scaleH = 0, 0
+        data.waifuTick = 0
+        self.label_2.setText("去噪等级：" + str(1))
+        self.label_3.setText("放大倍数：" + str(1))
+        self.SetData(waifuSize=QSize(), waifuDataLen=0, waifuTick=0)
+        self.readImg.ShowImg()
+        self.readImg.CheckLoadPicture()
+        return

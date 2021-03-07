@@ -147,6 +147,7 @@ class QtTask(Singleton, threading.Thread):
         if filePath:
             data.loadPath = filePath
 
+        Log.Debug("add download info, cachePath:{}, loadPath:{}".format(data.cacheAndLoadPath, data.loadPath))
         from src.server import Server
         from src.server import req
         Server().Download(req.DownloadBookReq(url, path, isSaveCache), bakParams=self.taskId, cacheAndLoadPath=data.cacheAndLoadPath, loadPath=data.loadPath)
@@ -252,7 +253,7 @@ class QtTask(Singleton, threading.Thread):
             info.cleanFlag = cleanFlag
             taskIds = self.convertFlag.setdefault(cleanFlag, set())
             taskIds.add(self.taskId)
-
+        Log.Debug("add convert info, cachePath:{}, loadPath:{}".format(info.cacheAndLoadPath, info.loadPath))
         self._inQueue.put(self.taskId)
         Log.Info("add convert info, taskId: {}, converId:{} backParam:{}".format(str(self.taskId), str(self.convertId),
                                                                                backParam))
@@ -321,6 +322,7 @@ class QtTask(Singleton, threading.Thread):
             if info.cacheAndLoadPath and data:
                 with open(info.cacheAndLoadPath, "wb+") as f:
                     f.write(data)
+                Log.Debug("add convert cache, cachePath:{}".format(info.cacheAndLoadPath))
             else:
                 pass
             self.convertBack.emit(taskId)

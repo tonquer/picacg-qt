@@ -190,6 +190,7 @@ class DownloadBookReq(object):
 
                     with open(filePath, "wb+") as f:
                         f.write(data)
+                    Log.Debug("add download cache, cachePath:{}".format(filePath))
             except Exception as es:
                 Log.Error(es)
                 if backData.bakParam:

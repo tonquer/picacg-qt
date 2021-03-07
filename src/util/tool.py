@@ -305,14 +305,26 @@ class ToolUtil(object):
     @staticmethod
     def GetModelAndScale(model):
         if model == "noscale":
-            return "cunet（通用）", 3, 1
+            return 0, 3, 1
         elif model == "cunet":
-            return "cunet（通用）", 3, 2
+            return 1, 3, 2
         elif model == "photo":
-            return "photo（写真）", 3, 2
+            return 2, 3, 2
         elif model == "anime_style_art_rgb":
-            return "anime_style_art_rgb（动漫）", 3, 2
-        return model, 1, 1
+            return 3, 3, 2
+        return 0, 1, 1
+
+    @staticmethod
+    def GetModelByIndex(index):
+        if index == 0:
+            return "noscale"
+        elif index == 1:
+            return "cunet"
+        elif index == 2:
+            return "photo"
+        elif index == 3:
+            return "anime_style_art_rgb"
+        return "cunet"
 
     @staticmethod
     def GetCanSaveName(name):

@@ -195,8 +195,9 @@ class QtReadImg(QtWidgets.QWidget):
         if not p or (not p.data):
             self.qtTool.SetData(state=QtFileData.Downloading)
             self.graphicsItem.setPixmap(QPixmap())
+            self.qtTool.modelBox.setEnabled(False)
             return
-
+        self.qtTool.modelBox.setEnabled(True)
         assert isinstance(p, QtFileData)
         if not isShowWaifu:
             p2 = p.data
@@ -322,8 +323,8 @@ class QtReadImg(QtWidgets.QWidget):
         if not info and info.data:
             return
         assert isinstance(info, QtFileData)
-        path = self.owner().downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
-        QtTask().AddConvertTask(picInfo.path+info.model, info.data, info.model, self.Waifu2xBack, i, self.closeFlag, path)
+        # path = self.owner().downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
+        QtTask().AddConvertTask(picInfo.path+info.model, info.data, info.model, self.Waifu2xBack, i, self.closeFlag)
         self.waitWaifuPicData.add(i)
 
     def AddDownloadTask(self, i, picInfo):

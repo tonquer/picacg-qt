@@ -126,10 +126,25 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.label_3)
 
-        self.modelLabel = QLabel(ReadImg)
-        self.modelLabel.setObjectName(u"modelLabel")
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_8 = QLabel(ReadImg)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setMaximumSize(QSize(35, 16777215))
 
-        self.verticalLayout.addWidget(self.modelLabel)
+        self.horizontalLayout_6.addWidget(self.label_8)
+
+        self.modelBox = QComboBox(ReadImg)
+        self.modelBox.addItem("")
+        self.modelBox.addItem("")
+        self.modelBox.addItem("")
+        self.modelBox.addItem("")
+        self.modelBox.setObjectName(u"modelBox")
+
+        self.horizontalLayout_6.addWidget(self.modelBox)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_6)
 
         self.label_9 = QLabel(ReadImg)
         self.label_9.setObjectName(u"label_9")
@@ -295,6 +310,7 @@ class Ui_ReadImg(object):
         self.radioButton_2.clicked.connect(ReadImg.SwitchPicture)
         self.pushButton_5.clicked.connect(ReadImg.OpenNextEps)
         self.radioButton.clicked.connect(ReadImg.SwitchPicture)
+        self.modelBox.currentIndexChanged.connect(ReadImg.SwitchModel)
 
         QMetaObject.connectSlotsByName(ReadImg)
     # setupUi
@@ -312,7 +328,12 @@ class Ui_ReadImg(object):
         self.checkBox.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00Waifu2x", None))
         self.label_2.setText(QCoreApplication.translate("ReadImg", u"\u566a\u70b9\u7b49\u7ea7\uff1a3", None))
         self.label_3.setText(QCoreApplication.translate("ReadImg", u"\u653e\u5927\u500d\u6570\uff1a2", None))
-        self.modelLabel.setText(QCoreApplication.translate("ReadImg", u"\u6a21\u578b\uff1a", None))
+        self.label_8.setText(QCoreApplication.translate("ReadImg", u"\u6a21\u578b\uff1a", None))
+        self.modelBox.setItemText(0, QCoreApplication.translate("ReadImg", u"cunet\uff08\u4e0d\u653e\u5927\uff09", None))
+        self.modelBox.setItemText(1, QCoreApplication.translate("ReadImg", u"cunet", None))
+        self.modelBox.setItemText(2, QCoreApplication.translate("ReadImg", u"photo", None))
+        self.modelBox.setItemText(3, QCoreApplication.translate("ReadImg", u"anime_style_art_rgb", None))
+
         self.label_9.setText(QCoreApplication.translate("ReadImg", u"\u8f6c\u7801\u6a21\u5f0f\uff1aGPU", None))
         self.resolutionWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
         self.sizeWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
