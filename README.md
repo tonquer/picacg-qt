@@ -1,4 +1,4 @@
-# picacomic-windows
+# picacg-windows
 哔咔漫画window客户端，界面使用PySide2，已实现分类、搜索、收藏夹、下载、在线观看等功能。
 
 ## 功能介绍
@@ -15,9 +15,10 @@
 
 
 ## waifu2x功能
-- waifu2x功能使用的是 ""https://github.com/nihui/waifu2x-ncnn-vulkan"" 改进而来，只保留了转码线程，加了个中间层打包成pyd给python使用，lib目录下的waifu2x.pyd。
-- 由于waifu2x-ncnn-vulkan编译参数和python混合编程有冲突的问题，所已只使用了代码，其中ncnn.lib,libwebp.lib是重新编译了libwebp和ncnn项目而来。
-- 固定使用 models-cunet模型，缩放比目前固定2x，去噪等级3，线程数默认2，转化线程是单独的c++线程，不会影响pyqt的性能。
+- waifu2x是用来提高图片分辨率和去噪点的功能，"https://github.com/nagadomi/waifu2x"。
+- 由于bika限制上传图片的大小，所以部分图片（尤其是彩图）放在电脑大屏幕上观看会非常糊，所有通过waifu2x功能让图片在电脑上有更好的观感。
+- waifu2x功能使用的是 ""https://github.com/nihui/waifu2x-ncnn-vulkan"" 改进而来，打包成lib目录下的waifu2x.pyd。
+- waifu2x-ncnn-vulkan有三种模型，cunet：效果最好，不过速度太慢，只在下载时默认是此模型。anime_style_art_rgb：看图模式默认此模型，速度快，效果明显，photo：对比下来貌似最差的？。
 
 ## 如何使用
 1. 下载最新的版本 ""https://github.com/tonquer/picacg-windows/releases""
@@ -37,3 +38,4 @@
 - https://github.com/nihui/waifu2x-ncnn-vulkan
 - https://github.com/webmproject/libwebp
 - https://github.com/Tencent/ncnn
+- 如有任何问题，欢迎提ISSUE
