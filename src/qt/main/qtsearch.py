@@ -64,6 +64,9 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
     def Search(self, categories=None):
         data = self.searchEdit.text()
         self.data = data
+        if len(data) == len("5822a6e3ad7ede654696e482"):
+            self.owner().bookInfoForm.OpenBook(data)
+            return
         if not data:
             return
         if not categories:

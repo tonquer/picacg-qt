@@ -8,6 +8,9 @@ from PySide2.QtWidgets import QMessageBox
 
 from conf import config
 from resources import resources
+from src.qt.chat.qtchat import QtChat
+from src.qt.com.qtimg import QtImg
+from src.qt.main.qtindex import QtIndex
 from src.qt.menu.qtabout import QtAbout
 from src.qt.read.qtbookinfo import QtBookInfo
 from src.qt.com.qtbubblelabel import QtBubbleLabel
@@ -17,6 +20,7 @@ from src.qt.read.qtepsinfo import QtEpsInfo
 from src.qt.user.qtfavorite import QtFavorite
 from src.qt.user.qthistory import QtHistory
 from src.qt.com.qtloading import QtLoading
+from src.qt.user.qtleavemsg import QtLeaveMsg
 from src.qt.user.qtlogin import QtLogin
 from src.qt.main.qtrank import QtRank
 from src.qt.read.qtreadimg import QtReadImg
@@ -49,11 +53,14 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setWindowIcon(icon)
         self.aboutForm = QtAbout(self)
 
+        self.indexForm = QtIndex(self)
         self.searchForm = QtSearch(self)
         self.favoriteForm = QtFavorite(self)
         self.downloadForm = QtDownload(self)
         self.categoryForm = QtCategory(self)
         self.loadingForm = QtLoading(self)
+        self.leaveMsgForm = QtLeaveMsg(self)
+        self.chatForm = QtChat(self)
         self.rankForm = QtRank(self)
 
         self.loginForm = QtLogin(self)

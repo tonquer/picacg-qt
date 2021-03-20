@@ -44,6 +44,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
             self.owner().stackedWidget.setCurrentIndex(1)
             self.owner().qtTask.AddHttpTask(lambda x: User().UpdateUserInfo(x), self.UpdateUserBack)
             self.owner().searchForm.InitKeyWord()
+            self.owner().indexForm.Init()
         else:
             # QtWidgets.QMessageBox.information(self, '登陆失败', msg, QtWidgets.QMessageBox.Yes)
             self.owner().msgForm.ShowError("登陆失败, " + msg)

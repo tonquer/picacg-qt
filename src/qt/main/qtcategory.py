@@ -32,7 +32,7 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
                 path = info.thumb.get("path")
                 originalName = info.thumb.get("originalName")
                 _id = info.id
-                self.bookList.AddBookItem(_id, "", info.title, url, path, originalName)
+                self.bookList.AddBookItem(_id, info.title, "", url, path, originalName)
             self.owner().searchForm.InitCheckBox()
         return
 
@@ -40,7 +40,7 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
         index = modelIndex.row()
         item = self.bookList.item(index)
         widget = self.bookList.itemWidget(item)
-        text = widget.infoLabel.text()
+        text = widget.title.text()
         self.owner().userForm.listWidget.setCurrentRow(0)
         self.owner().searchForm.searchEdit.setText("")
         self.owner().searchForm.OpenSearchCategories(text)

@@ -27,7 +27,7 @@ PreLoading = 5    # 预加载5页
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
-UpdateVersion = "v1.0.9"
+UpdateVersion = "v1.1.0"
 
 # waifu2x
 Encode = 0

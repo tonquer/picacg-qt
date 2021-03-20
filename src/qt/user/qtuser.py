@@ -29,7 +29,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.listWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.listWidget.setFrameShape(self.listWidget.NoFrame)
-        for name in ["搜索", "分类", "排行", "收藏", "历史记录", "下载"]:
+        for name in ["主页", "搜索", "分类", "排行", "收藏", "历史记录", "下载", "留言板", "聊天室"]:
             item = QListWidgetItem(
                 name,
                 self.listWidget
@@ -37,12 +37,16 @@ class QtUser(QtWidgets.QWidget, Ui_User):
             item.setSizeHint(QSize(16777215, 60))
             item.setTextAlignment(Qt.AlignCenter)
 
+        self.stackedWidget.addWidget(self.owner().indexForm)
         self.stackedWidget.addWidget(self.owner().searchForm)
         self.stackedWidget.addWidget(self.owner().categoryForm)
         self.stackedWidget.addWidget(self.owner().rankForm)
         self.stackedWidget.addWidget(self.owner().favoriteForm)
         self.stackedWidget.addWidget(self.owner().historyForm)
         self.stackedWidget.addWidget(self.owner().downloadForm)
+        self.stackedWidget.addWidget(self.owner().leaveMsgForm)
+        self.stackedWidget.addWidget(self.owner().chatForm)
+
 
     def Switch(self, index):
         # data = {

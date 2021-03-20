@@ -139,7 +139,10 @@ class QtTask(Singleton, threading.Thread):
             taskIds.add(self.taskId)
 
         if isSaveCache:
-            a = hashlib.md5(path.encode("utf-8")).hexdigest()
+            if not path:
+                a = hashlib.md5(url.encode("utf-8")).hexdigest()
+            else:
+                a = hashlib.md5(path.encode("utf-8")).hexdigest()
             filePath2 = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
             filePath2 = os.path.join(filePath2, a)
             data.cacheAndLoadPath = filePath2

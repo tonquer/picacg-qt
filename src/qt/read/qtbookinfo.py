@@ -2,7 +2,7 @@ import json
 import weakref
 
 from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtCore import QRect, Qt, QSize
+from PySide2.QtCore import QRect, Qt, QSize, QEvent
 from PySide2.QtGui import QColor
 from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
     QVBoxLayout
@@ -10,6 +10,7 @@ from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication
 from conf import config
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtimg import QtImgMgr
 from src.qt.com.qtlistwidget import QtBookList, QtCategoryList
 from src.qt.com.qtloading import QtLoading
 from src.server import req, Log, Server, ToolUtil
@@ -32,7 +33,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.lastEpsId = -1
 
         self.msgForm = QtBubbleLabel(self)
-
+        self.picture.installEventFilter(self)
         self.title.setGeometry(QRect(328, 240, 329, 27 * 4))
         self.title.setWordWrap(True)
         self.title.setAlignment(Qt.AlignTop)
@@ -548,3 +549,14 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
             item2.setSizeHint(widget2.sizeHint())
         self.childrenListWidget.clear()
         self.listWidget.clear()
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.LeftButton:
+                if obj.pixmap() and not obj.text():
+                    QtImgMgr().ShowImg(obj.pixmap())
+                return True
+            else:
+                return False
+        else:
+            return super(self.__class__, self).eventFilter(obj, event)

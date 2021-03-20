@@ -1,10 +1,11 @@
 from PySide2.QtCore import Qt, QSize
-from PySide2.QtGui import QPixmap, QColor, QIntValidator, QImage
+from PySide2.QtGui import QPixmap, QColor, QIntValidator, QImage, QFont
 from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
     QScroller, QGridLayout, QSpacerItem, QSizePolicy
 
 from conf import config
 from resources import resources
+from src.qt.com.qtcomment import QtComment
 from src.qt.util.qttask import QtTask
 from src.util import ToolUtil
 from src.util.status import Status
@@ -17,118 +18,21 @@ class QtIntLimit(QIntValidator):
     def fixup(self, input: str) -> str:
         return str(self.top())
 
-
-class UserItemWidget(QWidget):
-    def __init__(self, *args, **kwargs):
-        super(UserItemWidget, self).__init__(*args, **kwargs)
-        self.id = ""
-        self.setMinimumSize(0, 180)
-        self.setMaximumSize(16777215, 16777215)
-        self.gridLayout = QGridLayout(self)
-        hboxLayout = QHBoxLayout()
-        self.gridLayout.addLayout(hboxLayout, 0, 0, 1, 1)
-
-
-        layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        layout2 = QHBoxLayout()
-
-        self.indexLabel = QLabel("", self, styleSheet="color: #999999;")
-        self.indexLabel.setMinimumSize(40, 0)
-        self.indexLabel.setMaximumSize(40, 30)
-        self.indexLabel.setAlignment(Qt.AlignLeft)
-
-        self.timeLabel = QLabel("", self, styleSheet="color: #999999;")
-        self.timeLabel.setMinimumSize(60, 0)
-        self.timeLabel.setMaximumSize(60, 30)
-        self.timeLabel.setAlignment(Qt.AlignRight)
-
-        layout2.addWidget(self.indexLabel)
-        layout2.addWidget(self.timeLabel)
-        layout.addLayout(layout2)
-        # layout.addWidget(self.timeLabel)
-
-        # 图片label
-        self.picIcon = QLabel(self)
-        self.picIcon.setCursor(Qt.PointingHandCursor)
-        self.picIcon.setScaledContents(True)
-        self.picIcon.setMinimumSize(100, 100)
-        self.picIcon.setMaximumSize(100, 100)
-        pic = QPixmap()
-        pic.loadFromData(resources.DataMgr.GetData("placeholder_avatar"))
-        self.picIcon.setPixmap(pic)
-        layout.addWidget(self.picIcon)
-
-        self.label = QLabel("", self, styleSheet="color: #999999;")
-        self.label.setMinimumSize(100, 0)
-        self.label.setMaximumSize(100, 16777215)
-        self.label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.label)
-        hboxLayout.addLayout(layout)
-
-        layout3 = QVBoxLayout()
-        self.commentLabel = QLabel(self)
-        # self.commentLabel.setGeometry(QRect(328, 240, 329, 27 * 4))
-        self.commentLabel.setWordWrap(True)
-        layout3.addWidget(self.commentLabel)
-
-        self.likeNum = QLabel(self)
-        self.likeNum.setAlignment(Qt.AlignLeft)
-        self.likeNum.setMaximumSize(16777215, 30)
-        layout4 = QHBoxLayout()
-        label = QLabel()
-        label.setMaximumSize(30, 30)
-        label.setCursor(Qt.PointingHandCursor)
-        label.setScaledContents(True)
-        data = resources.DataMgr.GetData("icon_comment_like")
-        pixMap = QPixmap()
-        pixMap.loadFromData(data)
-        label.setPixmap(pixMap)
-
-        layout4.addWidget(label)
-        layout4.addWidget(self.likeNum)
-
-        self.commentNum = QLabel(self)
-        self.commentNum.setAlignment(Qt.AlignLeft)
-        self.commentNum.setMaximumSize(16777215, 30)
-        label = QLabel()
-        label.setMaximumSize(40, 30)
-        label.setCursor(Qt.PointingHandCursor)
-        label.setScaledContents(True)
-        data = resources.DataMgr.GetData("icon_comment_reply")
-        pixMap = QPixmap()
-        pixMap.loadFromData(data)
-        label.setPixmap(pixMap)
-        layout4.addWidget(label)
-        layout4.addWidget(self.commentNum)
-        space = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        layout4.addItem(space)
-        layout3.addLayout(layout4)
-        # self.commentLabel.setAlignment(Qt.AlignTop)
-        hboxLayout.addLayout(layout3)
-
-    def SetPicture(self, data):
-        pic = QPixmap()
-        pic.loadFromData(data)
-        self.picIcon.setPixmap(pic)
-
-
 class ItemWidget(QWidget):
     def __init__(self, _id, title, index, info, param, *args, **kwargs):
         super(ItemWidget, self).__init__(*args, **kwargs)
         self.id = _id
         self.param = param
-        self.setMaximumSize(220, 300)
-        self.setMaximumSize(220, 300)
+        self.setMaximumSize(220, 400)
+        self.setMaximumSize(220, 400)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 20, 10, 0)
         # 图片label
         self.picIcon = QLabel(self)
-        self.picIcon.setCursor(Qt.PointingHandCursor)
-        self.picIcon.setScaledContents(True)
-        self.picIcon.setMinimumSize(220, 220)
-        self.picIcon.setMaximumSize(220, 220)
+        # self.picIcon.setCursor(Qt.PointingHandCursor)
+        # self.picIcon.setScaledContents(True)
+        self.picIcon.setMinimumSize(220, 320)
+        self.picIcon.setMaximumSize(220, 320)
         self.picIcon.setToolTip(title)
         pic = QPixmap()
         self.picIcon.setPixmap(pic)
@@ -153,6 +57,7 @@ class ItemWidget(QWidget):
         self.label.setMinimumSize(220, 20)
         self.label.setMaximumSize(220, 40)
         self.label.setAlignment(Qt.AlignCenter)
+        self.label.setFont(QFont("Microsoft YaHei",  12,   87))
         layout.addWidget(self.label)
         # if self.info:
         #     self.PaintInfo()
@@ -187,9 +92,24 @@ class ItemWidget(QWidget):
     #                      Qt.AlignBottom, self.info)
 
     def SetPicture(self, data):
+        if not data:
+            return
         pic = QPixmap()
         pic.loadFromData(data)
-        self.picIcon.setPixmap(pic)
+        # maxW = self.picIcon.width()
+        # maxH = self.picIcon.height()
+        # picW = pic.width()
+        # picH = pic.height()
+        # if maxW / picW < maxH / picH:
+        #     toW = maxW
+        #     toH = (picH/(picW/maxW))
+        # else:
+        #     toH = maxH
+        #     toW = (picW / (picH / maxH))
+        newPic = pic.scaled(self.picIcon.width(), self.picIcon.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        self.picIcon.setPixmap(newPic)
+
 
     def GetTitle(self):
         return self.label.text()
@@ -214,6 +134,7 @@ class QtBookList(QListWidget):
 
     def InitBook(self, callBack=None):
         self.resize(800, 600)
+        self.setMinimumHeight(400)
         self.setFrameShape(self.NoFrame)  # 无边框
         self.setFlow(self.LeftToRight)  # 从左到右
         self.setWrapping(True)
@@ -223,6 +144,7 @@ class QtBookList(QListWidget):
     def InitUser(self, callBack=None):
         self.setFrameShape(self.NoFrame)  # 无边框
         self.LoadCallBack = callBack
+        self.setStyleSheet("QListWidget::item { border-bottom: 1px solid black; }")
 
     def OnActionTriggered(self, action):
         if action != QAbstractSlider.SliderMove or self.isLoadingPage:
@@ -254,25 +176,26 @@ class QtBookList(QListWidget):
 
     def AddUserItem(self, commnetId, commentsCount, likesCount, content, name, createdTime, floor, url="", path="", originalName=""):
         index = self.count()
-        iwidget = UserItemWidget(self)
+        iwidget = QtComment(self)
         iwidget.id = commnetId
         iwidget.commentLabel.setText(content)
-        iwidget.label.setText(name)
-        iwidget.commentNum.setText("({})".format(commentsCount))
-        iwidget.likeNum.setText("({})".format(likesCount))
-        timeArray, day = ToolUtil.GetDateStr(createdTime)
-        if day >= 1:
-            iwidget.timeLabel.setText("{}天前".format(str(day)))
-        else:
-            strTime = "{}:{}:{}".format(timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
-            iwidget.timeLabel.setText("{}".format(strTime))
+        iwidget.nameLabel.setText(name)
+        iwidget.numLabel.setText("({})".format(commentsCount))
+        iwidget.starLabel.setText("({})".format(likesCount))
+        if createdTime:
+            timeArray, day = ToolUtil.GetDateStr(createdTime)
+            if day >= 1:
+                iwidget.dateLabel.setText("{}天前".format(str(day)))
+            else:
+                strTime = "{}:{}:{}".format(timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
+                iwidget.dateLabel.setText("{}".format(strTime))
 
         iwidget.indexLabel.setText("{}楼".format(str(floor)))
 
         item = QListWidgetItem(self)
         item.setSizeHint(iwidget.sizeHint())
         self.setItemWidget(item, iwidget)
-        if url and path and config.IsLoadingPicture:
+        if url and config.IsLoadingPicture:
             QtTask().AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True, self.GetName())
             pass
 

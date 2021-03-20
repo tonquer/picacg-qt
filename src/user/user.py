@@ -39,6 +39,8 @@ class User(Singleton):
         self.title = ""     # 称号
         self.gender = ""    # 性别
         self.isPunched = False  # 是否签到
+        self.userInfo = {}
+
         self.avatar = {}
 
         self.addresss = []  # 列表
@@ -130,6 +132,7 @@ class User(Singleton):
     def UpdateUserInfoBack(self, backData):
         try:
             if backData.res.code == 200:
+                self.userInfo = backData.res.data["user"]
                 self.name = backData.res.data["user"]["name"]
                 self.level = backData.res.data["user"]["level"]
                 self.exp = backData.res.data["user"]["exp"]

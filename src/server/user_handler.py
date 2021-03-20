@@ -278,3 +278,24 @@ class SpeedTestReq(object):
                 Log.Error(es)
                 if backData.bakParam:
                     QtTask().taskBack.emit(backData.bakParam, "")
+
+
+@handler(req.GetChatReq)
+class GetChatReq(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
+@handler(req.GetCollectionsReq)
+class GetCollectionsReq(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
+@handler(req.GetRandomReq)
+class GetCollectionsReq(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
