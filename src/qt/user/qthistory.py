@@ -132,7 +132,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         item = self.bookList.item(index)
         widget = self.bookList.itemWidget(item)
         text = widget.infoLabel.text()
-        self.owner().userForm.listWidget.setCurrentRow(0)
+        self.owner().userForm.listWidget.setCurrentRow(1)
         self.owner().searchForm.searchEdit.setText("")
         self.owner().searchForm.OpenSearchCategories(text)
         pass

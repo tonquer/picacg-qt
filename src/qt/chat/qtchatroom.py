@@ -8,6 +8,7 @@ from PySide2.QtGui import QPixmap
 from conf import config
 from src.qt.chat.chat_ws import ChatWebSocket
 from src.qt.chat.qtchatroommsg import QtChatRoomMsg
+from src.qt.com.qtloading import QtLoading
 from src.qt.util.qttask import QtTask
 from src.user.user import User
 from src.util import Log
@@ -42,6 +43,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         self.removeMsgId = 0
         self.indexMsgId = 0
         self.maxMsgInfo = 100
+        self.loadingForm = QtLoading(self)
 
     def closeEvent(self, event) -> None:
         self.socket.Stop()
@@ -57,6 +59,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         Log.Debug("join room, Url:{}".format(self.url))
         self.LoginRoom()
         self.timer.start()
+        self.loadingForm.close()
         return
 
     def LoginRoom(self):
@@ -167,6 +170,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         self.show()
         self.url = url
         self.nameLabel.setText(name)
+        self.loadingForm.show()
         self.socket.Start(self.url)
         return
 

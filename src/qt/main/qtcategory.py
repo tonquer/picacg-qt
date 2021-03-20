@@ -40,8 +40,8 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
         index = modelIndex.row()
         item = self.bookList.item(index)
         widget = self.bookList.itemWidget(item)
-        text = widget.title.text()
-        self.owner().userForm.listWidget.setCurrentRow(0)
+        text = widget.label.text()
+        self.owner().userForm.listWidget.setCurrentRow(1)
         self.owner().searchForm.searchEdit.setText("")
         self.owner().searchForm.OpenSearchCategories(text)
         pass
