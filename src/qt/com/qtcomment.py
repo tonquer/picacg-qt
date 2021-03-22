@@ -29,6 +29,8 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         self.numPic.setCursor(Qt.PointingHandCursor)
         self.numPic.setScaledContents(True)
         self.picIcon.installEventFilter(self)
+        # self.commentLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        # self.nameLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
     def SetPicture(self, data):
         p = QPixmap()

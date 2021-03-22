@@ -141,8 +141,11 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
 
         url = data.get("avatar")
         if url and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(url, "", None, self.LoadingPictureComplete, True, self.indexMsgId, True, self.GetName())
-            pass
+            if isinstance(url, dict):
+                QtTask().AddDownloadTask(url.get("fileServer"), url.get("path"), None, self.LoadingPictureComplete, True, self.indexMsgId, True, self.GetName())
+            else:
+                QtTask().AddDownloadTask(url, "", None, self.LoadingPictureComplete, True, self.indexMsgId, True,
+                                         self.GetName())
         self.verticalLayout_2.addWidget(info)
         self.msgInfo[self.indexMsgId] = info
         self.indexMsgId += 1
@@ -190,11 +193,15 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         if not msg:
             return
         info = dict(User().userInfo)
+        if User().avatar:
+            info['avatar'] = "https://storage.wikawika.xyz" + "/static/" + User().avatar.get("path")
+        info['at'] = ""
         info['audio'] = ""
         info['message'] = msg
         info['reply'] = ""
         info['reply_name'] = ""
         info['image'] = ""
+        info['block_user_id'] = ""
         data = "42" + json.dumps(["send_message", info])
         self.socket.Send(data)
         self._RecvBroadcastMsg(info)

@@ -3,6 +3,7 @@ from PySide2.QtCore import QEvent
 from PySide2.QtGui import QPixmap, Qt
 from PySide2.QtWebSockets import QWebSocket
 
+from resources.resources import DataMgr
 from src.qt.com.qtimg import QtImgMgr
 from src.util import Log
 from ui.chatrootmsg import Ui_ChatRoomMsg
@@ -13,7 +14,8 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
         super(self.__class__, self).__init__()
         Ui_ChatRoomMsg.__init__(self)
         self.setupUi(self)
-        p = QPixmap("resources/placeholder_avatar.png")
+        p = QPixmap()
+        p.loadFromData(DataMgr().GetData("placeholder_avatar"))
         self.commentLabel.installEventFilter(self)
         self.picLabel.installEventFilter(self)
         self.picLabel.setPixmap(p)
@@ -35,6 +37,8 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
             border-bottom-width: 10px;
             border-left-width: 20px;
             """)
+        # self.commentLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        # self.name.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
     def SetPicture(self, data):
         pic = QPixmap()

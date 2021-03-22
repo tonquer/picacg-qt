@@ -122,6 +122,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.epsListWidget.clicked.connect(self.OpenReadImg)
 
         self.closeFlag = self.__class__.__name__ + "-close"         # 切换book时，取消加载
+        # self.title.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        # self.description.setTextInteractionFlags(Qt.TextSelectableByMouse)
+
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         if self.stackedWidget.currentIndex() == 1:

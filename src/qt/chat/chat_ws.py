@@ -1,6 +1,9 @@
 import weakref
 
 import websocket
+
+from conf import config
+
 try:
     import thread
 except ImportError:
@@ -49,7 +52,18 @@ class ChatWebSocket(threading.Thread):
                                         on_error=self.on_error,
                                         on_close=self.on_close)
             self.ws = ws
-            ws.run_forever()
+            if config.HttpProxy:
+                data = config.HttpProxy.split(":")
+                if len(data) == 3:
+                    port = data[2]
+                    host = data[1].replace("//", "")
+                else:
+                    host = data
+                    port = 80
+
+                ws.run_forever(http_proxy_host=host, http_proxy_port=port)
+            else:
+                ws.run_forever()
 
         thread = threading.Thread(target=Run)
         thread.setDaemon(True)
