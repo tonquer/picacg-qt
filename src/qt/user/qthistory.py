@@ -5,8 +5,9 @@ from PySide2.QtSql import QSqlDatabase, QSqlQuery
 import time
 
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
+from src.qt.com.qtmenu import QtBookListMenu
 from src.util import Log
-from ui.history import Ui_History
+from ui.history import Ui_History, QMenu
 
 
 class QtHistoryData(object):
@@ -20,7 +21,7 @@ class QtHistoryData(object):
         self.tick = 0
 
 
-class QtHistory(QtWidgets.QWidget, Ui_History):
+class QtHistory(QtWidgets.QWidget, Ui_History, QtBookListMenu):
     def __init__(self, owner):
         super(self.__class__, self).__init__(owner)
         Ui_History.__init__(self)
@@ -28,9 +29,9 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         self.owner = weakref.ref(owner)
 
         self.bookList = QtBookList(self, self.__class__.__name__)
+        QtBookListMenu.__init__(self)
         self.bookList.InitBook(self.LoadNextPage)
         self.gridLayout_3.addWidget(self.bookList)
-        self.bookList.doubleClicked.connect(self.OpenBookInfo)
         self.pageNums = 20
 
         self.lineEdit.setValidator(QtIntLimit(1, 1, self))
@@ -38,6 +39,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         self.history = {}
         self.db = QSqlDatabase.addDatabase("QSQLITE", "history")
         self.db.setDatabaseName("history.db")
+
 
         if not self.db.open():
             Log.Warn(self.db.lastError().text())
@@ -71,6 +73,14 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
 
     def GetHistory(self, bookId):
         return self.history.get(bookId)
+
+    def DelHistory(self, bookId):
+        query = QSqlQuery(self.db)
+        sql = "delete from history where bookId='{}'".format(bookId)
+        suc = query.exec_(sql)
+        if not suc:
+            Log.Warn(query.lastError().text())
+        return
 
     def AddHistory(self, bookId, name, epsId, index, url, path):
         tick = int(time.time())
@@ -152,18 +162,19 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
             data = "上次读到第{}章".format(str(info.epsId+1))
             self.bookList.AddBookItem(info.bookId, info.name, data, info.url, info.path)
 
-    def OpenBookInfo(self, modelIndex):
-        index = modelIndex.row()
-        item = self.bookList.item(index)
-        if not item:
-            return
-        widget = self.bookList.itemWidget(item)
-        if not widget:
-            return
-        bookId = widget.id
-        if not bookId:
-            return
-        self.owner().bookInfoForm.OpenBook(bookId)
-
     def UpdatePageLabel(self):
         self.pages.setText("页：{}/{}".format(str(self.bookList.page), str(self.bookList.pages)))
+
+    def DelCallBack(self, bookIds):
+        for bookId in bookIds:
+            if bookId not in self.history:
+                continue
+            self.history.pop(bookId)
+            self.DelHistory(bookId)
+
+        page = 1
+        self.bookList.page = page
+        self.bookList.clear()
+        self.RefreshData(page)
+        self.UpdatePageLabel()
+        return

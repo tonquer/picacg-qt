@@ -71,18 +71,44 @@ class Ui_Comment(object):
         self.nameLabel = QLabel(Comment)
         self.nameLabel.setObjectName(u"nameLabel")
         self.nameLabel.setMinimumSize(QSize(0, 20))
-        self.nameLabel.setMaximumSize(QSize(16777215, 30))
+        self.nameLabel.setMaximumSize(QSize(16777215, 20))
         self.nameLabel.setFont(font)
         self.nameLabel.setLayoutDirection(Qt.LeftToRight)
-        self.nameLabel.setStyleSheet(u"color: #999999;")
+        self.nameLabel.setStyleSheet(u"")
         self.nameLabel.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.verticalLayout_3.addWidget(self.nameLabel)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.levelLabel = QLabel(Comment)
+        self.levelLabel.setObjectName(u"levelLabel")
+        self.levelLabel.setMinimumSize(QSize(0, 20))
+        self.levelLabel.setMaximumSize(QSize(16777215, 20))
+        self.levelLabel.setStyleSheet(u"background:#eeA2A4;")
+
+        self.horizontalLayout_4.addWidget(self.levelLabel)
+
+        self.titleLabel = QLabel(Comment)
+        self.titleLabel.setObjectName(u"titleLabel")
+        self.titleLabel.setMinimumSize(QSize(0, 20))
+        self.titleLabel.setMaximumSize(QSize(16777215, 20))
+        self.titleLabel.setStyleSheet(u"background:#eeA2A4;")
+
+        self.horizontalLayout_4.addWidget(self.titleLabel)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
 
         self.commentLabel = QLabel(Comment)
         self.commentLabel.setObjectName(u"commentLabel")
         font1 = QFont()
         font1.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font1.setPointSize(12)
         self.commentLabel.setFont(font1)
 
         self.verticalLayout_3.addWidget(self.commentLabel)
@@ -142,6 +168,8 @@ class Ui_Comment(object):
         self.picIcon.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.dateLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.nameLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
+        self.levelLabel.setText(QCoreApplication.translate("Comment", u"LV", None))
+        self.titleLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.commentLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.starPic.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.starLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))

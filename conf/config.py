@@ -15,6 +15,8 @@ DownloadThreadNum = 5                        # 下载线程
 ImageQuality = "original"                    # 画质，original, low, medium, high
 Uuid = "defaultUuid"
 HttpProxy = ""                               # 代理
+ChatProxy = 1                             # 聊天室启用代理
+
 SavePath = ''
 SavePathDir = "commies"       # 下载目录
 ResetCnt = 5                  # 下载重试次数
@@ -27,7 +29,7 @@ PreLoading = 5    # 预加载5页
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
-UpdateVersion = "v1.1.0"
+UpdateVersion = "v1.1.1"
 
 # waifu2x
 Encode = 0

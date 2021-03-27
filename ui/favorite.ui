@@ -42,12 +42,12 @@
          </property>
          <item>
           <property name="text">
-           <string>从旧到新</string>
+           <string>从新到旧</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>从新到旧</string>
+           <string>从旧到新</string>
           </property>
          </item>
         </widget>

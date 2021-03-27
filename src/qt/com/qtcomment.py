@@ -22,6 +22,7 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         p.loadFromData(DataMgr.GetData("icon_comment_like"))
         q = QPixmap()
         q.loadFromData(DataMgr.GetData("icon_comment_reply"))
+        self.pictureData = None
         self.starPic.setPixmap(p)
         self.starPic.setCursor(Qt.PointingHandCursor)
         self.starPic.setScaledContents(True)
@@ -29,19 +30,21 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         self.numPic.setCursor(Qt.PointingHandCursor)
         self.numPic.setScaledContents(True)
         self.picIcon.installEventFilter(self)
-        # self.commentLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.commentLabel.setWordWrap(True)
+        self.commentLabel.setTextInteractionFlags(Qt.TextSelectableByKeyboard)
         # self.nameLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
     def SetPicture(self, data):
         p = QPixmap()
         p.loadFromData(data)
+        self.pictureData = data
         self.picIcon.setPixmap(p)
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                if obj.pixmap() and not obj.text():
-                    QtImgMgr().ShowImg(obj.pixmap())
+                if self.pictureData:
+                    QtImgMgr().ShowImg(self.pictureData)
                 return True
             else:
                 return False

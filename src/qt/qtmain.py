@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QMessageBox
 from conf import config
 from resources import resources
 from src.qt.chat.qtchat import QtChat
-from src.qt.com.qtimg import QtImg
+from src.qt.com.qtimg import QtImg, QtImgMgr
 from src.qt.main.qtindex import QtIndex
 from src.qt.menu.qtabout import QtAbout
 from src.qt.read.qtbookinfo import QtBookInfo
@@ -145,8 +145,11 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settingForm.show()
         pass
 
-    def OpenAbout(self):
-        self.aboutForm.show()
+    def OpenAbout(self, action):
+        if action.text() == "about":
+            self.aboutForm.show()
+        elif action.text() == "img convert":
+            QtImgMgr().ShowImg("")
         pass
 
     def InitUpdate(self):

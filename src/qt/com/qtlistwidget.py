@@ -174,7 +174,7 @@ class QtBookList(QListWidget):
             QtTask().AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True, self.GetName())
             pass
 
-    def AddUserItem(self, commnetId, commentsCount, likesCount, content, name, createdTime, floor, url="", path="", originalName=""):
+    def AddUserItem(self, commnetId, commentsCount, likesCount, content, name, createdTime, floor, url="", path="", originalName="", title="", level=1):
         index = self.count()
         iwidget = QtComment(self)
         iwidget.id = commnetId
@@ -182,6 +182,8 @@ class QtBookList(QListWidget):
         iwidget.nameLabel.setText(name)
         iwidget.numLabel.setText("({})".format(commentsCount))
         iwidget.starLabel.setText("({})".format(likesCount))
+        iwidget.levelLabel.setText(" LV" + str(level) + " ")
+        iwidget.titleLabel.setText(" " + title + " ")
         if createdTime:
             timeArray, day = ToolUtil.GetDateStr(createdTime)
             if day >= 1:

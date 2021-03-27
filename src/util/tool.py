@@ -165,11 +165,11 @@ class ToolUtil(object):
 
     @staticmethod
     def GetDateStr(createdTime):
-        timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%fZ")
-        tick = int(time.mktime(timeArray))
+        timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%f%z")
+        tick = int(time.mktime(timeArray)-time.timezone)
         now = int(time.time())
         day = int((int(now - time.timezone) / 86400) - (int(tick - time.timezone) / 86400))
-        return timeArray, day
+        return time.localtime(tick), day
 
     @staticmethod
     def GetDownloadSize(downloadLen):

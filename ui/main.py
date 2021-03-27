@@ -22,6 +22,8 @@ class Ui_MainWindow(object):
         self.actionsetting.setObjectName(u"actionsetting")
         self.actionabout = QAction(MainWindow)
         self.actionabout.setObjectName(u"actionabout")
+        self.actionimg_convert = QAction(MainWindow)
+        self.actionimg_convert.setObjectName(u"actionimg_convert")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_4 = QGridLayout(self.centralwidget)
@@ -54,6 +56,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuabout.menuAction())
         self.menusetting.addAction(self.actionsetting)
         self.menuabout.addAction(self.actionabout)
+        self.menuabout.addAction(self.actionimg_convert)
 
         self.retranslateUi(MainWindow)
 
@@ -67,7 +70,8 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.actionsetting.setText(QCoreApplication.translate("MainWindow", u"setting", None))
         self.actionabout.setText(QCoreApplication.translate("MainWindow", u"about", None))
+        self.actionimg_convert.setText(QCoreApplication.translate("MainWindow", u"img convert", None))
         self.menusetting.setTitle(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
-        self.menuabout.setTitle(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
+        self.menuabout.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
     # retranslateUi
 

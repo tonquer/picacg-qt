@@ -51,9 +51,10 @@
    </widget>
    <widget class="QMenu" name="menuabout">
     <property name="title">
-     <string>关于</string>
+     <string>工具</string>
     </property>
     <addaction name="actionabout"/>
+    <addaction name="actionimg_convert"/>
    </widget>
    <addaction name="menusetting"/>
    <addaction name="menuabout"/>
@@ -67,6 +68,11 @@
   <action name="actionabout">
    <property name="text">
     <string>about</string>
+   </property>
+  </action>
+  <action name="actionimg_convert">
+   <property name="text">
+    <string>img convert</string>
    </property>
   </action>
  </widget>

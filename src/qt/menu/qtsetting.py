@@ -37,6 +37,11 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
             config.HttpProxy = httpProxy
             self.httpEdit.setText(config.HttpProxy)
 
+        ChatProxy = self.settings.value("ChatProxy")
+        if ChatProxy is not None:
+            config.ChatProxy = int(ChatProxy)
+            self.checkBox_2.setChecked(bool(config.ChatProxy))
+
         config.SavePath = self.settings.value("SavePath") or config.SavePath
         self.saveEdit.setText(config.SavePath)
 
@@ -103,6 +108,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         config.ImageQuality = self.buttonGroup.checkedButton().objectName().replace("quality_", "")
         httpProxy = self.httpEdit.text()
         config.SavePath = self.saveEdit.text()
+        config.ChatProxy = 1 if self.checkBox_2.isChecked() else 0
 
         self.settings.setValue("DownloadThreadNum", config.DownloadThreadNum)
         self.settings.setValue("ImageQuality", config.ImageQuality)
@@ -110,6 +116,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("Proxy/Http", config.HttpProxy)
 
         self.settings.setValue("SavePath", config.SavePath)
+        self.settings.setValue("ChatProxy", config.ChatProxy)
 
         config.Encode = self.encodeSelect.currentIndex()
         config.Waifu2xThread = int(self.threadSelect.currentIndex()) + 1

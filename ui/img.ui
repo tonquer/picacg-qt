@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Img</class>
+ <widget class="QWidget" name="Img">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>417</width>
+    <height>351</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QGraphicsView" name="graphicsView"/>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QPushButton" name="oepnButton">
+         <property name="text">
+          <string>打开图片</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pushButton_3">
+           <property name="text">
+            <string>缩小</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>放大</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="saveButton">
+         <property name="text">
+          <string>保存图片</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="text">
+          <string>waifu2x</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox">
+         <item>
+          <property name="text">
+           <string>cunet(不放大)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>cunet</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>photo</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>anime_style_art_rgb</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="changeButton">
+         <property name="text">
+          <string>转换</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>changeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>StartWaifu2x()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>323</x>
+     <y>332</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>488</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>SavePicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>327</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-26</x>
+     <y>378</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>ReduceScalePic()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-59</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>AddScalePic()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>160</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>232</x>
+     <y>406</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>oepnButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>OpenPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>97</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-114</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>SwithPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>242</x>
+     <y>263</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>543</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Img</receiver>
+   <slot>ChangeModel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>298</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>616</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>StartWaifu2x()</slot>
+  <slot>AddScalePic()</slot>
+  <slot>ReduceScalePic()</slot>
+  <slot>OpenPicture()</slot>
+  <slot>SavePicture()</slot>
+  <slot>SwithPicture()</slot>
+  <slot>ChangeModel()</slot>
+ </slots>
+</ui>

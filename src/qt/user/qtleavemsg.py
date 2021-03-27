@@ -159,14 +159,17 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
                     floor = total - ((page - 1) * limit + index)
                     content = info.get("content")
                     name = info.get("_user", {}).get("name")
+                    level = info.get("_user", {}).get("lv")
                     avatar = info.get("_user", {}).get("avatar", {})
                     createdTime = info.get("created_at")
                     commentsCount = info.get("commentsCount")
                     likesCount = info.get("likesCount")
                     commnetId = info.get('_id')
+                    title = info.get("_user", {}).get("title", "")
+                    level = info.get("_user", {}).get("level", 1)
                     self.childrenListWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor,
                                                 avatar.get("fileServer"),
-                                                avatar.get("path"), avatar.get("originalName"))
+                                                avatar.get("path"), avatar.get("originalName"), title, level)
 
                 pass
             self.listWidget.scrollToItem(item, self.listWidget.ScrollHint.PositionAtTop)
@@ -197,12 +200,14 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
                         content = info.get("content")
                         name = info.get("_user", {}).get("name")
                         avatar = info.get("_user", {}).get("avatar", {})
+                        title = info.get("_user", {}).get("title", {})
+                        level = info.get("_user", {}).get("level", 1)
                         createdTime = info.get("created_at")
                         commentsCount = info.get("commentsCount")
                         commnetId = info.get('_id')
                         likesCount = info.get("likesCount")
                         self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                                    avatar.get("path"), avatar.get("originalName"))
+                                                    avatar.get("path"), avatar.get("originalName"), title, level)
 
                 for index, info in enumerate(comments.get("docs")):
                     floor = total - ((page - 1) * limit + index)
@@ -213,8 +218,10 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
                     commentsCount = info.get("commentsCount")
                     commnetId = info.get('_id')
                     likesCount = info.get("likesCount")
+                    title = info.get("_user", {}).get("title", "")
+                    level = info.get("_user", {}).get("level", 1)
                     self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                 avatar.get("path"), avatar.get("originalName"))
+                                 avatar.get("path"), avatar.get("originalName"), title, level)
             return
         except Exception as es:
             Log.Error(es)

@@ -3,6 +3,7 @@ import weakref
 import websocket
 
 from conf import config
+from src.util import Log
 
 try:
     import thread
@@ -23,14 +24,18 @@ class ChatWebSocket(threading.Thread):
         return self._parent()
 
     def Send(self, msg):
-        if self.ws:
-            self.ws.send(msg)
+        try:
+            if self.ws:
+                self.ws.send(msg)
+        except Exception as es:
+            Log.Error(es)
 
     def on_message(self, ws, message):
         self.parent.websocket.emit(self.parent.Msg, message)
 
     def on_error(self, ws, error):
-        print(error)
+        self.parent.websocket.emit(self.parent.Error, "")
+        Log.Warn(error)
 
     def on_close(self, ws):
         self.parent.websocket.emit(self.parent.Leave, "")
@@ -52,7 +57,7 @@ class ChatWebSocket(threading.Thread):
                                         on_error=self.on_error,
                                         on_close=self.on_close)
             self.ws = ws
-            if config.HttpProxy:
+            if config.HttpProxy and config.ChatProxy:
                 data = config.HttpProxy.split(":")
                 if len(data) == 3:
                     port = data[2]

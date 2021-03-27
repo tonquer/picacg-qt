@@ -79,8 +79,8 @@ class Ui_favorite(object):
         favorite.setWindowTitle(QCoreApplication.translate("favorite", u"Form", None))
         self.nums.setText(QCoreApplication.translate("favorite", u"\u6536\u85cf\u6570\uff1a", None))
         self.pages.setText(QCoreApplication.translate("favorite", u"\u9875", None))
-        self.comboBox.setItemText(0, QCoreApplication.translate("favorite", u"\u4ece\u65e7\u5230\u65b0", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("favorite", u"\u4ece\u65b0\u5230\u65e7", None))
+        self.comboBox.setItemText(0, QCoreApplication.translate("favorite", u"\u4ece\u65b0\u5230\u65e7", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("favorite", u"\u4ece\u65e7\u5230\u65b0", None))
 
         self.jumpButton.setText(QCoreApplication.translate("favorite", u"\u8df3\u8f6c", None))
 #if QT_CONFIG(shortcut)

@@ -1,41 +1,60 @@
+import os
+import time
+
 from PySide2 import QtWidgets, QtGui, QtCore
-from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
+from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QTextCodec
 from PySide2.QtGui import QColor, QPainter, QPixmap, QImage
-from PySide2.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication
+from PySide2.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
-from src.util import Singleton
+from src.qt.util.qttask import QtTask
+from src.util import Singleton, ToolUtil, Log
+from ui.img import Ui_Img
 
 
 class QtImgMgr(Singleton):
     def __init__(self):
         self.obj = QtImg()
+        self.data = None
+        self.waifu2xData = None
 
     def ShowImg(self, data):
-        p = None
-        if isinstance(data, bytes):
-            p = QPixmap()
-            p.loadFromData(data)
-        elif isinstance(data, (QPixmap, QImage)):
-            p = data
+        if data:
+            self.data = data
+            self.waifu2xData = None
+            QtTask().CancelConver("QtImg")
+            self.obj.comboBox.setEnabled(True)
+            self.obj.changeButton.setEnabled(True)
+            self.obj.changeButton.setText("转换")
+            self.obj.ShowImg(data)
+        elif self.data:
+            self.obj.comboBox.setEnabled(True)
+            self.obj.changeButton.setEnabled(True)
+            self.obj.changeButton.setText("转换")
+            self.obj.ShowImg(self.data)
         else:
-            return
-        self.obj.ShowImg(p)
+            self.obj.comboBox.setEnabled(True)
+            self.obj.changeButton.setEnabled(True)
+            self.obj.changeButton.setText("转换")
+            self.obj.show()
 
 
-class QtImg(QtWidgets.QWidget):
+class QtImg(QtWidgets.QWidget, Ui_Img):
     def __init__(self):
         super(self.__class__, self).__init__()
+        Ui_Img.__init__(self)
+        self.setupUi(self)
         self.bookId = ""
         self.epsId = 0
         self.curIndex = 0
-        self.gridLayout = QtWidgets.QGridLayout(self)
         self.setWindowTitle("图片查看")
         self.setWindowModality(QtCore.Qt.ApplicationModal)
-        self.resize(402, 509)
+        self.resize(800, 900)
+        self.radioButton.setChecked(True)
+        self.index = 1
+        self.comboBox.setCurrentIndex(self.index)
         # self.setWindowFlags(Qt.FramelessWindowHint)
 
-        self.graphicsView = QtWidgets.QGraphicsView(self)
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
         self.graphicsView.setObjectName("graphicsView")
 
@@ -67,14 +86,14 @@ class QtImg(QtWidgets.QWidget):
         # self.radioButton_2.installEventFilter(self)
         self.graphicsView.installEventFilter(self)
         self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
-        self.gridLayout.addWidget(self.graphicsView)
 
         self._delta = 0.1
         self.scaleCnt = 0
 
-    def ShowImg(self, pixMap):
+    def ShowImg(self, data):
         self.scaleCnt = 0
-        self.pixMap = QPixmap(pixMap)
+        self.pixMap = QPixmap()
+        self.pixMap.loadFromData(data)
         self.show()
         self.graphicsItem.setPixmap(self.pixMap)
         self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
@@ -156,4 +175,82 @@ class QtImg(QtWidgets.QWidget):
         clipboard = QApplication.clipboard()
         clipboard.setPixmap(self.pixMap)
         QtBubbleLabel.ShowMsgEx(self, "复制成功")
+        return
+
+    def ReduceScalePic(self):
+        self.zoom(1/1.1)
+        return
+
+    def AddScalePic(self):
+        self.zoom(1.1)
+        return
+
+    def OpenPicture(self):
+        try:
+            filename = QFileDialog.getOpenFileName(self, "Open Image", ".", "Image Files(*.jpg *.png)")
+            if filename and len(filename) >= 1:
+                name = filename[0]
+                if os.path.isfile(name):
+                    f = open(name, "rb")
+                    data = f.read()
+                    f.close()
+                    QtImgMgr().ShowImg(data)
+        except Exception as ex:
+            Log.Error(ex)
+        return
+
+    def StartWaifu2x(self):
+        if not QtImgMgr().data:
+            return
+        self.comboBox.setEnabled(False)
+        self.changeButton.setEnabled(False)
+
+        index = self.comboBox.currentIndex()
+        model = ToolUtil.GetModelByIndex(index)
+        QtTask().AddConvertTask("", QtImgMgr().data, model, self.AddConvertBack,
+                                cleanFlag="QtImg")
+        self.changeButton.setText("正在转换")
+        return
+
+    def AddConvertBack(self, data, waifuId, backParam, tick):
+        if data:
+            QtImgMgr().waifu2xData = data
+            if self.radioButton.isChecked():
+                self.ShowImg(data)
+            self.changeButton.setText("已转换")
+            self.changeButton.setEnabled(False)
+        else:
+            self.changeButton.setEnabled(True)
+        self.comboBox.setEnabled(True)
+        return
+
+    def SavePicture(self):
+        data = QtImgMgr().waifu2xData if QtImgMgr().waifu2xData else QtImgMgr().data
+        if not data:
+            return
+        try:
+            today = time.strftime("%Y%m%d%H%M%S", time.localtime(time.time()))
+            filepath = QFileDialog.getSaveFileName(self, "保存", "{}.jpg".format(today))
+            if filepath and len(filepath) >= 1:
+                name = filepath[0]
+                f = open(name, "wb")
+                f.write(data)
+                f.close()
+        except Exception as es:
+            Log.Error(es)
+        return
+
+    def SwithPicture(self):
+        if self.radioButton.isChecked() and QtImgMgr().waifu2xData:
+            self.ShowImg(QtImgMgr().waifu2xData)
+        else:
+            self.ShowImg(QtImgMgr().data)
+        return
+
+    def ChangeModel(self, index):
+        if self.comboBox.currentIndex() == self.index:
+            return
+        self.index = self.comboBox.currentIndex()
+        self.changeButton.setText("转换")
+        self.changeButton.setEnabled(True)
         return

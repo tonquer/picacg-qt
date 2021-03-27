@@ -31,6 +31,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.path = ""
         self.bookName = ""
         self.lastEpsId = -1
+        self.pictureData = None
 
         self.msgForm = QtBubbleLabel(self)
         self.picture.installEventFilter(self)
@@ -230,6 +231,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
     def UpdatePicture(self, data, status):
         if status == Status.Ok:
+            self.pictureData = data
             pic = QtGui.QPixmap()
             pic.loadFromData(data)
             pic.scaled(self.picture.size(), QtCore.Qt.KeepAspectRatio)
@@ -265,8 +267,10 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                         commentsCount = info.get("commentsCount")
                         commnetId = info.get('_id')
                         likesCount = info.get("likesCount")
+                        title = info.get("_user", {}).get("title", "")
+                        level = info.get("_user", {}).get("level", 1)
                         self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                                    avatar.get("path"), avatar.get("originalName"))
+                                                    avatar.get("path"), avatar.get("originalName"), title, level)
 
                 for index, info in enumerate(comments.get("docs")):
                     floor = total - ((page - 1) * limit + index)
@@ -277,8 +281,10 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                     commentsCount = info.get("commentsCount")
                     commnetId = info.get('_id')
                     likesCount = info.get("likesCount")
+                    title = info.get("_user", {}).get("title", "")
+                    level = info.get("_user", {}).get("level", 1)
                     self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                 avatar.get("path"), avatar.get("originalName"))
+                                 avatar.get("path"), avatar.get("originalName"), title, level)
             return
         except Exception as es:
             Log.Error(es)
@@ -477,9 +483,11 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                     commentsCount = info.get("commentsCount")
                     likesCount = info.get("likesCount")
                     commnetId = info.get('_id')
+                    title = info.get("_user", {}).get("title", "")
+                    level = info.get("_user", {}).get("level", 1)
                     self.childrenListWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor,
                                                 avatar.get("fileServer"),
-                                                avatar.get("path"), avatar.get("originalName"))
+                                                avatar.get("path"), avatar.get("originalName"), title, level)
 
                 pass
             self.listWidget.scrollToItem(item, self.listWidget.ScrollHint.PositionAtTop)
@@ -556,8 +564,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                if obj.pixmap() and not obj.text():
-                    QtImgMgr().ShowImg(obj.pixmap())
+                if self.pictureData:
+                    QtImgMgr().ShowImg(self.pictureData)
                 return True
             else:
                 return False

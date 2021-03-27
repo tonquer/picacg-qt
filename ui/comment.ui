@@ -126,7 +126,7 @@
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>30</height>
+             <height>20</height>
             </size>
            </property>
            <property name="font">
@@ -139,7 +139,7 @@
             <enum>Qt::LeftToRight</enum>
            </property>
            <property name="styleSheet">
-            <string notr="true">color: #999999;</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>TextLabel</string>
@@ -150,10 +150,72 @@
           </widget>
          </item>
          <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="levelLabel">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background:#eeA2A4;</string>
+             </property>
+             <property name="text">
+              <string>LV</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="titleLabel">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background:#eeA2A4;</string>
+             </property>
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QLabel" name="commentLabel">
            <property name="font">
             <font>
              <family>微软雅黑</family>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="text">
