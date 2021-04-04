@@ -61,9 +61,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
 
     def ShowUserImg(self, data, st):
         if st == Status.Ok:
-            a = QPixmap()
-            a.loadFromData(data)
-            self.owner().userForm.icon.setPixmap(a)
+            self.owner().userForm.SetPicture(data)
 
     def OpenRegister(self):
         self.SetSelectIp()

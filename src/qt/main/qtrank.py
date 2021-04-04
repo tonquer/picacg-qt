@@ -15,17 +15,17 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
         self.setupUi(self)
         self.owner = weakref.ref(owner)
 
-        self.h24BookList = QtBookList(self, "h24BookList")
+        self.h24BookList = QtBookList(self, "h24BookList", owner)
         self.h24BookList.InitBook()
         self.h24Layout.addWidget(self.h24BookList)
         self.h24BookList.doubleClicked.connect(self.OpenSearch)
 
-        self.d7BookList = QtBookList(self, "d7BookList")
+        self.d7BookList = QtBookList(self, "d7BookList", owner)
         self.d7BookList.InitBook()
         self.d7Layout.addWidget(self.d7BookList)
         self.d7BookList.doubleClicked.connect(self.OpenSearch)
 
-        self.d30BookList = QtBookList(self, "d30BookList")
+        self.d30BookList = QtBookList(self, "d30BookList", owner)
         self.d30BookList.InitBook()
         self.d30Layout.addWidget(self.d30BookList)
         self.d30BookList.doubleClicked.connect(self.OpenSearch)

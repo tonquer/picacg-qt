@@ -19,6 +19,7 @@ class DownloadInfo(object):
     Waiting = "等待中"
     Pause = "暂停"
     Error = "出错了"
+    NotFound = "原始文件不存在"
 
     Converting = "转码中"
     ConvertSuccess = "转码成功"
@@ -273,6 +274,7 @@ class DownloadEpsInfo(object):
 
         self.curPreDownloadIndex = 0
         self.curPreConvertId = 0   # 转码
+        self.resetConvertCnt = 0
         self.status = DownloadInfo.Downloading
         self.tick = 0
 
@@ -323,17 +325,26 @@ class DownloadEpsInfo(object):
     def AddDownload(self):
         bookInfo = BookMgr().books.get(self.parent.bookId)
         epsInfo = bookInfo.eps[self.epsId]
-        picInfo = epsInfo.pics[self.curPreDownloadIndex]
-        self.picCnt = len(epsInfo.pics)
-        if os.path.isfile(self.curSavePath):
-            self.curPreDownloadIndex += 1
-            return self.StartDownload()
-        QtTask().AddDownloadTask(picInfo.fileServer,
-                                 picInfo.path,
-                                 downloadCallBack=self.AddDownloadBack,
-                                 completeCallBack=self.AddDownloadCompleteBack,
-                                 isSaveCache=False,
-                                 cleanFlag="download_".format(self.parent.bookId))
+        isDownloadNext = True
+        while self.curPreDownloadIndex < len(epsInfo.pics):
+            bookInfo = BookMgr().books.get(self.parent.bookId)
+            epsInfo = bookInfo.eps[self.epsId]
+            picInfo = epsInfo.pics[self.curPreDownloadIndex]
+            self.picCnt = len(epsInfo.pics)
+            if os.path.isfile(self.curSavePath):
+                self.curPreDownloadIndex += 1
+            else:
+                isDownloadNext = False
+                QtTask().AddDownloadTask(picInfo.fileServer,
+                                         picInfo.path,
+                                         downloadCallBack=self.AddDownloadBack,
+                                         completeCallBack=self.AddDownloadCompleteBack,
+                                         isSaveCache=False,
+                                         cleanFlag="download_{}".format(self.parent.bookId))
+                break
+        self.parent.UpdateTableItem()
+        if isDownloadNext:
+            self.StartDownload()
 
     def AddDownloadBack(self, data, laveFileSize):
         self.downloadLen += len(data)
@@ -374,20 +385,27 @@ class DownloadEpsInfo(object):
         savePath = os.path.join(self.parent.savePath, ToolUtil.GetCanSaveName(self.epsTitle))
         filePath = os.path.join(savePath, "{:04}.{}".format(self.curPreConvertId + 1, "jpg"))
         if not os.path.isfile(filePath):
-            self.status = DownloadInfo.Error
+            self.status = DownloadInfo.NotFound
             self.parent.SetConvertStatu(self.status)
             return
-        if os.path.isfile(self.curConvertPath):
-            self.curPreConvertId += 1
-            return self.StartConvert()
-        f = open(filePath, "rb")
-        data = f.read()
-        f.close()
+        isConvertNext = True
+        while self.curPreConvertId < self.picCnt:
+            if os.path.isfile(self.curConvertPath):
+                self.curPreConvertId += 1
+            else:
+                isConvertNext = False
+                f = open(filePath, "rb")
+                data = f.read()
+                f.close()
 
-        w, h = ToolUtil.GetPictureSize(data)
-        model = ToolUtil.GetDownloadScaleModel(w, h)
-        QtTask().AddConvertTask("", data, model, self.AddConvertBack,
-                                cleanFlag="download_".format(self.parent.bookId))
+                w, h = ToolUtil.GetPictureSize(data)
+                model = ToolUtil.GetDownloadScaleModel(w, h)
+                QtTask().AddConvertTask("", data, model, self.AddConvertBack,
+                                        cleanFlag="download_{}".format(self.parent.bookId))
+                break
+        self.parent.UpdateTableItem()
+        if isConvertNext:
+            self.StartConvert()
         return
 
     def AddConvertBack(self, data, waifuId, backParam, tick):
@@ -400,8 +418,16 @@ class DownloadEpsInfo(object):
                 f.write(data)
                 f.close()
                 self.tick = tick
+                self.resetConvertCnt = 0
                 self.curPreConvertId += 1
                 self.StartConvert()
+            else:
+                self.resetConvertCnt += 1
+                if self.resetConvertCnt >= 3:
+                    self.status = DownloadInfo.Error
+                    self.parent.SetConvertStatu(DownloadInfo.Error)
+                else:
+                    self.StartConvert()
         except Exception as es:
             Log.Error(es)
             self.status = DownloadInfo.Error
@@ -410,8 +436,8 @@ class DownloadEpsInfo(object):
 
     def Pause(self):
         self.status = DownloadInfo.Pause
-        QtTask().CancelTasks(cleanFlag="download_".format(self.parent.bookId))
+        QtTask().CancelTasks(cleanFlag="download_{}".format(self.parent.bookId))
         return
 
     def PauseConvert(self):
-        QtTask().CancelConver(cleanFlag="download_".format(self.parent.bookId))
+        QtTask().CancelConver(cleanFlag="download_{}".format(self.parent.bookId))

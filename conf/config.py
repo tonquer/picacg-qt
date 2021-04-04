@@ -16,6 +16,7 @@ ImageQuality = "original"                    # 画质，original, low, medium, h
 Uuid = "defaultUuid"
 HttpProxy = ""                               # 代理
 ChatProxy = 1                             # 聊天室启用代理
+ChatSavePath = "chat"
 
 SavePath = ''
 SavePathDir = "commies"       # 下载目录
@@ -40,6 +41,7 @@ IsOpenWaifu = True
 
 LookModel = 0       # 默认值
 DownloadModel = 0   # 默认值
+LogIndex = 0
 
 
 Model1 = "cunet"     # 通用

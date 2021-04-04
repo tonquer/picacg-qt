@@ -13,10 +13,11 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
         Ui_category.__init__(self)
         self.setupUi(self)
         self.owner = weakref.ref(owner)
-        self.bookList = QtBookList(self, self.__class__.__name__)
+        self.bookList = QtBookList(self, self.__class__.__name__, owner)
         self.bookList.InitBook()
         self.gridLayout_2.addWidget(self.bookList)
         self.bookList.doubleClicked.connect(self.OpenSearch)
+        self.bookList.InstallCategory()
 
     def SwitchCurrent(self):
         if self.bookList.count() <= 0:

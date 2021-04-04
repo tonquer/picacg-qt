@@ -17,7 +17,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.owner = weakref.ref(owner)
         self.index = 1
         self.data = ""
-        self.bookList = QtBookList(self, self.__class__.__name__)
+        self.bookList = QtBookList(self, self.__class__.__name__, owner)
         self.bookList.InitBook(self.LoadNextPage)
 
         self.bookLayout.addWidget(self.bookList)

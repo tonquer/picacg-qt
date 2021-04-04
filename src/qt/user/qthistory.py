@@ -5,7 +5,6 @@ from PySide2.QtSql import QSqlDatabase, QSqlQuery
 import time
 
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
-from src.qt.com.qtmenu import QtBookListMenu
 from src.util import Log
 from ui.history import Ui_History, QMenu
 
@@ -21,15 +20,14 @@ class QtHistoryData(object):
         self.tick = 0
 
 
-class QtHistory(QtWidgets.QWidget, Ui_History, QtBookListMenu):
+class QtHistory(QtWidgets.QWidget, Ui_History):
     def __init__(self, owner):
         super(self.__class__, self).__init__(owner)
         Ui_History.__init__(self)
         self.setupUi(self)
         self.owner = weakref.ref(owner)
 
-        self.bookList = QtBookList(self, self.__class__.__name__)
-        QtBookListMenu.__init__(self)
+        self.bookList = QtBookList(self, self.__class__.__name__, owner)
         self.bookList.InitBook(self.LoadNextPage)
         self.gridLayout_3.addWidget(self.bookList)
         self.pageNums = 20
@@ -39,7 +37,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History, QtBookListMenu):
         self.history = {}
         self.db = QSqlDatabase.addDatabase("QSQLITE", "history")
         self.db.setDatabaseName("history.db")
-
+        self.bookList.InstallDel()
 
         if not self.db.open():
             Log.Warn(self.db.lastError().text())

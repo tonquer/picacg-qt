@@ -1,11 +1,12 @@
 import weakref
 
 from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import Qt, QSize
-from PySide2.QtGui import QIcon
+from PySide2.QtCore import Qt, QSize, QEvent
+from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtWidgets import QListWidget, QListWidgetItem
 
 from resources import resources
+from src.qt.com.qtimg import QtImgMgr
 from src.user.user import User
 from src.util.status import Status
 from ui.user import Ui_User
@@ -24,7 +25,8 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         pix.scaled(self.icon.size(), Qt.KeepAspectRatio)
         self.icon.setScaledContents(True)
         self.icon.setPixmap(pix)
-
+        self.pictureData = None
+        self.icon.installEventFilter(self)
         self.listWidget.currentRowChanged.connect(self.Switch)
         self.listWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -47,6 +49,11 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.stackedWidget.addWidget(self.owner().leaveMsgForm)
         self.stackedWidget.addWidget(self.owner().chatForm)
 
+    def SetPicture(self, data):
+        a = QPixmap()
+        a.loadFromData(data)
+        self.pictureData = data
+        self.icon.setPixmap(a)
 
     def Switch(self, index):
         # data = {
@@ -82,3 +89,14 @@ class QtUser(QtWidgets.QWidget, Ui_User):
             self.signButton.setEnabled(True)
             self.signButton.setText("签到")
         self.update()
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.LeftButton:
+                if self.pictureData:
+                    QtImgMgr().ShowImg(self.pictureData)
+                return True
+            else:
+                return False
+        else:
+            return super(self.__class__, self).eventFilter(obj, event)

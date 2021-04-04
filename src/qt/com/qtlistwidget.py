@@ -1,11 +1,14 @@
+import weakref
+
 from PySide2.QtCore import Qt, QSize
-from PySide2.QtGui import QPixmap, QColor, QIntValidator, QImage, QFont
+from PySide2.QtGui import QPixmap, QColor, QIntValidator, QImage, QFont, QCursor
 from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
-    QScroller, QGridLayout, QSpacerItem, QSizePolicy
+    QScroller, QGridLayout, QSpacerItem, QSizePolicy, QMenu, QApplication
 
 from conf import config
 from resources import resources
 from src.qt.com.qtcomment import QtComment
+from src.qt.com.qtimg import QtImg, QtImgMgr
 from src.qt.util.qttask import QtTask
 from src.util import ToolUtil
 from src.util.status import Status
@@ -18,6 +21,7 @@ class QtIntLimit(QIntValidator):
     def fixup(self, input: str) -> str:
         return str(self.top())
 
+
 class ItemWidget(QWidget):
     def __init__(self, _id, title, index, info, param, *args, **kwargs):
         super(ItemWidget, self).__init__(*args, **kwargs)
@@ -28,6 +32,7 @@ class ItemWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 20, 10, 0)
         # 图片label
+        self.pictureData = None
         self.picIcon = QLabel(self)
         # self.picIcon.setCursor(Qt.PointingHandCursor)
         # self.picIcon.setScaledContents(True)
@@ -94,6 +99,7 @@ class ItemWidget(QWidget):
     def SetPicture(self, data):
         if not data:
             return
+        self.pictureData = data
         pic = QPixmap()
         pic.loadFromData(data)
         # maxW = self.picIcon.width()
@@ -119,7 +125,7 @@ class ItemWidget(QWidget):
 
 
 class QtBookList(QListWidget):
-    def __init__(self, parent, name):
+    def __init__(self, parent, name, owner):
         QListWidget.__init__(self, parent)
         self.page = 1
         self.pages = 1
@@ -128,6 +134,8 @@ class QtBookList(QListWidget):
         self.isLoadingPage = False
         self.LoadCallBack = None
         self.parentId = -1
+        self.popMenu = None
+        self.owner = weakref.ref(owner)
 
     def GetName(self):
         return self.name + "-QtBookList"
@@ -140,6 +148,30 @@ class QtBookList(QListWidget):
         self.setWrapping(True)
         self.setResizeMode(self.Adjust)
         self.LoadCallBack = callBack
+
+        self.popMenu = QMenu(self)
+        action = self.popMenu.addAction("打开")
+        action.triggered.connect(self.OpenBookInfoHandler)
+        action = self.popMenu.addAction("查看封面")
+        action.triggered.connect(self.OpenPicture)
+        action = self.popMenu.addAction("复制标题")
+        action.triggered.connect(self.CopyHandler)
+        action = self.popMenu.addAction("下载")
+        action.triggered.connect(self.DownloadHandler)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.doubleClicked.connect(self.OpenBookInfo)
+        self.customContextMenuRequested.connect(self.SelectMenu)
+
+    def InstallCategory(self):
+        self.doubleClicked.disconnect(self.OpenBookInfo)
+        self.popMenu = QMenu(self)
+        action = self.popMenu.addAction("查看封面")
+        action.triggered.connect(self.OpenPicture)
+        return
+
+    def InstallDel(self):
+        action = self.popMenu.addAction("刪除")
+        action.triggered.connect(self.DelHandler)
 
     def InitUser(self, callBack=None):
         self.setFrameShape(self.NoFrame)  # 无边框
@@ -219,6 +251,69 @@ class QtBookList(QListWidget):
         # 防止异步加载时，信息错乱
         QtTask().CancelTasks(self.GetName())
 
+    def SelectMenu(self, pos):
+        index = self.indexAt(pos)
+        if index.isValid():
+            self.popMenu.exec_(QCursor.pos())
+        pass
+
+    def DownloadHandler(self):
+        selected = self.selectedItems()
+        for item in selected:
+            widget = self.itemWidget(item)
+            self.owner().epsInfoForm.OpenEpsInfo(widget.GetId())
+        pass
+
+    def OpenBookInfoHandler(self):
+        selected = self.selectedItems()
+        for item in selected:
+            widget = self.itemWidget(item)
+            self.owner().bookInfoForm.OpenBook(widget.GetId())
+            return
+
+    def CopyHandler(self):
+        selected = self.selectedItems()
+        if not selected:
+            return
+
+        data = ''
+        for item in selected:
+            widget = self.itemWidget(item)
+            data += widget.GetTitle() + str("\r\n")
+        clipboard = QApplication.clipboard()
+        data = data.strip("\r\n")
+        clipboard.setText(data)
+        pass
+
+    def DelHandler(self):
+        bookIds = set()
+        selected = self.selectedItems()
+        for item in selected:
+            widget = self.itemWidget(item)
+            bookIds.add(widget.GetId())
+        if not bookIds:
+            return
+        self.parent().DelCallBack(bookIds)
+
+    def OpenBookInfo(self, modelIndex):
+        index = modelIndex.row()
+        item = self.item(index)
+        if not item:
+            return
+        widget = self.itemWidget(item)
+        if not widget:
+            return
+        bookId = widget.id
+        if not bookId:
+            return
+        self.owner().bookInfoForm.OpenBook(bookId)
+
+    def OpenPicture(self):
+        selected = self.selectedItems()
+        for item in selected:
+            widget = self.itemWidget(item)
+            QtImgMgr().ShowImg(widget.pictureData)
+            return
 
 class QtCategoryList(QListWidget):
     def __init__(self, parent):

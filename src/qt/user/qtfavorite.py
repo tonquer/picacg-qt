@@ -5,14 +5,14 @@ from PySide2.QtGui import QCursor
 from PySide2.QtWidgets import QMenu, QApplication
 from PySide2.QtCore import Qt
 
+from src.index.book import BookMgr
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
-from src.qt.com.qtmenu import QtBookListMenu
 from src.user.user import User
 from src.util.status import Status
 from ui.favorite import Ui_favorite
 
 
-class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtBookListMenu):
+class QtFavorite(QtWidgets.QWidget, Ui_favorite):
     def __init__(self, owner):
         super(self.__class__, self).__init__(owner)
         Ui_favorite.__init__(self)
@@ -23,13 +23,13 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtBookListMenu):
         self.dealCount = 0
         self.dirty = False
 
-        self.bookList = QtBookList(self, self.__class__.__name__)
-        QtBookListMenu.__init__(self)
+        self.bookList = QtBookList(self, self.__class__.__name__, owner)
         self.bookList.InitBook(self.LoadNextPage)
         self.gridLayout_3.addWidget(self.bookList)
 
         self.lineEdit.setValidator(QtIntLimit(1, 1, self))
         self.sortList = ["dd", "da"]
+        self.bookList.InstallDel()
 
     def SwitchCurrent(self):
         self.RefreshDataFocus()
@@ -71,6 +71,10 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtBookListMenu):
         self.dealCount = len(bookIds)
         for bookId in bookIds:
             self.owner().qtTask.AddHttpTask(lambda x: User().AddAndDelFavorites(bookId, x), self.DelAndFavoritesBack)
+            info = BookMgr().books.get(bookId)
+            if info:
+                info.isFavourite = False
+
         pass
 
     def DelAndFavoritesBack(self, msg):

@@ -274,5 +274,25 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>toolButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ChatRoomMsg</receiver>
+   <slot>OpenAudioPath()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>145</x>
+     <y>129</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>81</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>OpenAudioPath()</slot>
+ </slots>
 </ui>

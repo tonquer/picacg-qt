@@ -17,13 +17,13 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
         self.setupUi(self)
         self.owner = weakref.ref(owner)
         self.closeFlag = self.__class__.__name__
-        self.listWidget = QtBookList(None, self.__class__.__name__)
+        self.listWidget = QtBookList(None, self.__class__.__name__, owner)
         # self.gridLayout_3.addWidget(self.listWidget, 0, 0, 1, 1)
 
         self.listWidget.InitUser(self.LoadNextPage)
         self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
 
-        self.childrenListWidget = QtBookList(None, self.__class__.__name__)
+        self.childrenListWidget = QtBookList(None, self.__class__.__name__, owner)
         self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
 
         self.childrenWidget = QtWidgets.QWidget()

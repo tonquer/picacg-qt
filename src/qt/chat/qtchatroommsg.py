@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets
-from PySide2.QtCore import QEvent
-from PySide2.QtGui import QPixmap, Qt, QIcon, QCursor
+from PySide2.QtCore import QEvent, QUrl, QProcess
+from PySide2.QtGui import QPixmap, Qt, QIcon, QCursor, QDesktopServices
 from PySide2.QtWebSockets import QWebSocket
 
 from resources.resources import DataMgr
@@ -32,6 +32,7 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
         self.picLabel.setScaledContents(True)
         self.picLabel.setAttribute(Qt.WA_TranslucentBackground)
         self.commentLabel.setWordWrap(True)
+        self.toolButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         # self.setStyleSheet("""
         #     background:transparent;
         #     border:2px solid red;
@@ -134,4 +135,11 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
     def At(self):
         if self.chatRoom:
             self.chatRoom.SetAtLabel(self.nameLabel.text())
+        return
+
+    def OpenAudioPath(self):
+        if self.audioData:
+            process = QProcess()
+            path = "explorer.exe /select,\"{}\"".format(self.audioData)
+            process.startDetached(path)
         return

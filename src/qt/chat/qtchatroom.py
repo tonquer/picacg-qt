@@ -1,6 +1,8 @@
 import base64
 import json
 import os
+import random
+import time
 
 from PySide2 import QtWidgets, QtWebSockets
 from PySide2.QtCore import Signal, QTimer, QSize
@@ -153,7 +155,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         info = QtChatRoomMsg(self)
         at = data.get('at')
         if at:
-            msg = at.replace("嗶咔_", "@") + "\n" + msg
+            msg = "<font color=#1661ab>{}</font>".format(at.replace("嗶咔_", "@")) + "\n" + msg
         info.commentLabel.setText(msg)
         info.nameLabel.setText(name)
         info.levelLabel.setText(" LV"+str(level)+" ")
@@ -182,8 +184,19 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
             info.replayLabel.setVisible(False)
             info.commentLabel.setVisible(False)
             info.toolButton.setVisible(True)
-            info.audioData = audio
-            # info.toolButton.setText("")
+            try:
+                saveName = str(int(time.time())) + "_" + str(random.randint(1, 1000)) + ".3gp"
+                info.toolButton.setText(saveName)
+                path = os.path.join(config.SavePath, config.ChatSavePath)
+                saveName = os.path.join(path, saveName)
+                info.audioData = saveName
+                if not os.path.isdir(path):
+                    os.makedirs(path)
+                f = open(saveName, "wb")
+                f.write(audio)
+                f.close()
+            except Exception as es:
+                Log.Error(es)
         else:
             info.toolButton.setVisible(False)
 

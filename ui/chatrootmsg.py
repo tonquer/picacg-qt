@@ -139,6 +139,7 @@ class Ui_ChatRoomMsg(object):
 
 
         self.retranslateUi(ChatRoomMsg)
+        self.toolButton.clicked.connect(ChatRoomMsg.OpenAudioPath)
 
         QMetaObject.connectSlotsByName(ChatRoomMsg)
     # setupUi

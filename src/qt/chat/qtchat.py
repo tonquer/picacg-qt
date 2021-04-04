@@ -13,7 +13,7 @@ class QtChat(QtWidgets.QWidget):
         super(self.__class__, self).__init__(owner)
         self.owner = weakref.ref(owner)
         self.gridLayout = QGridLayout(self)
-        self.listWidget = QtBookList(None, self.__class__.__name__)
+        self.listWidget = QtBookList(None, self.__class__.__name__, owner)
         self.listWidget.InitUser()
         self.gridLayout.addWidget(self.listWidget)
         self.closeFlag = self.__class__.__name__

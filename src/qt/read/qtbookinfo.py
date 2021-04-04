@@ -85,11 +85,11 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
         self.epsLayout.addWidget(self.epsListWidget)
 
-        self.listWidget = QtBookList(self, self.__class__.__name__)
+        self.listWidget = QtBookList(self, self.__class__.__name__, owner)
         self.listWidget.InitUser(self.LoadNextPage)
         self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
 
-        self.childrenListWidget = QtBookList(None, self.__class__.__name__)
+        self.childrenListWidget = QtBookList(None, self.__class__.__name__, owner)
         self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
 
         self.childrenWidget = QtWidgets.QWidget()
@@ -164,6 +164,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def OpenBook(self, bookId):
         self.bookId = bookId
         self.setWindowTitle(self.bookId)
+        self.setFocus()
         # if self.bookId in self.owner().downloadForm.downloadDict:
         #     self.download.setEnabled(False)
         # else:

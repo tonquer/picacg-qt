@@ -3,17 +3,29 @@ import sys
 import logging
 import time
 
+from conf import config
+
 
 class Log(object):
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
     @staticmethod
+    def UpdateLoggingLevel():
+        if config.LogIndex == 0:
+            Log.logger.setLevel(logging.WARN)
+        elif config.LogIndex == 1:
+            Log.logger.setLevel(logging.INFO)
+        elif config.LogIndex == 2:
+            Log.logger.setLevel(logging.DEBUG)
+        return
+
+    @staticmethod
     def Init():
         formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
 
         ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
+        ch.setLevel(logging.DEBUG)
         ch.setFormatter(formatter)
 
         Log.logger.addHandler(ch)
@@ -23,7 +35,7 @@ class Log(object):
         day = time.strftime('%Y%m%d', time.localtime(time.time()))
         logfile = os.path.join("logs", day+".log")
         fh = logging.FileHandler(logfile, mode='a', encoding="utf-8")
-        fh.setLevel(logging.INFO)
+        fh.setLevel(logging.DEBUG)
         formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
         fh.setFormatter(formatter)
         Log.logger.addHandler(fh)
