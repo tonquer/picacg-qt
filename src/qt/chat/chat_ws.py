@@ -1,6 +1,7 @@
 import weakref
 
 import websocket
+from queue import Queue
 
 from conf import config
 from src.util import Log
@@ -17,18 +18,50 @@ class ChatWebSocket(threading.Thread):
         threading.Thread.__init__(self)
         self._parent = weakref.ref(parent)
         self.ws = None
+        self.sendThread = threading.Thread(target=self.SendDataRun)
+        self.sendThread.setDaemon(True)
+        self.sendThread.start()
+        self._inQueue = Queue()
         pass
 
     @property
     def parent(self):
         return self._parent()
 
-    def Send(self, msg):
+    def SendDataRun(self):
+        while True:
+            try:
+                task = self._inQueue.get(True)
+            except Exception as es:
+                continue
+                pass
+            self._inQueue.task_done()
+            try:
+                self._SendData(task)
+            except Exception as es:
+                Log.Error(es)
+        pass
+
+    def _SendData(self, data):
+        # Log.Info("ws: send img data")
+        self._Send(data)
+        # Log.Info("ws: send img success")
+        if "send_image" in data:
+            self.parent.websocket.emit(self.parent.SendImg, data)
+        else:
+            self.parent.websocket.emit(self.parent.SendMsg2, data)
+        return
+
+    def _Send(self, msg):
         try:
             if self.ws:
                 self.ws.send(msg)
         except Exception as es:
             Log.Error(es)
+
+    def Send(self, data):
+        self._inQueue.put(data)
+        return
 
     def on_message(self, ws, message):
         self.parent.websocket.emit(self.parent.Msg, message)
@@ -66,9 +99,9 @@ class ChatWebSocket(threading.Thread):
                     host = data
                     port = 80
 
-                ws.run_forever(http_proxy_host=host, http_proxy_port=port)
+                ws.run_forever(ping_interval=30, http_proxy_host=host, http_proxy_port=port)
             else:
-                ws.run_forever()
+                ws.run_forever(ping_interval=30)
 
         thread = threading.Thread(target=Run)
         thread.setDaemon(True)

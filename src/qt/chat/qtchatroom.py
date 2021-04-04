@@ -1,13 +1,16 @@
 import base64
 import json
+import os
 
 from PySide2 import QtWidgets, QtWebSockets
-from PySide2.QtCore import Signal, QTimer
-from PySide2.QtGui import QPixmap
+from PySide2.QtCore import Signal, QTimer, QSize
+from PySide2.QtGui import QPixmap, QFont
+from PySide2.QtWidgets import QFileDialog, QLabel, QListWidgetItem
 
 from conf import config
 from src.qt.chat.chat_ws import ChatWebSocket
 from src.qt.chat.qtchatroommsg import QtChatRoomMsg
+from src.qt.com.qticon import IconList
 from src.qt.com.qtloading import QtLoading
 from src.qt.util.qttask import QtTask
 from src.user.user import User
@@ -23,6 +26,8 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
     Leave = 2
     Msg = 3
     Error = 4
+    SendImg = 5
+    SendMsg2 = 6
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -44,9 +49,26 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         self.msgInfo = {}
         self.removeMsgId = 0
         self.indexMsgId = 0
-        self.maxMsgInfo = 100
+        self.maxMsgInfo = 1000
         self.loadingForm = QtLoading(self)
-
+        self.replyName = ""
+        self.reply = ""
+        self.atName = ""
+        self.listWidget.setFrameShape(self.listWidget.NoFrame)  # 无边框
+        self.listWidget.setFlow(self.listWidget.LeftToRight)  # 从左到右
+        self.listWidget.setWrapping(True)
+        self.listWidget.setResizeMode(self.listWidget.Adjust)
+        self.listWidget.itemClicked.connect(self.IconSelect)
+        self.cachePath = "."
+        f = QFont()
+        f.setPointSize(14)
+        for icon in IconList:
+            item = QListWidgetItem(icon)
+            item.setTextAlignment(Qt.AlignCenter)
+            item.setFont(f)
+            item.setSizeHint(QSize(40, 40))
+            self.listWidget.addItem(item)
+        self.listWidget.setVisible(False)
 
     def closeEvent(self, event) -> None:
         self.socket.Stop()
@@ -110,6 +132,10 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
                 pass
             elif data[0] == "broadcast_audio":
                 self._RecvBroadcastMsg(data[1])
+            elif data[0] == "send_image":
+                self._RecvBroadcastMsg(data[1])
+            elif data[0] == "send_message":
+                self._RecvBroadcastMsg(data[1])
             else:
                 a = data[1]
         return
@@ -124,11 +150,15 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         name = data.get("name", "")
         level = data.get("level")
         title = data.get("title")
-        info = QtChatRoomMsg()
+        info = QtChatRoomMsg(self)
+        at = data.get('at')
+        if at:
+            msg = at.replace("嗶咔_", "@") + "\n" + msg
         info.commentLabel.setText(msg)
         info.nameLabel.setText(name)
         info.levelLabel.setText(" LV"+str(level)+" ")
         info.titleLabel.setText(" " + title + " ")
+        info.indexLabel.setText("{}楼".format(str(self.indexMsgId + 1)))
         # info.numLabel.setText("{}楼".format(str(self.indexMsgId+1)))
         info.infoLabel.setText(data.get("platform", "")+" ")
         imageData = data.get("image")
@@ -200,6 +230,8 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         if self.url:
             return
         self.show()
+        self.atLabel.setVisible(False)
+        self.replyLabel.setVisible(False)
         self.url = url
         self.nameLabel.setText(name)
         self.loadingForm.show()
@@ -215,6 +247,12 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
             self.JoinRoom()
         elif taskType == self.Error:
             pass
+        elif taskType == self.SendImg:
+            self.picButton.setEnabled(True)
+            self.picButton.setText("图片")
+            self.ReceviveMsg(data)
+        elif taskType == self.SendMsg2:
+            self.ReceviveMsg(data)
 
     def SliderScroll(self):
         # print(self.scrollArea.verticalScrollBar().value(), self.maxScrollArea,
@@ -223,25 +261,98 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
             self.scrollArea.verticalScrollBar().setValue(self.scrollArea.verticalScrollBar().maximum())
         self.maxScrollArea = self.scrollArea.verticalScrollBar().maximum()
 
-    def SendMsg(self):
-        msg = self.lineEdit.text()
-        if not msg:
+    def SendMsg(self, imageData=None):
+        msg = self.textEdit.toPlainText()
+        if not msg and not imageData:
             return
         info = dict(User().userInfo)
         if User().avatar:
             info['avatar'] = "https://storage.wikawika.xyz" + "/static/" + User().avatar.get("path")
-        info['at'] = ""
         info['audio'] = ""
-        info['message'] = msg
-        info['reply'] = ""
-        info['reply_name'] = ""
-        info['image'] = ""
         info['block_user_id'] = ""
         info['platform'] = "windows"
-        data = "42" + json.dumps(["send_message", info])
-        self.lineEdit.setText("")
+        if not imageData:
+            info['reply_name'] = ""
+            info['at'] = ""
+            info['reply'] = ""
+            if self.atLabel.isVisible() and self.atName:
+                info['at'] = "嗶咔_" + self.atName
+            if self.replyLabel.isVisible() and self.replyName:
+                info['reply'] = self.reply
+                info['reply_name'] = self.replyName
+            info['message'] = msg
+            sendType = "send_message"
+            data = "42" + json.dumps([sendType, info])
+            self.textEdit.setText("")
+            self.replyLabel.setVisible(False)
+            self.atLabel.setVisible(False)
+        else:
+            info['image'] = imageData
+            sendType = "send_image"
+            data = "42" + json.dumps([sendType, info])
+            self.picButton.setEnabled(False)
+            self.picButton.setText("正在发送")
+
         self.socket.Send(data)
-        self._RecvBroadcastMsg(info)
+
+    def OpenPicture(self):
+        try:
+            filename = QFileDialog.getOpenFileName(self, "Open Image", self.cachePath, "Image Files(*.jpg *.png)")
+            if filename and len(filename) > 1:
+                name = filename[0]
+                picFormat = filename[1]
+                baseName = os.path.basename(name)
+                if baseName[-3:] == "png":
+                    picFormat = "png"
+                elif baseName[-3:] == "jpg":
+                    picFormat = "jpeg"
+                elif baseName[-3:] == "gif":
+                    picFormat = "gif"
+                else:
+                    return
+
+                if os.path.isfile(name):
+                    self.cachePath = os.path.dirname(name)
+
+                    f = open(name, "rb")
+                    data = f.read()
+                    f.close()
+                    imgData = base64.b64encode(data).decode("utf-8")
+                    imgData = "data:image/" + picFormat + ";base64," + imgData
+                    self.SendMsg(imgData)
+        except Exception as ex:
+            Log.Error(ex)
+        return
 
     def Test(self):
         pass
+
+    def SetAtLabel(self, name):
+
+        self.atName = name
+        self.atLabel.setText("@" + name + ":")
+        self.atLabel.setVisible(True)
+
+    def SetReplyLabel(self, name, text):
+        self.replyName = name
+        self.reply = text
+        self.replyLabel.setText(name + ":" + text)
+        self.replyLabel.setVisible(True)
+
+    def SetEnable1(self):
+        self.atLabel.setVisible(False)
+        return
+
+    def SetEnable2(self):
+        self.replyLabel.setVisible(False)
+        return
+
+    def OpenIcon(self):
+        self.listWidget.setVisible(not self.listWidget.isVisible())
+        return
+
+    def IconSelect(self, item):
+        data = item.text()
+        text = self.textEdit.toPlainText()
+        self.textEdit.setText(text + data)
+        self.listWidget.setVisible(False)

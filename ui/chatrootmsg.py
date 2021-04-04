@@ -41,7 +41,7 @@ class Ui_ChatRoomMsg(object):
         self.picLabel.setAlignment(Qt.AlignCenter)
         self.label = QLabel(self.frame)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(0, 0, 100, 100))
+        self.label.setGeometry(QRect(0, 0, 100, 120))
         self.label.setMinimumSize(QSize(100, 100))
 
         self.verticalLayout.addWidget(self.frame)
@@ -67,6 +67,11 @@ class Ui_ChatRoomMsg(object):
         self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(4, -1, 4, -1)
+        self.indexLabel = QLabel(ChatRoomMsg)
+        self.indexLabel.setObjectName(u"indexLabel")
+
+        self.horizontalLayout.addWidget(self.indexLabel)
+
         self.levelLabel = QLabel(ChatRoomMsg)
         self.levelLabel.setObjectName(u"levelLabel")
         self.levelLabel.setMinimumSize(QSize(0, 20))
@@ -143,6 +148,7 @@ class Ui_ChatRoomMsg(object):
         self.picLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))
         self.nameLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))
+        self.indexLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"X\u697c", None))
         self.levelLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"LV", None))
         self.titleLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))
         self.replayLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))

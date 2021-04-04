@@ -1,16 +1,16 @@
 from PySide2 import QtWidgets
 from PySide2.QtCore import QEvent
-from PySide2.QtGui import QPixmap, Qt, QIcon
+from PySide2.QtGui import QPixmap, Qt, QIcon, QCursor
 from PySide2.QtWebSockets import QWebSocket
 
 from resources.resources import DataMgr
 from src.qt.com.qtimg import QtImgMgr
 from src.util import Log
-from ui.chatrootmsg import Ui_ChatRoomMsg
+from ui.chatrootmsg import Ui_ChatRoomMsg, QMenu, QApplication
 
 
 class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
-    def __init__(self):
+    def __init__(self, chatRoom):
         super(self.__class__, self).__init__()
         Ui_ChatRoomMsg.__init__(self)
         self.setupUi(self)
@@ -57,6 +57,24 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
         p = QPixmap()
         p.loadFromData(DataMgr().GetData("audio"))
         self.toolButton.setIcon(QIcon(p))
+        self.popMenu = QMenu(self)
+
+        action = self.popMenu.addAction("回复")
+        action.triggered.connect(self.Reply)
+
+        action = self.popMenu.addAction("@")
+        action.triggered.connect(self.At)
+
+        action = self.popMenu.addAction("复制")
+        action.triggered.connect(self.CopyHandler)
+
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.SelectMenu)
+        self.chatRoom = chatRoom
+
+    def setParent(self, parent):
+        self.chatRoom = None
+        return super(self.__class__, self).setParent(parent)
 
     def SetPicture(self, data):
         pic = QPixmap()
@@ -76,12 +94,14 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
         pic = QPixmap()
         pic.loadFromData(data)
         self.data = data
-        newPic = pic.scaled(200, 300, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        newPic = pic.scaled(500, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # print(newPic.height(), newPic.width())
         self.commentLabel.setCursor(Qt.PointingHandCursor)
         self.commentLabel.setScaledContents(True)
         self.commentLabel.setAttribute(Qt.WA_TranslucentBackground)
         self.commentLabel.setPixmap(newPic)
         self.commentLabel.setMinimumSize(newPic.width(), newPic.height())
+        self.commentLabel.setMaximumSize(newPic.width(), newPic.height())
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
@@ -95,3 +115,23 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
                 return False
         else:
             return super(self.__class__, self).eventFilter(obj, event)
+
+    def SelectMenu(self, pos):
+        self.popMenu.exec_(QCursor.pos())
+        pass
+
+    def CopyHandler(self):
+        if self.commentLabel.text():
+            clipboard = QApplication.clipboard()
+            clipboard.setText(self.commentLabel.text())
+        return
+
+    def Reply(self):
+        if self.chatRoom:
+            self.chatRoom.SetReplyLabel(self.nameLabel.text(), self.commentLabel.text())
+        return
+
+    def At(self):
+        if self.chatRoom:
+            self.chatRoom.SetAtLabel(self.nameLabel.text())
+        return

@@ -204,7 +204,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
             return
         self.comboBox.setEnabled(False)
         self.changeButton.setEnabled(False)
-
+        self.index = self.comboBox.currentIndex()
         index = self.comboBox.currentIndex()
         model = ToolUtil.GetModelByIndex(index)
         QtTask().AddConvertTask("", QtImgMgr().data, model, self.AddConvertBack,
@@ -250,7 +250,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
     def ChangeModel(self, index):
         if self.comboBox.currentIndex() == self.index:
             return
-        self.index = self.comboBox.currentIndex()
+        # self.index = self.comboBox.currentIndex()
         self.changeButton.setText("转换")
         self.changeButton.setEnabled(True)
         return
