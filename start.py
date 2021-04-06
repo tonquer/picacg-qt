@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """第一个程序"""
-from PyQt5 import QtWidgets, QtCore, QtGui  # 导入PyQt5部件
+from PySide2 import QtWidgets  # 导入PySide2部件
 import sys
 sys.path.append("lib")
 import waifu2x
@@ -16,5 +16,5 @@ if __name__ == "__main__":
 
     main.show()  # 显示窗体
     main.Init()
-    sys.exit(app.exec())  # 运行程序
+    sys.exit(app.exec_())  # 运行程序
     waifu2x.Stop()
