@@ -27,6 +27,7 @@
 2. 解压zip
 3. 打开start.exe
 4. 后续有更新，只需要下载最新版本覆盖原目录即可
+5. 如果无法初始化waifu2x，请安装[Vs运行库](https://download.visualstudio.microsoft.com/download/pr/366c0fb9-fe05-4b58-949a-5bc36e50e370/015EDD4E5D36E053B23A01ADB77A2B12444D3FB6ECCEFE23E3A8CD6388616A16/VC_redist.x64.exe)，如果还是无法启用，说明你的电脑不支持vulkan。
 
 ## 如何编译
 1. git clone https://github.com/tonquer/picacg-windows.git
