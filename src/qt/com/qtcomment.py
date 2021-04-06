@@ -1,9 +1,10 @@
 from PySide2 import QtWidgets
-from PySide2.QtCore import QEvent
+from PySide2.QtCore import QEvent, Qt
+from PySide2.QtGui import QPixmap
 
 from resources.resources import DataMgr
 from src.qt.com.qtimg import QtImgMgr
-from ui.comment import Ui_Comment, Qt, QPixmap
+from ui.comment import Ui_Comment
 
 
 class QtComment(QtWidgets.QWidget, Ui_Comment):

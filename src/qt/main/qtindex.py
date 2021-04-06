@@ -3,13 +3,13 @@ import weakref
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QPixmap
+from PySide2.QtGui import QPixmap, QIcon
 
 from resources.resources import DataMgr
 from src.qt.com.qtlistwidget import QtBookList
 from src.server import Server, req, Status, Log
 from src.user.user import User
-from ui.index import Ui_Index, QIcon
+from ui.index import Ui_Index
 
 
 class QtIndex(QtWidgets.QWidget, Ui_Index):

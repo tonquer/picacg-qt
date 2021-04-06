@@ -32,7 +32,6 @@ from src.qt.user.qtuser import QtUser
 from src.server import Server, req
 from src.util import Log
 from ui.main import Ui_MainWindow
-import waifu2x
 
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -129,13 +128,26 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settingForm.ExitSaveSetting(self.size(), self.bookInfoForm.size(), self.qtReadImg.size(), userId, passwd)
 
     def Init(self):
-        stat = waifu2x.Init(config.Encode, config.Waifu2xThread)
-        if stat < 0:
-            self.msgForm.ShowError("waifu2x初始化错误")
-
-        Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode))
-        gpuInfo = waifu2x.GetGpuInfo()
-        self.settingForm.SetGpuInfos(gpuInfo)
+        if config.CanWaifu2x:
+            import waifu2x
+            stat = waifu2x.Init(config.Encode, config.Waifu2xThread)
+            if stat < 0:
+                self.msgForm.ShowError("waifu2x初始化错误")
+            gpuInfo = waifu2x.GetGpuInfo()
+            if gpuInfo:
+                self.settingForm.SetGpuInfos(gpuInfo)
+            Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode))
+        else:
+            self.msgForm.ShowError("waifu2x无法启用")
+            self.settingForm.checkBox.setEnabled(False)
+            self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
+            self.downloadForm.autoConvert = False
+            self.downloadForm.radioButton.setChecked(False)
+            QtImgMgr().obj.radioButton.setChecked(False)
+            QtImgMgr().obj.radioButton.setEnabled(False)
+            QtImgMgr().obj.changeButton.setEnabled(False)
+            QtImgMgr().obj.comboBox.setEnabled(False)
+            config.IsOpenWaifu = 0
 
         self.InitUpdate()
         self.loginForm.Init()

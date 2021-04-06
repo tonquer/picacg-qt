@@ -2,7 +2,6 @@ import hashlib
 import os
 import threading
 import time
-import waifu2x
 import weakref
 from queue import Queue
 
@@ -279,6 +278,9 @@ class QtTask(Singleton, threading.Thread):
         t1.Refresh("RunLoad")
 
     def LoadData(self):
+        if not config.CanWaifu2x:
+            return None
+        import waifu2x
         return waifu2x.Load(10)
 
     def RunLoad(self):
@@ -300,8 +302,11 @@ class QtTask(Singleton, threading.Thread):
                             break
                     if isFind:
                         continue
-
-                    converId = waifu2x.Add(task.imgData, task.model, task.downloadId)
+                    if config.CanWaifu2x:
+                        import waifu2x
+                        converId = waifu2x.Add(task.imgData, task.model, task.downloadId)
+                    else:
+                        converId = -1
                     if converId <= 0:
                         self.convertBack.emit(taskId)
                         continue
@@ -339,4 +344,6 @@ class QtTask(Singleton, threading.Thread):
                 del self.convertLoad[taskId]
         Log.Info("cancel convert taskId, {}".format(taskIds))
         self.convertFlag.pop(cleanFlag)
-        waifu2x.Delete(list(taskIds))
+        if config.CanWaifu2x:
+            import waifu2x
+            waifu2x.Delete(list(taskIds))

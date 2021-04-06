@@ -1,13 +1,14 @@
 import weakref
 
 from PySide2 import QtWidgets
+from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton
 from PySide2.QtCore import QEvent, Qt
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.com.qtlistwidget import QtBookList
 from src.server import Server, req, json, Log, QtTask
-from ui.leavemsg import Ui_LeaveMsg, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton
+from ui.leavemsg import Ui_LeaveMsg
 
 
 class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):

@@ -33,6 +33,8 @@ UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
 UpdateVersion = "v1.1.3"
 
 # waifu2x
+CanWaifu2x = True
+
 Encode = 0
 Waifu2xThread = 2
 Format = "jpg"

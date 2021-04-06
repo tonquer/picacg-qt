@@ -1,5 +1,4 @@
 import weakref
-import waifu2x
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QSize, QMimeData
 from PySide2.QtGui import QPixmap, QPainter, QColor, QImage

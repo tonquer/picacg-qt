@@ -6,7 +6,7 @@ import time
 
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
 from src.util import Log
-from ui.history import Ui_History, QMenu
+from ui.history import Ui_History
 
 
 class QtHistoryData(object):

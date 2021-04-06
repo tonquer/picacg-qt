@@ -5,7 +5,7 @@ import random
 import time
 
 from PySide2 import QtWidgets, QtWebSockets
-from PySide2.QtCore import Signal, QTimer, QSize
+from PySide2.QtCore import Signal, QTimer, QSize, Qt
 from PySide2.QtGui import QPixmap, QFont
 from PySide2.QtWidgets import QFileDialog, QLabel, QListWidgetItem
 
@@ -18,7 +18,7 @@ from src.qt.util.qttask import QtTask
 from src.user.user import User
 from src.util import Log
 from src.util.status import Status
-from ui.chatroom import Ui_ChatRoom, Qt, QUrl
+from ui.chatroom import Ui_ChatRoom
 
 
 class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):

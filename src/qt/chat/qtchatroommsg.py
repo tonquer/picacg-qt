@@ -2,11 +2,12 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import QEvent, QUrl, QProcess
 from PySide2.QtGui import QPixmap, Qt, QIcon, QCursor, QDesktopServices
 from PySide2.QtWebSockets import QWebSocket
+from PySide2.QtWidgets import QMenu, QApplication
 
 from resources.resources import DataMgr
 from src.qt.com.qtimg import QtImgMgr
 from src.util import Log
-from ui.chatrootmsg import Ui_ChatRoomMsg, QMenu, QApplication
+from ui.chatrootmsg import Ui_ChatRoomMsg
 
 
 class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
