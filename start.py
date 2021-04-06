@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 """第一个程序"""
-from PySide2 import QtWidgets  # 导入PySide2部件
 import sys
-sys.path.append("lib")
-import waifu2x
 
+from conf import config
+sys.path.append("lib")
+try:
+    import waifu2x
+    config.CanWaifu2x = True
+except Exception as es:
+    config.CanWaifu2x = False
+
+from PySide2 import QtWidgets  # 导入PySide2部件
 from src.qt.qtmain import BikaQtMainWindow
 from src.util import Log
 
@@ -16,5 +22,7 @@ if __name__ == "__main__":
 
     main.show()  # 显示窗体
     main.Init()
-    sys.exit(app.exec_())  # 运行程序
-    waifu2x.Stop()
+    sts = app.exec_()
+    if config.CanWaifu2x:
+        waifu2x.Stop()
+    sys.exit(sts)  # 运行程序
