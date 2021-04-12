@@ -20,7 +20,6 @@
 - waifu2x-python，修改了waifu2x-ncnn-vulkan部分功能 "https://github.com/tonquer/waifu2x-ncnn-vulkan-python"
 - 由于bika限制上传图片的大小，所以部分图片（尤其是彩图）放在电脑大屏幕上观看会非常糊，所有通过waifu2x功能让图片在电脑上有更好的观感。
 - waifu2x功能使用的是 ""https://github.com/nihui/waifu2x-ncnn-vulkan"" 改进而来，打包成lib目录下的waifu2x.pyd。
-- waifu2x-ncnn-vulkan有三种模型，cunet：效果最好，不过速度太慢，只在下载时默认是此模型。anime_style_art_rgb：看图模式默认此模型，速度快，效果明显，photo：对比下来貌似最差的？。
 
 ## 如何使用
 1. 下载最新的版本 ""https://github.com/tonquer/picacg-windows/releases""
