@@ -1,25 +1,61 @@
 # picacg-windows
-- 哔咔漫画window客户端，界面使用PySide2，已实现分类、搜索、收藏夹、下载、在线观看等功能。
+- 哔咔漫画window客户端，界面使用PySide2。
 - 该项目仅供技术研究使用，请勿用于其他用途。
-
-## 功能介绍
-1. 登陆分流，还原安卓端的三个分流入口
-![image](https://github.com/tonquer/picacg-windows/blob/main/example/1.png)
-2. 分类，搜索，排行，收藏夹使用同一的逻辑，滚轮下滑自动加载下一页，双击打开
-3. 漫画详情，章节列表和评论列表
-![image](https://github.com/tonquer/picacg-windows/blob/main/example/4.png)
-4. 下载功能，目前按漫画名和章节建立目录，图片命名按数字递增
-![image](https://github.com/tonquer/picacg-windows/blob/main/example/2.png)
-5. 看图模式，右键打开关闭工具栏，左右键翻页，上下键移动图片，Alt+滚轮放大缩小，再次点击铺满高度或者铺满宽度可以还原图片
-7. waifu2x功能，可在设置中设置去噪、模型等，尽量使用GPU解码，如果显卡性能较差，建议关闭此功能，下图（关闭/开启效果）。
-![image](https://github.com/tonquer/picacg-windows/blob/main/example/5.png)![image](https://github.com/tonquer/picacg-windows/blob/main/example/6.png)
-
+- 
+## 功能
+- [x] 主页
+  - [x] 魔推荐
+  - [x] 神推荐
+  - [x] 随机本子
+- [x] 分类
+- [x] 用户
+  - [x] 登陆
+  - [x] 注册
+  - [x] 打卡
+  - [x] 收藏夹
+  - [ ] 头像
+  - [ ] 传谕
+  - [ ] 修改信息
+  - [ ] 通知
+- [x] 搜索
+  - [x] 热词
+  - [x] 排序
+  - [x] 封印
+  - [ ] 分类
+- [x] 排行榜
+  - [x] 今日排行
+  - [x] 7日排行
+  - [x] 30日排行
+  - [ ] 骑士榜
+- [x] 聊天室
+  - [x] 文字
+  - [x] 图片
+  - [ ] 语音
+  - [x] 回复
+  - [x] At
+- [x] 漫画详情
+  - [x] 章节
+  - [x] 评论
+  - [x] 看图
+  - [x] waifu2x
+- [x] 下载
+  - [x] 按章节下载
+  - [x] waifu2x
+- [x] 留言板
+  - [x] 子评论
+  - [x] 回复
+- [x] 历史记录
+- [ ] 游戏区
+- [ ] 小电影
+- [ ] 小里番
+- [ ] 锅贴
+- [ ] 画廊
 
 ## waifu2x功能
-- waifu2x是用来提高图片分辨率和去噪点的功能， ""https://github.com/nagadomi/waifu2x"" 
-- waifu2x-python，修改了waifu2x-ncnn-vulkan部分功能 "https://github.com/tonquer/waifu2x-ncnn-vulkan-python"
+- waifu2x是用来提高图片分辨率和去噪点的功能， 介绍 "https://github.com/nagadomi/waifu2x"
+- waifu2x-python，修改了waifu2x-ncnn-vulkan部分功能
 - 由于bika限制上传图片的大小，所以部分图片（尤其是彩图）放在电脑大屏幕上观看会非常糊，所有通过waifu2x功能让图片在电脑上有更好的观感。
-- waifu2x功能使用的是 ""https://github.com/nihui/waifu2x-ncnn-vulkan"" 改进而来，打包成lib目录下的waifu2x.pyd。
+- waifu2x功能使用的是 "https://github.com/tonquer/waifu2x-ncnn-vulkan-python" 改进而来，打包成lib目录下的waifu2x.pyd。
 
 ## 如何使用
 1. 下载最新的版本 ""https://github.com/tonquer/picacg-windows/releases""
