@@ -1,5 +1,4 @@
-import os
-import re
+
 
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
 from PySide2.QtCore import QTimer, QUrl
@@ -9,7 +8,7 @@ from PySide2.QtWidgets import QMessageBox
 from conf import config
 from resources import resources
 from src.qt.chat.qtchat import QtChat
-from src.qt.com.qtimg import QtImg, QtImgMgr
+from src.qt.com.qtimg import  QtImgMgr
 from src.qt.main.qtindex import QtIndex
 from src.qt.menu.qtabout import QtAbout
 from src.qt.read.qtbookinfo import QtBookInfo
@@ -138,13 +137,13 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.settingForm.SetGpuInfos(gpuInfo)
             Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode))
         else:
-            self.msgForm.ShowError("waifu2x无法启用")
+            self.msgForm.ShowError("waifu2x无法启用, "+config.ErrorMsg)
             self.settingForm.checkBox.setEnabled(False)
             self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
             self.downloadForm.autoConvert = False
-            self.downloadForm.radioButton.setChecked(False)
-            QtImgMgr().obj.radioButton.setChecked(False)
+            self.downloadForm.radioButton.setEnabled(False)
             QtImgMgr().obj.radioButton.setEnabled(False)
+            QtImgMgr().obj.changeButton.setEnabled(False)
             QtImgMgr().obj.changeButton.setEnabled(False)
             QtImgMgr().obj.comboBox.setEnabled(False)
             config.IsOpenWaifu = 0
@@ -173,6 +172,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                                         data),
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if r == QMessageBox.Yes:
-                QDesktopServices.openUrl(QUrl("https://github.com/tonquer/picacg-windows/releases"))
+                QDesktopServices.openUrl(QUrl(config.UpdateUrl2))
         except Exception as es:
             Log.Error(es)

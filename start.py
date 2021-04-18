@@ -9,6 +9,7 @@ try:
     config.CanWaifu2x = True
 except Exception as es:
     config.CanWaifu2x = False
+    config.ErrorMsg = es.msg
 
 from PySide2 import QtWidgets  # 导入PySide2部件
 from src.qt.qtmain import BikaQtMainWindow

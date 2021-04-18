@@ -163,6 +163,6 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
     def GetGpuName(self):
         index = config.Encode
-        if index >= len(self.gpuInfos):
+        if index >= len(self.gpuInfos) or index < 0:
             return "GPU"
         return self.gpuInfos[index]

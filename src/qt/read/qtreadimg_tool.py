@@ -227,7 +227,8 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
                 self.stateWaifu.setStyleSheet("color:red;")
             else:
                 self.stateWaifu.setStyleSheet("color:dark;")
-            self.stateWaifu.setText("状态：" + waifuState)
+            if config.CanWaifu2x:
+                self.stateWaifu.setText("状态：" + waifuState)
         if waifuTick or isInit:
             self.tickLabel.setText("耗时：" + str(waifuTick) + "s")
 

@@ -6,6 +6,7 @@ from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QTextCodec
 from PySide2.QtGui import QColor, QPainter, QPixmap, QImage
 from PySide2.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
 
+from conf import config
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.util.qttask import QtTask
 from src.util import Singleton, ToolUtil, Log
@@ -23,18 +24,21 @@ class QtImgMgr(Singleton):
             self.data = data
             self.waifu2xData = None
             QtTask().CancelConver("QtImg")
-            self.obj.comboBox.setEnabled(True)
-            self.obj.changeButton.setEnabled(True)
+            if config.CanWaifu2x:
+                self.obj.comboBox.setEnabled(True)
+                self.obj.changeButton.setEnabled(True)
             self.obj.changeButton.setText("转换")
             self.obj.ShowImg(data)
         elif self.data:
-            self.obj.comboBox.setEnabled(True)
-            self.obj.changeButton.setEnabled(True)
+            if config.CanWaifu2x:
+                self.obj.comboBox.setEnabled(True)
+                self.obj.changeButton.setEnabled(True)
             self.obj.changeButton.setText("转换")
             self.obj.ShowImg(self.data)
         else:
-            self.obj.comboBox.setEnabled(True)
-            self.obj.changeButton.setEnabled(True)
+            if config.CanWaifu2x:
+                self.obj.comboBox.setEnabled(True)
+                self.obj.changeButton.setEnabled(True)
             self.obj.changeButton.setText("转换")
             self.obj.show()
 

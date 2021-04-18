@@ -2,8 +2,8 @@ import weakref
 
 from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import Qt, QSize, QEvent
-from PySide2.QtGui import QIcon, QPixmap
-from PySide2.QtWidgets import QListWidget, QListWidgetItem
+from PySide2.QtGui import  QPixmap
+from PySide2.QtWidgets import  QListWidgetItem
 
 from resources import resources
 from src.qt.com.qtimg import QtImgMgr

@@ -91,6 +91,7 @@ class QtReadImg(QtWidgets.QWidget):
         info = BookMgr().books.get(bookId)
         if info:
             self.category = info.tags[:]
+            self.category.extend(info.categories)
         self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
         self.qtTool.SetData(isInit=True)
         self.graphicsItem.setPixmap(QPixmap())
@@ -196,7 +197,8 @@ class QtReadImg(QtWidgets.QWidget):
             self.graphicsItem.setPixmap(QPixmap())
             self.qtTool.modelBox.setEnabled(False)
             return
-        self.qtTool.modelBox.setEnabled(True)
+        if config.CanWaifu2x:
+            self.qtTool.modelBox.setEnabled(True)
         assert isinstance(p, QtFileData)
         if not isShowWaifu:
             p2 = p.data

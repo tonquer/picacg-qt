@@ -35,6 +35,7 @@ class Book(object):
         self.categories = []      # 分类
         self.tags = []            # tag
         self.eps = []             # 章节列表BookEps
+        self.epsDict = {}
 
     @property
     def id(self):
@@ -89,21 +90,24 @@ class BookMgr(Singleton):
             limit = r.data['eps']["limit"]
             # 优化，如果分页已经加载好了，只需要重新加载更新最后一页即可
 
-            for i, data in enumerate(r.data['eps']['docs']):
-                index = (page -1) * limit + i
-                if len(info.eps) > index:
-                    epsInfo = info.eps[index]
+            for i, data2 in enumerate(r.data['eps']['docs']):
+                # index = (page -1) * limit + i
+                epsId = data2.get('id')
+                if epsId in info.epsDict:
+                    epsInfo = info.epsDict[epsId]
                 else:
                     epsInfo = BookEps()
-                    info.eps.append(epsInfo)
-                ToolUtil.ParseFromData(epsInfo, data)
+                    info.epsDict[epsId] = epsInfo
+                    # info.eps.append(epsInfo)
+                ToolUtil.ParseFromData(epsInfo, data2)
 
-            loadPage = int((len(info.eps)-1) / limit + 1)
+            loadPage = int((len(info.epsDict)-1) / limit + 1)
             nextPage = page + 1
             # 如果已经有了，则从最后那一页加载起就可以了
             if loadPage > nextPage:
                 nextPage = loadPage
 
+            info.eps = list(info.epsDict.values())
             info.eps.sort(key=lambda a: a.order)
 
             if nextPage <= pages:

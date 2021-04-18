@@ -35,9 +35,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
         self.msgForm = QtBubbleLabel(self)
         self.picture.installEventFilter(self)
-        self.title.setGeometry(QRect(328, 240, 329, 27 * 4))
+        # self.title.setGeometry(QRect(328, 240, 329, 27 * 4))
         self.title.setWordWrap(True)
-        self.title.setAlignment(Qt.AlignTop)
+        # self.title.setAlignment(Qt.AlignLeft)
         self.title.setContextMenuPolicy(Qt.CustomContextMenu)
         self.title.customContextMenuRequested.connect(self.CopyTitle)
 
@@ -307,13 +307,15 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         downloadIds = self.owner().downloadForm.GetDownloadCompleteEpsId(self.bookId)
         for index, epsInfo in enumerate(info.eps):
             label = QLabel(epsInfo.title)
+            # label.setWordWrap(True)
             label.setContentsMargins(20, 10, 20, 10)
             item = QListWidgetItem(self.epsListWidget)
             if index in downloadIds:
                 item.setBackground(QColor(18, 161, 130))
             else:
                 item.setBackground(QColor(0,0,0,0))
-            item.setSizeHint(label.sizeHint())
+            item.setSizeHint(label.sizeHint() + QSize(2, 0))
+            item.setToolTip(epsInfo.title)
             self.epsListWidget.setItemWidget(item, label)
         self.tabWidget.setTabText(0, "章节({})".format(str(len(info.eps))))
         return

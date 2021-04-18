@@ -1,14 +1,13 @@
 import weakref
 
 from PySide2.QtCore import Qt, QSize
-from PySide2.QtGui import QPixmap, QColor, QIntValidator, QImage, QFont, QCursor
+from PySide2.QtGui import QPixmap, QColor, QIntValidator,  QFont, QCursor
 from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
-    QScroller, QGridLayout, QSpacerItem, QSizePolicy, QMenu, QApplication
+    QScroller,  QMenu, QApplication
 
 from conf import config
-from resources import resources
 from src.qt.com.qtcomment import QtComment
-from src.qt.com.qtimg import QtImg, QtImgMgr
+from src.qt.com.qtimg import  QtImgMgr
 from src.qt.util.qttask import QtTask
 from src.util import ToolUtil
 from src.util.status import Status

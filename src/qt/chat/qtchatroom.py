@@ -193,7 +193,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
                 if not os.path.isdir(path):
                     os.makedirs(path)
                 f = open(saveName, "wb")
-                f.write(audio)
+                f.write(audio.encode("utf-8"))
                 f.close()
             except Exception as es:
                 Log.Error(es)
