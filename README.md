@@ -1,7 +1,7 @@
 # picacg-windows
 - 哔咔漫画window客户端（现已支持Linux），界面使用PySide2。
 - 该项目仅供技术研究使用，请勿用于其他用途。
-- 
+- 如果觉得本项目对你有所帮助，请点个star关注，感谢支持
 ## 功能
 - [x] 主页
   - [x] 魔推荐
@@ -63,7 +63,7 @@
   2. 解压zip
   3. 打开start.exe
   4. 后续有更新，只需要下载最新版本覆盖原目录即可
-  5. 如果无法初始化waifu2x，请安装[Vs运行库](https://download.visualstudio.microsoft.com/download/pr/366c0fb9-fe05-4b58-949a-   5bc36e50e370/015EDD4E5D36E053B23A01ADB77A2B12444D3FB6ECCEFE23E3A8CD6388616A16/VC_redist.x64.exe)，如果还是无法启用，说明你的电脑不支持vulkan。
+  5. 如果无法初始化waifu2x，请更新显卡驱动，安装 [Vs运行库](https://download.visualstudio.microsoft.com/download/pr/366c0fb9-fe05-4b58-949a-5bc36e50e370/015EDD4E5D36E053B23A01ADB77A2B12444D3FB6ECCEFE23E3A8CD6388616A16/VC_redist.x64.exe)，如果还是无法启用，说明你的电脑不支持vulkan。
   ### Linux (测试使用deepin 20.2)
   1. 下载qt依赖， http://ftp.br.debian.org/debian/pool/main/x/xcb-util/libxcb-util1_0.4.0-1+b1_amd64.deb
   2. 安装依赖，sudo dpkg -i ./libxcb-util1_0.4.0-1+b1_amd64.deb
