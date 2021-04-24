@@ -325,7 +325,7 @@ class QtReadImg(QtWidgets.QWidget):
             return
         assert isinstance(info, QtFileData)
         # path = self.owner().downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
-        QtTask().AddConvertTask(picInfo.path+info.model, info.data, info.model, self.Waifu2xBack, i, self.closeFlag)
+        QtTask().AddConvertTask(picInfo.path+str(info.model.get('model', 0)), info.data, info.model, self.Waifu2xBack, i, self.closeFlag)
         self.waitWaifuPicData.add(i)
 
     def AddDownloadTask(self, i, picInfo):

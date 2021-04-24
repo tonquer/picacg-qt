@@ -27,7 +27,7 @@ class QtFileData(object):
         self.waifuDataSize = 0
         self.waifuData = None
         self.waifuTick = 0
-        self.model = ""
+        self.model = {}
 
         self.downloadSize = 0
 

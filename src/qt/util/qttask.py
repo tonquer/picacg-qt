@@ -50,7 +50,12 @@ class QtDownloadTask(object):
         self.imgData = b""
         self.scale = 0
         self.noise = 0
-        self.model = ""
+        self.model = {
+            "model": 1,
+            "scale": 2,
+            "toH": 100,
+            "toW": 100,
+        }
 
 
 class QtTask(Singleton, threading.Thread):
@@ -256,8 +261,6 @@ class QtTask(Singleton, threading.Thread):
             taskIds.add(self.taskId)
         Log.Debug("add convert info, cachePath:{}, loadPath:{}".format(info.cacheAndLoadPath, info.loadPath))
         self._inQueue.put(self.taskId)
-        Log.Info("add convert info, taskId: {}, converId:{} backParam:{}".format(str(self.taskId), str(self.convertId),
-                                                                               backParam))
         return self.taskId
 
     def HandlerConvertTask(self, taskId, isCallBack=True):
@@ -281,7 +284,7 @@ class QtTask(Singleton, threading.Thread):
         if not config.CanWaifu2x:
             return None
         import waifu2x
-        return waifu2x.Load(10)
+        return waifu2x.load(10)
 
     def RunLoad(self):
         while True:
@@ -304,10 +307,14 @@ class QtTask(Singleton, threading.Thread):
                         continue
                     if config.CanWaifu2x:
                         import waifu2x
-                        converId = waifu2x.Add(task.imgData, task.model, task.downloadId)
+                        sts = waifu2x.add(task.imgData, task.model.get('model', 0), task.downloadId, format="jpg", width=task.model.get("width", 0),
+                                               high=task.model.get("high", 0), scale=task.model.get("scale", 0))
+
+                        Log.Warn("add convert info, taskId: {}, model:{}, sts:{}".format(str(self.taskId), task.model,
+                                                                                                 str(sts)))
                     else:
-                        converId = -1
-                    if converId <= 0:
+                        sts = -1
+                    if sts <= 0:
                         self.convertBack.emit(taskId)
                         continue
                 except Exception as es:
@@ -320,6 +327,9 @@ class QtTask(Singleton, threading.Thread):
             data, convertId, taskId, tick = info
             if taskId not in self.convertLoad:
                 continue
+            Log.Warn("convert suc, taskId: {}, dataLen:{}, sts:{} tick:{}".format(str(taskId), len(data),
+                                                                                          str(convertId),
+                                                                                          str(tick)))
             info = self.convertLoad[taskId]
             assert isinstance(info, QtDownloadTask)
             info.saveData = data
@@ -346,4 +356,4 @@ class QtTask(Singleton, threading.Thread):
         self.convertFlag.pop(cleanFlag)
         if config.CanWaifu2x:
             import waifu2x
-            waifu2x.Delete(list(taskIds))
+            waifu2x.delete(list(taskIds))

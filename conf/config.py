@@ -31,7 +31,7 @@ IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
 UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
-UpdateVersion = "v1.1.4"
+UpdateVersion = "v1.1.5"
 
 # waifu2x
 CanWaifu2x = True
@@ -48,6 +48,7 @@ DownloadModel = 0   # 默认值
 LogIndex = 0
 
 
+Model0 = "cunet"     # 通用
 Model1 = "cunet"     # 通用
 Model2 = "photo"     # 写真
 Model3 = "anime_style_art_rgb"  # 动漫

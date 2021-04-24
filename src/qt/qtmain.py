@@ -129,23 +129,26 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def Init(self):
         if config.CanWaifu2x:
             import waifu2x
-            stat = waifu2x.Init(config.Encode, config.Waifu2xThread)
+            stat = waifu2x.init()
             if stat < 0:
                 self.msgForm.ShowError("waifu2x初始化错误")
-            gpuInfo = waifu2x.GetGpuInfo()
-            if gpuInfo:
-                self.settingForm.SetGpuInfos(gpuInfo)
-            Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode))
+            else:
+                gpuInfo = waifu2x.getGpuInfo()
+                if gpuInfo:
+                    self.settingForm.SetGpuInfos(gpuInfo)
+                waifu2x.initSet(config.Encode, config.Waifu2xThread)
+                Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode))
         else:
             self.msgForm.ShowError("waifu2x无法启用, "+config.ErrorMsg)
             self.settingForm.checkBox.setEnabled(False)
             self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
             self.downloadForm.autoConvert = False
             self.downloadForm.radioButton.setEnabled(False)
-            QtImgMgr().obj.radioButton.setEnabled(False)
+            QtImgMgr().obj.checkBox.setEnabled(False)
             QtImgMgr().obj.changeButton.setEnabled(False)
             QtImgMgr().obj.changeButton.setEnabled(False)
             QtImgMgr().obj.comboBox.setEnabled(False)
+            QtImgMgr().obj.SetStatus(False)
             config.IsOpenWaifu = 0
 
         self.InitUpdate()

@@ -1,0 +1,10 @@
+7767517
+8 8
+Input                    input                    0 1 Input1 0=156 1=156 2=3
+Convolution              conv1_layer              1 1 Input1 conv1_conv1_relu_layer 0=16 1=3 5=1 6=432 9=2 -23310=1,0.100000
+Convolution              conv2_layer              1 1 conv1_conv1_relu_layer conv2_conv2_relu_layer 0=32 1=3 5=1 6=4608 9=2 -23310=1,0.100000
+Convolution              conv3_layer              1 1 conv2_conv2_relu_layer conv3_conv3_relu_layer 0=64 1=3 5=1 6=18432 9=2 -23310=1,0.100000
+Convolution              conv4_layer              1 1 conv3_conv3_relu_layer conv4_conv4_relu_layer 0=128 1=3 5=1 6=73728 9=2 -23310=1,0.100000
+Convolution              conv5_layer              1 1 conv4_conv4_relu_layer conv5_conv5_relu_layer 0=128 1=3 5=1 6=147456 9=2 -23310=1,0.100000
+Convolution              conv6_layer              1 1 conv5_conv5_relu_layer conv6_conv6_relu_layer 0=256 1=3 5=1 6=294912 9=2 -23310=1,0.100000
+Deconvolution            conv7_layer              1 1 conv6_conv6_relu_layer Eltwise4 0=3 1=4 3=2 4=3 5=1 6=12288

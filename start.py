@@ -9,7 +9,8 @@ try:
     config.CanWaifu2x = True
 except Exception as es:
     config.CanWaifu2x = False
-    config.ErrorMsg = es.msg
+    if hasattr(es, "msg"):
+        config.ErrorMsg = es.msg
 
 from PySide2 import QtWidgets  # 导入PySide2部件
 from src.qt.qtmain import BikaQtMainWindow
@@ -25,5 +26,5 @@ if __name__ == "__main__":
     main.Init()
     sts = app.exec_()
     if config.CanWaifu2x:
-        waifu2x.Stop()
+        waifu2x.stop()
     sys.exit(sts)  # 运行程序
