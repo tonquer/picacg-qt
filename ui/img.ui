@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>728</width>
-    <height>603</height>
+    <width>387</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,125 +17,10 @@
    <item row="0" column="0">
     <widget class="QGraphicsView" name="graphicsView"/>
    </item>
-   <item row="1" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
+   <item row="0" column="1">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <widget class="QLabel" name="label_8">
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>分辨率：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="resolutionLabel">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_9">
-         <item>
-          <widget class="QLabel" name="label_10">
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>大 小：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="sizeLabel">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_10">
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="maximumSize">
-            <size>
-             <width>50</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>耗时：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="tickLabel">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="oepnButton">
-         <property name="text">
-          <string>打开图片</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="pushButton_3">
-           <property name="text">
-            <string>缩小</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>放大</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="saveButton">
-         <property name="text">
-          <string>保存图片</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="Line" name="line">
+      <widget class="Line" name="line_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -144,12 +29,41 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
+        <widget class="Line" name="line_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="checkBox">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>waifu2x</string>
          </property>
          <property name="checked">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="ttaModel">
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>画质提升，耗时增加</string>
+         </property>
+         <property name="text">
+          <string>tta模式</string>
          </property>
         </widget>
        </item>
@@ -175,17 +89,10 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>放大倍数</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QLineEdit" name="scaleEdit">
            <property name="maximumSize">
             <size>
-             <width>60</width>
+             <width>160</width>
              <height>16777215</height>
             </size>
            </property>
@@ -196,19 +103,6 @@
             <set>Qt::AlignCenter</set>
            </property>
           </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </item>
@@ -231,13 +125,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>长</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QLineEdit" name="widthEdit">
            <property name="enabled">
             <bool>false</bool>
@@ -255,8 +142,14 @@
          </item>
          <item>
           <widget class="QLabel" name="label_2">
+           <property name="maximumSize">
+            <size>
+             <width>20</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="text">
-            <string>宽</string>
+            <string>x</string>
            </property>
           </widget>
          </item>
@@ -276,19 +169,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
         </layout>
        </item>
        <item>
@@ -302,75 +182,44 @@
             </size>
            </property>
            <property name="text">
-            <string>降噪等级：</string>
+            <string>降噪：</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="radioButton_8">
-           <property name="text">
-            <string>-1</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButton_5">
-           <property name="text">
-            <string>0</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButton_6">
-           <property name="text">
-            <string>1</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButton_4">
-           <property name="text">
-            <string>2</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButton_7">
-           <property name="text">
-            <string>3</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
+          <widget class="QComboBox" name="noiseCombox">
+           <property name="maximumSize">
             <size>
-             <width>40</width>
-             <height>20</height>
+             <width>160</width>
+             <height>16777215</height>
             </size>
            </property>
-          </spacer>
+           <item>
+            <property name="text">
+             <string>3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>-1</string>
+            </property>
+           </item>
+          </widget>
          </item>
         </layout>
        </item>
@@ -393,7 +242,7 @@
           <widget class="QComboBox" name="comboBox">
            <property name="maximumSize">
             <size>
-             <width>130</width>
+             <width>160</width>
              <height>16777215</height>
             </size>
            </property>
@@ -414,29 +263,6 @@
            </item>
           </widget>
          </item>
-         <item>
-          <widget class="QCheckBox" name="ttaModel">
-           <property name="toolTip">
-            <string>画质提升，耗时增加</string>
-           </property>
-           <property name="text">
-            <string>tta模式</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
         </layout>
        </item>
        <item>
@@ -446,7 +272,7 @@
         <widget class="QPushButton" name="changeButton">
          <property name="maximumSize">
           <size>
-           <width>250</width>
+           <width>100</width>
            <height>16777215</height>
           </size>
          </property>
@@ -458,20 +284,190 @@
       </layout>
      </item>
      <item>
-      <spacer name="horizontalSpacer_5">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>分辨率：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="resolutionLabel">
+           <property name="maximumSize">
+            <size>
+             <width>160</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>大 小：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="sizeLabel">
+           <property name="maximumSize">
+            <size>
+             <width>160</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>耗时：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="tickLabel">
+           <property name="maximumSize">
+            <size>
+             <width>160</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="oepnButton">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>打开图片</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_3">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>缩小</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>放大</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="saveButton">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>保存图片</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line_6">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
-         <height>20</height>
+         <width>20</width>
+         <height>40</height>
         </size>
        </property>
       </spacer>
      </item>
      <item>
-      <widget class="Line" name="line_3">
+      <widget class="Line" name="line_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
@@ -484,18 +480,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>changeButton</sender>
+   <sender>checkBox</sender>
    <signal>clicked()</signal>
    <receiver>Img</receiver>
-   <slot>StartWaifu2x()</slot>
+   <slot>SwithPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>518</x>
-     <y>588</y>
+     <x>292</x>
+     <y>38</y>
     </hint>
     <hint type="destinationlabel">
-     <x>488</x>
-     <y>312</y>
+     <x>386</x>
+     <y>545</y>
     </hint>
    </hints>
   </connection>
@@ -506,236 +502,12 @@
    <slot>SavePicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>166</x>
-     <y>588</y>
+     <x>292</x>
+     <y>412</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
      <y>378</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>ReduceScalePic()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>81</x>
-     <y>552</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>0</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>AddScalePic()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>176</x>
-     <y>552</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>232</x>
-     <y>406</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>oepnButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>OpenPicture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>117</x>
-     <y>517</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>0</x>
-     <y>204</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>Img</receiver>
-   <slot>ChangeModel()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>377</x>
-     <y>538</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>616</x>
-     <y>335</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scaleRadio</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>215</x>
-     <y>452</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>179</x>
-     <y>597</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>heighRadio</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>239</x>
-     <y>480</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>221</x>
-     <y>597</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_8</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>280</x>
-     <y>508</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>285</x>
-     <y>597</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_5</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>319</x>
-     <y>508</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>300</x>
-     <y>597</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_6</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>349</x>
-     <y>508</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>357</x>
-     <y>597</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_4</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>394</x>
-     <y>508</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>393</x>
-     <y>597</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_7</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>425</x>
-     <y>508</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>428</x>
-     <y>597</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ttaModel</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>440</x>
-     <y>532</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>486</x>
-     <y>654</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>clicked()</signal>
-   <receiver>Img</receiver>
-   <slot>SwithPicture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>217</x>
-     <y>421</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>777</x>
-     <y>654</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>widthEdit</sender>
-   <signal>textChanged(QString)</signal>
-   <receiver>Img</receiver>
-   <slot>CheckScaleRadio()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>325</x>
-     <y>472</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>250</x>
-     <y>731</y>
     </hint>
    </hints>
   </connection>
@@ -746,12 +518,108 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>468</x>
-     <y>475</y>
+     <x>374</x>
+     <y>115</y>
     </hint>
     <hint type="destinationlabel">
-     <x>632</x>
-     <y>689</y>
+     <x>386</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>ReduceScalePic()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>274</x>
+     <y>354</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>heighRadio</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>CheckScaleRadio()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>264</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ttaModel</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>CheckScaleRadio()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>262</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>386</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>oepnButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>OpenPicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>292</x>
+     <y>317</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>204</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>widthEdit</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>Img</receiver>
+   <slot>CheckScaleRadio()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>313</x>
+     <y>115</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>250</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>AddScalePic()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>292</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>232</x>
+     <y>406</y>
     </hint>
    </hints>
   </connection>
@@ -762,12 +630,76 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>341</x>
-     <y>444</y>
+     <x>374</x>
+     <y>87</y>
     </hint>
     <hint type="destinationlabel">
-     <x>701</x>
-     <y>715</y>
+     <x>386</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scaleRadio</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>CheckScaleRadio()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>268</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>179</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Img</receiver>
+   <slot>ChangeModel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>171</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>386</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>changeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>StartWaifu2x()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>292</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>386</x>
+     <y>312</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noiseCombox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>Img</receiver>
+   <slot>CheckScaleRadio()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>310</x>
+     <y>134</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>636</x>
+     <y>173</y>
     </hint>
    </hints>
   </connection>
@@ -783,7 +715,7 @@
   <slot>CheckScaleRadio()</slot>
  </slots>
  <buttongroups>
-  <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

@@ -13,6 +13,8 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         Ui_Comment.__init__(self)
         self.setupUi(self)
         self.id = ""
+        self.url = ""
+        self.path = ""
         p = QPixmap()
         p.loadFromData(DataMgr.GetData("placeholder_avatar"))
         self.picIcon.setPixmap(p)

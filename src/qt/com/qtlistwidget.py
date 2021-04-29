@@ -25,6 +25,8 @@ class ItemWidget(QWidget):
     def __init__(self, _id, title, index, info, param, *args, **kwargs):
         super(ItemWidget, self).__init__(*args, **kwargs)
         self.id = _id
+        self.url = ""
+        self.path = ""
         self.param = param
         self.setMaximumSize(220, 400)
         self.setMaximumSize(220, 400)
@@ -153,6 +155,8 @@ class QtBookList(QListWidget):
         action.triggered.connect(self.OpenBookInfoHandler)
         action = self.popMenu.addAction("查看封面")
         action.triggered.connect(self.OpenPicture)
+        action = self.popMenu.addAction("重下封面")
+        action.triggered.connect(self.ReDownloadPicture)
         action = self.popMenu.addAction("复制标题")
         action.triggered.connect(self.CopyHandler)
         action = self.popMenu.addAction("下载")
@@ -197,6 +201,8 @@ class QtBookList(QListWidget):
     def AddBookItem(self, _id, title, info="", url="", path="", param="", originalName=""):
         index = self.count()
         iwidget = ItemWidget(_id, title, str(index+1), info, param, self)
+        iwidget.url = url
+        iwidget.path = path
         item = QListWidgetItem(self)
         item.setSizeHint(iwidget.sizeHint())
         self.setItemWidget(item, iwidget)
@@ -215,6 +221,8 @@ class QtBookList(QListWidget):
         iwidget.starLabel.setText("({})".format(likesCount))
         iwidget.levelLabel.setText(" LV" + str(level) + " ")
         iwidget.titleLabel.setText(" " + title + " ")
+        iwidget.url = url
+        iwidget.path = path
         if createdTime:
             timeArray, day = ToolUtil.GetDateStr(createdTime)
             if day >= 1:
@@ -313,6 +321,18 @@ class QtBookList(QListWidget):
             widget = self.itemWidget(item)
             QtImgMgr().ShowImg(widget.pictureData)
             return
+
+    def ReDownloadPicture(self):
+        selected = self.selectedItems()
+        for item in selected:
+            widget = self.itemWidget(item)
+            index = self.row(item)
+            if widget.url and config.IsLoadingPicture:
+                widget.picIcon.setPixmap(None)
+                widget.picIcon.setText("图片加载中")
+                QtTask().AddDownloadTask(widget.url, widget.path, None, self.LoadingPictureComplete, True, index, False,
+                                         self.GetName())
+                pass
 
 class QtCategoryList(QListWidget):
     def __init__(self, parent):

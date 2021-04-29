@@ -137,7 +137,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if gpuInfo:
                     self.settingForm.SetGpuInfos(gpuInfo)
                 waifu2x.initSet(config.Encode, config.Waifu2xThread)
-                Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode))
+                Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode) + " version:" + waifu2x.getVersion())
+                # self.msgForm.ShowMsg("waifu2x初始化成功\n" + waifu2x.getVersion())
         else:
             self.msgForm.ShowError("waifu2x无法启用, "+config.ErrorMsg)
             self.settingForm.checkBox.setEnabled(False)

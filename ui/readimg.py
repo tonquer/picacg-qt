@@ -17,7 +17,7 @@ class Ui_ReadImg(object):
     def setupUi(self, ReadImg):
         if not ReadImg.objectName():
             ReadImg.setObjectName(u"ReadImg")
-        ReadImg.resize(182, 639)
+        ReadImg.resize(207, 647)
         ReadImg.setAutoFillBackground(False)
         ReadImg.setStyleSheet(u"")
         self.gridLayout_2 = QGridLayout(ReadImg)
@@ -343,7 +343,7 @@ class Ui_ReadImg(object):
         self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u5bbd\u5ea6", None))
         self.pushButton.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u5c0f", None))
         self.pushButton_3.setText(QCoreApplication.translate("ReadImg", u"\u653e\u5927", None))
-        self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u590d\u5236\u56fe\u7247", None))
+        self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00\u56fe\u7247\u5de5\u5177", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
         self.returePage.setText(QCoreApplication.translate("ReadImg", u"\u8fd4\u56de", None))
         self.pushButton_4.setText(QCoreApplication.translate("ReadImg", u"\u4e0a\u4e00\u7ae0", None))

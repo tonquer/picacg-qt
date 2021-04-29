@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>182</width>
-    <height>639</height>
+    <width>207</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -347,7 +347,7 @@
        <item>
         <widget class="QPushButton" name="copyButton">
          <property name="text">
-          <string>复制图片</string>
+          <string>打开图片工具</string>
          </property>
         </widget>
        </item>

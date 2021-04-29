@@ -2,8 +2,9 @@ import os
 import time
 
 from PySide2 import QtWidgets, QtGui, QtCore
-from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QTextCodec
-from PySide2.QtGui import QColor, QPainter, QPixmap, QImage
+from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QTextCodec, QRegExp
+from PySide2.QtGui import QColor, QPainter, QPixmap, QImage, QValidator, QRegExpValidator, QDoubleValidator, \
+    QIntValidator
 from PySide2.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
 
 from conf import config
@@ -55,8 +56,14 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.resize(800, 900)
         self.checkBox.setChecked(True)
-        self.index = 1
+        self.index = 0
         self.comboBox.setCurrentIndex(self.index)
+        validator = QIntValidator(0, 9999999)
+        self.heighEdit.setValidator(validator)
+        self.widthEdit.setValidator(validator)
+        exp = QDoubleValidator(0.1, 64, 1)
+        exp.setNotation(exp.StandardNotation)
+        self.scaleEdit.setValidator(exp)
         # self.setWindowFlags(Qt.FramelessWindowHint)
 
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
@@ -90,6 +97,8 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         # self.radioButton_2.installEventFilter(self)
         self.graphicsView.installEventFilter(self)
         self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
+        # tta有BUG，暂时屏蔽 TODO
+        self.ttaModel.setEnabled(False)
 
         self._delta = 0.1
         self.scaleCnt = 0
@@ -141,6 +150,11 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
             else:
                 self.graphicsView.scale(1/1.1, 1/1.1)
 
+    def keyReleaseEvent(self, ev):
+        if ev.key() == Qt.Key_Escape:
+            self.hide()
+            return
+        super(self.__class__, self).keyReleaseEvent(ev)
 
     def resizeEvent(self, event) -> None:
         super(self.__class__, self).resizeEvent(event)
@@ -220,7 +234,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         self.SetStatus(False)
         self.index = self.comboBox.currentIndex()
         index = self.comboBox.currentIndex()
-        noise = int(self.buttonGroup.checkedButton().text())
+        noise = int(self.noiseCombox.currentText())
         if index == 0:
             modelName = "CUNET"
         elif index == 1:
@@ -233,8 +247,10 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
             noiseName = "NO_NOISE"
         else:
             noiseName = "NOISE"+str(noise)
-
-        modelInsence = "MODEL_{}_{}".format(modelName, noiseName)
+        if modelName == "CUNET" and self.scaleRadio.isChecked() and round(float(self.scaleEdit.text()), 1) <= 1:
+            modelInsence = "MODEL_{}_NO_SCALE_{}".format(modelName, noiseName)
+        else:
+            modelInsence = "MODEL_{}_{}".format(modelName, noiseName)
         if self.ttaModel.isChecked():
             modelInsence += "_TTA"
 
@@ -298,7 +314,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         return
 
     def GetStatus(self):
-        data = str(self.buttonGroup.checkedId()) + \
+        data = str(self.noiseCombox.currentText()) + \
             str(self.buttonGroup_2.checkedId()) + \
             str(self.scaleEdit.text()) + \
             str(self.heighEdit.text()) + \
@@ -313,12 +329,12 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         self.scaleEdit.setEnabled(status)
         self.widthEdit.setEnabled(status)
         self.heighEdit.setEnabled(status)
-        self.radioButton_4.setEnabled(status)
-        self.radioButton_5.setEnabled(status)
-        self.radioButton_6.setEnabled(status)
-        self.radioButton_7.setEnabled(status)
-        self.radioButton_8.setEnabled(status)
-        self.ttaModel.setEnabled(status)
+        # self.radioButton_4.setEnabled(status)
+        # self.radioButton_5.setEnabled(status)
+        # self.radioButton_6.setEnabled(status)
+        # self.radioButton_7.setEnabled(status)
+        # self.radioButton_8.setEnabled(status)
+        # self.ttaModel.setEnabled(status)
         self.CheckScaleRadio()
 
     def SetEnable(self):

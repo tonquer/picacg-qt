@@ -310,7 +310,7 @@ class QtTask(Singleton, threading.Thread):
                         sts = waifu2x.add(task.imgData, task.model.get('model', 0), task.downloadId, format="jpg", width=task.model.get("width", 0),
                                                high=task.model.get("high", 0), scale=task.model.get("scale", 0))
 
-                        Log.Warn("add convert info, taskId: {}, model:{}, sts:{}".format(str(self.taskId), task.model,
+                        Log.Warn("add convert info, taskId: {}, model:{}, sts:{}".format(str(task.taskId), task.model,
                                                                                                  str(sts)))
                     else:
                         sts = -1
@@ -327,7 +327,12 @@ class QtTask(Singleton, threading.Thread):
             data, convertId, taskId, tick = info
             if taskId not in self.convertLoad:
                 continue
-            Log.Warn("convert suc, taskId: {}, dataLen:{}, sts:{} tick:{}".format(str(taskId), len(data),
+            if not data:
+                lenData = 0
+            else:
+                lenData = len(data)
+
+            Log.Warn("convert suc, taskId: {}, dataLen:{}, sts:{} tick:{}".format(str(taskId), lenData,
                                                                                           str(convertId),
                                                                                           str(tick)))
             info = self.convertLoad[taskId]
