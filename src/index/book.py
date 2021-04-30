@@ -66,7 +66,9 @@ class BookMgr(Singleton):
                 self.books[info.id] = info
                 return Status.Ok
             else:
-                Log.Warn("未找到书籍, bookId:{}".format(backData.res))
+                if backData.res.message == "under review":
+                    return Status.UnderReviewBook
+                Log.Warn("未找到书籍, bookId:{}, {}".format(backData.req.bookId, backData.res.message))
                 return Status.NotFoundBook
         except Exception as es:
             Log.Error(es)

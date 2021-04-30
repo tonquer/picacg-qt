@@ -5,6 +5,7 @@ from PySide2.QtWidgets import QCheckBox, QLabel
 
 from src.index.category import CateGoryMgr
 from src.qt.com.qtlistwidget import QtBookList, QtIntLimit, QtCategoryList
+from src.qt.main.qtsearch_db import QtSearchDb
 from src.server import Server, req, Log, json
 from ui.search import Ui_search
 
@@ -24,7 +25,11 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.bookList.doubleClicked.connect(self.OpenSearch)
         self.categories = ""
         self.jumpLine.setValidator(QtIntLimit(1, 1, self))
-
+        self.searchDb = QtSearchDb(owner)
+        self.searchEdit.words = self.searchDb.InitWord()
+        nums, times = self.searchDb.InitUpdateInfo()
+        self.numsLabel.setText(str(nums))
+        self.timesLabel.setText(times)
         self.categoryList = QtCategoryList(self)
         layouy = QtWidgets.QHBoxLayout()
         layouy.addWidget(QLabel("屏蔽："))
@@ -62,13 +67,20 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         return
 
     def Search(self, categories=None):
+        if not self.searchEdit.listView.isHidden():
+            currentIndex = self.searchEdit.listView.currentIndex()
+            if currentIndex.isValid():
+                self.searchEdit.completeText(currentIndex)
+            self.searchEdit.listView.hide()
+            return
+
         data = self.searchEdit.text()
         self.data = data
         if len(data) == len("5822a6e3ad7ede654696e482"):
             self.owner().bookInfoForm.OpenBook(data)
             return
-        if not data:
-            return
+        # if not data:
+        #     return
         if not categories:
             self.categories = []
         else:
@@ -80,12 +92,56 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.searchEdit.setPlaceholderText("")
         self.SendSearch(self.data, 1)
 
+    def SetSearch(self):
+        # self.localBox.setChecked(not self.localBox.isChecked())
+        if self.localBox.isChecked():
+            self.authorBox.setEnabled(True)
+            self.desBox.setEnabled(True)
+            self.tagsBox.setEnabled(True)
+            self.categoryBox.setEnabled(True)
+            self.titleBox.setEnabled(True)
+            self.sortKey.setEnabled(True)
+            self.sortId.setEnabled(True)
+        else:
+            self.authorBox.setEnabled(False)
+            self.desBox.setEnabled(False)
+            self.tagsBox.setEnabled(False)
+            self.categoryBox.setEnabled(False)
+            self.titleBox.setEnabled(False)
+            self.sortKey.setEnabled(False)
+            self.sortId.setEnabled(False)
+
     def SendSearch(self, data, page):
-        self.owner().loadingForm.show()
         self.index = 1
-        sort = ["dd", "da", "ld", "vd"]
-        sortId = sort[self.comboBox.currentIndex()]
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.AdvancedSearchReq(page, [], data, sortId), bakParam=x), self.SendSearchBack)
+        self.searchEdit.listView.hide()
+        if self.localBox.isChecked():
+            books = self.searchDb.Search(data, self.titleBox.isChecked(), self.authorBox.isChecked(), self.desBox.isChecked(), self.tagsBox.isChecked(), self.categoryBox.isChecked(), page, self.sortKey.currentIndex(), self.sortId.currentIndex())
+            self.SendLocalBack(books, page)
+        else:
+            self.owner().loadingForm.show()
+            sort = ["dd", "da", "ld", "vd"]
+            sortId = sort[self.comboBox.currentIndex()]
+            self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.AdvancedSearchReq(page, [], data, sortId), bakParam=x), self.SendSearchBack)
+
+    def SendLocalBack(self, books, page):
+        self.owner().loadingForm.close()
+        self.bookList.UpdateState()
+        pages = 100
+        self.bookList.UpdatePage(page, pages)
+        self.jumpLine.setValidator(QtIntLimit(1, pages, self))
+        pageText = "页：" + str(self.bookList.page) + "/" + str(self.bookList.pages)
+        self.label.setText(pageText)
+        for v in books:
+            title = v.title2
+            _id = v.id
+            url = v.fileServer
+            path = v.path
+            originalName = v.originalName
+            info2 = "完本," if v.finished else ""
+            info2 += "{}E/{}P".format(str(v.epsCount), str(v.pages))
+            param = v.categories
+            self.bookList.AddBookItem(_id, title, info2, url, path, param)
+        self.CheckCategoryShowItem()
 
     def OpenSearchCategories(self, categories):
         self.bookList.clear()
@@ -220,3 +276,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         data = item.text()
         self.searchEdit.setText(data)
         self.Search()
+
+    def focusOutEvent(self, ev):
+        self.searchEdit.listView.hide()
+        return super(self.__class__, self).focusOutEvent(ev)

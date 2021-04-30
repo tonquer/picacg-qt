@@ -22,8 +22,8 @@ class QtIntLimit(QIntValidator):
 
 
 class ItemWidget(QWidget):
-    def __init__(self, _id, title, index, info, param, *args, **kwargs):
-        super(ItemWidget, self).__init__(*args, **kwargs)
+    def __init__(self, _id, title, index, info, param):
+        super(ItemWidget, self).__init__()
         self.id = _id
         self.url = ""
         self.path = ""
@@ -43,7 +43,7 @@ class ItemWidget(QWidget):
         pic = QPixmap()
         self.picIcon.setPixmap(pic)
         layout.addWidget(self.picIcon)
-        layout2 = QHBoxLayout(self)
+        layout2 = QHBoxLayout()
 
         self.indexLabel = QLabel(index, self, styleSheet="color: #999999;")
         self.indexLabel.setMinimumSize(40, 20)
@@ -61,9 +61,10 @@ class ItemWidget(QWidget):
 
         self.label = QLabel(title, self, styleSheet="color: #999999;")
         self.label.setMinimumSize(220, 20)
-        self.label.setMaximumSize(220, 40)
+        self.label.setMaximumSize(220, 50)
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setFont(QFont("Microsoft YaHei",  12,   87))
+        self.label.setWordWrap(True)
         layout.addWidget(self.label)
         # if self.info:
         #     self.PaintInfo()
@@ -200,7 +201,7 @@ class QtBookList(QListWidget):
 
     def AddBookItem(self, _id, title, info="", url="", path="", param="", originalName=""):
         index = self.count()
-        iwidget = ItemWidget(_id, title, str(index+1), info, param, self)
+        iwidget = ItemWidget(_id, title, str(index+1), info, param)
         iwidget.url = url
         iwidget.path = path
         item = QListWidgetItem(self)

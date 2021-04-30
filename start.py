@@ -25,6 +25,7 @@ if __name__ == "__main__":
     main.show()  # 显示窗体
     main.Init()
     sts = app.exec_()
+    main.Close()
     if config.CanWaifu2x:
         waifu2x.stop()
     sys.exit(sts)  # 运行程序

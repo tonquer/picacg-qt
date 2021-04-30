@@ -94,6 +94,9 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
             self.tableWidget.insertRow(rowCont)
             self.UpdateTableItem(task)
 
+    def Close(self):
+        self.timer.stop()
+
     def GetDownloadEpsId(self, bookId):
         if bookId not in self.downloadDict:
             return []

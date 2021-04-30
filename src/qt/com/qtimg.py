@@ -329,6 +329,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         self.scaleEdit.setEnabled(status)
         self.widthEdit.setEnabled(status)
         self.heighEdit.setEnabled(status)
+        self.noiseCombox.setEnabled(status)
         # self.radioButton_4.setEnabled(status)
         # self.radioButton_5.setEnabled(status)
         # self.radioButton_6.setEnabled(status)

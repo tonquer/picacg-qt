@@ -136,6 +136,9 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 gpuInfo = waifu2x.getGpuInfo()
                 if gpuInfo:
                     self.settingForm.SetGpuInfos(gpuInfo)
+                if gpuInfo and config.Encode < 0:
+                    config.Encode = 0
+
                 waifu2x.initSet(config.Encode, config.Waifu2xThread)
                 Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode) + " version:" + waifu2x.getVersion())
                 # self.msgForm.ShowMsg("waifu2x初始化成功\n" + waifu2x.getVersion())
@@ -179,3 +182,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 QDesktopServices.openUrl(QUrl(config.UpdateUrl2))
         except Exception as es:
             Log.Error(es)
+
+    def Close(self):
+        self.downloadForm.Close()

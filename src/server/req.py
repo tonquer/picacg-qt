@@ -135,6 +135,7 @@ class GetComicsBookReq(ServerReq):
     def __init__(self, bookId=""):
         url = config.Url + "comics/{}".format(bookId)
         method = "GET"
+        self.bookId = bookId
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
 
