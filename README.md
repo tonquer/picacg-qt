@@ -71,6 +71,7 @@
   4. 解压tar -zxvf bika.tar.gz 
   5. cd bika && chmod +x start
   6. ./start
+  7. 要想使用waifu2x请确定你的设备支持vulkan，然后安装vulkan驱动包，sudo apt install mesa-vulkan-drivers
 
 ## 如何编译
 1. git clone https://github.com/tonquer/picacg-windows.git
