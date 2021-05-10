@@ -126,3 +126,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Cache Files for picacg
+cache/
+config.ini
+download.db
+history.db
