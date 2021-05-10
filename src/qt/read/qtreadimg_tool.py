@@ -321,7 +321,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
 
         epsId -= 1
-        if epsId <= 0:
+        if epsId < 0:
             QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一章")
             return
 
