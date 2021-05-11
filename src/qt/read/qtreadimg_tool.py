@@ -149,7 +149,15 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.scaleCnt = value
 
     def NextPage(self):
+        epsId = self.readImg.epsId
+        bookId = self.readImg.bookId
+        bookInfo = BookMgr().books.get(bookId)
+
         if self.curIndex >= self.maxPic -1:
+            if epsId + 1 < len(bookInfo.eps):
+                QtBubbleLabel.ShowMsgEx(self.readImg, "自动跳转到下一章")
+                self.OpenNextEps()
+                return
             QtBubbleLabel.ShowMsgEx(self.readImg, "已经最后一页")
             return
         t = CTime()
@@ -163,7 +171,15 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         return
 
     def LastPage(self):
+        epsId = self.readImg.epsId
+        bookId = self.readImg.bookId
+        bookInfo = BookMgr().books.get(bookId)
+
         if self.curIndex <= 0:
+            if epsId - 1 >= 0:
+                QtBubbleLabel.ShowMsgEx(self.readImg, "自动跳转到上一章")
+                self.OpenLastEps()
+                return
             QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一页")
             return
         self.curIndex -= 1
@@ -305,7 +321,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
 
         epsId -= 1
-        if epsId <= 0:
+        if epsId < 0:
             QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一章")
             return
 

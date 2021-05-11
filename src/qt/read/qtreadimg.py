@@ -274,6 +274,12 @@ class QtReadImg(QtWidgets.QWidget):
         self.graphicsView.scale(factor, factor)
 
     def keyReleaseEvent(self, ev):
+        if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Left:
+            self.qtTool.OpenLastEps()
+            return
+        if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Right:
+            self.qtTool.OpenNextEps()
+            return
         if ev.key() == Qt.Key_Left:
             self.qtTool.LastPage()
             return
