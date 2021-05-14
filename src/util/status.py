@@ -10,4 +10,5 @@ class Status(object):
     RegisterError = "注册失败"
     NotFoundBook = "未找到书籍"
     UnderReviewBook = "本子审核中"
+    SetHeadError = "头像设置出错了，"
 

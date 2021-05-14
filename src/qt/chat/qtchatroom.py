@@ -12,6 +12,7 @@ from PySide2.QtWidgets import QFileDialog, QLabel, QListWidgetItem
 from conf import config
 from src.qt.chat.chat_ws import ChatWebSocket
 from src.qt.chat.qtchatroommsg import QtChatRoomMsg
+from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qticon import IconList
 from src.qt.com.qtloading import QtLoading
 from src.qt.util.qttask import QtTask
@@ -310,29 +311,12 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
 
     def OpenPicture(self):
         try:
-            filename = QFileDialog.getOpenFileName(self, "Open Image", self.cachePath, "Image Files(*.jpg *.png)")
-            if filename and len(filename) > 1:
-                name = filename[0]
-                picFormat = filename[1]
-                baseName = os.path.basename(name)
-                if baseName[-3:] == "png":
-                    picFormat = "png"
-                elif baseName[-3:] == "jpg":
-                    picFormat = "jpeg"
-                elif baseName[-3:] == "gif":
-                    picFormat = "gif"
-                else:
-                    return
-
-                if os.path.isfile(name):
-                    self.cachePath = os.path.dirname(name)
-
-                    f = open(name, "rb")
-                    data = f.read()
-                    f.close()
-                    imgData = base64.b64encode(data).decode("utf-8")
-                    imgData = "data:image/" + picFormat + ";base64," + imgData
-                    self.SendMsg(imgData)
+            data, name, picFormat = QtBubbleLabel.OpenPicture(self, self.cachePath)
+            if data:
+                self.cachePath = os.path.dirname(name)
+                imgData = base64.b64encode(data).decode("utf-8")
+                imgData = "data:image/" + picFormat + ";base64," + imgData
+                self.SendMsg(imgData)
         except Exception as ex:
             Log.Error(ex)
         return

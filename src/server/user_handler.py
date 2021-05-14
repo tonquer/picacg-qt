@@ -56,6 +56,26 @@ class GetUserInfo(object):
             QtTask().taskBack.emit(backData.bakParam, st)
 
 
+@handler(req.SetAvatarInfoReq)
+class SetAvatarInfoReq(object):
+    def __call__(self, backData):
+        st = Status.Ok
+        if backData.res.code != 200:
+            st = Status.SetHeadError + backData.res.message
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, st)
+
+
+@handler(req.SetTitleReq)
+class SetTitleReq(object):
+    def __call__(self, backData):
+        st = Status.Ok
+        if backData.res.code != 200:
+            st = Status.SetHeadError + backData.res.message
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, st)
+
+
 @handler(req.PunchIn)
 class PunchIn(object):
     def __call__(self, backData):

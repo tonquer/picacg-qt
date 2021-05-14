@@ -97,7 +97,7 @@ class Server(Singleton, threading.Thread):
             else:
                 request.url = request.url.replace(host, self.imageServer)
 
-        if request.method.lower() == "post":
+        if request.method.lower() in ["post", "put"]:
             request.headers["Content-Type"] = "application/json; charset=UTF-8"
 
     def Send(self, request, token="", bakParam="", isASync=True):
@@ -113,6 +113,8 @@ class Server(Singleton, threading.Thread):
                 self.Post(task)
             elif task.req.method.lower() == "get":
                 self.Get(task)
+            elif task.req.method.lower() == "put":
+                self.Put(task)
             else:
                 return
         except Exception as es:
@@ -133,8 +135,19 @@ class Server(Singleton, threading.Thread):
         if request.headers == None:
             request.headers = {}
 
-
         r = self.session.post(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=task.timeout, verify=False)
+        task.res = res.BaseRes(r, request.isParseRes)
+        return task
+
+    def Put(self, task):
+        request = task.req
+        if request.params == None:
+            request.params = {}
+
+        if request.headers == None:
+            request.headers = {}
+
+        r = self.session.put(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=60, verify=False)
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 

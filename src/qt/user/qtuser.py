@@ -6,7 +6,9 @@ from PySide2.QtGui import  QPixmap
 from PySide2.QtWidgets import  QListWidgetItem
 
 from resources import resources
+from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
+from src.server import Server, req
 from src.user.user import User
 from src.util.status import Status
 from ui.user import Ui_User
@@ -90,11 +92,25 @@ class QtUser(QtWidgets.QWidget, Ui_User):
             self.signButton.setText("签到")
         self.update()
 
+    def UpdatePictureData(self):
+        data, name, picFormat = QtBubbleLabel.OpenPicture(self)
+        if not data:
+            return
+        self.icon.setPixmap(None)
+        self.icon.setText("头像上传中......")
+        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SetAvatarInfoReq(data, picFormat), bakParam=x), self.UpdatePictureDataBack)
+        return
+
+    def UpdatePictureDataBack(self, msg):
+        if msg == Status.Ok:
+            self.owner().loginForm.InitUser()
+        else:
+            QtBubbleLabel().ShowMsg(msg)
+
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                if self.pictureData:
-                    QtImgMgr().ShowImg(self.pictureData)
+                self.UpdatePictureData()
                 return True
             else:
                 return False

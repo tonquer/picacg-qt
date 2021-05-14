@@ -1,3 +1,5 @@
+import base64
+
 from src.util import ToolUtil
 from conf import config
 from urllib.parse import quote
@@ -67,6 +69,27 @@ class GetUserInfo(ServerReq):
         method = "GET"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
+
+
+class SetAvatarInfoReq(ServerReq):
+    def __init__(self, data, picFormat="png"):
+        url = config.Url + "users/avatar"
+        method = "PUT"
+        if picFormat[-3:] == "png":
+            picFormat = "png"
+        else:
+            picFormat = "jpeg"
+
+        imgData = base64.b64encode(data).decode("utf-8")
+        imgData = "data:image/" + picFormat + ";base64," + imgData
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {"avatar": imgData}, method)
+
+
+class SetTitleReq(ServerReq):
+    def __init__(self, userId, title):
+        url = config.Url + "users/{}/title".format(userId)
+        method = "PUT"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {"title": title}, method)
 
 
 # 签到
@@ -275,3 +298,5 @@ class GetRandomReq(ServerReq):
         url = config.Url + "comics/random"
         method = "GET"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
+
+

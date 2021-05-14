@@ -1,6 +1,10 @@
+import os
+
 from PySide2.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QRectF, Property
 from PySide2.QtGui import QPen, QPainterPath, QPainter, QColor
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication, QFileDialog
+
+from src.util import Log
 
 
 class QtBubbleLabel(QWidget):
@@ -116,3 +120,31 @@ class QtBubbleLabel(QWidget):
         data.setText(text)
         data.setStyleSheet("color:red")
         data.show()
+
+    @staticmethod
+    def OpenPicture(self, path="."):
+        try:
+            filename = QFileDialog.getOpenFileName(self, "Open Image", path, "Image Files(*.jpg *.png)")
+            if filename and len(filename) > 1:
+                name = filename[0]
+                picFormat = filename[1]
+                baseName = os.path.basename(name)
+                if baseName[-3:] == "png":
+                    picFormat = "png"
+                elif baseName[-3:] == "jpg":
+                    picFormat = "jpeg"
+                elif baseName[-3:] == "gif":
+                    picFormat = "gif"
+                else:
+                    return
+
+                if os.path.isfile(name):
+                    self.cachePath = os.path.dirname(name)
+
+                    f = open(name, "rb")
+                    data = f.read()
+                    f.close()
+                    return data, name, picFormat
+        except Exception as ex:
+            Log.Error(ex)
+            return None, None, None
