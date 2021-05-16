@@ -55,7 +55,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
         return
 
     def UpdateUserBack(self, msg):
-        self.owner().userForm.UpdateLabel(User().name, User().level, User().exp, User().isPunched)
+        self.owner().userForm.UpdateLabel(User().name, User().level, User().exp, User().title, User().isPunched)
         if not User().avatar:
             return
 

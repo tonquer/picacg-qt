@@ -444,6 +444,19 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="headButton">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>设置为头像</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -486,7 +499,7 @@
    <slot>SwithPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
+     <x>291</x>
      <y>38</y>
     </hint>
     <hint type="destinationlabel">
@@ -502,7 +515,7 @@
    <slot>SavePicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
+     <x>291</x>
      <y>412</y>
     </hint>
     <hint type="destinationlabel">
@@ -550,7 +563,7 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>264</x>
+     <x>263</x>
      <y>113</y>
     </hint>
     <hint type="destinationlabel">
@@ -566,7 +579,7 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>262</x>
+     <x>261</x>
      <y>60</y>
     </hint>
     <hint type="destinationlabel">
@@ -582,7 +595,7 @@
    <slot>OpenPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
+     <x>291</x>
      <y>317</y>
     </hint>
     <hint type="destinationlabel">
@@ -598,7 +611,7 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>313</x>
+     <x>312</x>
      <y>115</y>
     </hint>
     <hint type="destinationlabel">
@@ -614,7 +627,7 @@
    <slot>AddScalePic()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
+     <x>291</x>
      <y>383</y>
     </hint>
     <hint type="destinationlabel">
@@ -646,7 +659,7 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>268</x>
+     <x>263</x>
      <y>85</y>
     </hint>
     <hint type="destinationlabel">
@@ -678,7 +691,7 @@
    <slot>StartWaifu2x()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>292</x>
+     <x>291</x>
      <y>209</y>
     </hint>
     <hint type="destinationlabel">
@@ -703,6 +716,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>headButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Img</receiver>
+   <slot>SetHead()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>246</x>
+     <y>431</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>380</x>
+     <y>491</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>StartWaifu2x()</slot>
@@ -713,9 +742,9 @@
   <slot>SwithPicture()</slot>
   <slot>ChangeModel()</slot>
   <slot>CheckScaleRadio()</slot>
+  <slot>SetHead()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

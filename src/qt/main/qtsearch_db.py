@@ -68,19 +68,32 @@ class QtSearchDb(object):
                 time = query.value(2)
         return nums, time
 
-    def Search(self, word, isTitle, isAutor, isDes, isTag, isCategory, page, sortKey=0, sortId=0):
+    def Search(self, wordList, isTitle, isAutor, isDes, isTag, isCategory, page, sortKey=0, sortId=0):
         query = QSqlQuery(self.db)
         data = ""
-        if isTitle:
-            data += " or title2 like '%{}%' ".format(word)
-        if isAutor:
-            data += " or author like '%{}%' ".format(word)
-        if isDes:
-            data += " or description like '%{}%' ".format(word)
-        if isTag:
-            data += " or tags like '%{}%' ".format(word)
-        if isCategory:
-            data += " or categories like '%{}%' ".format(word)
+        wordList2 = wordList.split("|")
+        for words in wordList2:
+            data2 = ""
+            for word in words.split("&"):
+                if not word:
+                    continue
+                data3 = ""
+                if isTitle:
+                    data3 += " title2 like '%{}%' or ".format(word)
+                if isAutor:
+                    data3 += " author like '%{}%' or ".format(word)
+                if isDes:
+                    data3 += " description like '%{}%' or ".format(word)
+                if isTag:
+                    data3 += " tags like '%{}%' or ".format(word)
+                if isCategory:
+                    data3 += " categories like '%{}%' or ".format(word)
+                data3 = data3.strip("or ")
+                data2 += "({}) and ".format(data3)
+            data2 = data2.strip("and ")
+            if data2:
+                data += " or ({})".format(data2)
+
         sql = "SELECT * FROM book WHERE 0 {}".format(data)
         if sortKey == 0:
             sql += "ORDER BY updated_at "
@@ -117,6 +130,8 @@ class QtSearchDb(object):
             info.pages = query.value(7)
             info.finished = query.value(8)
             info.likesCount = query.value(9)
+            info.categories = query.value(10)
+            info.tags = query.value(11)
             info.created_at = query.value(12)
             info.updated_at = query.value(13)
             info.path = query.value(14)

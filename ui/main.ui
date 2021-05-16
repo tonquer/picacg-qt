@@ -72,7 +72,7 @@
   </action>
   <action name="actionimg_convert">
    <property name="text">
-    <string>img convert</string>
+    <string>waifu2x</string>
    </property>
   </action>
  </widget>

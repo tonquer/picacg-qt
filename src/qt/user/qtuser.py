@@ -50,6 +50,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.stackedWidget.addWidget(self.owner().downloadForm)
         self.stackedWidget.addWidget(self.owner().leaveMsgForm)
         self.stackedWidget.addWidget(self.owner().chatForm)
+        self.isHeadUp = False
 
     def SetPicture(self, data):
         a = QPixmap()
@@ -83,34 +84,40 @@ class QtUser(QtWidgets.QWidget, Ui_User):
             self.update()
         return
 
-    def UpdateLabel(self, name, level, exp, sign):
+    def UpdateLabel(self, name, level, exp, title, sign):
         self.name.setText(name)
         self.level.setText("level: "+str(level))
+        self.title.setText(title)
+        self.level.setText("LV"+str(level))
         self.exp.setText("exp: " + str(exp))
         if not sign:
             self.signButton.setEnabled(True)
             self.signButton.setText("签到")
         self.update()
 
-    def UpdatePictureData(self):
-        data, name, picFormat = QtBubbleLabel.OpenPicture(self)
+    def UpdatePictureData(self, data):
         if not data:
             return
         self.icon.setPixmap(None)
         self.icon.setText("头像上传中......")
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SetAvatarInfoReq(data, picFormat), bakParam=x), self.UpdatePictureDataBack)
+        self.isHeadUp = True
+        QtImgMgr().SetHeadStatus(not self.isHeadUp)
+        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SetAvatarInfoReq(data), bakParam=x), self.UpdatePictureDataBack)
         return
 
     def UpdatePictureDataBack(self, msg):
+        self.isHeadUp = False
+        QtImgMgr().SetHeadStatus(not self.isHeadUp)
         if msg == Status.Ok:
             self.owner().loginForm.InitUser()
         else:
-            QtBubbleLabel().ShowMsg(msg)
+            self.owner().msgForm.ShowError(msg)
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                self.UpdatePictureData()
+                QtImgMgr().ShowImg(self.pictureData)
+                # self.UpdatePictureData()
                 return True
             else:
                 return False

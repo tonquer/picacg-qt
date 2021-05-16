@@ -21,11 +21,6 @@ class Ui_User(object):
         User.setMinimumSize(QSize(0, 0))
         self.gridLayout_2 = QGridLayout(User)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.stackedWidget = QStackedWidget(User)
-        self.stackedWidget.setObjectName(u"stackedWidget")
-
-        self.gridLayout_2.addWidget(self.stackedWidget, 0, 1, 1, 1)
-
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.verticalLayout = QVBoxLayout()
@@ -42,35 +37,46 @@ class Ui_User(object):
 
         self.verticalLayout.addWidget(self.icon)
 
-        self.exp = QLabel(User)
-        self.exp.setObjectName(u"exp")
-        self.exp.setMaximumSize(QSize(200, 16777215))
-
-        self.verticalLayout.addWidget(self.exp)
-
-        self.level = QLabel(User)
-        self.level.setObjectName(u"level")
-        self.level.setMaximumSize(QSize(200, 16777215))
-
-        self.verticalLayout.addWidget(self.level)
-
         self.name = QLabel(User)
         self.name.setObjectName(u"name")
         self.name.setMaximumSize(QSize(200, 16777215))
+        self.name.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout.addWidget(self.name)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setContentsMargins(6, -1, 0, -1)
+        self.level = QLabel(User)
+        self.level.setObjectName(u"level")
+        self.level.setMaximumSize(QSize(80, 16777215))
+        self.level.setStyleSheet(u"background:#eeA2A4;")
+        self.level.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_2.addWidget(self.level)
+
+        self.title = QLabel(User)
+        self.title.setObjectName(u"title")
+        self.title.setMaximumSize(QSize(100, 16777215))
+        self.title.setStyleSheet(u"background:#eeA2A4;")
+        self.title.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_2.addWidget(self.title)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+
+        self.exp = QLabel(User)
+        self.exp.setObjectName(u"exp")
+        self.exp.setMaximumSize(QSize(200, 16777215))
+        self.exp.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.exp)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
-        self.sign = QLabel(User)
-        self.sign.setObjectName(u"sign")
-        self.sign.setMinimumSize(QSize(0, 0))
-        self.sign.setMaximumSize(QSize(100, 16777215))
-
-        self.horizontalLayout.addWidget(self.sign)
-
         self.signButton = QPushButton(User)
         self.signButton.setObjectName(u"signButton")
         self.signButton.setEnabled(False)
@@ -94,6 +100,11 @@ class Ui_User(object):
 
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
 
+        self.stackedWidget = QStackedWidget(User)
+        self.stackedWidget.setObjectName(u"stackedWidget")
+
+        self.gridLayout_2.addWidget(self.stackedWidget, 0, 1, 1, 1)
+
 
         self.retranslateUi(User)
         self.signButton.clicked.connect(User.Sign)
@@ -104,10 +115,10 @@ class Ui_User(object):
     def retranslateUi(self, User):
         User.setWindowTitle(QCoreApplication.translate("User", u"Form", None))
         self.icon.setText("")
-        self.exp.setText(QCoreApplication.translate("User", u"exp", None))
-        self.level.setText(QCoreApplication.translate("User", u"level:", None))
         self.name.setText(QCoreApplication.translate("User", u"name", None))
-        self.sign.setText(QCoreApplication.translate("User", u"sign:", None))
+        self.level.setText(QCoreApplication.translate("User", u"level:", None))
+        self.title.setText(QCoreApplication.translate("User", u"title", None))
+        self.exp.setText(QCoreApplication.translate("User", u"exp", None))
         self.signButton.setText(QCoreApplication.translate("User", u"\u5df2\u7b7e\u5230", None))
     # retranslateUi
 

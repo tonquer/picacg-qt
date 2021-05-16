@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>613</width>
+    <width>827</width>
     <height>585</height>
    </rect>
   </property>
@@ -142,12 +142,15 @@
        <property name="text">
         <string>使用本地搜索</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
       <widget class="QCheckBox" name="titleBox">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>标题</string>
@@ -160,7 +163,7 @@
      <item>
       <widget class="QCheckBox" name="desBox">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>内容</string>
@@ -173,7 +176,7 @@
      <item>
       <widget class="QCheckBox" name="authorBox">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>作者</string>
@@ -186,20 +189,26 @@
      <item>
       <widget class="QCheckBox" name="tagsBox">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>tags</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QCheckBox" name="categoryBox">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>分类</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

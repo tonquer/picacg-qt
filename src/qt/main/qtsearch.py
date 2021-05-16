@@ -35,8 +35,6 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         layouy.addWidget(QLabel("屏蔽："))
         layouy.addWidget(self.categoryList)
         self.bookLayout.addLayout(layouy, 1, 0)
-        for name in ["耽美", "偽娘", "禁書", "扶她", "重口", "生肉", "純愛", "WEBTOON"]:
-            self.categoryList.AddItem(name)
         self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
 
         self.keywordList = QtCategoryList(self)
@@ -45,6 +43,16 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         layouy.addWidget(self.keywordList)
         self.bookLayout.addLayout(layouy, 2, 0)
         self.keywordList.itemClicked.connect(self.ClickKeywordListItem)
+        self.SetSearch()
+
+    def InitCategoryList(self):
+        self.categoryList.clear()
+        if not self.localBox.isChecked():
+            for name in ["耽美", "偽娘", "禁書", "扶她", "重口", "生肉", "純愛", "WEBTOON"]:
+                self.categoryList.AddItem(name)
+        else:
+            for name in ["耽美", "伪娘", "禁书", "扶她", "重口", "生肉", "纯爱", "WEBTOON"]:
+                self.categoryList.AddItem(name)
 
     def SwitchCurrent(self):
         pass
@@ -94,6 +102,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
 
     def SetSearch(self):
         # self.localBox.setChecked(not self.localBox.isChecked())
+        self.InitCategoryList()
         if self.localBox.isChecked():
             self.authorBox.setEnabled(True)
             self.desBox.setEnabled(True)

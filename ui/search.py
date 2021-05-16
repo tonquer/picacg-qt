@@ -19,7 +19,7 @@ class Ui_search(object):
     def setupUi(self, search):
         if not search.objectName():
             search.setObjectName(u"search")
-        search.resize(613, 585)
+        search.resize(827, 585)
         self.gridLayout_2 = QGridLayout(search)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.horizontalLayout = QHBoxLayout()
@@ -88,39 +88,42 @@ class Ui_search(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.localBox = QRadioButton(search)
         self.localBox.setObjectName(u"localBox")
+        self.localBox.setChecked(True)
 
         self.horizontalLayout_2.addWidget(self.localBox)
 
         self.titleBox = QCheckBox(search)
         self.titleBox.setObjectName(u"titleBox")
-        self.titleBox.setEnabled(False)
+        self.titleBox.setEnabled(True)
         self.titleBox.setChecked(True)
 
         self.horizontalLayout_2.addWidget(self.titleBox)
 
         self.desBox = QCheckBox(search)
         self.desBox.setObjectName(u"desBox")
-        self.desBox.setEnabled(False)
+        self.desBox.setEnabled(True)
         self.desBox.setChecked(True)
 
         self.horizontalLayout_2.addWidget(self.desBox)
 
         self.authorBox = QCheckBox(search)
         self.authorBox.setObjectName(u"authorBox")
-        self.authorBox.setEnabled(False)
+        self.authorBox.setEnabled(True)
         self.authorBox.setChecked(True)
 
         self.horizontalLayout_2.addWidget(self.authorBox)
 
         self.tagsBox = QCheckBox(search)
         self.tagsBox.setObjectName(u"tagsBox")
-        self.tagsBox.setEnabled(False)
+        self.tagsBox.setEnabled(True)
+        self.tagsBox.setChecked(True)
 
         self.horizontalLayout_2.addWidget(self.tagsBox)
 
         self.categoryBox = QCheckBox(search)
         self.categoryBox.setObjectName(u"categoryBox")
-        self.categoryBox.setEnabled(False)
+        self.categoryBox.setEnabled(True)
+        self.categoryBox.setChecked(True)
 
         self.horizontalLayout_2.addWidget(self.categoryBox)
 

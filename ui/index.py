@@ -17,7 +17,7 @@ class Ui_Index(object):
     def setupUi(self, Index):
         if not Index.objectName():
             Index.setObjectName(u"Index")
-        Index.resize(483, 488)
+        Index.resize(483, 507)
         self.verticalLayout = QVBoxLayout(Index)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.scrollArea = QScrollArea(Index)
@@ -25,7 +25,7 @@ class Ui_Index(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 463, 468))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 463, 487))
         self.gridLayout = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout.setObjectName(u"gridLayout")
         self.toolButton = QToolButton(self.scrollAreaWidgetContents)
@@ -88,6 +88,9 @@ class Ui_Index(object):
         self.toolButton.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u795e\u63a8\u8350", None))
         self.toolButton_3.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u968f\u673a\u672c\u5b50", None))
         self.pushButton.setText(QCoreApplication.translate("Index", u"\u5237\u65b0", None))
+#if QT_CONFIG(shortcut)
+        self.pushButton.setShortcut(QCoreApplication.translate("Index", u"F5", None))
+#endif // QT_CONFIG(shortcut)
         self.toolButton_2.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u9b54\u63a8\u8350", None))
     # retranslateUi
 

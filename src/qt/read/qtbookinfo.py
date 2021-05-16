@@ -574,3 +574,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                 return False
         else:
             return super(self.__class__, self).eventFilter(obj, event)
+
+    def keyPressEvent(self, ev):
+        key = ev.key()
+        if Qt.Key_Escape == key:
+            self.close()
+        return super(self.__class__, self).keyPressEvent(ev)

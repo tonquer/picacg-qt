@@ -264,6 +264,12 @@ class Ui_Img(object):
 
         self.verticalLayout_3.addWidget(self.saveButton)
 
+        self.headButton = QPushButton(Img)
+        self.headButton.setObjectName(u"headButton")
+        self.headButton.setMaximumSize(QSize(100, 16777215))
+
+        self.verticalLayout_3.addWidget(self.headButton)
+
 
         self.verticalLayout.addLayout(self.verticalLayout_3)
 
@@ -304,6 +310,7 @@ class Ui_Img(object):
         self.comboBox.currentIndexChanged.connect(Img.ChangeModel)
         self.changeButton.clicked.connect(Img.StartWaifu2x)
         self.noiseCombox.currentIndexChanged.connect(Img.CheckScaleRadio)
+        self.headButton.clicked.connect(Img.SetHead)
 
         QMetaObject.connectSlotsByName(Img)
     # setupUi
@@ -342,5 +349,6 @@ class Ui_Img(object):
         self.pushButton_3.setText(QCoreApplication.translate("Img", u"\u7f29\u5c0f", None))
         self.pushButton.setText(QCoreApplication.translate("Img", u"\u653e\u5927", None))
         self.saveButton.setText(QCoreApplication.translate("Img", u"\u4fdd\u5b58\u56fe\u7247", None))
+        self.headButton.setText(QCoreApplication.translate("Img", u"\u8bbe\u7f6e\u4e3a\u5934\u50cf", None))
     # retranslateUi
 

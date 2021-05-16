@@ -1,4 +1,6 @@
 import json
+import re
+
 from PySide2.QtCore import Qt, QStringListModel, QPoint, QEvent
 from PySide2.QtWidgets import QApplication, QLineEdit, QListView, QCompleter, QWidget, QHBoxLayout
 
@@ -26,21 +28,23 @@ class CompleteLineEdit(QLineEdit):
             count = self.listView.model().rowCount()
             currentIndex = self.listView.currentIndex()
             if Qt.Key_Down == key:
-                if currentIndex.row() <= 0 and self.text() != currentIndex.data():
+                curText = re.split('&|\|', self.text())
+                curText = curText.pop() if len(curText) > 0 else ""
+                if currentIndex.row() <= 0 and curText != currentIndex.data():
                     row = 0
                 else:
                     row = currentIndex.row() + 1 if currentIndex.row() + 1 < count else 0
                 index = self.listView.model().index(row, 0)
                 self.listView.setCurrentIndex(index)
                 if self.listView.currentIndex().isValid():
-                    self.completeText2(self.listView.currentIndex())
+                    self.completeText2(self.listView.currentIndex(), False)
                 return
             elif Qt.Key_Up == key:
                 row = currentIndex.row() - 1 if currentIndex.row() > 0 else 0
                 index = self.listView.model().index(row, 0)
                 self.listView.setCurrentIndex(index)
                 if self.listView.currentIndex().isValid():
-                    self.completeText2(self.listView.currentIndex())
+                    self.completeText2(self.listView.currentIndex(), False)
                 return
             elif Qt.Key_Escape == key:
                 self.listView.hide()
@@ -58,6 +62,9 @@ class CompleteLineEdit(QLineEdit):
             return
         datas = []
         strings = strings.upper()
+
+        strings2 = re.split('&|\|', strings)
+        strings = strings2.pop() if len(strings2) > 0 else ""
         isSelf = False
         for data in self.words:
             assert isinstance(data, str)
@@ -87,11 +94,17 @@ class CompleteLineEdit(QLineEdit):
         self.completeText2(modelIndex)
         self.listView.hide()
 
-    def completeText2(self, modelIndex):
+    def completeText2(self, modelIndex, isNext=True):
         text = modelIndex.data()
         data = text.split("|")
         self.isNotReload = True
-        self.setText(data[0])
+        oldData = re.split('&|\|', self.text())
+        print(self.text())
+        if len(oldData) > 0:
+            text = self.text().replace(oldData[len(oldData)-1], data[0])
+        if data[0] and isNext:
+            text = text + "|"
+        self.setText(text)
         self.isNotReload = False
 
     def focusOutEvent(self, ev):

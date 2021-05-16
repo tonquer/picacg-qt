@@ -3,7 +3,7 @@
 import sys
 
 from conf import config
-sys.path.append("lib")
+sys.path.insert(0, "lib")
 try:
     import waifu2x
     config.CanWaifu2x = True

@@ -95,7 +95,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.menusetting.triggered.connect(self.OpenSetting)
         self.menuabout.triggered.connect(self.OpenAbout)
-
+        QtImgMgr().SetOwner(self)
     # def ClearExpiredCache(self):
     #     try:
     #         toPath = os.path.join(config.SavePath, config.CachePathDir)
@@ -166,7 +166,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def OpenAbout(self, action):
         if action.text() == "about":
             self.aboutForm.show()
-        elif action.text() == "img convert":
+        elif action.text() == "waifu2x":
             QtImgMgr().ShowImg("")
         pass
 

@@ -136,7 +136,7 @@ class QtBubbleLabel(QWidget):
                 elif baseName[-3:] == "gif":
                     picFormat = "gif"
                 else:
-                    return
+                    return None, None, None
 
                 if os.path.isfile(name):
                     self.cachePath = os.path.dirname(name)
@@ -145,6 +145,7 @@ class QtBubbleLabel(QWidget):
                     data = f.read()
                     f.close()
                     return data, name, picFormat
+                return None, None, None
         except Exception as ex:
             Log.Error(ex)
             return None, None, None

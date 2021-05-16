@@ -1,5 +1,6 @@
 import os
 import time
+import weakref
 
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QTextCodec, QRegExp
@@ -19,6 +20,14 @@ class QtImgMgr(Singleton):
         self.obj = QtImg()
         self.data = None
         self.waifu2xData = None
+        self._owner = None
+
+    @property
+    def owner(self):
+        return self._owner()
+
+    def SetOwner(self, owner):
+        self._owner = weakref.ref(owner)
 
     def ShowImg(self, data):
         if data:
@@ -42,6 +51,9 @@ class QtImgMgr(Singleton):
                 self.obj.changeButton.setEnabled(True)
             self.obj.changeButton.setText("转换")
             self.obj.show()
+
+    def SetHeadStatus(self, isSet):
+        self.obj.headButton.setEnabled(isSet)
 
 
 class QtImg(QtWidgets.QWidget, Ui_Img):
@@ -360,3 +372,11 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         else:
             self.changeButton.setEnabled(False)
             self.changeButton.setText("转换")
+
+    def SetHead(self):
+        data = QtImgMgr().waifu2xData if QtImgMgr().waifu2xData else QtImgMgr().data
+        if not data:
+            return
+        QtImgMgr().owner.userForm.UpdatePictureData(data)
+        QtBubbleLabel.ShowMsgEx(self, "头像上传中......")
+        return

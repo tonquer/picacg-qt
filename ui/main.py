@@ -70,7 +70,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.actionsetting.setText(QCoreApplication.translate("MainWindow", u"setting", None))
         self.actionabout.setText(QCoreApplication.translate("MainWindow", u"about", None))
-        self.actionimg_convert.setText(QCoreApplication.translate("MainWindow", u"img convert", None))
+        self.actionimg_convert.setText(QCoreApplication.translate("MainWindow", u"waifu2x", None))
         self.menusetting.setTitle(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.menuabout.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
     # retranslateUi

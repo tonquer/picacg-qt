@@ -20,9 +20,6 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="1">
-    <widget class="QStackedWidget" name="stackedWidget"/>
-   </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
@@ -65,6 +62,70 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="name">
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>name</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="leftMargin">
+          <number>6</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="level">
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background:#eeA2A4;</string>
+           </property>
+           <property name="text">
+            <string>level:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="title">
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background:#eeA2A4;</string>
+           </property>
+           <property name="text">
+            <string>title</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QLabel" name="exp">
          <property name="maximumSize">
           <size>
@@ -75,31 +136,8 @@
          <property name="text">
           <string>exp</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="level">
-         <property name="maximumSize">
-          <size>
-           <width>200</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>level:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="name">
-         <property name="maximumSize">
-          <size>
-           <width>200</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>name</string>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -111,25 +149,6 @@
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
-         <item>
-          <widget class="QLabel" name="sign">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>sign:</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <widget class="QPushButton" name="signButton">
            <property name="enabled">
@@ -167,6 +186,9 @@
       </layout>
      </item>
     </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="QStackedWidget" name="stackedWidget"/>
    </item>
   </layout>
  </widget>

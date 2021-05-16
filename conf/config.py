@@ -31,7 +31,7 @@ IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
 UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
-UpdateVersion = "v1.1.5"
+UpdateVersion = "v1.1.6"
 
 # waifu2x
 CanWaifu2x = True

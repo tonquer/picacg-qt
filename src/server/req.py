@@ -72,7 +72,7 @@ class GetUserInfo(ServerReq):
 
 
 class SetAvatarInfoReq(ServerReq):
-    def __init__(self, data, picFormat="png"):
+    def __init__(self, data, picFormat="jpg"):
         url = config.Url + "users/avatar"
         method = "PUT"
         if picFormat[-3:] == "png":
