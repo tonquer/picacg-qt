@@ -1,0 +1,5 @@
+PySide2
+websocket-client
+requests
+urllib3
+pillow
