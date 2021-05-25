@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 """第一个程序"""
 import sys
+import os
+
+# 确保工作区为当前可执行文件所在目录
+current_path = os.path.abspath(__file__)
+current_dir = os.path.abspath(os.path.dirname(current_path) + os.path.sep + '.')
+os.chdir(current_dir)
 
 from conf import config
 sys.path.insert(0, "lib")
