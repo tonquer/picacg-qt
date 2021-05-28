@@ -9,7 +9,10 @@ current_dir = os.path.abspath(os.path.dirname(current_path) + os.path.sep + '.')
 os.chdir(current_dir)
 
 from conf import config
-sys.path.insert(0, "lib")
+import platform
+if not platform.system().upper() == 'DARWIN':
+    sys.path.insert(0, "lib")
+
 try:
     import waifu2x
     config.CanWaifu2x = True
