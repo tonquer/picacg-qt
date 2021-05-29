@@ -36,6 +36,7 @@ class QtImgFrame(QFrame):
 
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.graphicsView.setScene(self.graphicsScene)
+        self.graphicsItem.setTransformationMode(Qt.SmoothTransformation)
         self.graphicsScene.addItem(self.graphicsItem)
         self.graphicsView.setMinimumSize(10, 10)
         self.graphicsView.installEventFilter(self)
