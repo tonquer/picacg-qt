@@ -1,7 +1,7 @@
 import weakref
 
 from PySide2 import QtWidgets
-from PySide2.QtCore import Qt, QSizeF, QRectF
+from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint
 from PySide2.QtGui import QPainter, QColor, QPixmap
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame
 
@@ -18,8 +18,9 @@ class QtImgFrame(QFrame):
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
         self.graphicsView.setObjectName("graphicsView")
         self.qtTool = QtImgTool(self)
+        self.qtTool.hide()
         self.graphicsView.setBackgroundBrush(QColor(Qt.white))
-        self.graphicsView.setCursor(Qt.OpenHandCursor)
+        # self.graphicsView.setCursor(Qt.OpenHandCursor)
         self.graphicsView.setResizeAnchor(self.graphicsView.AnchorViewCenter)
         self.graphicsView.setTransformationAnchor(self.graphicsView.AnchorViewCenter)
 
@@ -31,22 +32,60 @@ class QtImgFrame(QFrame):
         self.graphicsView.setViewportUpdateMode(self.graphicsView.SmartViewportUpdate)
 
         self.graphicsItem = QGraphicsPixmapItem()
-        self.graphicsItem.setFlags(QGraphicsPixmapItem.ItemIsFocusable |
-                                   QGraphicsPixmapItem.ItemIsMovable)
+        self.graphicsItem.setFlags(QGraphicsPixmapItem.ItemIsFocusable)
 
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.graphicsView.setScene(self.graphicsScene)
         self.graphicsItem.setTransformationMode(Qt.SmoothTransformation)
+
         self.graphicsScene.addItem(self.graphicsItem)
+
         self.graphicsView.setMinimumSize(10, 10)
-        self.graphicsView.installEventFilter(self)
+
+        self.graphicsScene.installEventFilter(self)
+        # self.graphicsView.installEventFilter(self)
+        # self.graphicsItem.installSceneEventFilter(self.graphicsItem)
+
         self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
         self.pixMap = QPixmap()
         self.scaleCnt = 0
+        self.startPos = QPoint()
+        self.endPos = QPoint()
 
     @property
     def readImg(self):
         return self._readImg()
+
+    def eventFilter(self, obj, ev):
+        # print(obj, ev)
+        if obj == self.graphicsScene:
+            if ev.type() == QEvent.GraphicsSceneMousePress:
+                # print(ev, ev.button())
+                self.startPos = ev.screenPos()
+                return ev.ignore()
+            elif ev.type() == QEvent.GraphicsSceneMouseRelease:
+                # print(ev, self.width(), self.height(), self.readImg.pos())
+                self.endPos = ev.screenPos()
+                subPos = (self.endPos - self.startPos)
+
+                if ev.button() == Qt.MouseButton.LeftButton:
+                    if abs(subPos.x()) >= 50:
+                        if subPos.x() < 0:
+                            self.qtTool.NextPage()
+                        elif subPos.y() > 0:
+                            self.qtTool.LastPage()
+                    elif abs(subPos.x()) <= 20:
+                        curPos = self.endPos - self.readImg.pos()
+                        if curPos.y() <= self.height() / 2:
+                            self.readImg.ShowAndCloseTool()
+                        else:
+                            if curPos.x() >= self.width()/3*2:
+                                self.qtTool.NextPage()
+                            elif curPos.x() <= self.width()/3:
+                                self.qtTool.LastPage()
+
+                return ev.ignore()
+        return super(self.__class__, self).eventFilter(obj, ev)
 
     def resizeEvent(self, event) -> None:
         super(self.__class__, self).resizeEvent(event)

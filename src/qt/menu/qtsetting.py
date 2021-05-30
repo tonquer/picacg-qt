@@ -79,6 +79,10 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
             config.LogIndex = int(v)
         self.logBox.setCurrentIndex(config.LogIndex)
         Log.UpdateLoggingLevel()
+
+        v = self.settings.value("Waifu2x/IsTips")
+        if v:
+            config.IsTips = int(v)
         # v = self.settings.value("Waifu2x/Scale")
         # if v:
         #     config.Scale = int(v)
@@ -108,6 +112,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("UserId", userId)
         self.settings.setValue("Passwd", passwd)
         self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)
+        self.settings.setValue("Waifu2x/IsTips", config.IsTips)
 
     def SaveSetting(self):
         config.DownloadThreadNum = int(self.comboBox.currentText())

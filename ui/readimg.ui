@@ -77,39 +77,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_5">
-         <property name="styleSheet">
-          <string notr="true">color: #ee2a24</string>
-         </property>
-         <property name="text">
-          <string>点击右键打开关闭</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="styleSheet">
-          <string notr="true">color: #ee2a24</string>
-         </property>
-         <property name="text">
-          <string>按住左Alt+滚轮放大</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="label_4">
          <property name="styleSheet">
           <string notr="true">color: #ee2a24</string>
@@ -327,24 +294,6 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>缩小</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_3">
-           <property name="text">
-            <string>放大</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="QPushButton" name="copyButton">
          <property name="text">
           <string>打开图片工具</string>
@@ -470,98 +419,34 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>pushButton_5</sender>
    <signal>clicked()</signal>
    <receiver>ReadImg</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>129</x>
-     <y>505</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>105</x>
-     <y>392</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_4</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>OpenLastEps()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>57</x>
-     <y>577</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>287</x>
-     <y>437</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>nextPage</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>NextPage()</slot>
+   <slot>OpenNextEps()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>168</x>
-     <y>615</y>
+     <y>577</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>479</y>
+     <x>395</x>
+     <y>422</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>copyButton</sender>
-   <signal>clicked()</signal>
+   <sender>modelBox</sender>
+   <signal>currentIndexChanged(int)</signal>
    <receiver>ReadImg</receiver>
-   <slot>CopyPicture()</slot>
+   <slot>SwitchModel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>157</x>
-     <y>476</y>
+     <x>84</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>571</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_3</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>AddScalePic()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>131</x>
-     <y>441</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>181</x>
-     <y>433</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>returePage</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>ReturnPage()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>166</x>
-     <y>533</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>181</x>
-     <y>455</y>
+     <x>305</x>
+     <y>241</y>
     </hint>
    </hints>
   </connection>
@@ -582,34 +467,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>radioButton</sender>
    <signal>clicked()</signal>
    <receiver>ReadImg</receiver>
-   <slot>ReduceScalePic()</slot>
+   <slot>SwitchPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>51</x>
-     <y>438</y>
+     <x>87</x>
+     <y>418</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
-     <y>459</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>checkBox</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>OpenWaifu()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>34</x>
-     <y>232</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>181</x>
-     <y>318</y>
+     <y>309</y>
     </hint>
    </hints>
   </connection>
@@ -630,50 +499,98 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_5</sender>
+   <sender>copyButton</sender>
    <signal>clicked()</signal>
    <receiver>ReadImg</receiver>
-   <slot>OpenNextEps()</slot>
+   <slot>CopyPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>168</x>
-     <y>577</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>395</x>
-     <y>422</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>SwitchPicture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>87</x>
-     <y>418</y>
+     <x>157</x>
+     <y>476</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
-     <y>309</y>
+     <y>571</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>modelBox</sender>
-   <signal>currentIndexChanged(int)</signal>
+   <sender>nextPage</sender>
+   <signal>clicked()</signal>
    <receiver>ReadImg</receiver>
-   <slot>SwitchModel()</slot>
+   <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>84</x>
-     <y>280</y>
+     <x>168</x>
+     <y>615</y>
     </hint>
     <hint type="destinationlabel">
-     <x>305</x>
-     <y>241</y>
+     <x>181</x>
+     <y>479</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>OpenLastEps()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>57</x>
+     <y>577</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>287</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>129</x>
+     <y>505</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>105</x>
+     <y>392</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>returePage</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>ReturnPage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>166</x>
+     <y>533</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>455</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>OpenWaifu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>34</x>
+     <y>232</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>181</x>
+     <y>318</y>
     </hint>
    </hints>
   </connection>

@@ -2,6 +2,7 @@ import weakref
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QSize, QMimeData
 from PySide2.QtGui import QPixmap, QPainter, QColor, QImage
+from PySide2.QtWidgets import QDesktopWidget, QMessageBox
 
 from conf import config
 from src.index.book import BookMgr
@@ -18,7 +19,6 @@ class QtReadImg(QtWidgets.QWidget):
     def __init__(self, owner):
         super(self.__class__, self).__init__()
         self.owner = weakref.ref(owner)
-        self.resize(800, 800)
         self.loadingForm = QtLoading(self)
         self.bookId = ""
         self.epsId = 0
@@ -49,6 +49,7 @@ class QtReadImg(QtWidgets.QWidget):
         self.waitWaifuPicData = set()
 
         self.category = []
+        self.isInit = False
 
     @property
     def graphicsView(self):
@@ -96,11 +97,16 @@ class QtReadImg(QtWidgets.QWidget):
         self.qtTool.SetData(isInit=True)
         self.graphicsItem.setPixmap(QPixmap())
         self.qtTool.SetData()
-        self.qtTool.show()
+        # self.qtTool.show()
         self.bookId = bookId
         self.epsId = epsId
-        self.graphicsItem.setPos(0, 0)
 
+        self.graphicsItem.setPos(0, 0)
+        if not self.isInit:
+            desktop = QDesktopWidget()
+            print(desktop.width(), desktop.height())
+            self.resize(desktop.width()//4*3, desktop.height()-100)
+            self.move(desktop.width()//8, 0)
 
         # historyInfo = self.owner().historyForm.GetHistory(bookId)
         # if historyInfo and historyInfo.epsId == epsId:
@@ -113,6 +119,32 @@ class QtReadImg(QtWidgets.QWidget):
         self.StartLoadPicUrl()
         self.setWindowTitle(name)
         self.show()
+        if config.IsTips:
+            config.IsTips = 0
+            msg = QMessageBox()
+            msg.setStyleSheet("QLabel{"
+                                 "min-width: 300px;"
+                                 "min-height: 300px; "
+                                 "}")
+            msg.setWindowTitle("操作提示")
+            msg.setText("""
+            操作提示：             
+                下一页：
+                    点击右下角区域
+                    左滑图片
+                    使用键盘→
+                上一页：
+                    点击左下角区域
+                    右滑图片
+                    使用键盘←
+                打开菜单：
+                    点击上方区域
+                    点击右键
+                退出：
+                    使用键盘ESC
+            """)
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec()
 
     def ReturnPage(self):
         self.AddHistory()
@@ -230,10 +262,11 @@ class QtReadImg(QtWidgets.QWidget):
 
     def wheelEvent(self, event):
         if event.modifiers() == Qt.ControlModifier:
-            if event.angleDelta().y() > 0:
-                self.zoomIn()
-            else:
-                self.zoomOut()
+            return
+            # if event.angleDelta().y() > 0:
+            #     self.zoomIn()
+            # else:
+            #     self.zoomOut()
         else:
             if event.angleDelta().y() > 0:
                 # self.zoomIn()

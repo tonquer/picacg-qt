@@ -300,3 +300,30 @@ class GetRandomReq(ServerReq):
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
 
 
+class GetAPPsReq(ServerReq):
+    def __init__(self):
+        url = config.Url + "pica-apps"
+        method = "GET"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
+        self.isParseRes = False
+
+
+class LoginAPPReq(ServerReq):
+    def __init__(self, url, token):
+        url = url + "/?token=" + token
+        method = "GET"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
+        self.isParseRes = False
+
+
+class AppInfoReq(ServerReq):
+    def __init__(self, token, page=0):
+        url = "https://post-api.wikawika.xyz"
+        url = url + "/posts?offset=" + str(page)
+        method = "GET"
+        header = {
+            "Referer": url + "/?token=" + token,
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36",
+            "token": token,
+        }
+        super(self.__class__, self).__init__(url, header, {}, method)

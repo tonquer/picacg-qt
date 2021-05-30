@@ -149,6 +149,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.scaleCnt = value
 
     def NextPage(self):
+        self.graphicsItem.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().books.get(bookId)
@@ -171,6 +172,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         return
 
     def LastPage(self):
+        self.graphicsItem.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().books.get(bookId)

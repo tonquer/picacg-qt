@@ -46,7 +46,7 @@ IsOpenWaifu = True
 LookModel = 0       # 默认值
 DownloadModel = 0   # 默认值
 LogIndex = 0
-
+IsTips = 1
 
 Model0 = "cunet"     # 通用
 Model1 = "cunet"     # 通用

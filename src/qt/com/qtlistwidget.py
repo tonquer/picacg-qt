@@ -3,7 +3,7 @@ import weakref
 from PySide2.QtCore import Qt, QSize
 from PySide2.QtGui import QPixmap, QColor, QIntValidator,  QFont, QCursor
 from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
-    QScroller,  QMenu, QApplication
+    QScroller, QMenu, QApplication, QAbstractItemView
 
 from conf import config
 from src.qt.com.qtcomment import QtComment
@@ -139,6 +139,9 @@ class QtBookList(QListWidget):
         self.popMenu = None
         self.owner = weakref.ref(owner)
 
+        QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
+        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+
     def GetName(self):
         return self.name + "-QtBookList"
 
@@ -165,22 +168,26 @@ class QtBookList(QListWidget):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.doubleClicked.connect(self.OpenBookInfo)
         self.customContextMenuRequested.connect(self.SelectMenu)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def InstallCategory(self):
         self.doubleClicked.disconnect(self.OpenBookInfo)
         self.popMenu = QMenu(self)
         action = self.popMenu.addAction("查看封面")
         action.triggered.connect(self.OpenPicture)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         return
 
     def InstallDel(self):
         action = self.popMenu.addAction("刪除")
         action.triggered.connect(self.DelHandler)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def InitUser(self, callBack=None):
         self.setFrameShape(self.NoFrame)  # 无边框
         self.LoadCallBack = callBack
         self.setStyleSheet("QListWidget::item { border-bottom: 1px solid black; }")
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def OnActionTriggered(self, action):
         if action != QAbstractSlider.SliderMove or self.isLoadingPage:

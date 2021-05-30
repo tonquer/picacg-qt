@@ -39,27 +39,6 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.line_6)
 
-        self.label_5 = QLabel(ReadImg)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setStyleSheet(u"color: #ee2a24")
-        self.label_5.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout.addWidget(self.label_5)
-
-        self.label_6 = QLabel(ReadImg)
-        self.label_6.setObjectName(u"label_6")
-        self.label_6.setStyleSheet(u"color: #ee2a24")
-        self.label_6.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout.addWidget(self.label_6)
-
-        self.line_3 = QFrame(ReadImg)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.HLine)
-        self.line_3.setFrameShadow(QFrame.Sunken)
-
-        self.verticalLayout.addWidget(self.line_3)
-
         self.label_4 = QLabel(ReadImg)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setStyleSheet(u"color: #ee2a24")
@@ -198,21 +177,6 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.pushButton = QPushButton(ReadImg)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.horizontalLayout_3.addWidget(self.pushButton)
-
-        self.pushButton_3 = QPushButton(ReadImg)
-        self.pushButton_3.setObjectName(u"pushButton_3")
-
-        self.horizontalLayout_3.addWidget(self.pushButton_3)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
-
         self.copyButton = QPushButton(ReadImg)
         self.copyButton.setObjectName(u"copyButton")
 
@@ -298,27 +262,23 @@ class Ui_ReadImg(object):
 
 
         self.retranslateUi(ReadImg)
-        self.pushButton_2.clicked.connect(ReadImg.hide)
-        self.pushButton_4.clicked.connect(ReadImg.OpenLastEps)
-        self.nextPage.clicked.connect(ReadImg.NextPage)
-        self.copyButton.clicked.connect(ReadImg.CopyPicture)
-        self.pushButton_3.clicked.connect(ReadImg.AddScalePic)
-        self.returePage.clicked.connect(ReadImg.ReturnPage)
-        self.lastPage.clicked.connect(ReadImg.LastPage)
-        self.pushButton.clicked.connect(ReadImg.ReduceScalePic)
-        self.checkBox.clicked.connect(ReadImg.OpenWaifu)
-        self.radioButton_2.clicked.connect(ReadImg.SwitchPicture)
         self.pushButton_5.clicked.connect(ReadImg.OpenNextEps)
-        self.radioButton.clicked.connect(ReadImg.SwitchPicture)
         self.modelBox.currentIndexChanged.connect(ReadImg.SwitchModel)
+        self.lastPage.clicked.connect(ReadImg.LastPage)
+        self.radioButton.clicked.connect(ReadImg.SwitchPicture)
+        self.radioButton_2.clicked.connect(ReadImg.SwitchPicture)
+        self.copyButton.clicked.connect(ReadImg.CopyPicture)
+        self.nextPage.clicked.connect(ReadImg.NextPage)
+        self.pushButton_4.clicked.connect(ReadImg.OpenLastEps)
+        self.pushButton_2.clicked.connect(ReadImg.hide)
+        self.returePage.clicked.connect(ReadImg.ReturnPage)
+        self.checkBox.clicked.connect(ReadImg.OpenWaifu)
 
         QMetaObject.connectSlotsByName(ReadImg)
     # setupUi
 
     def retranslateUi(self, ReadImg):
         ReadImg.setWindowTitle(QCoreApplication.translate("ReadImg", u"Form", None))
-        self.label_5.setText(QCoreApplication.translate("ReadImg", u"\u70b9\u51fb\u53f3\u952e\u6253\u5f00\u5173\u95ed", None))
-        self.label_6.setText(QCoreApplication.translate("ReadImg", u"\u6309\u4f4f\u5de6Alt+\u6eda\u8f6e\u653e\u5927", None))
         self.label_4.setText(QCoreApplication.translate("ReadImg", u"\u56fe\u7247\u4fe1\u606f", None))
         self.resolutionLabel.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
         self.sizeLabel.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
@@ -341,8 +301,6 @@ class Ui_ReadImg(object):
         self.stateWaifu.setText(QCoreApplication.translate("ReadImg", u"\u72b6\u6001\uff1a", None))
         self.radioButton.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u9ad8\u5ea6", None))
         self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u5bbd\u5ea6", None))
-        self.pushButton.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u5c0f", None))
-        self.pushButton_3.setText(QCoreApplication.translate("ReadImg", u"\u653e\u5927", None))
         self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00\u56fe\u7247\u5de5\u5177", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
         self.returePage.setText(QCoreApplication.translate("ReadImg", u"\u8fd4\u56de", None))
