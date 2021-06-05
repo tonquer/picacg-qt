@@ -15,7 +15,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.setupUi(self)
         self.settings = QSettings('config.ini', QSettings.IniFormat)
         self.setWindowModality(Qt.ApplicationModal)
-        self.mainSize = QSize(1500, 1100)
+        self.mainSize = None
         self.bookSize = QSize(900, 1020)
         self.readSize = QSize(1120, 1020)
         self.userId = ""

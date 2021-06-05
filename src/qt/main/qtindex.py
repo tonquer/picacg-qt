@@ -6,7 +6,7 @@ from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QIcon
 
 from resources.resources import DataMgr
-from src.qt.com.qtlistwidget import QtBookList
+from ui.qtlistwidget import QtBookList
 from src.server import Server, req,  Log
 from src.user.user import User
 from ui.index import Ui_Index
@@ -21,19 +21,16 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.owner = weakref.ref(owner)
         self.isInit = False
-        self.bookList1 = QtBookList(self, "1", owner)
-        self.bookList1.InitBook()
-        self.horizontalLayout.addWidget(self.bookList1)
-        self.bookList1.doubleClicked.connect(self.OpenSearch1)
-        self.bookList2 = QtBookList(self, "2", owner)
-        self.bookList2.InitBook()
-        self.bookList2.doubleClicked.connect(self.OpenSearch2)
-        self.horizontalLayout_2.addWidget(self.bookList2)
 
-        self.bookList3 = QtBookList(self, "3", owner)
-        self.bookList3.InitBook()
+        self.bookList1.InitBook("index1", owner)
+        self.bookList1.doubleClicked.connect(self.OpenSearch1)
+
+        self.bookList2.InitBook("index2", owner)
+        self.bookList2.doubleClicked.connect(self.OpenSearch2)
+
+        self.bookList3.InitBook("index3", owner)
         self.bookList3.doubleClicked.connect(self.OpenSearch3)
-        self.horizontalLayout_3.addWidget(self.bookList3)
+
         p = QPixmap()
         p.loadFromData(DataMgr().GetData("fold2"))
         q = QPixmap()

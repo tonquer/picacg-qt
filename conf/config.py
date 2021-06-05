@@ -31,7 +31,7 @@ IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
 UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
-UpdateVersion = "v1.1.6"
+UpdateVersion = "v1.1.7"
 
 # waifu2x
 CanWaifu2x = True
@@ -41,7 +41,7 @@ Encode = 0
 Waifu2xThread = 2
 Format = "jpg"
 Waifu2xPath = "waifu2x"
-IsOpenWaifu = True
+IsOpenWaifu = False
 
 LookModel = 0       # 默认值
 DownloadModel = 0   # 默认值

@@ -12,12 +12,15 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from .qtlistwidget import QtBookList
+from .qtlistwidget import QtCategoryList
+
 
 class Ui_BookInfo(object):
     def setupUi(self, BookInfo):
         if not BookInfo.objectName():
             BookInfo.setObjectName(u"BookInfo")
-        BookInfo.resize(999, 808)
+        BookInfo.resize(709, 963)
         self.gridLayout_2 = QGridLayout(BookInfo)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.stackedWidget = QStackedWidget(BookInfo)
@@ -47,11 +50,13 @@ class Ui_BookInfo(object):
         self.label = QLabel(self.page)
         self.label.setObjectName(u"label")
         self.label.setMaximumSize(QSize(40, 16777215))
+        self.label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_3.addWidget(self.label)
 
         self.title = QLabel(self.page)
         self.title.setObjectName(u"title")
+        self.title.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_3.addWidget(self.title)
 
@@ -60,6 +65,29 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.horizontalLayout_11.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.label_2 = QLabel(self.page)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setMinimumSize(QSize(0, 0))
+        self.label_2.setMaximumSize(QSize(16777215, 50))
+
+        self.horizontalLayout_11.addWidget(self.label_2)
+
+        self.autorList = QtCategoryList(self.page)
+        self.autorList.setObjectName(u"autorList")
+        self.autorList.setMaximumSize(QSize(16777215, 40))
+        self.autorList.setStyleSheet(u"background-color:transparent;")
+        self.autorList.setFrameShape(QFrame.NoFrame)
+        self.autorList.setProperty("showDropIndicator", True)
+        self.autorList.setFlow(QListView.LeftToRight)
+
+        self.horizontalLayout_11.addWidget(self.autorList)
+
+
+        self.horizontalLayout_4.addLayout(self.horizontalLayout_11)
+
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
 
@@ -68,11 +96,13 @@ class Ui_BookInfo(object):
         self.label_3 = QLabel(self.page)
         self.label_3.setObjectName(u"label_3")
         self.label_3.setMaximumSize(QSize(40, 16777215))
+        self.label_3.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_5.addWidget(self.label_3)
 
         self.description = QLabel(self.page)
         self.description.setObjectName(u"description")
+        self.description.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_5.addWidget(self.description)
 
@@ -81,11 +111,71 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_4 = QLabel(self.page)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setMaximumSize(QSize(16777215, 40))
+
+        self.horizontalLayout_6.addWidget(self.label_4)
+
+        self.categoriesList = QtCategoryList(self.page)
+        self.categoriesList.setObjectName(u"categoriesList")
+        self.categoriesList.setMaximumSize(QSize(16777215, 40))
+        self.categoriesList.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
+"QListWidget::item {\n"
+"    background-color:rgb(251, 239, 243);\n"
+"    color: rgb(196, 95, 125);\n"
+"	border:2px solid red;\n"
+"    border-radius: 10px;\n"
+"	border-color:rgb(196, 95, 125);\n"
+"}\n"
+"/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+" QListWidget::item:hover \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+"")
+        self.categoriesList.setFrameShape(QFrame.NoFrame)
+        self.categoriesList.setSpacing(6)
+
+        self.horizontalLayout_6.addWidget(self.categoriesList)
+
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.label_5 = QLabel(self.page)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setMaximumSize(QSize(16777215, 40))
+
+        self.horizontalLayout_7.addWidget(self.label_5)
+
+        self.tagsList = QtCategoryList(self.page)
+        self.tagsList.setObjectName(u"tagsList")
+        self.tagsList.setMaximumSize(QSize(16777215, 40))
+        self.tagsList.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
+"QListWidget::item {\n"
+"    background-color:rgb(251, 239, 243);\n"
+"    color: rgb(196, 95, 125);\n"
+"	border:2px solid red;\n"
+"    border-radius: 10px;\n"
+"	border-color:rgb(196, 95, 125);\n"
+"}\n"
+"/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+" QListWidget::item:hover \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+"")
+        self.tagsList.setFrameShape(QFrame.NoFrame)
+        self.tagsList.setSpacing(6)
+
+        self.horizontalLayout_7.addWidget(self.tagsList)
+
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_7)
 
@@ -128,15 +218,15 @@ class Ui_BookInfo(object):
         self.updateTick = QLabel(self.page)
         self.updateTick.setObjectName(u"updateTick")
         self.updateTick.setEnabled(True)
-        self.updateTick.setMinimumSize(QSize(80, 0))
-        self.updateTick.setMaximumSize(QSize(80, 20))
+        self.updateTick.setMinimumSize(QSize(80, 40))
+        self.updateTick.setMaximumSize(QSize(80, 40))
 
         self.horizontalLayout_2.addWidget(self.updateTick)
 
         self.isFinished = QLabel(self.page)
         self.isFinished.setObjectName(u"isFinished")
-        self.isFinished.setMinimumSize(QSize(80, 0))
-        self.isFinished.setMaximumSize(QSize(80, 20))
+        self.isFinished.setMinimumSize(QSize(80, 40))
+        self.isFinished.setMaximumSize(QSize(80, 40))
         self.isFinished.setTextFormat(Qt.AutoText)
         self.isFinished.setAlignment(Qt.AlignCenter)
 
@@ -144,19 +234,22 @@ class Ui_BookInfo(object):
 
         self.download = QPushButton(self.page)
         self.download.setObjectName(u"download")
-        self.download.setMaximumSize(QSize(16777215, 20))
+        self.download.setMinimumSize(QSize(0, 40))
+        self.download.setMaximumSize(QSize(16777215, 40))
 
         self.horizontalLayout_2.addWidget(self.download)
 
         self.favorites = QPushButton(self.page)
         self.favorites.setObjectName(u"favorites")
-        self.favorites.setMaximumSize(QSize(16777215, 20))
+        self.favorites.setMinimumSize(QSize(0, 40))
+        self.favorites.setMaximumSize(QSize(16777215, 40))
 
         self.horizontalLayout_2.addWidget(self.favorites)
 
         self.startRead = QPushButton(self.page)
         self.startRead.setObjectName(u"startRead")
-        self.startRead.setMaximumSize(QSize(16777215, 20))
+        self.startRead.setMinimumSize(QSize(0, 40))
+        self.startRead.setMaximumSize(QSize(16777215, 40))
 
         self.horizontalLayout_2.addWidget(self.startRead)
 
@@ -178,15 +271,64 @@ class Ui_BookInfo(object):
 
         self.tabWidget = QTabWidget(self.page)
         self.tabWidget.setObjectName(u"tabWidget")
+        self.tabWidget.setStyleSheet(u"QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }")
         self.epsWidget = QWidget()
         self.epsWidget.setObjectName(u"epsWidget")
         self.epsLayout = QGridLayout(self.epsWidget)
         self.epsLayout.setObjectName(u"epsLayout")
+        self.epsListWidget = QListWidget(self.epsWidget)
+        self.epsListWidget.setObjectName(u"epsListWidget")
+        self.epsListWidget.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
+"QListWidget::item {\n"
+"    background-color:rgb(251, 239, 243);\n"
+"    color: rgb(196, 95, 125);\n"
+"	border:2px solid red;\n"
+"    border-radius: 10px;\n"
+"	border-color:rgb(196, 95, 125);\n"
+"}\n"
+"/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+" QListWidget::item:hover \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+"")
+        self.epsListWidget.setTextElideMode(Qt.ElideRight)
+        self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.epsListWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.epsListWidget.setSpacing(6)
+
+        self.epsLayout.addWidget(self.epsListWidget, 0, 0, 1, 1)
+
         self.tabWidget.addTab(self.epsWidget, "")
         self.commentWidget = QWidget()
         self.commentWidget.setObjectName(u"commentWidget")
         self.commentLayout = QGridLayout(self.commentWidget)
         self.commentLayout.setObjectName(u"commentLayout")
+        self.listWidget = QtBookList(self.commentWidget)
+        self.listWidget.setObjectName(u"listWidget")
+        self.listWidget.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
+"QListWidget::item { border-bottom: 1px solid black; }")
+
+        self.commentLayout.addWidget(self.listWidget, 0, 0, 1, 1)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.commentLine = QLineEdit(self.commentWidget)
+        self.commentLine.setObjectName(u"commentLine")
+        self.commentLine.setStyleSheet(u"background-color:transparent;")
+
+        self.horizontalLayout_10.addWidget(self.commentLine)
+
+        self.commentButton = QPushButton(self.commentWidget)
+        self.commentButton.setObjectName(u"commentButton")
+
+        self.horizontalLayout_10.addWidget(self.commentButton)
+
+
+        self.commentLayout.addLayout(self.horizontalLayout_10, 1, 0, 1, 1)
+
         self.tabWidget.addTab(self.commentWidget, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
@@ -218,8 +360,11 @@ class Ui_BookInfo(object):
         self.picture.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("BookInfo", u"\u6807\u9898\uff1a", None))
         self.title.setText(QCoreApplication.translate("BookInfo", u"\u6807\u9898", None))
+        self.label_2.setText(QCoreApplication.translate("BookInfo", u"\u4f5c\u8005\uff1a", None))
         self.label_3.setText(QCoreApplication.translate("BookInfo", u"\u63cf\u8ff0\uff1a", None))
         self.description.setText(QCoreApplication.translate("BookInfo", u"\u63cf\u8ff0", None))
+        self.label_4.setText(QCoreApplication.translate("BookInfo", u"\u5206\u7c7b\uff1a", None))
+        self.label_5.setText(QCoreApplication.translate("BookInfo", u"Tags\uff1a", None))
         self.label_6.setText(QCoreApplication.translate("BookInfo", u"\u7231\u5fc3\u6570\uff1a", None))
         self.likes.setText(QCoreApplication.translate("BookInfo", u"\u7231\u5fc3\u6570", None))
         self.label_7.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570\uff1a", None))
@@ -230,6 +375,7 @@ class Ui_BookInfo(object):
         self.favorites.setText(QCoreApplication.translate("BookInfo", u"\u6536\u85cf", None))
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.epsWidget), QCoreApplication.translate("BookInfo", u"\u7ae0\u8282", None))
+        self.commentButton.setText(QCoreApplication.translate("BookInfo", u"\u53d1\u9001\u8bc4\u8bba", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.commentWidget), QCoreApplication.translate("BookInfo", u"\u8bc4\u8bba", None))
     # retranslateUi
 

@@ -11,6 +11,8 @@ for root, dirs, filenames in os.walk("./"):
     for name in filenames:
         if name[-3:] != "png":
             continue
+        if len(name.split(".")) >= 3:
+            continue
         f = open(name, "rb")
         # fw.write("def get():\r\n    return )
         i = 0

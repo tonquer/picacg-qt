@@ -13,8 +13,23 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2"/>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="QtBookList" name="bookList">
+     <property name="styleSheet">
+      <string notr="true">QListWidget {background-color:transparent;}</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtBookList</class>
+   <extends>QListWidget</extends>
+   <header location="global">.qtlistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

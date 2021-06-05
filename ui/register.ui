@@ -362,6 +362,22 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>userEdit</tabstop>
+  <tabstop>nameEdit</tabstop>
+  <tabstop>passwdEdit</tabstop>
+  <tabstop>birthdayEdit</tabstop>
+  <tabstop>question1Edit</tabstop>
+  <tabstop>answer1Edit</tabstop>
+  <tabstop>question2Edit</tabstop>
+  <tabstop>answer2Edit</tabstop>
+  <tabstop>question3Edit</tabstop>
+  <tabstop>answer3Edit</tabstop>
+  <tabstop>gender_m</tabstop>
+  <tabstop>gender_f</tabstop>
+  <tabstop>gender_bot</tabstop>
+  <tabstop>register_2</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

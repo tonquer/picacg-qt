@@ -12,6 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from .head_label import HeadLabel
+
 
 class Ui_Comment(object):
     def setupUi(self, Comment):
@@ -43,7 +45,7 @@ class Ui_Comment(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_2)
 
-        self.picIcon = QLabel(Comment)
+        self.picIcon = HeadLabel(Comment)
         self.picIcon.setObjectName(u"picIcon")
         self.picIcon.setMinimumSize(QSize(100, 100))
         self.picIcon.setMaximumSize(QSize(100, 100))

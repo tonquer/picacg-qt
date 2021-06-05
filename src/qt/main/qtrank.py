@@ -3,7 +3,7 @@ import json
 from PySide2 import QtWidgets
 import weakref
 
-from src.qt.com.qtlistwidget import QtBookList
+from ui.qtlistwidget import QtBookList
 from src.server import req, Server, Log
 from ui.rank import Ui_Rank
 
@@ -14,20 +14,13 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
         Ui_Rank.__init__(self)
         self.setupUi(self)
         self.owner = weakref.ref(owner)
-
-        self.h24BookList = QtBookList(self, "h24BookList", owner)
-        self.h24BookList.InitBook()
-        self.h24Layout.addWidget(self.h24BookList)
+        self.h24BookList.InitBook("h24BookList", owner)
         self.h24BookList.doubleClicked.connect(self.OpenSearch)
 
-        self.d7BookList = QtBookList(self, "d7BookList", owner)
-        self.d7BookList.InitBook()
-        self.d7Layout.addWidget(self.d7BookList)
+        self.d7BookList.InitBook("d7BookList", owner)
         self.d7BookList.doubleClicked.connect(self.OpenSearch)
 
-        self.d30BookList = QtBookList(self, "d30BookList", owner)
-        self.d30BookList.InitBook()
-        self.d30Layout.addWidget(self.d30BookList)
+        self.d30BookList.InitBook("d30BookList", owner)
         self.d30BookList.doubleClicked.connect(self.OpenSearch)
         self.isInit = False
 

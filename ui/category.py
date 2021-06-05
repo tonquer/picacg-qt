@@ -12,6 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from .qtlistwidget import QtBookList
+
 
 class Ui_category(object):
     def setupUi(self, category):
@@ -20,6 +22,12 @@ class Ui_category(object):
         category.resize(400, 300)
         self.gridLayout_2 = QGridLayout(category)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.bookList = QtBookList(category)
+        self.bookList.setObjectName(u"bookList")
+        self.bookList.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.gridLayout_2.addWidget(self.bookList, 0, 0, 1, 1)
+
 
         self.retranslateUi(category)
 

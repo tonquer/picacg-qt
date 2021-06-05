@@ -134,6 +134,9 @@
          <pointsize>12</pointsize>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background-color:transparent;</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -188,6 +191,9 @@
        <width>16777215</width>
        <height>100</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color:transparent;</string>
      </property>
     </widget>
    </item>

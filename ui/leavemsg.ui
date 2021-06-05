@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>292</height>
+    <width>699</width>
+    <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,28 +17,37 @@
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout"/>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="1" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLabel" name="nums">
-         <property name="text">
-          <string>分页：</string>
+        <widget class="QLineEdit" name="commentLine">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color:transparent;</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="pages">
-         <property name="text">
-          <string>页</string>
+        <widget class="QPushButton" name="commentButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineEdit"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="jumpButton">
          <property name="text">
-          <string>跳转</string>
+          <string>发送评论</string>
          </property>
          <property name="shortcut">
           <string>Return</string>
@@ -58,15 +67,106 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="nums">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>分页：</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="pages">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>页</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBox">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color:transparent;</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="jumpButton">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>跳转</string>
+         </property>
+        </widget>
+       </item>
       </layout>
+     </item>
+     <item row="0" column="0">
+      <widget class="QtBookList" name="listWidget">
+       <property name="styleSheet">
+        <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item { border-bottom: 1px solid black; }</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
-   <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_3"/>
-   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtBookList</class>
+   <extends>QListWidget</extends>
+   <header location="global">.qtlistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

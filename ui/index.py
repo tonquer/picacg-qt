@@ -12,6 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from .qtlistwidget import QtBookList
+
 
 class Ui_Index(object):
     def setupUi(self, Index):
@@ -20,23 +22,43 @@ class Ui_Index(object):
         Index.resize(483, 507)
         self.verticalLayout = QVBoxLayout(Index)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(6, 6, 6, 6)
         self.scrollArea = QScrollArea(Index)
         self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setAutoFillBackground(False)
+        self.scrollArea.setFrameShape(QFrame.NoFrame)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 463, 487))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 471, 495))
         self.gridLayout = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.toolButton = QToolButton(self.scrollAreaWidgetContents)
-        self.toolButton.setObjectName(u"toolButton")
-
-        self.gridLayout.addWidget(self.toolButton, 0, 0, 1, 1)
-
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.bookList2 = QtBookList(self.scrollAreaWidgetContents)
+        self.bookList2.setObjectName(u"bookList2")
+        self.bookList2.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.horizontalLayout_2.addWidget(self.bookList2)
+
 
         self.gridLayout.addLayout(self.horizontalLayout_2, 3, 0, 1, 1)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.bookList3 = QtBookList(self.scrollAreaWidgetContents)
+        self.bookList3.setObjectName(u"bookList3")
+        self.bookList3.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.horizontalLayout_3.addWidget(self.bookList3)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_3, 6, 0, 1, 1)
+
+        self.toolButton_2 = QToolButton(self.scrollAreaWidgetContents)
+        self.toolButton_2.setObjectName(u"toolButton_2")
+
+        self.gridLayout.addWidget(self.toolButton_2, 2, 0, 1, 1)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
@@ -57,20 +79,21 @@ class Ui_Index(object):
 
         self.gridLayout.addLayout(self.horizontalLayout_4, 4, 0, 1, 1)
 
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-
-        self.gridLayout.addLayout(self.horizontalLayout_3, 6, 0, 1, 1)
-
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.bookList1 = QtBookList(self.scrollAreaWidgetContents)
+        self.bookList1.setObjectName(u"bookList1")
+        self.bookList1.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.horizontalLayout.addWidget(self.bookList1)
+
 
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
 
-        self.toolButton_2 = QToolButton(self.scrollAreaWidgetContents)
-        self.toolButton_2.setObjectName(u"toolButton_2")
+        self.toolButton = QToolButton(self.scrollAreaWidgetContents)
+        self.toolButton.setObjectName(u"toolButton")
 
-        self.gridLayout.addWidget(self.toolButton_2, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.toolButton, 0, 0, 1, 1)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -85,12 +108,12 @@ class Ui_Index(object):
 
     def retranslateUi(self, Index):
         Index.setWindowTitle(QCoreApplication.translate("Index", u"Form", None))
-        self.toolButton.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u795e\u63a8\u8350", None))
+        self.toolButton_2.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u9b54\u63a8\u8350", None))
         self.toolButton_3.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u968f\u673a\u672c\u5b50", None))
         self.pushButton.setText(QCoreApplication.translate("Index", u"\u5237\u65b0", None))
 #if QT_CONFIG(shortcut)
         self.pushButton.setShortcut(QCoreApplication.translate("Index", u"F5", None))
 #endif // QT_CONFIG(shortcut)
-        self.toolButton_2.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u9b54\u63a8\u8350", None))
+        self.toolButton.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u795e\u63a8\u8350", None))
     # retranslateUi
 

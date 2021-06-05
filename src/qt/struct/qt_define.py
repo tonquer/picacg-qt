@@ -1,6 +1,7 @@
 
 from PySide2.QtCore import QSize
 
+from conf import config
 from src.util import ToolUtil
 
 
@@ -23,7 +24,7 @@ class QtFileData(object):
         self.scaleH = 0
         self.state = self.Downloading
         self.data = None
-        self.waifuState = self.WaifuStateStart
+        self.waifuState = self.WaifuStateCancle
         self.waifuDataSize = 0
         self.waifuData = None
         self.waifuTick = 0
@@ -43,6 +44,8 @@ class QtFileData(object):
         if not data:
             self.state = self.DownloadError
             return
+        if config.IsOpenWaifu:
+            self.waifuState = self.WaifuStateStart
         self.data = data
         self.w, self.h = ToolUtil.GetPictureSize(data)
         self.model = ToolUtil.GetLookScaleModel(self.w, self.h, category)

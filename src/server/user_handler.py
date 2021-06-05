@@ -340,3 +340,10 @@ class AppInfoHandler(object):
     def __call__(self, backData):
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
+@handler(req.AppCommentInfoReq)
+class AppCommentInfoReqHandler(object):
+    def __call__(self, backData):
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)

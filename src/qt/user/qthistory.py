@@ -4,7 +4,7 @@ from PySide2 import QtWidgets
 from PySide2.QtSql import QSqlDatabase, QSqlQuery
 import time
 
-from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
+from ui.qtlistwidget import QtBookList, QtIntLimit
 from src.util import Log
 from ui.history import Ui_History
 
@@ -27,12 +27,8 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         self.setupUi(self)
         self.owner = weakref.ref(owner)
 
-        self.bookList = QtBookList(self, self.__class__.__name__, owner)
-        self.bookList.InitBook(self.LoadNextPage)
-        self.gridLayout_3.addWidget(self.bookList)
+        self.bookList.InitBook(self.__class__.__name__, owner, self.LoadNextPage)
         self.pageNums = 20
-
-        self.lineEdit.setValidator(QtIntLimit(1, 1, self))
 
         self.history = {}
         self.db = QSqlDatabase.addDatabase("QSQLITE", "history")
@@ -64,7 +60,8 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         self.bookList.clear()
         self.bookList.page = 1
         self.bookList.pages = len(self.history) // self.pageNums + 1
-        self.lineEdit.setValidator(QtIntLimit(1, self.bookList.pages, self))
+        self.spinBox.setValue(1)
+        self.spinBox.setMaximum(self.pageNums)
         self.bookList.UpdateState()
         self.UpdatePageLabel()
         self.RefreshData(self.bookList.page)
@@ -127,23 +124,13 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         pass
 
     def JumpPage(self):
-        page = int(self.lineEdit.text())
+        page = int(self.spinBox.text())
         if page > self.bookList.pages:
             return
         self.bookList.page = page
         self.bookList.clear()
         self.RefreshData(page)
         self.UpdatePageLabel()
-
-    def OpenSearch(self, modelIndex):
-        index = modelIndex.row()
-        item = self.bookList.item(index)
-        widget = self.bookList.itemWidget(item)
-        text = widget.infoLabel.text()
-        self.owner().userForm.listWidget.setCurrentRow(1)
-        self.owner().searchForm.searchEdit.setText("")
-        self.owner().searchForm.OpenSearchCategories(text)
-        pass
 
     def LoadNextPage(self):
         self.bookList.page += 1

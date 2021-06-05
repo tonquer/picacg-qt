@@ -12,12 +12,14 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from .head_label import HeadLabel
+
 
 class Ui_ChatRoomMsg(object):
     def setupUi(self, ChatRoomMsg):
         if not ChatRoomMsg.objectName():
             ChatRoomMsg.setObjectName(u"ChatRoomMsg")
-        ChatRoomMsg.resize(466, 175)
+        ChatRoomMsg.resize(466, 168)
         self.gridLayout_2 = QGridLayout(ChatRoomMsg)
         self.gridLayout_2.setSpacing(1)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -28,23 +30,12 @@ class Ui_ChatRoomMsg(object):
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.frame = QFrame(ChatRoomMsg)
-        self.frame.setObjectName(u"frame")
-        self.frame.setMinimumSize(QSize(100, 100))
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.picLabel = QLabel(self.frame)
+        self.picLabel = HeadLabel(ChatRoomMsg)
         self.picLabel.setObjectName(u"picLabel")
-        self.picLabel.setGeometry(QRect(10, 10, 80, 80))
-        self.picLabel.setMinimumSize(QSize(80, 80))
-        self.picLabel.setMaximumSize(QSize(80, 80))
-        self.picLabel.setAlignment(Qt.AlignCenter)
-        self.label = QLabel(self.frame)
-        self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(0, 0, 100, 120))
-        self.label.setMinimumSize(QSize(100, 100))
+        self.picLabel.setMinimumSize(QSize(100, 100))
+        self.picLabel.setMaximumSize(QSize(100, 100))
 
-        self.verticalLayout.addWidget(self.frame)
+        self.verticalLayout.addWidget(self.picLabel, 0, Qt.AlignTop)
 
 
         self.gridLayout_2.addLayout(self.verticalLayout, 0, 0, 1, 1)
@@ -147,7 +138,6 @@ class Ui_ChatRoomMsg(object):
     def retranslateUi(self, ChatRoomMsg):
         ChatRoomMsg.setWindowTitle(QCoreApplication.translate("ChatRoomMsg", u"Form", None))
         self.picLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))
-        self.label.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))
         self.nameLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"TextLabel", None))
         self.indexLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"X\u697c", None))
         self.levelLabel.setText(QCoreApplication.translate("ChatRoomMsg", u"LV", None))

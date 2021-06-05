@@ -284,7 +284,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
             info['avatar'] = "https://storage.wikawika.xyz" + "/static/" + User().avatar.get("path")
         info['audio'] = ""
         info['block_user_id'] = ""
-        info['platform'] = "windows"
+        info['platform'] = "android"
         if not imageData:
             info['reply_name'] = ""
             info['at'] = ""

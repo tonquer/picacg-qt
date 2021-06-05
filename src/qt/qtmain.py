@@ -3,12 +3,13 @@
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
 from PySide2.QtCore import QTimer, QUrl
 from PySide2.QtGui import QIcon, QPixmap, QDesktopServices
-from PySide2.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QMessageBox, QDesktopWidget
 
 from conf import config
 from resources import resources
 from src.qt.chat.qtchat import QtChat
 from src.qt.com.qtimg import  QtImgMgr
+from src.qt.main.qt_fried import QtFried
 from src.qt.main.qtindex import QtIndex
 from src.qt.menu.qtabout import QtAbout
 from src.qt.read.qtbookinfo import QtBookInfo
@@ -60,6 +61,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.leaveMsgForm = QtLeaveMsg(self)
         self.chatForm = QtChat(self)
         self.rankForm = QtRank(self)
+        self.friedForm = QtFried(self)
 
         self.loginForm = QtLogin(self)
         self.registerForm = QtRegister(self)
@@ -86,7 +88,12 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settingForm = QtSetting(self)
         self.settingForm.LoadSetting()
 
-        self.resize(self.settingForm.mainSize)
+        if self.settingForm.mainSize:
+            self.resize(self.settingForm.mainSize)
+        else:
+            desktop = QDesktopWidget()
+            self.resize(desktop.width() // 4 * 2, desktop.height() // 4 * 2)
+            self.move(desktop.width() // 4, desktop.height() // 4)
         self.bookInfoForm.resize(self.settingForm.bookSize)
         self.qtReadImg.resize(self.settingForm.readSize)
 

@@ -84,6 +84,7 @@ class Ui_ChatRoom(object):
         font.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
         font.setPointSize(12)
         self.textEdit.setFont(font)
+        self.textEdit.setStyleSheet(u"background-color:transparent;")
 
         self.horizontalLayout_2.addWidget(self.textEdit)
 
@@ -116,6 +117,7 @@ class Ui_ChatRoom(object):
         self.listWidget = QListWidget(ChatRoom)
         self.listWidget.setObjectName(u"listWidget")
         self.listWidget.setMaximumSize(QSize(16777215, 100))
+        self.listWidget.setStyleSheet(u"background-color:transparent;")
 
         self.gridLayout.addWidget(self.listWidget, 4, 0, 1, 1)
 

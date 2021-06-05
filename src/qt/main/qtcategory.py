@@ -2,7 +2,7 @@ from PySide2 import QtWidgets
 import weakref
 
 from src.index.category import CateGoryMgr
-from src.qt.com.qtlistwidget import QtBookList
+from ui.qtlistwidget import QtBookList
 from src.util.status import Status
 from ui.category import Ui_category
 
@@ -13,9 +13,7 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
         Ui_category.__init__(self)
         self.setupUi(self)
         self.owner = weakref.ref(owner)
-        self.bookList = QtBookList(self, self.__class__.__name__, owner)
-        self.bookList.InitBook()
-        self.gridLayout_2.addWidget(self.bookList)
+        self.bookList.InitBook(self.__class__.__name__, owner)
         self.bookList.doubleClicked.connect(self.OpenSearch)
         self.bookList.InstallCategory()
 
@@ -42,7 +40,7 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
         item = self.bookList.item(index)
         widget = self.bookList.itemWidget(item)
         text = widget.label.text()
-        self.owner().userForm.listWidget.setCurrentRow(1)
+        self.owner().userForm.toolButton1.click()
         self.owner().searchForm.searchEdit.setText("")
         self.owner().searchForm.OpenSearchCategories(text)
         pass

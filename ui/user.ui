@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>801</width>
-    <height>488</height>
+    <height>637</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -31,20 +31,20 @@
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
        <item>
-        <widget class="QLabel" name="icon">
+        <widget class="HeadLabel" name="icon">
          <property name="enabled">
           <bool>true</bool>
          </property>
          <property name="minimumSize">
           <size>
-           <width>200</width>
-           <height>200</height>
+           <width>100</width>
+           <height>100</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>200</width>
-           <height>200</height>
+           <width>100</width>
+           <height>100</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -65,7 +65,7 @@
         <widget class="QLabel" name="name">
          <property name="maximumSize">
           <size>
-           <width>200</width>
+           <width>100</width>
            <height>16777215</height>
           </size>
          </property>
@@ -78,58 +78,48 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="leftMargin">
-          <number>6</number>
+        <widget class="QLabel" name="level">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
          </property>
-         <property name="rightMargin">
-          <number>0</number>
+         <property name="styleSheet">
+          <string notr="true">background:#eeA2A4;</string>
          </property>
-         <item>
-          <widget class="QLabel" name="level">
-           <property name="maximumSize">
-            <size>
-             <width>80</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background:#eeA2A4;</string>
-           </property>
-           <property name="text">
-            <string>level:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="title">
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background:#eeA2A4;</string>
-           </property>
-           <property name="text">
-            <string>title</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
+         <property name="text">
+          <string>level:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="title">
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background:#eeA2A4;</string>
+         </property>
+         <property name="text">
+          <string>title</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="exp">
          <property name="maximumSize">
           <size>
-           <width>200</width>
+           <width>100</width>
            <height>16777215</height>
           </size>
          </property>
@@ -142,17 +132,46 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <widget class="QPushButton" name="signButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>已签到</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="spacing">
           <number>0</number>
          </property>
-         <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
-         </property>
          <item>
-          <widget class="QPushButton" name="signButton">
-           <property name="enabled">
-            <bool>false</bool>
+          <widget class="QToolButton" name="toolButton0">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
            </property>
            <property name="maximumSize">
             <size>
@@ -160,38 +179,517 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="text">
-            <string>已签到</string>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
            </property>
+           <property name="text">
+            <string>主页</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton1">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>搜索</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton2">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>分类</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton3">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>排行</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton4">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>收藏</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton5">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>历史记录</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton6">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>下载</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton7">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>留言板</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton8">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>聊天室</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton9">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+           </property>
+           <property name="text">
+            <string>锅贴</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QListWidget" name="listWidget">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>200</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
     </layout>
    </item>
    <item row="0" column="1">
-    <widget class="QStackedWidget" name="stackedWidget"/>
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="styleSheet">
+      <string notr="true">#stackedWidget {border:1px solid #014F84;}</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HeadLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">.head_label.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -201,8 +699,8 @@
    <slot>Sign()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>75</x>
-     <y>135</y>
+     <x>86</x>
+     <y>211</y>
     </hint>
     <hint type="destinationlabel">
      <x>103</x>
@@ -215,4 +713,7 @@
   <slot>Switch()</slot>
   <slot>Sign()</slot>
  </slots>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

@@ -11,7 +11,7 @@ from conf import config
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
-from src.qt.com.qtlistwidget import QtBookList, QtCategoryList
+from ui.qtlistwidget import QtBookList, QtCategoryList
 from src.qt.com.qtloading import QtLoading
 from src.server import req, Log, Server, ToolUtil
 from src.user.user import User
@@ -44,10 +44,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         # self.autor.setContextMenuPolicy(Qt.CustomContextMenu)
         # self.autor.customContextMenuRequested.connect(self.OpenAutor)
 
-        layouy = self.horizontalLayout_4
-        self.autorList = QtCategoryList(self)
-        layouy.addWidget(QLabel("作者："))
-        layouy.addWidget(self.autorList)
         self.autorList.itemClicked.connect(self.ClickTagsItem)
 
         self.description.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -61,36 +57,24 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         # self.categories.setWordWrap(True)
         # self.categories.setAlignment(Qt.AlignTop)
 
-        layouy = self.horizontalLayout_6
-        self.categoriesList = QtCategoryList(self)
-        layouy.addWidget(QLabel("分类："))
-        layouy.addWidget(self.categoriesList)
         self.categoriesList.itemClicked.connect(self.ClickCategoriesItem)
 
         # self.tags.setGeometry(QRect(328, 240, 329, 27 * 4))
         # self.tags.setWordWrap(True)
         # self.tags.setAlignment(Qt.AlignTop)
 
-        layouy = self.horizontalLayout_7
-        self.tagsList = QtCategoryList(self)
-        layouy.addWidget(QLabel("Tags："))
-        layouy.addWidget(self.tagsList)
         self.tagsList.itemClicked.connect(self.ClickTagsItem)
 
-        self.epsListWidget = QListWidget(self)
         self.epsListWidget.setFlow(self.epsListWidget.LeftToRight)
         self.epsListWidget.setWrapping(True)
         self.epsListWidget.setFrameShape(self.epsListWidget.NoFrame)
         self.epsListWidget.setResizeMode(self.epsListWidget.Adjust)
 
-        self.epsLayout.addWidget(self.epsListWidget)
-
-        self.listWidget = QtBookList(self, self.__class__.__name__, owner)
-        self.listWidget.InitUser(self.LoadNextPage)
+        self.listWidget.InitUser(self.__class__.__name__, owner, self.LoadNextPage)
         self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
 
-        self.childrenListWidget = QtBookList(None, self.__class__.__name__, owner)
-        self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
+        self.childrenListWidget = QtBookList(None)
+        self.childrenListWidget.InitUser(self.__class__.__name__, owner, self.LoadChildrenNextPage)
 
         self.childrenWidget = QtWidgets.QWidget()
         layout = QHBoxLayout(self.childrenWidget)
@@ -110,13 +94,13 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         layout3.addWidget(self.childrenListWidget)
         layout.addLayout(layout3)
 
-        self.commentLayout.addWidget(self.listWidget)
-        layout = QHBoxLayout()
-        self.commentLine = QLineEdit()
-        layout.addWidget(self.commentLine)
-        self.commentButton = QPushButton("发送评论")
-        layout.addWidget(self.commentButton)
-        self.commentLayout.addLayout(layout, 1, 0)
+        # self.commentLayout.addWidget(self.listWidget)
+        # layout = QHBoxLayout()
+        # self.commentLine = QLineEdit()
+        # layout.addWidget(self.commentLine)
+        # self.commentButton = QPushButton("发送评论")
+        # layout.addWidget(self.commentButton)
+        # self.commentLayout.addLayout(layout, 1, 0)
         self.commentButton.clicked.connect(self.SendComment)
 
         # self.stackedWidget.addWidget(self.qtReadImg)
@@ -261,31 +245,11 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                 if page == 1:
                     for index, info in enumerate(topComments):
                         floor = "置顶"
-                        content = info.get("content")
-                        name = info.get("_user", {}).get("name")
-                        avatar = info.get("_user", {}).get("avatar", {})
-                        createdTime = info.get("created_at")
-                        commentsCount = info.get("commentsCount")
-                        commnetId = info.get('_id')
-                        likesCount = info.get("likesCount")
-                        title = info.get("_user", {}).get("title", "")
-                        level = info.get("_user", {}).get("level", 1)
-                        self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                                    avatar.get("path"), avatar.get("originalName"), title, level)
+                        self.listWidget.AddUserItem(info, floor)
 
                 for index, info in enumerate(comments.get("docs")):
                     floor = total - ((page - 1) * limit + index)
-                    content = info.get("content")
-                    name = info.get("_user", {}).get("name")
-                    avatar = info.get("_user", {}).get("avatar", {})
-                    createdTime = info.get("created_at")
-                    commentsCount = info.get("commentsCount")
-                    commnetId = info.get('_id')
-                    likesCount = info.get("likesCount")
-                    title = info.get("_user", {}).get("title", "")
-                    level = info.get("_user", {}).get("level", 1)
-                    self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                 avatar.get("path"), avatar.get("originalName"), title, level)
+                    self.listWidget.AddUserItem(info, floor)
             return
         except Exception as es:
             Log.Error(es)
@@ -307,14 +271,15 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         downloadIds = self.owner().downloadForm.GetDownloadCompleteEpsId(self.bookId)
         for index, epsInfo in enumerate(info.eps):
             label = QLabel(epsInfo.title)
+            label.setAlignment(Qt.AlignCenter)
             # label.setWordWrap(True)
-            label.setContentsMargins(20, 10, 20, 10)
+            # label.setContentsMargins(20, 10, 20, 10)
             item = QListWidgetItem(self.epsListWidget)
             if index in downloadIds:
                 item.setBackground(QColor(18, 161, 130))
             else:
                 item.setBackground(QColor(0,0,0,0))
-            item.setSizeHint(label.sizeHint() + QSize(2, 0))
+            item.setSizeHint(label.sizeHint() + QSize(20, 20))
             item.setToolTip(epsInfo.title)
             self.epsListWidget.setItemWidget(item, label)
         self.tabWidget.setTabText(0, "章节({})".format(str(len(info.eps))))
@@ -391,16 +356,14 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
     def ClickCategoriesItem(self, item):
         text = item.text()
-        self.owner().userForm.listWidget.setCurrentRow(1)
+        self.owner().userForm.toolButton1.click()
         self.owner().searchForm.searchEdit.setText("")
         self.owner().searchForm.OpenSearchCategories(text)
         return
 
     def ClickTagsItem(self, item):
         text = item.text()
-        self.owner().userForm.listWidget.setCurrentRow(1)
-        self.owner().searchForm.searchEdit.setText(text)
-        self.owner().searchForm.Search()
+        self.owner().searchForm.Search2(text)
         return
 
     def SendComment(self):
@@ -479,18 +442,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
                 self.childrenListWidget.UpdatePage(page, pages)
                 for index, info in enumerate(comments.get("docs")):
                     floor = total - ((page - 1) * limit + index)
-                    content = info.get("content")
-                    name = info.get("_user", {}).get("name")
-                    avatar = info.get("_user", {}).get("avatar", {})
-                    createdTime = info.get("created_at")
-                    commentsCount = info.get("commentsCount")
-                    likesCount = info.get("likesCount")
-                    commnetId = info.get('_id')
-                    title = info.get("_user", {}).get("title", "")
-                    level = info.get("_user", {}).get("level", 1)
-                    self.childrenListWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor,
-                                                avatar.get("fileServer"),
-                                                avatar.get("path"), avatar.get("originalName"), title, level)
+                    self.childrenListWidget.AddUserItem(info, floor)
 
                 pass
             self.listWidget.scrollToItem(item, self.listWidget.ScrollHint.PositionAtTop)

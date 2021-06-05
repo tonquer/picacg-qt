@@ -12,6 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from .qtlistwidget import QtBookList
+
 
 class Ui_Rank(object):
     def setupUi(self, Rank):
@@ -22,20 +24,40 @@ class Ui_Rank(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.tabWidget = QTabWidget(Rank)
         self.tabWidget.setObjectName(u"tabWidget")
+        self.tabWidget.setStyleSheet(u"QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }")
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
+        self.tab.setStyleSheet(u"")
         self.h24Layout = QGridLayout(self.tab)
         self.h24Layout.setObjectName(u"h24Layout")
+        self.h24BookList = QtBookList(self.tab)
+        self.h24BookList.setObjectName(u"h24BookList")
+        self.h24BookList.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.h24Layout.addWidget(self.h24BookList, 0, 0, 1, 1)
+
         self.tabWidget.addTab(self.tab, "")
         self.tab_3 = QWidget()
         self.tab_3.setObjectName(u"tab_3")
         self.d7Layout = QGridLayout(self.tab_3)
         self.d7Layout.setObjectName(u"d7Layout")
+        self.d7BookList = QtBookList(self.tab_3)
+        self.d7BookList.setObjectName(u"d7BookList")
+        self.d7BookList.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.d7Layout.addWidget(self.d7BookList, 0, 0, 1, 1)
+
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
         self.d30Layout = QGridLayout(self.tab_2)
         self.d30Layout.setObjectName(u"d30Layout")
+        self.d30BookList = QtBookList(self.tab_2)
+        self.d30BookList.setObjectName(u"d30BookList")
+        self.d30BookList.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.d30Layout.addWidget(self.d30BookList, 0, 0, 1, 1)
+
         self.tabWidget.addTab(self.tab_2, "")
 
         self.gridLayout_2.addWidget(self.tabWidget, 0, 0, 1, 1)
@@ -43,7 +65,7 @@ class Ui_Rank(object):
 
         self.retranslateUi(Rank)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(Rank)

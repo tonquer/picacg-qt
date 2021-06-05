@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>999</width>
-    <height>808</height>
+    <width>709</width>
+    <height>963</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,6 +54,9 @@
                      <property name="text">
                       <string>标题：</string>
                      </property>
+                     <property name="alignment">
+                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -61,12 +64,64 @@
                      <property name="text">
                       <string>标题</string>
                      </property>
+                     <property name="alignment">
+                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                     </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_4"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_11">
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SetDefaultConstraint</enum>
+                     </property>
+                     <item>
+                      <widget class="QLabel" name="label_2">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>50</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>作者：</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QtCategoryList" name="autorList">
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color:transparent;</string>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::NoFrame</enum>
+                       </property>
+                       <property name="showDropIndicator" stdset="0">
+                        <bool>true</bool>
+                       </property>
+                       <property name="flow">
+                        <enum>QListView::LeftToRight</enum>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
                  </item>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -81,6 +136,9 @@
                      <property name="text">
                       <string>描述：</string>
                      </property>
+                     <property name="alignment">
+                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -88,15 +146,114 @@
                      <property name="text">
                       <string>描述</string>
                      </property>
+                     <property name="alignment">
+                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                     </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_6"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
+                   <item>
+                    <widget class="QLabel" name="label_4">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>分类：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QtCategoryList" name="categoriesList">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+ QListWidget::item:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+</string>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::NoFrame</enum>
+                     </property>
+                     <property name="spacing">
+                      <number>6</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+                  <layout class="QHBoxLayout" name="horizontalLayout_7">
+                   <item>
+                    <widget class="QLabel" name="label_5">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Tags：</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QtCategoryList" name="tagsList">
+                     <property name="maximumSize">
+                      <size>
+                       <width>16777215</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+ QListWidget::item:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+</string>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::NoFrame</enum>
+                     </property>
+                     <property name="spacing">
+                      <number>6</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_8">
@@ -168,13 +325,13 @@
                      <property name="minimumSize">
                       <size>
                        <width>80</width>
-                       <height>0</height>
+                       <height>40</height>
                       </size>
                      </property>
                      <property name="maximumSize">
                       <size>
                        <width>80</width>
-                       <height>20</height>
+                       <height>40</height>
                       </size>
                      </property>
                      <property name="text">
@@ -187,13 +344,13 @@
                      <property name="minimumSize">
                       <size>
                        <width>80</width>
-                       <height>0</height>
+                       <height>40</height>
                       </size>
                      </property>
                      <property name="maximumSize">
                       <size>
                        <width>80</width>
-                       <height>20</height>
+                       <height>40</height>
                       </size>
                      </property>
                      <property name="text">
@@ -209,10 +366,16 @@
                    </item>
                    <item>
                     <widget class="QPushButton" name="download">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>40</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>16777215</width>
-                       <height>20</height>
+                       <height>40</height>
                       </size>
                      </property>
                      <property name="text">
@@ -222,10 +385,16 @@
                    </item>
                    <item>
                     <widget class="QPushButton" name="favorites">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>40</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>16777215</width>
-                       <height>20</height>
+                       <height>40</height>
                       </size>
                      </property>
                      <property name="text">
@@ -235,10 +404,16 @@
                    </item>
                    <item>
                     <widget class="QPushButton" name="startRead">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>40</height>
+                      </size>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>16777215</width>
-                       <height>20</height>
+                       <height>40</height>
                       </size>
                      </property>
                      <property name="text">
@@ -269,6 +444,9 @@
            </item>
            <item>
             <widget class="QTabWidget" name="tabWidget">
+             <property name="styleSheet">
+              <string notr="true">QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }</string>
+             </property>
              <property name="currentIndex">
               <number>0</number>
              </property>
@@ -276,13 +454,75 @@
               <attribute name="title">
                <string>章节</string>
               </attribute>
-              <layout class="QGridLayout" name="epsLayout"/>
+              <layout class="QGridLayout" name="epsLayout">
+               <item row="0" column="0">
+                <widget class="QListWidget" name="epsListWidget">
+                 <property name="styleSheet">
+                  <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+ QListWidget::item:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+</string>
+                 </property>
+                 <property name="textElideMode">
+                  <enum>Qt::ElideRight</enum>
+                 </property>
+                 <property name="verticalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="horizontalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="spacing">
+                  <number>6</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
              <widget class="QWidget" name="commentWidget">
               <attribute name="title">
                <string>评论</string>
               </attribute>
-              <layout class="QGridLayout" name="commentLayout"/>
+              <layout class="QGridLayout" name="commentLayout">
+               <item row="0" column="0">
+                <widget class="QtBookList" name="listWidget">
+                 <property name="styleSheet">
+                  <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item { border-bottom: 1px solid black; }</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <item>
+                  <widget class="QLineEdit" name="commentLine">
+                   <property name="styleSheet">
+                    <string notr="true">background-color:transparent;</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="commentButton">
+                   <property name="text">
+                    <string>发送评论</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
             </widget>
            </item>
@@ -296,6 +536,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtBookList</class>
+   <extends>QListWidget</extends>
+   <header location="global">.qtlistwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QtCategoryList</class>
+   <extends>QListWidget</extends>
+   <header location="global">.qtlistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

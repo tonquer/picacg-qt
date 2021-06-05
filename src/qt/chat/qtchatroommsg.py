@@ -21,8 +21,6 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
         p.loadFromData(DataMgr().GetData("placeholder_avatar"))
         self.commentLabel.installEventFilter(self)
         self.picLabel.installEventFilter(self)
-        self.label.installEventFilter(self)
-        self.label.setText("")
         self.data = None
         self.picData = None
         self.audioData = None
@@ -77,18 +75,11 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
         return super(self.__class__, self).setParent(parent)
 
     def SetPicture(self, data):
-        pic = QPixmap()
-        pic.loadFromData(data)
         self.picData = data
-        self.picLabel.setPixmap(pic)
+        self.picLabel.SetPicture(data)
 
     def SetHeadPicture(self, data):
-        pic = QPixmap()
-        pic.loadFromData(data)
-        self.label.setCursor(Qt.PointingHandCursor)
-        self.label.setScaledContents(True)
-        self.label.setAttribute(Qt.WA_TranslucentBackground)
-        self.label.setPixmap(pic)
+        self.picLabel.SetPicture(self.picData, data)
 
     def SetPictureComment(self, data):
         pic = QPixmap()
@@ -106,7 +97,7 @@ class QtChatRoomMsg(QtWidgets.QWidget, Ui_ChatRoomMsg):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                if self.picData and (obj == self.label or obj == self.picLabel):
+                if self.picData and (obj == self.picLabel):
                     QtImgMgr().ShowImg(self.picData)
                 elif self.data and obj == self.commentLabel:
                     QtImgMgr().ShowImg(self.data)

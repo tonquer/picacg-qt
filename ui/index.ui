@@ -14,8 +14,26 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
+   </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -24,20 +42,39 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>463</width>
-        <height>487</height>
+        <width>471</width>
+        <height>495</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QToolButton" name="toolButton">
+       <item row="3" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QtBookList" name="bookList2">
+           <property name="styleSheet">
+            <string notr="true">QListWidget {background-color:transparent;}</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QtBookList" name="bookList3">
+           <property name="styleSheet">
+            <string notr="true">QListWidget {background-color:transparent;}</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QToolButton" name="toolButton_2">
          <property name="text">
-          <string>哔咔神推荐</string>
+          <string>哔咔魔推荐</string>
          </property>
         </widget>
-       </item>
-       <item row="3" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_2"/>
        </item>
        <item row="4" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -73,16 +110,21 @@
          </item>
         </layout>
        </item>
-       <item row="6" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_3"/>
-       </item>
        <item row="1" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout"/>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QtBookList" name="bookList1">
+           <property name="styleSheet">
+            <string notr="true">QListWidget {background-color:transparent;}</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
-       <item row="2" column="0">
-        <widget class="QToolButton" name="toolButton_2">
+       <item row="0" column="0">
+        <widget class="QToolButton" name="toolButton">
          <property name="text">
-          <string>哔咔魔推荐</string>
+          <string>哔咔神推荐</string>
          </property>
         </widget>
        </item>
@@ -92,6 +134,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtBookList</class>
+   <extends>QListWidget</extends>
+   <header location="global">.qtlistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

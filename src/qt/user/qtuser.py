@@ -1,9 +1,10 @@
+import re
 import weakref
 
 from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import Qt, QSize, QEvent
 from PySide2.QtGui import  QPixmap
-from PySide2.QtWidgets import  QListWidgetItem
+from PySide2.QtWidgets import QListWidgetItem, QScroller, QAbstractItemView
 
 from resources import resources
 from src.qt.com.qtbubblelabel import QtBubbleLabel
@@ -22,25 +23,24 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.owner = weakref.ref(owner)
         self.setWindowTitle("哔咔漫画")
 
-        pix = QtGui.QPixmap()
-        pix.loadFromData(resources.DataMgr.GetData("placeholder_avatar"))
-        pix.scaled(self.icon.size(), Qt.KeepAspectRatio)
-        self.icon.setScaledContents(True)
-        self.icon.setPixmap(pix)
+        self.icon.SetPicture(resources.DataMgr.GetData("placeholder_avatar"))
         self.pictureData = None
         self.icon.installEventFilter(self)
-        self.listWidget.currentRowChanged.connect(self.Switch)
-        self.listWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.listWidget.setFrameShape(self.listWidget.NoFrame)
-        for name in ["主页", "搜索", "分类", "排行", "收藏", "历史记录", "下载", "留言板", "聊天室"]:
-            item = QListWidgetItem(
-                name,
-                self.listWidget
-            )
-            item.setSizeHint(QSize(16777215, 60))
-            item.setTextAlignment(Qt.AlignCenter)
-
+        # self.listWidget.currentRowChanged.connect(self.Switch)
+        # self.listWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # QScroller.grabGesture(self.listWidget, QScroller.LeftMouseButtonGesture)
+        # self.listWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        # self.listWidget.setFrameShape(self.listWidget.NoFrame)
+        # self.listWidget.setResizeMode(self.listWidget.Fixed)
+        # for name in ["主页", "搜索", "分类", "排行", "收藏", "历史记录", "下载", "留言板", "聊天室"]:
+        #     item = QListWidgetItem(
+        #         name,
+        #         self.listWidget
+        #     )
+        #     item.setSizeHint(QSize(16777215, 60))
+        #     item.setTextAlignment(Qt.AlignCenter)
+        #
         self.stackedWidget.addWidget(self.owner().indexForm)
         self.stackedWidget.addWidget(self.owner().searchForm)
         self.stackedWidget.addWidget(self.owner().categoryForm)
@@ -50,15 +50,15 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.stackedWidget.addWidget(self.owner().downloadForm)
         self.stackedWidget.addWidget(self.owner().leaveMsgForm)
         self.stackedWidget.addWidget(self.owner().chatForm)
+        self.stackedWidget.addWidget(self.owner().friedForm)
+        self.buttonGroup.buttonClicked.connect(self.Switch)
         self.isHeadUp = False
 
     def SetPicture(self, data):
-        a = QPixmap()
-        a.loadFromData(data)
         self.pictureData = data
-        self.icon.setPixmap(a)
+        self.icon.SetPicture(data)
 
-    def Switch(self, index):
+    def Switch(self, button):
         # data = {
         #     "search": 0,
         #     "category": 1,
@@ -66,6 +66,8 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         #     "download": 3
         # }
         # index = data.get(name)
+        index = int(re.findall(r"\d+", button.objectName())[0])
+        # button.setChecked(True)
         self.stackedWidget.setCurrentIndex(index)
         self.stackedWidget.currentWidget().SwitchCurrent()
 

@@ -36,7 +36,6 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.tableWidget.setColumnCount(10)
         self.tableWidget.setHorizontalHeaderLabels(["id", "标题", "下载状态", "下载进度", "下载章节", "下载速度", "转码进度", "转码章节", "转码耗时", "转码状态"])
-
         self.timer = QTimer(self.tableWidget)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.UpdateTable)
@@ -128,6 +127,8 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         return os.path.join(savePath, "{:04}.{}".format(index + 1, "jpg"))
 
     def SwitchCurrent(self):
+        self.radioButton.setChecked(config.IsOpenWaifu)
+        self.SetAutoConvert()
         pass
 
     def UpdateTable(self):

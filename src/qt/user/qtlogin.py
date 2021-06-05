@@ -44,6 +44,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
             # self.close()
             self.owner().stackedWidget.setCurrentIndex(1)
             self.InitUser()
+            self.owner().userForm.toolButton0.click()
             self.owner().searchForm.InitKeyWord()
             self.owner().indexForm.Init()
         else:

@@ -57,7 +57,7 @@
         </layout>
        </item>
        <item alignment="Qt::AlignHCenter">
-        <widget class="QLabel" name="picIcon">
+        <widget class="HeadLabel" name="picIcon">
          <property name="minimumSize">
           <size>
            <width>100</width>
@@ -303,6 +303,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HeadLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">.head_label.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -327,3 +327,16 @@ class AppInfoReq(ServerReq):
             "token": token,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
+
+
+class AppCommentInfoReq(ServerReq):
+    def __init__(self, id, token, page=0):
+        url = "https://post-api.wikawika.xyz"
+        url = url + "/posts/{}/comments?offset={}".format(id, str(page))
+        method = "GET"
+        header = {
+            "Referer": url + "/?token=" + token,
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36",
+            "token": token,
+        }
+        super(self.__class__, self).__init__(url, header, {}, method)

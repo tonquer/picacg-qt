@@ -241,6 +241,19 @@ class Ui_Register(object):
 
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
 
+        QWidget.setTabOrder(self.userEdit, self.nameEdit)
+        QWidget.setTabOrder(self.nameEdit, self.passwdEdit)
+        QWidget.setTabOrder(self.passwdEdit, self.birthdayEdit)
+        QWidget.setTabOrder(self.birthdayEdit, self.question1Edit)
+        QWidget.setTabOrder(self.question1Edit, self.answer1Edit)
+        QWidget.setTabOrder(self.answer1Edit, self.question2Edit)
+        QWidget.setTabOrder(self.question2Edit, self.answer2Edit)
+        QWidget.setTabOrder(self.answer2Edit, self.question3Edit)
+        QWidget.setTabOrder(self.question3Edit, self.answer3Edit)
+        QWidget.setTabOrder(self.answer3Edit, self.gender_m)
+        QWidget.setTabOrder(self.gender_m, self.gender_f)
+        QWidget.setTabOrder(self.gender_f, self.gender_bot)
+        QWidget.setTabOrder(self.gender_bot, self.register_2)
 
         self.retranslateUi(Register)
         self.register_2.clicked.connect(Register.Register)

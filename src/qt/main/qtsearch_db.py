@@ -93,8 +93,10 @@ class QtSearchDb(object):
             data2 = data2.strip("and ")
             if data2:
                 data += " or ({})".format(data2)
-
-        sql = "SELECT * FROM book WHERE 0 {}".format(data)
+        if data:
+            sql = "SELECT * FROM book WHERE 0 {}".format(data)
+        else:
+            sql = "SELECT * FROM book WHERE 1 "
         if sortKey == 0:
             sql += "ORDER BY updated_at "
         elif sortKey == 1:

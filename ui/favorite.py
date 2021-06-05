@@ -12,6 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+from .qtlistwidget import QtBookList
+
 
 class Ui_favorite(object):
     def setupUi(self, favorite):
@@ -24,8 +26,20 @@ class Ui_favorite(object):
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+        self.line_2 = QFrame(favorite)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.VLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout.addWidget(self.line_2)
+
         self.nums = QLabel(favorite)
         self.nums.setObjectName(u"nums")
+        self.nums.setMinimumSize(QSize(0, 30))
 
         self.horizontalLayout.addWidget(self.nums)
 
@@ -34,27 +48,48 @@ class Ui_favorite(object):
 
         self.horizontalLayout.addWidget(self.pages)
 
+        self.line = QFrame(favorite)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.VLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout.addWidget(self.line)
+
         self.comboBox = QComboBox(favorite)
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setMinimumSize(QSize(75, 0))
+        self.comboBox.setMinimumSize(QSize(75, 30))
 
         self.horizontalLayout.addWidget(self.comboBox)
 
-        self.lineEdit = QLineEdit(favorite)
-        self.lineEdit.setObjectName(u"lineEdit")
+        self.line_4 = QFrame(favorite)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.VLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
 
-        self.horizontalLayout.addWidget(self.lineEdit)
+        self.horizontalLayout.addWidget(self.line_4)
+
+        self.spinBox = QSpinBox(favorite)
+        self.spinBox.setObjectName(u"spinBox")
+        self.spinBox.setMinimumSize(QSize(50, 30))
+        self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(1)
+
+        self.horizontalLayout.addWidget(self.spinBox)
+
+        self.line_3 = QFrame(favorite)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.VLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout.addWidget(self.line_3)
 
         self.jumpButton = QPushButton(favorite)
         self.jumpButton.setObjectName(u"jumpButton")
+        self.jumpButton.setMinimumSize(QSize(0, 30))
 
         self.horizontalLayout.addWidget(self.jumpButton)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer)
 
 
         self.gridLayout_4.addLayout(self.horizontalLayout, 0, 0, 1, 1)
@@ -64,6 +99,12 @@ class Ui_favorite(object):
 
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.bookList = QtBookList(favorite)
+        self.bookList.setObjectName(u"bookList")
+        self.bookList.setStyleSheet(u"QListWidget {background-color:transparent;}")
+
+        self.gridLayout_3.addWidget(self.bookList, 0, 0, 1, 1)
+
 
         self.gridLayout_2.addLayout(self.gridLayout_3, 0, 0, 1, 1)
 

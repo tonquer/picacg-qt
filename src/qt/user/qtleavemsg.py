@@ -2,11 +2,9 @@ import weakref
 
 from PySide2 import QtWidgets
 from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton
-from PySide2.QtCore import QEvent, Qt
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
-from src.qt.com.qtimg import QtImgMgr
-from src.qt.com.qtlistwidget import QtBookList
+from ui.qtlistwidget import QtBookList
 from src.server import Server, req, json, Log, QtTask
 from ui.leavemsg import Ui_LeaveMsg
 
@@ -18,14 +16,13 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
         self.setupUi(self)
         self.owner = weakref.ref(owner)
         self.closeFlag = self.__class__.__name__
-        self.listWidget = QtBookList(None, self.__class__.__name__, owner)
         # self.gridLayout_3.addWidget(self.listWidget, 0, 0, 1, 1)
 
-        self.listWidget.InitUser(self.LoadNextPage)
+        self.listWidget.InitUser("leave_msg1", owner, self.LoadNextPage)
         self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
 
-        self.childrenListWidget = QtBookList(None, self.__class__.__name__, owner)
-        self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
+        self.childrenListWidget = QtBookList(None)
+        self.childrenListWidget.InitUser("leave_msg2", owner, self.LoadChildrenNextPage)
 
         self.childrenWidget = QtWidgets.QWidget()
         layout = QHBoxLayout(self.childrenWidget)
@@ -45,13 +42,13 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
         layout3.addWidget(self.childrenListWidget)
         layout.addLayout(layout3)
 
-        self.gridLayout_3.addWidget(self.listWidget)
-        layout = QHBoxLayout()
-        self.commentLine = QLineEdit()
-        layout.addWidget(self.commentLine)
-        self.commentButton = QPushButton("发送评论")
-        layout.addWidget(self.commentButton)
-        self.gridLayout_3.addLayout(layout, 1, 0)
+        # self.gridLayout_3.addWidget(self.listWidget)
+        # layout = QHBoxLayout()
+        # self.commentLine = QLineEdit()
+        # layout.addWidget(self.commentLine)
+        # self.commentButton = QPushButton("发送评论")
+        # layout.addWidget(self.commentButton)
+        # self.gridLayout_3.addLayout(layout, 1, 0)
         self.commentButton.clicked.connect(self.SendComment)
         self.bookId = "5822a6e3ad7ede654696e482"
 
@@ -73,7 +70,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
 
     def JumpPage(self):
         try:
-            page = int(self.lineEdit.text())
+            page = int(self.spinBox.text())
             if page > self.listWidget.pages:
                 return
             self.listWidget.page = page
@@ -158,19 +155,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
                 self.childrenListWidget.UpdatePage(page, pages)
                 for index, info in enumerate(comments.get("docs")):
                     floor = total - ((page - 1) * limit + index)
-                    content = info.get("content")
-                    name = info.get("_user", {}).get("name")
-                    level = info.get("_user", {}).get("lv")
-                    avatar = info.get("_user", {}).get("avatar", {})
-                    createdTime = info.get("created_at")
-                    commentsCount = info.get("commentsCount")
-                    likesCount = info.get("likesCount")
-                    commnetId = info.get('_id')
-                    title = info.get("_user", {}).get("title", "")
-                    level = info.get("_user", {}).get("level", 1)
-                    self.childrenListWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor,
-                                                avatar.get("fileServer"),
-                                                avatar.get("path"), avatar.get("originalName"), title, level)
+                    self.childrenListWidget.AddUserItem(info, floor)
 
                 pass
             self.listWidget.scrollToItem(item, self.listWidget.ScrollHint.PositionAtTop)
@@ -192,37 +177,19 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
                 pages = int(comments.get("pages", 1))
                 limit = int(comments.get("limit", 1))
                 self.listWidget.UpdatePage(page, pages)
+                self.spinBox.setValue(page)
+                self.spinBox.setMaximum(pages)
                 self.nums.setText("分页：{}/{}".format(str(page), str(pages)))
                 total = comments.get("total", 0)
                 # self.tabWidget.setTabText(1, "评论({})".format(str(total)))
                 if page == 1:
                     for index, info in enumerate(topComments):
                         floor = "置顶"
-                        content = info.get("content")
-                        name = info.get("_user", {}).get("name")
-                        avatar = info.get("_user", {}).get("avatar", {})
-                        title = info.get("_user", {}).get("title", {})
-                        level = info.get("_user", {}).get("level", 1)
-                        createdTime = info.get("created_at")
-                        commentsCount = info.get("commentsCount")
-                        commnetId = info.get('_id')
-                        likesCount = info.get("likesCount")
-                        self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                                    avatar.get("path"), avatar.get("originalName"), title, level)
+                        self.listWidget.AddUserItem(info, floor)
 
                 for index, info in enumerate(comments.get("docs")):
                     floor = total - ((page - 1) * limit + index)
-                    content = info.get("content")
-                    name = info.get("_user", {}).get("name")
-                    avatar = info.get("_user", {}).get("avatar", {})
-                    createdTime = info.get("created_at")
-                    commentsCount = info.get("commentsCount")
-                    commnetId = info.get('_id')
-                    likesCount = info.get("likesCount")
-                    title = info.get("_user", {}).get("title", "")
-                    level = info.get("_user", {}).get("level", 1)
-                    self.listWidget.AddUserItem(commnetId, commentsCount, likesCount, content, name, createdTime, floor, avatar.get("fileServer"),
-                                 avatar.get("path"), avatar.get("originalName"), title, level)
+                    self.listWidget.AddUserItem(info, floor)
             return
         except Exception as es:
             Log.Error(es)

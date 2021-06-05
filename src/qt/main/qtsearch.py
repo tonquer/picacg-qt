@@ -4,7 +4,8 @@ import weakref
 from PySide2.QtWidgets import QCheckBox, QLabel
 
 from src.index.category import CateGoryMgr
-from src.qt.com.qtlistwidget import QtBookList, QtIntLimit, QtCategoryList
+from src.qt.com.langconv import Converter
+from ui.qtlistwidget import QtBookList, QtIntLimit, QtCategoryList
 from src.qt.main.qtsearch_db import QtSearchDb
 from src.server import Server, req, Log, json
 from ui.search import Ui_search
@@ -18,30 +19,18 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.owner = weakref.ref(owner)
         self.index = 1
         self.data = ""
-        self.bookList = QtBookList(self, self.__class__.__name__, owner)
-        self.bookList.InitBook(self.LoadNextPage)
+        self.bookList.InitBook(self.__class__.__name__, owner, self.LoadNextPage)
 
-        self.bookLayout.addWidget(self.bookList)
         self.bookList.doubleClicked.connect(self.OpenSearch)
         self.categories = ""
-        self.jumpLine.setValidator(QtIntLimit(1, 1, self))
         self.searchDb = QtSearchDb(owner)
         self.searchEdit.words = self.searchDb.InitWord()
         nums, times = self.searchDb.InitUpdateInfo()
         self.numsLabel.setText(str(nums))
         self.timesLabel.setText(times)
-        self.categoryList = QtCategoryList(self)
-        layouy = QtWidgets.QHBoxLayout()
-        layouy.addWidget(QLabel("屏蔽："))
-        layouy.addWidget(self.categoryList)
-        self.bookLayout.addLayout(layouy, 1, 0)
+
         self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
 
-        self.keywordList = QtCategoryList(self)
-        layouy = QtWidgets.QHBoxLayout()
-        layouy.addWidget(QLabel("大家都在搜："))
-        layouy.addWidget(self.keywordList)
-        self.bookLayout.addLayout(layouy, 2, 0)
         self.keywordList.itemClicked.connect(self.ClickKeywordListItem)
         self.SetSearch()
 
@@ -54,7 +43,16 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             for name in ["耽美", "伪娘", "禁书", "扶她", "重口", "生肉", "纯爱", "WEBTOON"]:
                 self.categoryList.AddItem(name)
 
+    def InitKeywordTranslate(self):
+        if not self.localBox.isChecked():
+            self.InitKeyWord()
+        else:
+            for i in range(self.keywordList.count()):
+                item = self.keywordList.item(i)
+                item.setText(Converter('zh-hans').convert(item.text()).replace("'", "\""))
+
     def SwitchCurrent(self):
+        self.InitKeywordTranslate()
         pass
 
     def InitCheckBox(self):
@@ -74,6 +72,17 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.comboBoxLayout.addLayout(hBoxLayout)
         return
 
+    def Search2(self, text):
+        self.owner().userForm.toolButton1.click()
+
+        if self.localBox.isChecked():
+            self.searchEdit.setText(Converter('zh-hans').convert(text).replace("'", "\""))
+        else:
+            self.searchEdit.setText(text)
+        self.searchEdit.listView.hide()
+        self.Search()
+        return
+
     def Search(self, categories=None):
         if not self.searchEdit.listView.isHidden():
             currentIndex = self.searchEdit.listView.currentIndex()
@@ -81,7 +90,6 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
                 self.searchEdit.completeText(currentIndex)
             self.searchEdit.listView.hide()
             return
-
         data = self.searchEdit.text()
         self.data = data
         if len(data) == len("5822a6e3ad7ede654696e482"):
@@ -95,6 +103,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             pass
         self.categories = ""
         self.bookList.clear()
+        self.bookList.update()
         self.bookList.UpdatePage(1, 1)
         self.bookList.UpdateState()
         self.searchEdit.setPlaceholderText("")
@@ -103,6 +112,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
     def SetSearch(self):
         # self.localBox.setChecked(not self.localBox.isChecked())
         self.InitCategoryList()
+        self.InitKeywordTranslate()
         if self.localBox.isChecked():
             self.authorBox.setEnabled(True)
             self.desBox.setEnabled(True)
@@ -137,7 +147,9 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.bookList.UpdateState()
         pages = 100
         self.bookList.UpdatePage(page, pages)
-        self.jumpLine.setValidator(QtIntLimit(1, pages, self))
+        # self.jumpLine.setValidator(QtIntLimit(1, pages, self))
+        self.spinBox.setValue(page)
+        self.spinBox.setMaximum(pages)
         pageText = "页：" + str(self.bookList.page) + "/" + str(self.bookList.pages)
         self.label.setText(pageText)
         for v in books:
@@ -151,6 +163,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             param = v.categories
             self.bookList.AddBookItem(_id, title, info2, url, path, param)
         self.CheckCategoryShowItem()
+        self.bookList.update()
 
     def OpenSearchCategories(self, categories):
         self.bookList.clear()
@@ -183,7 +196,9 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
                 page = int(info.get("page"))
                 pages = int(info.get("pages"))
                 self.bookList.UpdatePage(page, pages)
-                self.jumpLine.setValidator(QtIntLimit(1, pages, self))
+                # self.jumpLine.setValidator(QtIntLimit(1, pages, self))
+                self.spinBox.setValue(page)
+                self.spinBox.setMaximum(pages)
                 pageText = "页：" + str(self.bookList.page) + "/" + str(self.bookList.pages)
                 self.label.setText(pageText)
                 for v in info.get("docs", []):
@@ -232,7 +247,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.owner().bookInfoForm.OpenBook(bookId)
 
     def JumpPage(self):
-        page = int(self.jumpLine.text())
+        page = int(self.spinBox.text())
         if page > self.bookList.pages:
             return
         self.bookList.page = page
@@ -282,9 +297,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
                 item.setHidden(False)
 
     def ClickKeywordListItem(self, item):
-        data = item.text()
-        self.searchEdit.setText(data)
-        self.Search()
+        self.Search2(item.text())
 
     def focusOutEvent(self, ev):
         self.searchEdit.listView.hide()

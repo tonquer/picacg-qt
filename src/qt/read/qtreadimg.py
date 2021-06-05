@@ -104,7 +104,6 @@ class QtReadImg(QtWidgets.QWidget):
         self.graphicsItem.setPos(0, 0)
         if not self.isInit:
             desktop = QDesktopWidget()
-            print(desktop.width(), desktop.height())
             self.resize(desktop.width()//4*3, desktop.height()-100)
             self.move(desktop.width()//8, 0)
 

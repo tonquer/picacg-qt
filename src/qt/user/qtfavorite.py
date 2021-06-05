@@ -1,12 +1,8 @@
 from PySide2 import QtWidgets
 import weakref
 
-from PySide2.QtGui import QCursor
-from PySide2.QtWidgets import QMenu, QApplication
-from PySide2.QtCore import Qt
-
 from src.index.book import BookMgr
-from src.qt.com.qtlistwidget import QtBookList, QtIntLimit
+from ui.qtlistwidget import QtBookList, QtIntLimit
 from src.user.user import User
 from src.util.status import Status
 from ui.favorite import Ui_favorite
@@ -23,11 +19,8 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
         self.dealCount = 0
         self.dirty = False
 
-        self.bookList = QtBookList(self, self.__class__.__name__, owner)
-        self.bookList.InitBook(self.LoadNextPage)
-        self.gridLayout_3.addWidget(self.bookList)
+        self.bookList.InitBook(self.__class__.__name__, owner, self.LoadNextPage)
 
-        self.lineEdit.setValidator(QtIntLimit(1, 1, self))
         self.sortList = ["dd", "da"]
         self.bookList.InstallDel()
 
@@ -56,7 +49,8 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
             self.nums.setText("收藏数：{}".format(str(User().total)))
             self.pages.setText("页：{}/{}".format(str(page), str(pageNums)))
             self.bookList.UpdatePage(page, pageNums)
-            self.lineEdit.setValidator(QtIntLimit(1, pageNums, self))
+            self.spinBox.setValue(page)
+            self.spinBox.setMaximum(pageNums)
             for index, info in enumerate(User().category.get(self.bookList.page)):
                 url = info.thumb.get("fileServer")
                 path = info.thumb.get("path")
@@ -92,7 +86,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
         self.owner().loadingForm.show()
 
     def JumpPage(self):
-        page = int(self.lineEdit.text())
+        page = int(self.spinBox.text())
         if page > self.bookList.pages:
             return
         self.bookList.page = page
