@@ -108,6 +108,6 @@ cp -avf data example models resources dist/PicACG.app/Contents/MacOS
 ## 感谢以下项目
 - https://github.com/nagadomi/waifu2x
 - https://github.com/nihui/waifu2x-ncnn-vulkan
-- https://github.com/webmproject/libwebp
-- https://github.com/Tencent/ncnn
+- https://github.com/PyQt5/PyQt
+- https://github.com/PyQt5/PyQtClient
 - 如有任何问题，欢迎提ISSUE
