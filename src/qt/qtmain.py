@@ -2,7 +2,7 @@
 
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
 from PySide2.QtCore import QTimer, QUrl
-from PySide2.QtGui import QIcon, QPixmap, QDesktopServices
+from PySide2.QtGui import QIcon, QPixmap, QDesktopServices, Qt, QCursor
 from PySide2.QtWidgets import QMessageBox, QDesktopWidget
 
 from conf import config
@@ -29,7 +29,7 @@ from src.qt.main.qtsearch import QtSearch
 from src.qt.menu.qtsetting import QtSetting
 from src.qt.util.qttask import QtTask
 from src.qt.user.qtuser import QtUser
-from src.server import Server, req
+from src.server import Server, req, ToolUtil
 from src.util import Log
 from ui.main import Ui_MainWindow
 
@@ -44,12 +44,11 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.msgForm = QtBubbleLabel(self)
 
         self.qtTask = QtTask()
-
-        icon = QIcon()
-        pic = QPixmap()
-        pic.loadFromData(resources.DataMgr.GetData("logo_round"))
-        icon.addPixmap(pic, QIcon.Normal, QIcon.Off)
-        self.setWindowIcon(icon)
+        # pix = QPixmap()
+        # pix.loadFromData(resources.DataMgr.GetData("loading_2"))
+        # pix = pix.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # self.setCursor(QCursor(pix))
+        ToolUtil.SetIcon(self)
         self.aboutForm = QtAbout(self)
 
         self.indexForm = QtIndex(self)

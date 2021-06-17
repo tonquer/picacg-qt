@@ -48,6 +48,8 @@ DownloadModel = 0   # 默认值
 LogIndex = 0
 IsTips = 1
 
+ChatSendAction = 2
+
 Model0 = "cunet"     # 通用
 Model1 = "cunet"     # 通用
 Model2 = "photo"     # 写真

@@ -5,10 +5,11 @@ import weakref
 from PySide2 import QtWidgets, QtGui, QtCore
 from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QTextCodec, QRegExp
 from PySide2.QtGui import QColor, QPainter, QPixmap, QImage, QValidator, QRegExpValidator, QDoubleValidator, \
-    QIntValidator
+    QIntValidator, QIcon
 from PySide2.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
 
 from conf import config
+from resources import resources
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.util.qttask import QtTask
 from src.util import Singleton, ToolUtil, Log
@@ -117,6 +118,8 @@ class QtImg(QtWidgets.QWidget, Ui_Img):
         self.scaleCnt = 0
 
         self.backStatus = ""
+
+        ToolUtil.SetIcon(self)
 
     def ShowImg(self, data):
         self.scaleCnt = 0

@@ -353,3 +353,13 @@ class ToolUtil(object):
         except Exception as es:
             Log.Error(es)
         return None
+
+    @staticmethod
+    def SetIcon(self):
+        from PySide2.QtGui import QIcon, QPixmap
+        icon = QIcon()
+        pic = QPixmap()
+        from resources import resources
+        pic.loadFromData(resources.DataMgr.GetData("logo_round"))
+        icon.addPixmap(pic, QIcon.Normal, QIcon.Off)
+        self.setWindowIcon(icon)

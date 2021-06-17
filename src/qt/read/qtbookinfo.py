@@ -3,11 +3,12 @@ import weakref
 
 from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import QRect, Qt, QSize, QEvent
-from PySide2.QtGui import QColor
+from PySide2.QtGui import QColor, QIcon, QPixmap
 from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
-    QVBoxLayout
+    QVBoxLayout, QMenu
 
 from conf import config
+from resources import resources
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
@@ -109,6 +110,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.closeFlag = self.__class__.__name__ + "-close"         # 切换book时，取消加载
         # self.title.setTextInteractionFlags(Qt.TextSelectableByMouse)
         # self.description.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        ToolUtil.SetIcon(self)
 
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:

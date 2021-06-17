@@ -5,11 +5,12 @@ import random
 import time
 
 from PySide2 import QtWidgets, QtWebSockets
-from PySide2.QtCore import Signal, QTimer, QSize, Qt
-from PySide2.QtGui import QPixmap, QFont
-from PySide2.QtWidgets import QFileDialog, QLabel, QListWidgetItem
+from PySide2.QtCore import Signal, QTimer, QSize, Qt, QEvent
+from PySide2.QtGui import QPixmap, QFont, QIcon, QTextCursor
+from PySide2.QtWidgets import QFileDialog, QLabel, QListWidgetItem, QMenu, QAction
 
 from conf import config
+from resources import resources
 from src.qt.chat.chat_ws import ChatWebSocket
 from src.qt.chat.qtchatroommsg import QtChatRoomMsg
 from src.qt.com.qtbubblelabel import QtBubbleLabel
@@ -17,7 +18,7 @@ from src.qt.com.qticon import IconList
 from src.qt.com.qtloading import QtLoading
 from src.qt.util.qttask import QtTask
 from src.user.user import User
-from src.util import Log
+from src.util import Log, ToolUtil
 from src.util.status import Status
 from ui.chatroom import Ui_ChatRoom
 
@@ -72,6 +73,60 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
             item.setSizeHint(QSize(40, 40))
             self.listWidget.addItem(item)
         self.listWidget.setVisible(False)
+        ToolUtil.SetIcon(self)
+
+        self.toolMenu = QMenu(self.toolButton)
+        self.action1 = QAction('按Enter发送消息', self.toolMenu, triggered=self.CheckAction1)
+        self.action1.setCheckable(True)
+        self.action2 = QAction('按Ctrl+Enter发送消息', self.toolMenu, triggered=self.CheckAction2)
+        self.action2.setCheckable(True)
+        self.toolMenu.addAction(self.action1)
+        self.toolMenu.addAction(self.action2)
+        self.toolButton.setMenu(self.toolMenu)
+        if config.ChatSendAction == 2:
+            self.action2.setChecked(True)
+        else:
+            self.action1.setChecked(True)
+        self.textEdit.installEventFilter(self)
+
+    def CheckAction1(self):
+        self.action2.setChecked(not self.action1.isChecked())
+        config.ChatSendAction = 1
+
+    def CheckAction2(self):
+        self.action1.setChecked(not self.action2.isChecked())
+        config.ChatSendAction = 2
+
+    def eventFilter(self, obj, event):
+        if obj == self.textEdit and event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Return:
+                print(event.modifiers() == Qt.ControlModifier)
+                if (config.ChatSendAction == 2 and event.modifiers() != Qt.ControlModifier) or (config.ChatSendAction == 1 and (event.modifiers() == Qt.ControlModifier)):
+                    cursor = self.textEdit.textCursor()
+                    textCursor = QTextCursor(self.textEdit.document())
+                    textCursor.setPosition(cursor.position())
+                    self.textEdit.setUndoRedoEnabled(False)
+                    textCursor.insertBlock()
+                    self.textEdit.setUndoRedoEnabled(True)
+                    return True
+                else:
+                    self.SendMsg()
+                    return True
+
+        else:
+            return super(self.__class__, self).eventFilter(obj, event)
+
+    def keyPressEvent(self, event) -> None:
+        if event.key() == Qt.Key_Return:
+            print(event.modifiers() == Qt.ControlModifier)
+            if (config.ChatSendAction == 2 and event.modifiers() != Qt.ControlModifier) or (
+                    config.ChatSendAction == 1 and (event.modifiers() == Qt.ControlModifier)):
+                return
+            else:
+                self.SendMsg()
+                return
+        else:
+            return super(self.__class__, self).keyPressEvent(event)
 
     def closeEvent(self, event) -> None:
         self.socket.Stop()
@@ -94,13 +149,15 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         data = ["init", User().userInfo]
         msg = "42{}".format(json.dumps(data))
         self.socket.Send(msg)
+        Log.Info("send websocket info: {}".format(msg))
 
     def SendPing(self):
         msg = "2"
         self.socket.Send(msg)
-        Log.Info("recv websocket info: ping")
+        Log.Info("send websocket info: ping")
 
     def RecvPong(self):
+        Log.Info("recv websocket info: pong")
         return
 
     def LeaveRoom(self):

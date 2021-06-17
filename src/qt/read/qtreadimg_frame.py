@@ -5,6 +5,7 @@ from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint
 from PySide2.QtGui import QPainter, QColor, QPixmap
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame
 
+from src.qt.com.DWaterProgress import DWaterProgress
 from src.qt.read.qtreadimg_tool import QtImgTool
 
 
@@ -51,6 +52,9 @@ class QtImgFrame(QFrame):
         self.scaleCnt = 0
         self.startPos = QPoint()
         self.endPos = QPoint()
+        self.process = DWaterProgress(self)
+        self.downloadSize = 1
+        self.downloadMaxSize = 1
 
     @property
     def readImg(self):
@@ -98,8 +102,12 @@ class QtImgFrame(QFrame):
         h = size.height()
         self.graphicsView.setGeometry(0, 0, w, h)
 
-        h = min(700, h)
-        self.qtTool.setGeometry(w - 220, 0, 220, h)
+        h2 = min(700, h)
+        self.qtTool.setGeometry(w - 220, 0, 220, h2)
+
+        # w = max((w - 150)//2, 0)
+        # h = max((h - 150)//2, 0)
+        self.process.setGeometry(w-150, h-150, 150, 150)
         return
 
     def ScalePicture(self):
@@ -139,3 +147,12 @@ class QtImgFrame(QFrame):
             else:
                 self.graphicsView.scale(1/1.1, 1/1.1)
 
+    def UpdateProcessBar(self, info):
+        if info:
+            self.downloadSize = info.downloadSize
+            self.downloadMaxSize = max(1, info.size)
+            self.process.setValue(int((self.downloadMaxSize / self.downloadMaxSize) * 100))
+        else:
+            self.downloadSize = 0
+            self.downloadMaxSize = 1
+            self.process.setValue(0)

@@ -68,12 +68,6 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.epsLabel)
 
-        self.progressBar = QProgressBar(ReadImg)
-        self.progressBar.setObjectName(u"progressBar")
-        self.progressBar.setValue(24)
-
-        self.verticalLayout.addWidget(self.progressBar)
-
         self.line = QFrame(ReadImg)
         self.line.setObjectName(u"line")
         self.line.setFrameShape(QFrame.HLine)

@@ -1,10 +1,11 @@
 import weakref
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QSize, QMimeData
-from PySide2.QtGui import QPixmap, QPainter, QColor, QImage
+from PySide2.QtGui import QPixmap, QPainter, QColor, QImage, QIcon
 from PySide2.QtWidgets import QDesktopWidget, QMessageBox
 
 from conf import config
+from resources import resources
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtloading import QtLoading
@@ -51,6 +52,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.category = []
         self.isInit = False
 
+        ToolUtil.SetIcon(self)
+
     @property
     def graphicsView(self):
         return self.frame.graphicsView
@@ -71,7 +74,7 @@ class QtReadImg(QtWidgets.QWidget):
 
     def Clear(self):
         self.qtTool.UpdateText("")
-        self.qtTool.UpdateProcessBar(None)
+        self.frame.UpdateProcessBar(None)
         self.bookId = ""
         self.epsId = 0
         self.maxPic = 0
@@ -85,7 +88,7 @@ class QtReadImg(QtWidgets.QWidget):
         QtTask().CancelTasks(self.closeFlag)
         QtTask().CancelConver(self.closeFlag)
 
-    def OpenPage(self, bookId, epsId, name):
+    def OpenPage(self, bookId, epsId, name, isLastEps=False):
         if not bookId:
             return
         self.Clear()
@@ -115,7 +118,7 @@ class QtReadImg(QtWidgets.QWidget):
         # self.AddHistory()
 
         self.loadingForm.show()
-        self.StartLoadPicUrl()
+        self.StartLoadPicUrl(isLastEps)
         self.setWindowTitle(name)
         self.show()
         if config.IsTips:
@@ -150,10 +153,10 @@ class QtReadImg(QtWidgets.QWidget):
         self.owner().bookInfoForm.LoadHistory()
         return
 
-    def StartLoadPicUrl(self):
+    def StartLoadPicUrl(self, isLastEps=False):
         QtTask().AddHttpTask(lambda x: BookMgr().AddBookEpsPicInfo(self.bookId, self.epsId+1, x),
                                         self.StartLoadPicUrlBack,
-                                        self.bookId, cleanFlag=self.closeFlag)
+                                        isLastEps, cleanFlag=self.closeFlag)
 
     def CheckLoadPicture(self):
         i = 0
@@ -175,13 +178,16 @@ class QtReadImg(QtWidgets.QWidget):
                     self.AddCovertData(picInfo, i)
         pass
 
-    def StartLoadPicUrlBack(self, msg, bookId):
+    def StartLoadPicUrlBack(self, msg, isLastEps):
         if msg != Status.Ok:
-            self.StartLoadPicUrl()
+            self.StartLoadPicUrl(isLastEps)
         else:
             bookInfo = BookMgr().books.get(self.bookId)
             epsInfo = bookInfo.eps[self.epsId]
             self.maxPic = len(epsInfo.pics)
+            if isLastEps:
+                self.curIndex = self.maxPic - 1
+            self.qtTool.UpdateSlider()
             self.CheckLoadPicture()
             self.qtTool.InitSlider(self.maxPic)
         return
@@ -197,7 +203,7 @@ class QtReadImg(QtWidgets.QWidget):
         info.downloadSize += len(data)
         if self.curIndex != backParam:
             return
-        self.qtTool.UpdateProcessBar(info)
+        self.frame.UpdateProcessBar(info)
 
     def CompleteDownloadPic(self, data, st, index):
         self.loadingForm.close()
@@ -227,7 +233,11 @@ class QtReadImg(QtWidgets.QWidget):
             self.qtTool.SetData(state=QtFileData.Downloading)
             self.graphicsItem.setPixmap(QPixmap())
             self.qtTool.modelBox.setEnabled(False)
+            self.frame.UpdateProcessBar(None)
+            self.frame.process.show()
             return
+
+        self.frame.process.hide()
         if config.CanWaifu2x:
             self.qtTool.modelBox.setEnabled(True)
         assert isinstance(p, QtFileData)

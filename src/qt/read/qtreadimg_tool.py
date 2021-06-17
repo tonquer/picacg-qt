@@ -3,16 +3,19 @@ import weakref
 from PySide2 import QtWidgets
 from PySide2.QtCore import QSize, QEvent, Qt
 from PySide2.QtGui import QImage, QPalette
-from PySide2.QtWidgets import QApplication, QVBoxLayout, QLabel
+from PySide2.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QFormLayout, QRadioButton
 
 from conf import config
 from src.index.book import BookMgr
+
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.struct.qt_define import QtFileData
 from src.util import ToolUtil
 from src.util.tool import CTime
 from ui.readimg import Ui_ReadImg
+from PySide2.QtCore import QTimer, QRectF, Property, QSize
+from PySide2.QtGui import QColor, QPainter, Qt, QFont
 
 
 class QtCustomSlider(QtWidgets.QSlider):
@@ -98,7 +101,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.radioButton_2.installEventFilter(self)
         self.downloadMaxSize = 0
         self.downloadSize = 0
-        self.progressBar.setMinimum(0)
         self.slider = QtCustomSlider(self)
         self.horizontalLayout_7.addWidget(self.slider)
 
@@ -164,8 +166,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         t = CTime()
         self.curIndex += 1
         self.SetData(isInit=True)
-        info = self.readImg.pictureData.get(self.curIndex)
-        self.UpdateProcessBar(info)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
         t.Refresh(self.__class__.__name__)
@@ -185,8 +185,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一页")
             return
         self.curIndex -= 1
-        info = self.readImg.pictureData.get(self.curIndex)
-        self.UpdateProcessBar(info)
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
@@ -292,16 +290,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         return
 
-    def UpdateProcessBar(self, info):
-        if info:
-            self.downloadSize = info.downloadSize
-            self.downloadMaxSize = max(1, info.size)
-        else:
-            self.downloadSize = 0
-            self.downloadMaxSize = 1
-        self.progressBar.setMaximum(self.downloadMaxSize)
-        self.progressBar.setValue(self.downloadSize)
-
     def UpdateText(self, model):
         index, noise, scale = ToolUtil.GetModelAndScale(model)
         self.modelBox.setCurrentIndex(index)
@@ -333,7 +321,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         epsInfo = bookInfo.eps[epsId]
         self.readImg.AddHistory()
         self.readImg.owner().bookInfoForm.LoadHistory()
-        self.readImg.OpenPage(bookId, epsId, epsInfo.title)
+        self.readImg.OpenPage(bookId, epsId, epsInfo.title, True)
         return
 
     def OpenNextEps(self):
@@ -364,8 +352,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         if value-1 > self.maxPic -1:
             return
         self.curIndex = value - 1
-        info = self.readImg.pictureData.get(self.curIndex)
-        self.UpdateProcessBar(info)
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()

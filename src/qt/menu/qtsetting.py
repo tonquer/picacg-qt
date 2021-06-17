@@ -83,6 +83,10 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         v = self.settings.value("Waifu2x/IsTips")
         if v:
             config.IsTips = int(v)
+
+        v = self.settings.value("Waifu2x/ChatSendAction")
+        if v:
+            config.ChatSendAction = int(v)
         # v = self.settings.value("Waifu2x/Scale")
         # if v:
         #     config.Scale = int(v)
@@ -113,6 +117,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("Passwd", passwd)
         self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)
         self.settings.setValue("Waifu2x/IsTips", config.IsTips)
+        self.settings.setValue("Waifu2x/ChatSendAction", config.ChatSendAction)
 
     def SaveSetting(self):
         config.DownloadThreadNum = int(self.comboBox.currentText())

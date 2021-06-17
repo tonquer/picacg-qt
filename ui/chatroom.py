@@ -102,11 +102,23 @@ class Ui_ChatRoom(object):
 
         self.verticalLayout.addWidget(self.picButton)
 
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setSpacing(0)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.sendButton = QPushButton(ChatRoom)
         self.sendButton.setObjectName(u"sendButton")
         self.sendButton.setMaximumSize(QSize(16777215, 20))
 
-        self.verticalLayout.addWidget(self.sendButton)
+        self.horizontalLayout_4.addWidget(self.sendButton)
+
+        self.toolButton = QPushButton(ChatRoom)
+        self.toolButton.setObjectName(u"toolButton")
+        self.toolButton.setMaximumSize(QSize(16777215, 20))
+
+        self.horizontalLayout_4.addWidget(self.toolButton)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
 
 
         self.horizontalLayout_2.addLayout(self.verticalLayout)
@@ -141,5 +153,6 @@ class Ui_ChatRoom(object):
         self.pushButton.setText(QCoreApplication.translate("ChatRoom", u"\u8868\u60c5", None))
         self.picButton.setText(QCoreApplication.translate("ChatRoom", u"\u56fe\u7247", None))
         self.sendButton.setText(QCoreApplication.translate("ChatRoom", u"\u53d1\u9001", None))
+        self.toolButton.setText("")
     # retranslateUi
 
