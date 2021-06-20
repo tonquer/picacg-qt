@@ -3,17 +3,16 @@
 import sys
 import os
 
-import platform
-# 确保工作区为当前可执行文件所在目录
-if not (platform.system().upper() in ['WINDOWS', 'DARWIN', "LINUX"]):
-    print(platform.system().upper())
+# macOS 修复
+if sys.platform == 'darwin':
+    # 确保工作区为当前可执行文件所在目录
     current_path = os.path.abspath(__file__)
     current_dir = os.path.abspath(os.path.dirname(current_path) + os.path.sep + '.')
     os.chdir(current_dir)
+else:
+    sys.path.insert(0, "lib")
 
 from conf import config
-if not platform.system().upper() == 'DARWIN':
-    sys.path.insert(0, "lib")
 
 try:
     import waifu2x

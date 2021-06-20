@@ -99,9 +99,11 @@ pyinstaller --clean --log-level TRACE --onedir --name PicACG \
             --hidden-import src.qt.read --hidden-import src.qt.struct \
             --hidden-import src.qt.user --hidden-import src.qt.util --hidden-import src.server \
             --hidden-import src.user --hidden-import src.util --hidden-import ui \
-            --strip --windowed -i Icon.icns \
+            --hidden-import qss --strip --windowed -i Icon.icns \
             start.py
+rm -rf dist/PicACG
 cp -avf data example models resources dist/PicACG.app/Contents/MacOS
+rm -f dist/PicACG.app/Contents/MacOS/resources/*.py
 ````
 * 打包完成以后可以在 dist 目录下找到应用程序 (.app)
 
