@@ -5,7 +5,6 @@ from PySide2.QtWidgets import QCheckBox, QLabel
 
 from src.index.category import CateGoryMgr
 from src.qt.com.langconv import Converter
-from ui.qtlistwidget import QtBookList, QtIntLimit, QtCategoryList
 from src.qt.main.qtsearch_db import QtSearchDb
 from src.server import Server, req, Log, json
 from ui.search import Ui_search
@@ -21,7 +20,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.data = ""
         self.bookList.InitBook(self.__class__.__name__, owner, self.LoadNextPage)
 
-        self.bookList.doubleClicked.connect(self.OpenSearch)
+        ## self.bookList.doubleClicked.connect(self.OpenSearch)
         self.categories = ""
         self.searchDb = QtSearchDb(owner)
         self.searchEdit.words = self.searchDb.InitWord()
@@ -153,15 +152,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         pageText = "页：" + str(self.bookList.page) + "/" + str(self.bookList.pages)
         self.label.setText(pageText)
         for v in books:
-            title = v.title2
-            _id = v.id
-            url = v.fileServer
-            path = v.path
-            originalName = v.originalName
-            info2 = "完本," if v.finished else ""
-            info2 += "{}E/{}P".format(str(v.epsCount), str(v.pages))
-            param = v.categories
-            self.bookList.AddBookItem(_id, title, info2, url, path, param)
+            self.bookList.AddBookItem(v)
         self.CheckCategoryShowItem()
         self.bookList.update()
 
@@ -202,15 +193,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
                 pageText = "页：" + str(self.bookList.page) + "/" + str(self.bookList.pages)
                 self.label.setText(pageText)
                 for v in info.get("docs", []):
-                    title = v.get("title", "")
-                    _id = v.get("_id")
-                    url = v.get("thumb", {}).get("fileServer")
-                    path = v.get("thumb", {}).get("path")
-                    originalName = v.get("thumb", {}).get("originalName")
-                    info2 = "完本," if v.get("finished") else ""
-                    info2 += "{}E/{}P".format(str(v.get("epsCount")), str(v.get("pagesCount")))
-                    param = ",".join(v.get("categories"))
-                    self.bookList.AddBookItem(_id, title, info2, url, path, param)
+                    self.bookList.AddBookItem(v)
                 self.CheckCategoryShowItem()
             else:
                 # QtWidgets.QMessageBox.information(self, '未搜索到结果', "未搜索到结果", QtWidgets.QMessageBox.Yes)
@@ -289,7 +272,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             widget = self.bookList.itemWidget(item)
             isHidden = False
             for name in data:
-                if name in widget.param:
+                if name in widget.leftLabel1.text():
                     item.setHidden(True)
                     isHidden = True
                     break

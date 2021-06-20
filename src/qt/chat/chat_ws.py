@@ -43,10 +43,10 @@ class ChatWebSocket(threading.Thread):
         pass
 
     def _SendData(self, data):
-        # Log.Info("ws: send img data")
+        Log.Info("ws: send img data")
         self._Send(data)
-        # Log.Info("ws: send img success")
         if "send_image" in data:
+            Log.Info("ws: send img success")
             self.parent.websocket.emit(self.parent.SendImg, data)
         else:
             self.parent.websocket.emit(self.parent.SendMsg2, data)
@@ -67,12 +67,12 @@ class ChatWebSocket(threading.Thread):
         self.parent.websocket.emit(self.parent.Msg, message)
 
     def on_error(self, ws, error):
-        self.parent.websocket.emit(self.parent.Error, "")
-        Log.Warn(error)
+        self.parent.websocket.emit(self.parent.ErrorMsg, str(error))
+        print(error)
 
-    def on_close(self, ws):
+    def on_close(self, ws, code, msg):
         self.parent.websocket.emit(self.parent.Leave, "")
-        print("### closed ###")
+        print("### closed ###, code:{}, msg:{}".format(code, msg))
 
     def on_open(self, ws):
         self.parent.websocket.emit(self.parent.Enter, "")

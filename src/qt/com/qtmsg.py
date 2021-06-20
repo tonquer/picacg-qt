@@ -53,7 +53,7 @@ class BubbleLabel(QWidget):
         endPos = QPoint(
             self._desktop.screenGeometry().width() - self.width() - 100,
             self._desktop.availableGeometry().height() - self.height() * 3 - 5)
-        print(startPos, endPos)
+        # print(startPos, endPos)
         self.move(startPos)
         # 初始化动画
         self.initAnimation(startPos, endPos)

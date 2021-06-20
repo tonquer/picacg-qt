@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-"""
-Created on 2021/1/1
-@author: Irony
-@site: https://pyqt5.com , https://github.com/892768447
-@email: 892768447@qq.com
-@file: DWaterProgress
-@see https://github.com/linuxdeepin/dtkwidget/blob/master/src/widgets/dwaterprogress.cpp
-@description:
-"""
 import math
 
 from PySide2.QtCore import Slot, QTimer, QSizeF, Qt, QRectF, QPointF, QRect, QPoint, QSize
@@ -28,8 +16,6 @@ WATER_BACK = """<svg xmlns="http://www.w3.org/2000/svg" width="383" height="115"
 
 
 class Pop:
-    # https://github.com/linuxdeepin/dtkwidget/blob/master/src/widgets/dwaterprogress.cpp#L36
-
     def __init__(self, size, xs, ys, xo=0, yo=0):
         self.size = size
         self.xSpeed = xs

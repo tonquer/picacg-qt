@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>451</width>
-    <height>292</height>
+    <width>628</width>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,6 +18,13 @@
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="msgLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -75,12 +82,57 @@
          </property>
          <item>
           <property name="text">
-           <string>从新到旧</string>
+           <string>更新时间</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>从旧到新</string>
+           <string>收藏时间</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>创建时间</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>爱心数</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>章节数</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>章节数</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>图片数</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox_2">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>30</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>降序</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>升序</string>
           </property>
          </item>
         </widget>
@@ -165,7 +217,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>439</x>
-     <y>226</y>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>361</x>
@@ -180,12 +232,28 @@
    <slot>RefreshDataFocus()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>214</y>
+     <x>215</x>
+     <y>280</y>
     </hint>
     <hint type="destinationlabel">
      <x>118</x>
      <y>338</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_2</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>favorite</receiver>
+   <slot>RefreshDataFocus()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>251</x>
+     <y>261</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>258</x>
+     <y>288</y>
     </hint>
    </hints>
   </connection>

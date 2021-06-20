@@ -13,8 +13,8 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 from .qtlistwidget import QtBookList
-from .completelineedit import CompleteLineEdit
 from .qtlistwidget import QtCategoryList
+from .completelineedit import CompleteLineEdit
 
 
 class Ui_search(object):
@@ -135,7 +135,7 @@ class Ui_search(object):
         self.searchEdit.setObjectName(u"searchEdit")
         self.searchEdit.setMinimumSize(QSize(0, 30))
         self.searchEdit.setMaximumSize(QSize(16777215, 30))
-        self.searchEdit.setStyleSheet(u"background-color:transparent;")
+        self.searchEdit.setStyleSheet(u"QLineEdit {background-color:transparent;}")
 
         self.horizontalLayout.addWidget(self.searchEdit)
 
@@ -213,13 +213,13 @@ class Ui_search(object):
         self.label_4 = QLabel(search)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setMinimumSize(QSize(80, 0))
-        self.label_4.setMaximumSize(QSize(80, 50))
+        self.label_4.setMaximumSize(QSize(80, 40))
 
         self.horizontalLayout_3.addWidget(self.label_4)
 
         self.categoryList = QtCategoryList(search)
         self.categoryList.setObjectName(u"categoryList")
-        self.categoryList.setMaximumSize(QSize(16777215, 50))
+        self.categoryList.setMaximumSize(QSize(16777215, 40))
         self.categoryList.setStyleSheet(u"QListWidget {background-color:transparent;}")
         self.categoryList.setFrameShape(QFrame.StyledPanel)
         self.categoryList.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -271,7 +271,7 @@ class Ui_search(object):
         self.keywordList.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.keywordList.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.keywordList.setFlow(QListView.LeftToRight)
-        self.keywordList.setSpacing(10)
+        self.keywordList.setSpacing(6)
 
         self.horizontalLayout_4.addWidget(self.keywordList)
 

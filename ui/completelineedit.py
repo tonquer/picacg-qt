@@ -99,7 +99,7 @@ class CompleteLineEdit(QLineEdit):
         data = text.split("|")
         self.isNotReload = True
         oldData = re.split('&|\|', self.text())
-        print(self.text())
+        # print(self.text())
         if len(oldData) > 0:
             text = self.text().replace(oldData[len(oldData)-1], data[0])
         if data[0] and isNext:

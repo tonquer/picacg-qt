@@ -94,7 +94,7 @@ class Server(Singleton, threading.Thread):
             if host in config.Url:
                 request.url = request.url.replace(host, self.address).replace("https://", "http://")
                 request.headers["Host"] = host
-            else:
+            elif self.imageServer:
                 request.url = request.url.replace(host, self.imageServer)
 
         if request.method.lower() in ["post", "put"]:

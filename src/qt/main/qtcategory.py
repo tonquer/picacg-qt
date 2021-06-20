@@ -27,11 +27,7 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
         self.owner().loadingForm.close()
         if msg == Status.Ok:
             for index, info in enumerate(CateGoryMgr().idToCateGoryBase):
-                url = info.thumb.get("fileServer")
-                path = info.thumb.get("path")
-                originalName = info.thumb.get("originalName")
-                _id = info.id
-                self.bookList.AddBookItem(_id, info.title, "", url, path, originalName)
+                self.bookList.AddBookItem(info)
             self.owner().searchForm.InitCheckBox()
         return
 

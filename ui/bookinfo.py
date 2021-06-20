@@ -71,7 +71,7 @@ class Ui_BookInfo(object):
         self.label_2 = QLabel(self.page)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setMinimumSize(QSize(0, 0))
-        self.label_2.setMaximumSize(QSize(16777215, 50))
+        self.label_2.setMaximumSize(QSize(16777215, 40))
 
         self.horizontalLayout_11.addWidget(self.label_2)
 
@@ -82,6 +82,7 @@ class Ui_BookInfo(object):
         self.autorList.setFrameShape(QFrame.NoFrame)
         self.autorList.setProperty("showDropIndicator", True)
         self.autorList.setFlow(QListView.LeftToRight)
+        self.autorList.setSpacing(10)
 
         self.horizontalLayout_11.addWidget(self.autorList)
 
@@ -223,15 +224,6 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_2.addWidget(self.updateTick)
 
-        self.isFinished = QLabel(self.page)
-        self.isFinished.setObjectName(u"isFinished")
-        self.isFinished.setMinimumSize(QSize(80, 40))
-        self.isFinished.setMaximumSize(QSize(80, 40))
-        self.isFinished.setTextFormat(Qt.AutoText)
-        self.isFinished.setAlignment(Qt.AlignCenter)
-
-        self.horizontalLayout_2.addWidget(self.isFinished)
-
         self.download = QPushButton(self.page)
         self.download.setObjectName(u"download")
         self.download.setMinimumSize(QSize(0, 40))
@@ -370,7 +362,6 @@ class Ui_BookInfo(object):
         self.label_7.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570\uff1a", None))
         self.views.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570", None))
         self.updateTick.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
-        self.isFinished.setText(QCoreApplication.translate("BookInfo", u"\u5b8c\u672c", None))
         self.download.setText(QCoreApplication.translate("BookInfo", u"\u4e0b\u8f7d", None))
         self.favorites.setText(QCoreApplication.translate("BookInfo", u"\u6536\u85cf", None))
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))

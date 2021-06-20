@@ -82,6 +82,7 @@ class QtSearchDb(object):
                     data3 += " title2 like '%{}%' or ".format(word)
                 if isAutor:
                     data3 += " author like '%{}%' or ".format(word)
+                    data3 += " chineseTeam like '%{}%' or ".format(word)
                 if isDes:
                     data3 += " description like '%{}%' or ".format(word)
                 if isTag:

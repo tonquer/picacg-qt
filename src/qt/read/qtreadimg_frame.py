@@ -151,7 +151,9 @@ class QtImgFrame(QFrame):
         if info:
             self.downloadSize = info.downloadSize
             self.downloadMaxSize = max(1, info.size)
-            self.process.setValue(int((self.downloadMaxSize / self.downloadMaxSize) * 100))
+            value = int((self.downloadSize / self.downloadMaxSize) * 100)
+            # print(value)
+            self.process.setValue(value)
         else:
             self.downloadSize = 0
             self.downloadMaxSize = 1

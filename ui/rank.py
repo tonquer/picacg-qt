@@ -65,7 +65,7 @@ class Ui_Rank(object):
 
         self.retranslateUi(Rank)
 
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Rank)

@@ -29,7 +29,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
     Enter = 1
     Leave = 2
     Msg = 3
-    Error = 4
+    ErrorMsg = 4
     SendImg = 5
     SendMsg2 = 6
 
@@ -100,7 +100,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
     def eventFilter(self, obj, event):
         if obj == self.textEdit and event.type() == QEvent.KeyPress:
             if event.key() == Qt.Key_Return:
-                print(event.modifiers() == Qt.ControlModifier)
+                # print(event.modifiers() == Qt.ControlModifier)
                 if (config.ChatSendAction == 2 and event.modifiers() != Qt.ControlModifier) or (config.ChatSendAction == 1 and (event.modifiers() == Qt.ControlModifier)):
                     cursor = self.textEdit.textCursor()
                     textCursor = QTextCursor(self.textEdit.document())
@@ -316,7 +316,9 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
             self.ReceviveMsg(data)
         elif taskType == self.Enter:
             self.JoinRoom()
-        elif taskType == self.Error:
+        elif taskType == self.ErrorMsg:
+            self.loadingForm.close()
+            QtBubbleLabel().ShowErrorEx(self, "出错了,"+data)
             pass
         elif taskType == self.SendImg:
             self.picButton.setEnabled(True)

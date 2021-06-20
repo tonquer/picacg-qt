@@ -362,6 +362,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def UpdateSlider(self):
         self.slider.setValue(self.readImg.curIndex+1)
+        self.readImg.setWindowTitle(self.readImg.epsName + "（{}/{}）".format(self.slider.value(), self.slider.maximum()))
 
     def SwitchModel(self, index):
         data = self.readImg.pictureData.get(self.readImg.curIndex)

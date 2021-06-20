@@ -4,7 +4,6 @@ from PySide2 import QtWidgets
 from PySide2.QtSql import QSqlDatabase, QSqlQuery
 import time
 
-from ui.qtlistwidget import QtBookList, QtIntLimit
 from src.util import Log
 from ui.history import Ui_History
 
@@ -144,8 +143,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         start = (page-1) * self.pageNums
         end = start + self.pageNums
         for info in sortedList[start:end]:
-            data = "上次读到第{}章".format(str(info.epsId+1))
-            self.bookList.AddBookItem(info.bookId, info.name, data, info.url, info.path)
+            self.bookList.AddBookItem(info)
 
     def UpdatePageLabel(self):
         self.pages.setText("页：{}/{}".format(str(self.bookList.page), str(self.bookList.pages)))

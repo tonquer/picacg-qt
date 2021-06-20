@@ -101,10 +101,10 @@ class FavoritesAddHandler(object):
 class FavoritesAddHandler(object):
     def __call__(self, backData):
         from src.user.user import User
-        st, page = User().UpdateFavoritesBack(backData)
-        time.sleep(0.1)
+        # st, page = User().UpdateFavoritesBack(backData)
+        # time.sleep(0.1)
         if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
 
 
 @handler(req.CategoryReq)

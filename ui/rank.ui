@@ -20,7 +20,7 @@
       <string notr="true">QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }</string>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <property name="styleSheet">

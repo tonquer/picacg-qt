@@ -1,104 +1,114 @@
 import weakref
 
 from PySide2.QtCore import Qt, QSize, QTimer
-from PySide2.QtGui import QPixmap, QColor, QIntValidator,  QFont, QCursor
+from PySide2.QtGui import QPixmap, QColor, QIntValidator, QFont, QCursor, QPainter, QLinearGradient, QGradient, QBrush
 from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
     QScroller, QMenu, QApplication, QAbstractItemView
 
 from conf import config
 from qss.qss import QssDataMgr
+from resources.resources import DataMgr
+from src.index.category import CateGoryBase
 from src.qt.com.qtcomment import QtComment
 from src.qt.com.qtimg import  QtImgMgr
+from src.qt.main.qtsearch_db import DbBook
 from src.qt.util.qttask import QtTask
+from src.user.user import CategoryInfo
 from src.util import ToolUtil
 from src.util.status import Status
 
 
-class QtIntLimit(QIntValidator):
-    def __init__(self, bottom, top, parent):
-        super(self.__class__, self).__init__(bottom, top, parent)
-
-    def fixup(self, input: str) -> str:
-        return str(self.top())
-
-
 class ItemWidget(QWidget):
-    def __init__(self, _id, title, index, info, param):
+    def __init__(self, _id, title, leftStr1, leftStr2, leftStr3, leftStr4):
         super(ItemWidget, self).__init__()
         self.id = _id
         self.url = ""
         self.path = ""
-        self.param = param
         self.IsClicked = False
-        self.setMaximumSize(220, 400)
-        self.setMaximumSize(220, 400)
+        # self.setMaximumSize(220, 400)
+        # self.setMaximumSize(220, 550)
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(10, 20, 10, 0)
+        # layout.setContentsMargins(10, 10, 10, 0)
         # 图片label
         self.pictureData = None
         self.picIcon = QLabel(self)
         # self.picIcon.setCursor(Qt.PointingHandCursor)
         # self.picIcon.setScaledContents(True)
-        self.picIcon.setMinimumSize(220, 320)
-        self.picIcon.setMaximumSize(220, 320)
+        self.picIcon.setMinimumSize(220, 308)
+        self.picIcon.setMaximumSize(220, 308)
+
         self.picIcon.setToolTip(title)
         pic = QPixmap()
         self.picIcon.setPixmap(pic)
         layout.addWidget(self.picIcon)
-        layout2 = QHBoxLayout()
+        if leftStr1:
+            self.leftLabel1 = QLabel(leftStr1, self)
+            self.leftLabel1.setMinimumHeight(20)
+            self.leftLabel1.setMaximumHeight(50)
+            self.leftLabel1.setWordWrap(True)
+            self.leftLabel1.adjustSize()
+            self.leftLabel1.setAlignment(Qt.AlignLeft)
+            layout.addWidget(self.leftLabel1)
 
-        self.indexLabel = QLabel(index, self, styleSheet="color: #999999;")
-        self.indexLabel.setMinimumSize(40, 20)
-        self.indexLabel.setMaximumSize(40, 40)
-        self.indexLabel.setAlignment(Qt.AlignLeft)
-        layout2.addWidget(self.indexLabel)
+        if leftStr2:
+            layout2 = QHBoxLayout()
+            p = QPixmap()
+            p.loadFromData(DataMgr.GetData("icon_bookmark_on"))
+            self.starPic = QLabel()
 
-        self.infoLabel = QLabel(info, self, styleSheet="color: #999999;")
-        self.infoLabel.setMinimumSize(160, 20)
-        self.infoLabel.setMaximumSize(160, 40)
-        self.infoLabel.setAlignment(Qt.AlignRight)
-        layout2.addWidget(self.infoLabel)
+            self.starPic.setMinimumSize(20, 20)
+            self.starPic.setMaximumSize(20, 20)
+            self.starPic.setPixmap(p)
+            self.starPic.setCursor(Qt.PointingHandCursor)
+            self.starPic.setScaledContents(True)
 
-        layout.addLayout(layout2)
+            self.leftLabel2 = QLabel(leftStr2, self)
+            self.leftLabel2.setMinimumHeight(20)
+            self.leftLabel2.setMaximumHeight(20)
+            self.leftLabel2.setAlignment(Qt.AlignLeft)
+            self.leftLabel2.adjustSize()
 
-        self.label = QLabel(title, self, styleSheet="color: #999999;")
-        self.label.setMinimumSize(220, 20)
-        self.label.setMaximumSize(220, 50)
-        self.label.setAlignment(Qt.AlignCenter)
-        self.label.setFont(QFont("Microsoft YaHei",  12,   87))
+            layout2.addWidget(self.starPic)
+            layout2.addWidget(self.leftLabel2)
+            if leftStr3:
+                self.leftLabel3 = QLabel(leftStr3, self)
+                self.leftLabel3.setMinimumHeight(20)
+                self.leftLabel3.setMaximumHeight(20)
+                self.leftLabel3.setAlignment(Qt.AlignRight)
+                self.leftLabel3.adjustSize()
+                layout2.addWidget(self.leftLabel3)
+
+            layout.addLayout(layout2)
+
+        if leftStr4:
+            self.leftLabel4 = QLabel(leftStr4, self)
+            self.leftLabel4.setMinimumHeight(20)
+            self.leftLabel4.setMaximumHeight(20)
+            self.leftLabel4.adjustSize()
+            self.leftLabel4.setAlignment(Qt.AlignLeft)
+            layout.addWidget(self.leftLabel4)
+        # self.infoLabel = QLabel(info, self, styleSheet="color: #999999;")
+        # self.infoLabel.setMinimumSize(160, 20)
+        # self.infoLabel.setMaximumSize(160, 40)
+        # self.infoLabel.setAlignment(Qt.AlignRight)
+        # layout2.addWidget(self.infoLabel)
+
+
+        self.label = QLabel(title, self)
+        self.label.setMinimumSize(210, 20)
+        self.label.setMaximumSize(210, 150)
+        self.label.setAlignment(Qt.AlignLeft)
+        self.label.adjustSize()
+        self.label.setWordWrap(True)
+        font = QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        self.label.setFont(font)
+        # self.label.setFont(QFont("Microsoft YaHei",  10,   87))
         self.label.setWordWrap(True)
         layout.addWidget(self.label)
         # if self.info:
         #     self.PaintInfo()
-
-    # def PaintInfo(self):
-    #     painter = QPainter(self.picIcon)
-    #     rect = self.picIcon.rect()
-    #     painter.save()
-    #     fheight = self.picIcon.fontMetrics().height()
-    #     # 底部矩形框背景渐变颜色
-    #     bottomRectColor = QLinearGradient(
-    #         rect.width() / 2, rect.height() - 24 - fheight,
-    #         rect.width() / 2, rect.height())
-    #
-    #     bottomRectColor.setSpread(QGradient.PadSpread)
-    #     bottomRectColor.setColorAt(0, QColor(255, 255, 255, 70))
-    #     bottomRectColor.setColorAt(1, QColor(0, 0, 0, 50))
-    #
-    #     # 画半透明渐变矩形框
-    #     painter.setPen(Qt.NoPen)
-    #     painter.setBrush(QBrush(bottomRectColor))
-    #     painter.drawRect(rect.x(), rect.height() - 24 -
-    #                      fheight, rect.width(), 24 + fheight)
-    #     painter.restore()
-    #     # 距离底部一定高度画文字
-    #     font = self.picIcon.font() or QFont()
-    #     font.setPointSize(8)
-    #     painter.setFont(font)
-    #     painter.setPen(Qt.white)
-    #     rect.setHeight(rect.height() - 12)  # 底部减去一定高度
-    #     painter.drawText(rect, Qt.AlignHCenter |
-    #                      Qt.AlignBottom, self.info)
 
     def SetPicture(self, data):
         if not data:
@@ -144,6 +154,7 @@ class QtBookList(QListWidget):
         QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
+        self.verticalScrollBar().setSingleStep(30)
         # self.timer = QTimer()
         # self.timer.setInterval(1000)
         # self.timer.timeout.connect(self.TimeOut)
@@ -227,9 +238,89 @@ class QtBookList(QListWidget):
     def UpdateState(self, isLoading=False):
         self.isLoadingPage = isLoading
 
-    def AddBookItem(self, _id, title, info="", url="", path="", param="", originalName=""):
+    def AddBookItem(self, v):
         index = self.count()
-        iwidget = ItemWidget(_id, title, str(index+1), info, param)
+        pagesCount = ""
+        finished = ""
+        categories = []
+        likesCount = ""
+        updateStr = ""
+        updated_at = ""
+        categoryStr = ""
+
+        from src.qt.user.qthistory import QtHistoryData
+        from src.qt.user.qtfavorite_db import DbFavorite
+        if isinstance(v, dict):
+            title = v.get("title", "")
+            _id = v.get("_id")
+            url = v.get("thumb", {}).get("fileServer")
+            path = v.get("thumb", {}).get("path")
+            finished = v.get("finished")
+            categories = v.get('categories', [])
+            pagesCount = v.get("pagesCount")
+            likesCount = str(v.get("totalLikes", ""))
+
+        elif isinstance(v, DbBook):
+            title = v.title2
+            url = v.fileServer
+            path = v.path
+            _id = v.id
+            finished = v.finished
+            categories = v.categories.split(",")
+            pagesCount = v.pages
+            likesCount = str(v.likesCount)
+            updated_at = v.updated_at
+
+        elif isinstance(v, CateGoryBase):
+            title = v.title
+            url = v.thumb.get("fileServer")
+            path = v.thumb.get("path")
+            _id = v.id
+
+        elif isinstance(v, CategoryInfo):
+            title = v.title
+            url = v.thumb.get("fileServer")
+            path = v.thumb.get("path")
+            _id = v.id
+            finished = v.finished
+            pagesCount = v.pagesCount
+            likesCount = str(v.totalLikes)
+
+        elif isinstance(v, QtHistoryData):
+            _id = v.bookId
+            title = v.name
+            path = v.path
+            url = v.url
+
+        elif isinstance(v, DbFavorite):
+            _id = v.id
+            title = v.title
+            path = v.path
+            url = v.fileServer
+            finished = v.finished
+            pagesCount = v.pages
+            updated_at = v.updated_at
+            likesCount = str(v.totalLikes)
+            info = self.owner().historyForm.GetHistory(_id)
+            if info:
+                categoryStr = "上次观看到第{}章/{}章".format(info.epsId+1, v.epsCount)
+
+        else:
+            assert False
+
+        if pagesCount:
+            title += "<font color=#d5577c>{}</font>".format("("+str(pagesCount)+"P)")
+        if finished:
+            title += "<font color=#d5577c>{}</font>".format("(完)")
+
+        if categories:
+            categoryStr = "分类：" + "，".join(categories)
+
+        if updated_at:
+            timeArray, day = ToolUtil.GetDateStr(updated_at)
+            updateStr = "{}天前更新".format(day)
+
+        iwidget = ItemWidget(_id, title, categoryStr, likesCount, updateStr, "")
         iwidget.url = url
         iwidget.path = path
         item = QListWidgetItem(self)
@@ -421,7 +512,9 @@ class QtCategoryList(QListWidget):
         item.setTextAlignment(Qt.AlignCenter)
         # item.setBackground(QColor(87, 195, 194))
         item.setBackground(QColor(0, 0, 0, 0))
-        item.setSizeHint(QSize(90, 30))
+        if len(name) <= 4:
+            item.setSizeHint(QSize(90, 30))
+
         item.setFlags(item.flags() & (~Qt.ItemIsSelectable))
 
         self.addItem(item)

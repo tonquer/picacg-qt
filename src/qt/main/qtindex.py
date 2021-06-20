@@ -77,14 +77,7 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
                 else:
                     bookList = self.bookList2
                 for v in categroys.get('comics'):
-                    title = v.get("title", "")
-                    _id = v.get("_id")
-                    url = v.get("thumb", {}).get("fileServer")
-                    path = v.get("thumb", {}).get("path")
-                    originalName = v.get("thumb", {}).get("originalName")
-                    info = "完本," if v.get("finished") else ""
-                    info += "{}E/{}P".format(str(v.get("epsCount")), str(v.get("pagesCount")))
-                    bookList.AddBookItem(_id, title, info, url, path, originalName)
+                    bookList.AddBookItem(v)
         except Exception as es:
             Log.Error(es)
             self.isInit = False
@@ -103,7 +96,7 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
                 originalName = v.get("thumb", {}).get("originalName")
                 info = "完本," if v.get("finished") else ""
                 info += "{}E/{}P".format(str(v.get("epsCount")), str(v.get("pagesCount")))
-                bookList.AddBookItem(_id, title, info, url, path, originalName)
+                bookList.AddBookItem(v)
         except Exception as es:
             Log.Error(es)
 

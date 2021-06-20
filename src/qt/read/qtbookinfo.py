@@ -3,7 +3,7 @@ import weakref
 
 from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import QRect, Qt, QSize, QEvent
-from PySide2.QtGui import QColor, QIcon, QPixmap
+from PySide2.QtGui import QColor, QIcon, QPixmap, QFont
 from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
     QVBoxLayout, QMenu
 
@@ -50,9 +50,12 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.description.setContextMenuPolicy(Qt.CustomContextMenu)
         self.description.customContextMenuRequested.connect(self.CopyDescription)
 
-        self.description.setGeometry(QRect(328, 240, 329, 27 * 4))
+        # self.description.setGeometry(QRect(328, 240, 329, 27 * 4))
         self.description.setWordWrap(True)
         self.description.setAlignment(Qt.AlignTop)
+
+        self.description.adjustSize()
+        self.title.adjustSize()
 
         # self.categories.setGeometry(QRect(328, 240, 329, 27 * 4))
         # self.categories.setWordWrap(True)
@@ -177,10 +180,23 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         if msg == Status.Ok and info:
             # self.autor.setText(info.author)
             self.autorList.AddItem(info.author)
-            self.title.setText(info.title)
+            if hasattr(info, "chineseTeam"):
+                self.autorList.AddItem(info.chineseTeam)
+            title = info.title
+            if info.pagesCount:
+                title += "<font color=#d5577c>{}</font>".format("(" + str(info.pagesCount) + "P)")
+            if info.finished:
+                title += "<font color=#d5577c>{}</font>".format("(完)")
+            self.title.setText(title)
+            font = QFont()
+            font.setPointSize(12)
+            font.setBold(True)
+            self.title.setFont(font)
+
             self.bookName = info.title
             self.description.setText(info.description)
-            self.isFinished.setText("完本" if info.finished else "未完本")
+            # self.isFinished.setText("完本" if info.finished else "未完本")
+
             for name in info.categories:
                 self.categoriesList.AddItem(name)
             # self.categories.setText(','.join(info.categories))
@@ -298,6 +314,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def AddFavority(self):
         User().AddAndDelFavorites(self.bookId)
         QtBubbleLabel.ShowMsgEx(self, "添加收藏成功")
+        self.owner().favoriteForm.AddFavorites(self.bookId)
         self.favorites.setEnabled(False)
 
     def LoadNextPage(self):
@@ -336,7 +353,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
             self.startRead.setText("观看第{}章".format(str(1)))
             return
         if self.lastEpsId == info.epsId:
-            self.startRead.setText("观看第{}章".format(str(self.lastEpsId + 1)))
+            self.startRead.setText("上次看到第{}章".format(str(self.lastEpsId + 1)))
             return
 
         if self.lastEpsId >= 0:
@@ -354,7 +371,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         item.setBackground(QColor(238, 162, 164))
         self.epsListWidget.update()
         self.lastEpsId = info.epsId
-        self.startRead.setText("观看第{}章".format(str(self.lastEpsId+1)))
+        self.startRead.setText("上次看到第{}章".format(str(self.lastEpsId+1)))
 
     def ClickCategoriesItem(self, item):
         text = item.text()

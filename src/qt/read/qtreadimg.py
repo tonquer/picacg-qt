@@ -51,6 +51,7 @@ class QtReadImg(QtWidgets.QWidget):
 
         self.category = []
         self.isInit = False
+        self.epsName = ""
 
         ToolUtil.SetIcon(self)
 
@@ -116,10 +117,10 @@ class QtReadImg(QtWidgets.QWidget):
         # else:
         #     self.AddHistory()
         # self.AddHistory()
-
+        self.epsName = name
         self.loadingForm.show()
         self.StartLoadPicUrl(isLastEps)
-        self.setWindowTitle(name)
+        self.setWindowTitle(self.epsName)
         self.show()
         if config.IsTips:
             config.IsTips = 0
@@ -190,6 +191,7 @@ class QtReadImg(QtWidgets.QWidget):
             self.qtTool.UpdateSlider()
             self.CheckLoadPicture()
             self.qtTool.InitSlider(self.maxPic)
+
         return
 
     def UpdateProcessBar(self, data, laveFileSize, backParam):

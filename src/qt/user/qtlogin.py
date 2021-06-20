@@ -47,6 +47,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
             self.owner().userForm.toolButton0.click()
             self.owner().searchForm.InitKeyWord()
             self.owner().indexForm.Init()
+            self.owner().favoriteForm.InitFavorite()
         else:
             # QtWidgets.QMessageBox.information(self, '登陆失败', msg, QtWidgets.QMessageBox.Yes)
             self.owner().msgForm.ShowError("登陆失败, " + msg)

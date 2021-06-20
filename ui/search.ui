@@ -225,7 +225,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color:transparent;</string>
+        <string notr="true">QLineEdit {background-color:transparent;}</string>
        </property>
       </widget>
      </item>
@@ -383,7 +383,7 @@
          <property name="maximumSize">
           <size>
            <width>80</width>
-           <height>50</height>
+           <height>40</height>
           </size>
          </property>
          <property name="text">
@@ -396,7 +396,7 @@
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>50</height>
+           <height>40</height>
           </size>
          </property>
          <property name="styleSheet">
@@ -494,7 +494,7 @@ QListWidget::item {
           <enum>QListView::LeftToRight</enum>
          </property>
          <property name="spacing">
-          <number>10</number>
+          <number>6</number>
          </property>
         </widget>
        </item>
@@ -511,14 +511,14 @@ QListWidget::item {
    <header location="global">.qtlistwidget.h</header>
   </customwidget>
   <customwidget>
-   <class>CompleteLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>.completelineedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>QtCategoryList</class>
    <extends>QListWidget</extends>
    <header location="global">.qtlistwidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CompleteLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>.completelineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -530,8 +530,8 @@ QListWidget::item {
    <slot>Search()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>331</x>
-     <y>378</y>
+     <x>387</x>
+     <y>574</y>
     </hint>
     <hint type="destinationlabel">
      <x>266</x>
@@ -546,8 +546,8 @@ QListWidget::item {
    <slot>JumpPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>602</x>
-     <y>378</y>
+     <x>816</x>
+     <y>574</y>
     </hint>
     <hint type="destinationlabel">
      <x>515</x>
@@ -562,8 +562,8 @@ QListWidget::item {
    <slot>ChangeSort()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>250</x>
-     <y>373</y>
+     <x>306</x>
+     <y>569</y>
     </hint>
     <hint type="destinationlabel">
      <x>637</x>
@@ -578,8 +578,8 @@ QListWidget::item {
    <slot>SetSearch()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>38</x>
-     <y>224</y>
+     <x>48</x>
+     <y>534</y>
     </hint>
     <hint type="destinationlabel">
      <x>632</x>

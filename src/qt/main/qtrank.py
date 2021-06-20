@@ -52,14 +52,7 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
             data = json.loads(raw)
             if data.get("code") == 200:
                 for v in data.get("data").get("comics"):
-                    title = v.get("title", "")
-                    _id = v.get("_id")
-                    url = v.get("thumb", {}).get("fileServer")
-                    path = v.get("thumb", {}).get("path")
-                    originalName = v.get("thumb", {}).get("originalName")
-                    info = "完本," if v.get("finished") else ""
-                    info += "{}E/{}P".format(str(v.get("epsCount")), str(v.get("pagesCount")))
-                    bookList.AddBookItem(_id, title, info, url, path, originalName)
+                    bookList.AddBookItem(v)
         except Exception as es:
             Log.Error(es)
             self.isInit = False
