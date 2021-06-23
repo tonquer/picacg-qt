@@ -149,6 +149,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
 
     ## 完成所有的收藏加载
     def LoadPageComplete(self):
+        self.msgLabel.setText("更新完毕")
         delBookIds = set(self.dbMgr.allFavoriteIds.keys()) - self.reupdateBookIds
         for bookId in delBookIds:
             self.dbMgr.DelFavorite(bookId)

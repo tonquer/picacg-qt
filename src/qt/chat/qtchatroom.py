@@ -15,13 +15,14 @@ from src.qt.chat.qtchatroommsg import QtChatRoomMsg
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qticon import IconList
 from src.qt.com.qtloading import QtLoading
+from src.qt.util.qttask import QtTaskBase
 from src.user.user import User
 from src.util import Log, ToolUtil
 from src.util.status import Status
 from ui.chatroom import Ui_ChatRoom
 
 
-class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
+class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom, QtTaskBase):
     websocket = Signal(int, str)
 
     Enter = 1
@@ -34,6 +35,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
     def __init__(self):
         super(self.__class__, self).__init__()
         Ui_ChatRoom.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
