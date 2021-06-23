@@ -1,21 +1,21 @@
 import weakref
 
 from PySide2 import QtWidgets
-from PySide2.QtCore import QSize, QEvent, Qt
-from PySide2.QtGui import QImage, QPalette
-from PySide2.QtWidgets import QApplication, QVBoxLayout, QLabel, QWidget, QFormLayout, QRadioButton
+from PySide2.QtCore import QEvent, Qt
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QPalette
+from PySide2.QtGui import Qt
+from PySide2.QtWidgets import QLabel
 
 from conf import config
 from src.index.book import BookMgr
-
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
+from src.qt.qtmain import QtOwner
 from src.qt.struct.qt_define import QtFileData
 from src.util import ToolUtil
 from src.util.tool import CTime
 from ui.readimg import Ui_ReadImg
-from PySide2.QtCore import QTimer, QRectF, Property, QSize
-from PySide2.QtGui import QColor, QPainter, Qt, QFont
 
 
 class QtCustomSlider(QtWidgets.QSlider):
@@ -202,9 +202,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
     def ReturnPage(self):
         self.readImg.hide()
         self.hide()
-        self.readImg.owner().bookInfoForm.show()
+        QtOwner().owner.bookInfoForm.show()
         self.readImg.AddHistory()
-        self.readImg.owner().bookInfoForm.LoadHistory()
+        QtOwner().owner.bookInfoForm.LoadHistory()
         self.readImg.Clear()
         return
 
@@ -295,7 +295,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.modelBox.setCurrentIndex(index)
         self.label_2.setText("去噪等级：" + str(noise))
         self.label_3.setText("放大倍数：" + str(scale))
-        self.label_9.setText("转码模式：" + self.readImg.owner().settingForm.GetGpuName())
+        self.label_9.setText("转码模式：" + QtOwner().owner.settingForm.GetGpuName())
 
     def ReduceScalePic(self):
         self.readImg.zoom(1/1.1)
@@ -320,7 +320,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         epsInfo = bookInfo.eps[epsId]
         self.readImg.AddHistory()
-        self.readImg.owner().bookInfoForm.LoadHistory()
+        QtOwner().owner.bookInfoForm.LoadHistory()
         self.readImg.OpenPage(bookId, epsId, epsInfo.title, True)
         return
 
@@ -339,7 +339,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         epsInfo = bookInfo.eps[epsId]
         self.readImg.AddHistory()
-        self.readImg.owner().bookInfoForm.LoadHistory()
+        QtOwner().owner.bookInfoForm.LoadHistory()
         self.readImg.OpenPage(bookId, epsId, epsInfo.title)
         return
 

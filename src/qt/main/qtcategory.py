@@ -1,34 +1,35 @@
 from PySide2 import QtWidgets
-import weakref
 
 from src.index.category import CateGoryMgr
-from ui.qtlistwidget import QtBookList
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
+from src.server import req
 from src.util.status import Status
 from ui.category import Ui_category
 
 
-class QtCategory(QtWidgets.QWidget, Ui_category):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+class QtCategory(QtWidgets.QWidget, Ui_category, QtTaskBase):
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_category.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
-        self.bookList.InitBook(self.__class__.__name__, owner)
+        self.bookList.InitBook()
         self.bookList.doubleClicked.connect(self.OpenSearch)
         self.bookList.InstallCategory()
 
     def SwitchCurrent(self):
         if self.bookList.count() <= 0:
-            self.owner().loadingForm.show()
-            self.owner().qtTask.AddHttpTask(lambda x: CateGoryMgr().UpdateCateGory(x), callBack=self.InitCateGoryBack)
+            QtOwner().owner.loadingForm.show()
+            self.AddHttpTask(req.CategoryReq(), callBack=self.InitCateGoryBack)
         pass
 
     def InitCateGoryBack(self, msg):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
             for index, info in enumerate(CateGoryMgr().idToCateGoryBase):
                 self.bookList.AddBookItem(info)
-            self.owner().searchForm.InitCheckBox()
+            QtOwner().owner.searchForm.InitCheckBox()
         return
 
     def OpenSearch(self, modelIndex):
@@ -36,7 +37,7 @@ class QtCategory(QtWidgets.QWidget, Ui_category):
         item = self.bookList.item(index)
         widget = self.bookList.itemWidget(item)
         text = widget.label.text()
-        self.owner().userForm.toolButton1.click()
-        self.owner().searchForm.searchEdit.setText("")
-        self.owner().searchForm.OpenSearchCategories(text)
+        QtOwner().owner.userForm.toolButton1.click()
+        QtOwner().owner.searchForm.searchEdit.setText("")
+        QtOwner().owner.searchForm.OpenSearchCategories(text)
         pass

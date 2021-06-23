@@ -1,12 +1,11 @@
-import hashlib
 import os
 import re
 import time
 
 from conf import config
 from src.qt.util.qttask import QtTask
-from .server import handler
 from src.server import req, Status, Log, ToolUtil
+from .server import handler
 
 
 @handler(req.InitReq)
@@ -100,7 +99,6 @@ class FavoritesAddHandler(object):
 @handler(req.FavoritesReq)
 class FavoritesAddHandler(object):
     def __call__(self, backData):
-        from src.user.user import User
         # st, page = User().UpdateFavoritesBack(backData)
         # time.sleep(0.1)
         if backData.bakParam:

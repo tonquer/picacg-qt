@@ -1,43 +1,57 @@
-
+import weakref
 
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
 from PySide2.QtCore import QTimer, QUrl
-from PySide2.QtGui import QIcon, QPixmap, QDesktopServices, Qt, QCursor
+from PySide2.QtGui import QDesktopServices
 from PySide2.QtWidgets import QMessageBox, QDesktopWidget
 
 from conf import config
-from resources import resources
-from src.qt.chat.qtchat import QtChat
-from src.qt.com.qtimg import  QtImgMgr
-from src.qt.main.qt_fried import QtFried
-from src.qt.main.qtindex import QtIndex
-from src.qt.menu.qtabout import QtAbout
-from src.qt.read.qtbookinfo import QtBookInfo
-from src.qt.com.qtbubblelabel import QtBubbleLabel
-from src.qt.main.qtcategory import QtCategory
-from src.qt.download.qtdownload import QtDownload
-from src.qt.read.qtepsinfo import QtEpsInfo
-from src.qt.user.qtfavorite import QtFavorite
-from src.qt.user.qthistory import QtHistory
-from src.qt.com.qtloading import QtLoading
-from src.qt.user.qtleavemsg import QtLeaveMsg
-from src.qt.user.qtlogin import QtLogin
-from src.qt.main.qtrank import QtRank
-from src.qt.read.qtreadimg import QtReadImg
-from src.qt.user.qtregister import QtRegister
-from src.qt.main.qtsearch import QtSearch
-from src.qt.menu.qtsetting import QtSetting
-from src.qt.util.qttask import QtTask
-from src.qt.user.qtuser import QtUser
-from src.server import Server, req, ToolUtil
-from src.util import Log
+from src.server import req, ToolUtil
+from src.util import Log, Singleton
 from ui.main import Ui_MainWindow
+
+
+class QtOwner(Singleton):
+    def __init__(self):
+        Singleton.__init__(self)
+        self._owner = None
+
+    @property
+    def owner(self):
+        assert isinstance(self._owner(), BikaQtMainWindow)
+        return self._owner()
+
+    def SetOwner(self, owner):
+        self._owner = weakref.ref(owner)
 
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
+        QtOwner().SetOwner(self)
+        from src.qt.chat.qtchat import QtChat
+        from src.qt.main.qt_fried import QtFried
+        from src.qt.main.qtindex import QtIndex
+        from src.qt.menu.qtabout import QtAbout
+        from src.qt.read.qtbookinfo import QtBookInfo
+        from src.qt.com.qtbubblelabel import QtBubbleLabel
+        from src.qt.main.qtcategory import QtCategory
+        from src.qt.download.qtdownload import QtDownload
+        from src.qt.read.qtepsinfo import QtEpsInfo
+        from src.qt.user.qtfavorite import QtFavorite
+        from src.qt.user.qthistory import QtHistory
+        from src.qt.com.qtloading import QtLoading
+        from src.qt.user.qtleavemsg import QtLeaveMsg
+        from src.qt.user.qtlogin import QtLogin
+        from src.qt.main.qtrank import QtRank
+        from src.qt.read.qtreadimg import QtReadImg
+        from src.qt.user.qtregister import QtRegister
+        from src.qt.main.qtsearch import QtSearch
+        from src.qt.menu.qtsetting import QtSetting
+        from src.qt.util.qttask import QtTask
+        from src.qt.user.qtuser import QtUser
+
         self.userInfo = None
         self.setupUi(self)
         self.setWindowTitle("哔咔漫画")
@@ -49,33 +63,32 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # pix = pix.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         # self.setCursor(QCursor(pix))
         ToolUtil.SetIcon(self)
-        self.aboutForm = QtAbout(self)
+        self.aboutForm = QtAbout()
 
-        self.indexForm = QtIndex(self)
-        self.searchForm = QtSearch(self)
-        self.favoriteForm = QtFavorite(self)
-        self.downloadForm = QtDownload(self)
-        self.categoryForm = QtCategory(self)
+        self.indexForm = QtIndex()
+        self.searchForm = QtSearch()
+        self.favoriteForm = QtFavorite()
+        self.downloadForm = QtDownload()
+        self.categoryForm = QtCategory()
         self.loadingForm = QtLoading(self)
-        self.leaveMsgForm = QtLeaveMsg(self)
-        self.chatForm = QtChat(self)
-        self.rankForm = QtRank(self)
-        self.friedForm = QtFried(self)
+        self.leaveMsgForm = QtLeaveMsg()
+        self.chatForm = QtChat()
+        self.rankForm = QtRank()
+        self.friedForm = QtFried()
 
-        self.loginForm = QtLogin(self)
-        self.registerForm = QtRegister(self)
+        self.loginForm = QtLogin()
+        self.registerForm = QtRegister()
 
-        self.historyForm = QtHistory(self)
+        self.historyForm = QtHistory()
 
-        self.qtReadImg = QtReadImg(self)
+        self.qtReadImg = QtReadImg()
 
-        self.userForm = QtUser(self)
-        self.bookInfoForm = QtBookInfo(self)
+        self.userForm = QtUser()
+        self.bookInfoForm = QtBookInfo()
 
-        self.epsInfoForm = QtEpsInfo(self)
+        self.epsInfoForm = QtEpsInfo()
 
         self.task = QtTask()
-        self.task.SetOwner(self)
         self.timer = QTimer(self)
         self.timer.setInterval(100)
         # self.timer.timeout.connect(self.OnTimeOut)
@@ -101,7 +114,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.menusetting.triggered.connect(self.OpenSetting)
         self.menuabout.triggered.connect(self.OpenAbout)
-        QtImgMgr().SetOwner(self)
+        # QtImgMgr().SetOwner(self)
     # def ClearExpiredCache(self):
     #     try:
     #         toPath = os.path.join(config.SavePath, config.CachePathDir)
@@ -177,7 +190,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         pass
 
     def InitUpdate(self):
-        self.qtTask.AddHttpTask(lambda x: Server().Send(req.CheckUpdateReq(), bakParam=x), self.InitUpdateBack)
+        self.qtTask.AddHttpTask(req.CheckUpdateReq(), self.InitUpdateBack)
 
     def InitUpdateBack(self, data):
         try:

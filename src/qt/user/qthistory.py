@@ -1,8 +1,7 @@
-import weakref
+import time
 
 from PySide2 import QtWidgets
 from PySide2.QtSql import QSqlDatabase, QSqlQuery
-import time
 
 from src.util import Log
 from ui.history import Ui_History
@@ -20,13 +19,12 @@ class QtHistoryData(object):
 
 
 class QtHistory(QtWidgets.QWidget, Ui_History):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_History.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
 
-        self.bookList.InitBook(self.__class__.__name__, owner, self.LoadNextPage)
+        self.bookList.InitBook(self.LoadNextPage)
         self.pageNums = 20
 
         self.history = {}

@@ -1,7 +1,7 @@
 import weakref
+from queue import Queue
 
 import websocket
-from queue import Queue
 
 from conf import config
 from src.util import Log

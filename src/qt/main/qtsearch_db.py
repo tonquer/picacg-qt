@@ -27,7 +27,7 @@ class DbBook(object):
 
 
 class QtSearchDb(object):
-    def __init__(self, owner):
+    def __init__(self):
         super(self.__class__, self).__init__()
         self.db = QSqlDatabase.addDatabase("QSQLITE", "book")
         self.db.setDatabaseName("data/book.db")

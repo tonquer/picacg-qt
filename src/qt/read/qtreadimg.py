@@ -1,26 +1,27 @@
-import weakref
 from PySide2 import QtWidgets
-from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QSize, QMimeData
-from PySide2.QtGui import QPixmap, QPainter, QColor, QImage, QIcon
+from PySide2 import QtWidgets
+from PySide2.QtCore import Qt, QRectF, QPointF, QEvent, QSize
+from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import QDesktopWidget, QMessageBox
 
 from conf import config
-from resources import resources
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtloading import QtLoading
+from src.qt.qtmain import QtOwner
 from src.qt.read.qtreadimg_frame import QtImgFrame
-from src.qt.util.qttask import QtTask
 from src.qt.struct.qt_define import QtFileData
+from src.qt.util.qttask import QtTaskBase
+from src.server import req
 from src.util import ToolUtil, Log
 from src.util.status import Status
 
 
-class QtReadImg(QtWidgets.QWidget):
-    def __init__(self, owner):
+class QtReadImg(QtWidgets.QWidget, QtTaskBase):
+    def __init__(self):
         super(self.__class__, self).__init__()
-        self.owner = weakref.ref(owner)
         self.loadingForm = QtLoading(self)
+        QtTaskBase.__init__(self)
         self.bookId = ""
         self.epsId = 0
         self.resetCnt = config.ResetCnt
@@ -69,7 +70,7 @@ class QtReadImg(QtWidgets.QWidget):
 
     def closeEvent(self, a0) -> None:
         self.ReturnPage()
-        self.owner().bookInfoForm.show()
+        QtOwner().owner.bookInfoForm.show()
         self.Clear()
         a0.accept()
 
@@ -86,8 +87,8 @@ class QtReadImg(QtWidgets.QWidget):
         self.indexToWaifu2xId.clear()
         self.waitWaifuPicData.clear()
         self.waitPicData.clear()
-        QtTask().CancelTasks(self.closeFlag)
-        QtTask().CancelConver(self.closeFlag)
+        self.ClearTask()
+        self.ClearConvert()
 
     def OpenPage(self, bookId, epsId, name, isLastEps=False):
         if not bookId:
@@ -151,13 +152,11 @@ class QtReadImg(QtWidgets.QWidget):
 
     def ReturnPage(self):
         self.AddHistory()
-        self.owner().bookInfoForm.LoadHistory()
+        QtOwner().owner.bookInfoForm.LoadHistory()
         return
 
     def StartLoadPicUrl(self, isLastEps=False):
-        QtTask().AddHttpTask(lambda x: BookMgr().AddBookEpsPicInfo(self.bookId, self.epsId+1, x),
-                                        self.StartLoadPicUrlBack,
-                                        isLastEps, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetComicsBookOrderReq(self.bookId, self.epsId+1), self.StartLoadPicUrlBack, isLastEps)
 
     def CheckLoadPicture(self):
         i = 0
@@ -171,7 +170,7 @@ class QtReadImg(QtWidgets.QWidget):
             if i not in self.pictureData:
                 # 防止重复请求
                 if i not in self.waitPicData:
-                    self.AddDownloadTask(i, picInfo)
+                    self.AddDownload(i, picInfo)
             elif config.IsOpenWaifu and i not in self.waitWaifuPicData:
                 if not self.pictureData[i].data:
                     continue
@@ -219,7 +218,7 @@ class QtReadImg(QtWidgets.QWidget):
         self.waitPicData.discard(index)
         if st != Status.Ok:
             p.state = p.DownloadReset
-            self.AddDownloadTask(index, picInfo)
+            self.AddDownload(index, picInfo)
         else:
             p.SetData(data, self.category)
             if config.IsOpenWaifu:
@@ -344,10 +343,10 @@ class QtReadImg(QtWidgets.QWidget):
         super(self.__class__, self).keyReleaseEvent(ev)
 
     def AddHistory(self):
-        bookName = self.owner().bookInfoForm.bookName
-        url = self.owner().bookInfoForm.url
-        path = self.owner().bookInfoForm.path
-        self.owner().historyForm.AddHistory(self.bookId, bookName, self.epsId, self.curIndex, url, path)
+        bookName = QtOwner().owner.bookInfoForm.bookName
+        url = QtOwner().owner.bookInfoForm.url
+        path = QtOwner().owner.bookInfoForm.path
+        QtOwner().owner.historyForm.AddHistory(self.bookId, bookName, self.epsId, self.curIndex, url, path)
         return
 
     def ShowAndCloseTool(self):
@@ -374,16 +373,16 @@ class QtReadImg(QtWidgets.QWidget):
         if not info and info.data:
             return
         assert isinstance(info, QtFileData)
-        # path = self.owner().downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
-        QtTask().AddConvertTask(picInfo.path+str(info.model.get('model', 0)), info.data, info.model, self.Waifu2xBack, i, self.closeFlag)
+        # path = QtOwner().owner.downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
+        self.AddConvertTask(picInfo.path+str(info.model.get('model', 0)), info.data, info.model, self.Waifu2xBack, i)
         self.waitWaifuPicData.add(i)
 
-    def AddDownloadTask(self, i, picInfo):
-        path = self.owner().downloadForm.GetDonwloadFilePath(self.bookId, self.epsId, i)
-        QtTask().AddDownloadTask(picInfo.fileServer, picInfo.path,
+    def AddDownload(self, i, picInfo):
+        path = QtOwner().owner.downloadForm.GetDonwloadFilePath(self.bookId, self.epsId, i)
+        self.AddDownloadTask(picInfo.fileServer, picInfo.path,
                                  downloadCallBack=self.UpdateProcessBar,
                                  completeCallBack=self.CompleteDownloadPic, backParam=i,
-                                 isSaveCache=True, cleanFlag=self.closeFlag, filePath=path)
+                                 isSaveCache=True, filePath=path)
         self.waitPicData.add(i)
         if i not in self.pictureData:
             data = QtFileData()

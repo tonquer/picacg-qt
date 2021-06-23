@@ -1,6 +1,5 @@
 # 目录管理
-import src.server.res as res
-from src.server import Server, req
+from src.server import Server
 from src.util import Singleton, ToolUtil, Log
 
 
@@ -24,10 +23,6 @@ class CateGoryMgr(Singleton):
     @property
     def server(self):
         return Server()
-
-    # 初始化目录
-    def UpdateCateGory(self, bakParam=0):
-        self.server.Send(req.CategoryReq(), bakParam=bakParam)
 
     def UpdateCateGoryBack(self, backData):
         for info in backData.res.data.get("categories", {}):

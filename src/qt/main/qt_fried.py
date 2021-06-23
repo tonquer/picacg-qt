@@ -1,24 +1,23 @@
 import json
-import weakref
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import QPoint
 from PySide2.QtGui import Qt
 
 from qss.qss import QssDataMgr
-from src.qt.chat.qtchatroommsg import QtChatRoomMsg
 from src.qt.com.qt_fried_msg import QtFriedMsg
-from src.qt.util.qttask import QtTask
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
 from src.server import Server, req, Log, Status, config, ToolUtil
 from ui.fried import Ui_Ui_Fried
 
 
-class QtFried(QtWidgets.QWidget, Ui_Ui_Fried):
-    def __init__(self, owner):
+class QtFried(QtWidgets.QWidget, Ui_Ui_Fried, QtTaskBase):
+    def __init__(self):
         super(self.__class__, self).__init__()
         Ui_Ui_Fried.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
 
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -45,13 +44,13 @@ class QtFried(QtWidgets.QWidget, Ui_Ui_Fried):
         return
 
     def LoadPageInfo(self, page):
-        self.owner().loadingForm.show()
+        QtOwner().owner.loadingForm.show()
         self.Clear()
-        QtTask().AddHttpTask(lambda x: Server().Send(req.AppInfoReq(Server().token, (page-1)*self.limit), bakParam=x), self.LoadPageBack, page)
+        self.AddHttpTask(req.AppInfoReq(Server().token, (page-1)*self.limit), self.LoadPageBack, page)
         return
 
     def LoadPageBack(self, data, page):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         errMsg = ""
         try:
             info = json.loads(data)
@@ -68,7 +67,7 @@ class QtFried(QtWidgets.QWidget, Ui_Ui_Fried):
                 pass
         except Exception as es:
             Log.Error(es)
-            self.owner().msgForm.ShowMsg(Status.UnKnowError + errMsg)
+            QtOwner().owner.msgForm.ShowMsg(Status.UnKnowError + errMsg)
         return
 
     def JumpPage(self):
@@ -77,7 +76,7 @@ class QtFried(QtWidgets.QWidget, Ui_Ui_Fried):
         self.LoadPageInfo(page)
 
     def AddInfo(self, v):
-        info = QtFriedMsg(self, self.owner())
+        info = QtFriedMsg(self)
         msg = v.get("content", "")
         name = v.get("_user", {}).get("name", "")
         level = v.get("_user", {}).get("level", "")
@@ -107,15 +106,13 @@ class QtFried(QtWidgets.QWidget, Ui_Ui_Fried):
         info.replayLabel.setVisible(False)
 
         if medias and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(medias[0], "", None, self.LoadingPictureComplete, True, self.indexMsgId, True, self.GetName())
+            self.AddDownloadTask(medias[0], "", None, self.LoadingPictureComplete, True, self.indexMsgId, True)
 
         if avatar and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(avatar, "", None, self.LoadingTitleComplete, True, self.indexMsgId, True,
-                                     self.GetName())
+            self.AddDownloadTask(avatar, "", None, self.LoadingTitleComplete, True, self.indexMsgId, True)
 
         if "pica-web.wakamoment.tk" not in character and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, self.indexMsgId, True,
-                                     self.GetName())
+            self.AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, self.indexMsgId, True)
 
         self.indexMsgId += 1
         self.verticalLayout_4.addWidget(info)

@@ -1,28 +1,27 @@
-import weakref
-
 from PySide2 import QtWidgets
 from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
-from ui.qtlistwidget import QtBookList
-from src.server import Server, req, json, Log, QtTask
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
+from src.server import req, json, Log
 from ui.leavemsg import Ui_LeaveMsg
+from ui.qtlistwidget import QtBookList
 
 
-class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_LeaveMsg.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
-        self.closeFlag = self.__class__.__name__
         # self.gridLayout_3.addWidget(self.listWidget, 0, 0, 1, 1)
 
-        self.listWidget.InitUser("leave_msg1", owner, self.LoadNextPage)
+        self.listWidget.InitUser(self.LoadNextPage)
         self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
 
         self.childrenListWidget = QtBookList(None)
-        self.childrenListWidget.InitUser("leave_msg2", owner, self.LoadChildrenNextPage)
+        self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
 
         self.childrenWidget = QtWidgets.QWidget()
         layout = QHBoxLayout(self.childrenWidget)
@@ -54,7 +53,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
 
     @property
     def loadingForm(self):
-        return self.owner().loadingForm
+        return QtOwner().owner.loadingForm
 
     def SwitchCurrent(self):
         self.loadingForm.show()
@@ -63,9 +62,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
         self.childrenListWidget.UpdatePage(1, 1)
         self.childrenListWidget.UpdateState()
         self.listWidget.UpdateState()
-        QtTask().AddHttpTask(
-            lambda x: Server().Send(req.GetComments(self.bookId, self.listWidget.page), bakParam=x),
-            self.GetCommnetBack, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetComments(self.bookId, self.listWidget.page), self.GetCommnetBack)
         return
 
     def JumpPage(self):
@@ -76,9 +73,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
             self.listWidget.page = page
             self.listWidget.clear()
             self.loadingForm.show()
-            QtTask().AddHttpTask(
-                lambda x: Server().Send(req.GetComments(self.bookId, self.listWidget.page), bakParam=x),
-                self.GetCommnetBack, cleanFlag=self.closeFlag)
+            self.AddHttpTask(req.GetComments(self.bookId, self.listWidget.page), self.GetCommnetBack)
         except Exception as es:
             Log.Error(es)
 
@@ -110,14 +105,11 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
             item2.setSizeHint(widget2.sizeHint())
 
         self.loadingForm.show()
-        QtTask().AddHttpTask(lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id), bakParam=x),
-                                        self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetCommentsChildrenReq(widget.id), self.LoadCommentInfoBack, backParam=index)
 
     def LoadNextPage(self):
         self.loadingForm.show()
-        QtTask().AddHttpTask(
-            lambda x: Server().Send(req.GetComments(self.bookId, self.listWidget.page + 1), bakParam=x),
-            self.GetCommnetBack, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetComments(self.bookId, self.listWidget.page + 1), self.GetCommnetBack)
         return
 
     def LoadChildrenNextPage(self):
@@ -129,8 +121,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
         if not widget:
             return
         self.loadingForm.show()
-        QtTask().AddHttpTask(lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id, self.childrenListWidget.page + 1), bakParam=x),
-                                        self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetCommentsChildrenReq(widget.id, self.childrenListWidget.page + 1), self.LoadCommentInfoBack, backParam=index)
         return
 
     def LoadCommentInfoBack(self, msg, index):
@@ -200,15 +191,14 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
             return
         self.commentLine.setText("")
         self.loadingForm.show()
-        QtTask().AddHttpTask(lambda x: Server().Send(req.SendComment(self.bookId, data), bakParam=x), callBack=self.SendCommentBack)
+        self.AddHttpTask(req.SendComment(self.bookId, data), callBack=self.SendCommentBack)
 
     def SendCommentBack(self, msg):
         try:
             data = json.loads(msg)
             if data.get("code") == 200:
                 self.ClearCommnetList()
-                QtTask().AddHttpTask(lambda x: Server().Send(req.GetComments(self.bookId), bakParam=x),
-                                                self.GetCommnetBack, cleanFlag=self.closeFlag)
+                self.AddHttpTask(req.GetComments(self.bookId), self.GetCommnetBack)
             else:
                 self.loadingForm.close()
                 QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
@@ -232,7 +222,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
         commentId = widget.id
         self.loadingForm.show()
         self.childrenListWidget.clear()
-        QtTask().AddHttpTask(lambda x: Server().Send(req.SendCommentChildrenReq(commentId, data), bakParam=x), callBack=self.SendCommentChildrenBack, backParam=index)
+        self.AddHttpTask(req.SendCommentChildrenReq(commentId, data), callBack=self.SendCommentChildrenBack, backParam=index)
 
     def SendCommentChildrenBack(self, msg, index):
         try:
@@ -247,9 +237,7 @@ class QtLeaveMsg(QtWidgets.QWidget, Ui_LeaveMsg):
 
             data = json.loads(msg)
             if data.get("code") == 200:
-                QtTask().AddHttpTask(
-                    lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id), bakParam=x),
-                    self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+                self.AddHttpTask(req.GetCommentsChildrenReq(widget.id), self.LoadCommentInfoBack, backParam=index)
             else:
                 self.loadingForm.close()
                 QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))

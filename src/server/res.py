@@ -1,5 +1,3 @@
-import json
-
 from src.util import ToolUtil
 
 

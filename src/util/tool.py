@@ -1,15 +1,12 @@
+import hmac
 import json
 import os
 import time
 import uuid
-
-import hmac
 from hashlib import sha256
 
-from src.util import Log
 from conf import config
-
-
+from src.util import Log
 
 
 class CTime(object):

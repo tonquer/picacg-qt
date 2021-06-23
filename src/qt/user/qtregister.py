@@ -1,23 +1,20 @@
-import weakref
-
 from PySide2 import QtWidgets
 from PySide2.QtCore import QRegExp, Qt
 from PySide2.QtGui import QRegExpValidator
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtloading import QtLoading
-from src.user.user import User
+from src.server import req, QtTask
 from src.util.status import Status
 from ui.register import Ui_Register
 
 
 class QtRegister(QtWidgets.QWidget, Ui_Register):
-    def __init__(self, owner):
+    def __init__(self):
         super(self.__class__, self).__init__()
         Ui_Register.__init__(self)
         self.setupUi(self)
         self.setWindowModality(Qt.ApplicationModal)
-        self.owner = weakref.ref(owner)
         self.setWindowTitle("注册")
         self.loadingForm = QtLoading(self)
         reg = QRegExp("^[A-Z0-9a-z\\.\\_]{1,16}$")
@@ -53,7 +50,7 @@ class QtRegister(QtWidgets.QWidget, Ui_Register):
                 return
 
         self.loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: User().Register(data, x), self.RegisterBack)
+        QtTask().AddHttpTask(req.RegisterReq(data), self.RegisterBack)
         return
 
     def RegisterBack(self, msg):

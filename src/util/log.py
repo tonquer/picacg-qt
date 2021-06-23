@@ -1,6 +1,5 @@
-import os
-import sys
 import logging
+import os
 import time
 
 from conf import config

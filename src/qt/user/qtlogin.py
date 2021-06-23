@@ -1,24 +1,22 @@
-import weakref
-
+from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
-from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import QLabel
 
 from conf import config
-from src.qt.util.qttask import QtTask
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
 from src.server import Server, req
 from src.user.user import User
 from src.util.status import Status
 from ui.login import Ui_Login
-from PySide2 import QtWidgets
 
 
-class QtLogin(QtWidgets.QWidget, Ui_Login):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+class QtLogin(QtWidgets.QWidget, Ui_Login, QtTaskBase):
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_Login.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
         self.setWindowTitle("登陆")
         self.buttonGroup = QtWidgets.QButtonGroup(self)
         self.buttonGroup.addButton(self.selectIp1)
@@ -32,56 +30,58 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
         userId = self.userIdEdit.text()
         passwd = self.passwdEdit.text()
         User().SetUserInfo(userId, passwd)
-        QtTask().AddHttpTask(lambda x: User().Login(x), self.LoginBack)
+        self.AddHttpTask(req.LoginReq(userId, passwd), self.LoginBack)
 
-        self.owner().loadingForm.show()
+        QtOwner().owner.loadingForm.show()
         # self.close()
         # self.owner().show()
 
     def LoginBack(self, msg):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
             # self.close()
-            self.owner().stackedWidget.setCurrentIndex(1)
+            QtOwner().owner.stackedWidget.setCurrentIndex(1)
             self.InitUser()
-            self.owner().userForm.toolButton0.click()
-            self.owner().searchForm.InitKeyWord()
-            self.owner().indexForm.Init()
-            self.owner().favoriteForm.InitFavorite()
+            QtOwner().owner.userForm.toolButton0.click()
+            QtOwner().owner.searchForm.InitKeyWord()
+            QtOwner().owner.indexForm.Init()
+            QtOwner().owner.favoriteForm.InitFavorite()
         else:
             # QtWidgets.QMessageBox.information(self, '登陆失败', msg, QtWidgets.QMessageBox.Yes)
-            self.owner().msgForm.ShowError("登陆失败, " + msg)
+            QtOwner().owner.msgForm.ShowError("登陆失败, " + msg)
 
     def InitUser(self):
-        self.owner().qtTask.AddHttpTask(lambda x: User().UpdateUserInfo(x), self.UpdateUserBack)
+        self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
         return
 
     def UpdateUserBack(self, msg):
-        self.owner().userForm.UpdateLabel(User().name, User().level, User().exp, User().title, User().isPunched)
+        QtOwner().owner.userForm.UpdateLabel(User().name, User().level, User().exp, User().title, User().isPunched)
         if not User().avatar:
             return
 
         url = User().avatar.get("fileServer")
         path = User().avatar.get("path")
         if url and path and config.IsLoadingPicture:
-            self.owner().qtTask.AddDownloadTask(url, path, None, self.ShowUserImg)
+            self.AddDownloadTask(url, path, None, self.ShowUserImg)
 
     def ShowUserImg(self, data, st):
         if st == Status.Ok:
-            self.owner().userForm.SetPicture(data)
+            QtOwner().owner.userForm.SetPicture(data)
 
     def OpenRegister(self):
         self.SetSelectIp()
-        self.owner().registerForm.show()
+        QtOwner().owner.registerForm.show()
         return
 
     def Init(self):
-        self.owner().loadingForm.show()
-        QtTask().AddHttpTask(lambda x: User().Init(x), self.InitBack)
+        QtOwner().owner.loadingForm.show()
+        request = req.InitReq()
+        request.proxy = {}
+        self.AddHttpTask(request, self.InitBack)
         return
 
     def InitBack(self, msg):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
             for index, ip in enumerate(User().addresss, 2):
                 selectIp = QtWidgets.QRadioButton(self)
@@ -93,7 +93,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
             self.update()
         else:
             # QtWidgets.QMessageBox.information(self, , QtWidgets.QMessageBox.Yes)
-            self.owner().msgForm.ShowError("无法获取哔咔分流列表")
+            QtOwner().owner.msgForm.ShowError("无法获取哔咔分流列表")
         pass
 
     def SetSelectIp(self):
@@ -152,7 +152,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login):
             request.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
         else:
             request.proxy = ""
-        QtTask().AddHttpTask(lambda x: Server().TestSpeed(request, x, testIp), self.SpeedTestBack, index)
+        self.AddHttpTask(lambda x: Server().TestSpeed(request, x, testIp), self.SpeedTestBack, index)
         return
 
     def SpeedTestBack(self, data, backParam):

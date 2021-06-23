@@ -1,26 +1,21 @@
 import re
-import weakref
 
-from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import Qt, QSize, QEvent
-from PySide2.QtGui import  QPixmap
-from PySide2.QtWidgets import QListWidgetItem, QScroller, QAbstractItemView
+from PySide2 import QtWidgets
+from PySide2.QtCore import Qt, QEvent
 
 from resources import resources
-from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
-from src.server import Server, req
-from src.user.user import User
+from src.qt.qtmain import QtOwner
+from src.server import req, QtTask
 from src.util.status import Status
 from ui.user import Ui_User
 
 
 class QtUser(QtWidgets.QWidget, Ui_User):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_User.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
         self.setWindowTitle("哔咔漫画")
 
         self.icon.SetPicture(resources.DataMgr.GetData("placeholder_avatar"))
@@ -41,16 +36,16 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         #     item.setSizeHint(QSize(16777215, 60))
         #     item.setTextAlignment(Qt.AlignCenter)
         #
-        self.stackedWidget.addWidget(self.owner().indexForm)
-        self.stackedWidget.addWidget(self.owner().searchForm)
-        self.stackedWidget.addWidget(self.owner().categoryForm)
-        self.stackedWidget.addWidget(self.owner().rankForm)
-        self.stackedWidget.addWidget(self.owner().favoriteForm)
-        self.stackedWidget.addWidget(self.owner().historyForm)
-        self.stackedWidget.addWidget(self.owner().downloadForm)
-        self.stackedWidget.addWidget(self.owner().leaveMsgForm)
-        self.stackedWidget.addWidget(self.owner().chatForm)
-        self.stackedWidget.addWidget(self.owner().friedForm)
+        self.stackedWidget.addWidget(QtOwner().owner.indexForm)
+        self.stackedWidget.addWidget(QtOwner().owner.searchForm)
+        self.stackedWidget.addWidget(QtOwner().owner.categoryForm)
+        self.stackedWidget.addWidget(QtOwner().owner.rankForm)
+        self.stackedWidget.addWidget(QtOwner().owner.favoriteForm)
+        self.stackedWidget.addWidget(QtOwner().owner.historyForm)
+        self.stackedWidget.addWidget(QtOwner().owner.downloadForm)
+        self.stackedWidget.addWidget(QtOwner().owner.leaveMsgForm)
+        self.stackedWidget.addWidget(QtOwner().owner.chatForm)
+        self.stackedWidget.addWidget(QtOwner().owner.friedForm)
         self.buttonGroup.buttonClicked.connect(self.Switch)
         self.isHeadUp = False
 
@@ -72,17 +67,17 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.stackedWidget.currentWidget().SwitchCurrent()
 
     def Sign(self):
-        self.owner().loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: User().Punched(x), self.SignBack)
+        QtOwner().owner.loadingForm.show()
+        QtTask().AddHttpTask(req.PunchIn(), self.SignBack)
 
         return
 
     def SignBack(self, msg):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
             self.signButton.setEnabled(False)
             self.signButton.setText("已签到")
-            self.owner().qtTask.AddHttpTask(lambda x: User().UpdateUserInfo(x), self.owner().loginForm.UpdateUserBack)
+            QtTask().AddHttpTask(req.GetUserInfo(), self.owner().loginForm.UpdateUserBack)
             self.update()
         return
 
@@ -104,16 +99,16 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.icon.setText("头像上传中......")
         self.isHeadUp = True
         QtImgMgr().SetHeadStatus(not self.isHeadUp)
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SetAvatarInfoReq(data), bakParam=x), self.UpdatePictureDataBack)
+        QtTask().AddHttpTask(req.SetAvatarInfoReq(data), self.UpdatePictureDataBack)
         return
 
     def UpdatePictureDataBack(self, msg):
         self.isHeadUp = False
         QtImgMgr().SetHeadStatus(not self.isHeadUp)
         if msg == Status.Ok:
-            self.owner().loginForm.InitUser()
+            QtOwner().owner.loginForm.InitUser()
         else:
-            self.owner().msgForm.ShowError(msg)
+            QtOwner().owner.msgForm.ShowError(msg)
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:

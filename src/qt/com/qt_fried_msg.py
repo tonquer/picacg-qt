@@ -1,24 +1,24 @@
 import json
-import weakref
 
 from PySide2 import QtWidgets
-from PySide2.QtCore import QEvent,  QProcess
+from PySide2.QtCore import QEvent
 from PySide2.QtGui import QPixmap, Qt, QIcon, QCursor
 from PySide2.QtWidgets import QMenu, QApplication
 
 from resources.resources import DataMgr
 from src.qt.com.qtimg import QtImgMgr
-from src.qt.util.qttask import QtTask
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
 from src.server import Server, req, Log, Status
 from ui.chatrootmsg import Ui_ChatRoomMsg
 from ui.fried_msg import Ui_FriedMsg
 
 
-class QtFriedMsg(QtWidgets.QWidget, Ui_FriedMsg):
-    def __init__(self, chatRoom, owner):
+class QtFriedMsg(QtWidgets.QWidget, Ui_FriedMsg, QtTaskBase):
+    def __init__(self, chatRoom):
         super(self.__class__, self).__init__()
         Ui_ChatRoomMsg.__init__(self)
-        self.owner = weakref.ref(owner)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
         self.id = ""
         # self.setWindowFlag(Qt.FramelessWindowHint)
@@ -104,7 +104,7 @@ class QtFriedMsg(QtWidgets.QWidget, Ui_FriedMsg):
         self.replayLabel.setMaximumSize(newPic.width(), newPic.height())
         self.replayLabel.setVisible(True)
         self.listWidget.setVisible(False)
-        self.listWidget.InitUser(self.__class__.__name__, self, self.LoadNextPage)
+        self.listWidget.InitUser(self.LoadNextPage)
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
@@ -137,14 +137,14 @@ class QtFriedMsg(QtWidgets.QWidget, Ui_FriedMsg):
 
     def OpenComment(self):
         if not self.listWidget.isVisible():
-            self.owner().loadingForm.show()
-            QtTask().AddHttpTask(lambda x: Server().Send(req.AppCommentInfoReq(self.id, Server().token), bakParam=x), self.LoadBack)
+            QtOwner().owner.loadingForm.show()
+            self.AddHttpTask(req.AppCommentInfoReq(self.id, Server().token), self.LoadBack)
         else:
             self.listWidget.setVisible(False)
         return
 
     def LoadBack(self, data):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         errMsg = ""
         try:
             data = json.loads(data)
@@ -163,12 +163,11 @@ class QtFriedMsg(QtWidgets.QWidget, Ui_FriedMsg):
         except Exception as es:
             self.page = self.listWidget.page
             Log.Error(es)
-            self.owner().msgForm.ShowMsg(Status.UnKnowError + errMsg)
+            QtOwner().owner.msgForm.ShowMsg(Status.UnKnowError + errMsg)
         return
 
     def LoadNextPage(self):
         self.page += 1
-        self.owner().loadingForm.show()
-        QtTask().AddHttpTask(
-            lambda x: Server().Send(req.AppCommentInfoReq(self.id, Server().token, (self.page - 1)*self.limit), bakParam=x), self.LoadBack)
+        QtOwner().owner.loadingForm.show()
+        self.AddHttpTask(req.AppCommentInfoReq(self.id, Server().token, (self.page - 1)*self.limit), self.LoadBack)
         return

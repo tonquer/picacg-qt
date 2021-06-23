@@ -1,31 +1,31 @@
 import json
-import weakref
 
 from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtCore import QRect, Qt, QSize, QEvent
-from PySide2.QtGui import QColor, QIcon, QPixmap, QFont
-from PySide2.QtWidgets import QListWidget, QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
-    QVBoxLayout, QMenu
+from PySide2.QtCore import Qt, QSize, QEvent
+from PySide2.QtGui import QColor, QFont
+from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
+    QVBoxLayout
 
 from conf import config
-from resources import resources
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtimg import QtImgMgr
-from ui.qtlistwidget import QtBookList, QtCategoryList
 from src.qt.com.qtloading import QtLoading
-from src.server import req, Log, Server, ToolUtil
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
+from src.server import req, Log, ToolUtil
 from src.user.user import User
 from src.util.status import Status
 from ui.bookinfo import Ui_BookInfo
+from ui.qtlistwidget import QtBookList
 
 
-class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
-    def __init__(self, owner):
+class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
+    def __init__(self):
         super(self.__class__, self).__init__()
         Ui_BookInfo.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
         self.loadingForm = QtLoading(self)
         self.bookId = ""
         self.url = ""
@@ -74,11 +74,11 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.epsListWidget.setFrameShape(self.epsListWidget.NoFrame)
         self.epsListWidget.setResizeMode(self.epsListWidget.Adjust)
 
-        self.listWidget.InitUser(self.__class__.__name__, owner, self.LoadNextPage)
+        self.listWidget.InitUser(self.LoadNextPage)
         self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
 
         self.childrenListWidget = QtBookList(None)
-        self.childrenListWidget.InitUser(self.__class__.__name__, owner, self.LoadChildrenNextPage)
+        self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
 
         self.childrenWidget = QtWidgets.QWidget()
         layout = QHBoxLayout(self.childrenWidget)
@@ -110,7 +110,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         # self.stackedWidget.addWidget(self.qtReadImg)
         self.epsListWidget.clicked.connect(self.OpenReadImg)
 
-        self.closeFlag = self.__class__.__name__ + "-close"         # 切换book时，取消加载
         # self.title.setTextInteractionFlags(Qt.TextSelectableByMouse)
         # self.description.setTextInteractionFlags(Qt.TextSelectableByMouse)
         ToolUtil.SetIcon(self)
@@ -119,7 +118,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         if self.stackedWidget.currentIndex() == 1:
             self.stackedWidget.setCurrentIndex(0)
-            self.owner().qtReadImg.AddHistory()
+            QtOwner().owner.qtReadImg.AddHistory()
             self.LoadHistory()
             a0.ignore()
         else:
@@ -140,7 +139,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
     def Clear(self):
         self.stackedWidget.setCurrentIndex(0)
-        self.owner().qtTask.CancelTasks(self.closeFlag)
+        self.ClearTask()
         self.epsListWidget.clear()
         self.ClearCommnetList()
 
@@ -162,7 +161,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         self.Clear()
         self.show()
         self.loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: BookMgr().AddBookById(bookId, x), self.OpenBookBack)
+        self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenBookBack)
 
     def close(self):
         super(self.__class__, self).close()
@@ -220,11 +219,10 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
             self.updateTick.setText(str(day) + "天前更新")
             if config.IsLoadingPicture:
 
-                self.owner().qtTask.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture, cleanFlag=self.closeFlag)
-            self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetComments(self.bookId), bakParam=x),
-                                            self.GetCommnetBack, cleanFlag=self.closeFlag)
+                self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
+            self.AddHttpTask(req.GetComments(self.bookId), self.GetCommnetBack)
 
-            self.owner().qtTask.AddHttpTask(lambda x: BookMgr().AddBookEpsInfo(self.bookId, x), self.GetEpsBack, cleanFlag=self.closeFlag)
+            self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
@@ -286,7 +284,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         if not info:
             return
         self.startRead.setEnabled(True)
-        downloadIds = self.owner().downloadForm.GetDownloadCompleteEpsId(self.bookId)
+        downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
         for index, epsInfo in enumerate(info.eps):
             label = QLabel(epsInfo.title)
             label.setAlignment(Qt.AlignCenter)
@@ -304,7 +302,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         return
 
     def AddDownload(self):
-        self.owner().epsInfoForm.OpenEpsInfo(self.bookId)
+        QtOwner().owner.epsInfoForm.OpenEpsInfo(self.bookId)
         # if self.owner().downloadForm.AddDownload(self.bookId):
         #     QtBubbleLabel.ShowMsgEx(self, "添加下载成功")
         # else:
@@ -314,14 +312,12 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
     def AddFavority(self):
         User().AddAndDelFavorites(self.bookId)
         QtBubbleLabel.ShowMsgEx(self, "添加收藏成功")
-        self.owner().favoriteForm.AddFavorites(self.bookId)
+        QtOwner().owner.favoriteForm.AddFavorites(self.bookId)
         self.favorites.setEnabled(False)
 
     def LoadNextPage(self):
         self.loadingForm.show()
-        self.owner().qtTask.AddHttpTask(
-            lambda x: Server().Send(req.GetComments(self.bookId, self.listWidget.page + 1), bakParam=x),
-            self.GetCommnetBack, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetComments(self.bookId, self.listWidget.page + 1), self.GetCommnetBack)
         return
 
     def OpenReadImg(self, modelIndex):
@@ -337,7 +333,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
             return
         name = widget.text()
         self.hide()
-        self.owner().qtReadImg.OpenPage(self.bookId, index, name)
+        QtOwner().owner.qtReadImg.OpenPage(self.bookId, index, name)
         # self.stackedWidget.setCurrentIndex(1)
 
     def StartRead(self):
@@ -348,7 +344,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         return
 
     def LoadHistory(self):
-        info = self.owner().historyForm.GetHistory(self.bookId)
+        info = QtOwner().owner.historyForm.GetHistory(self.bookId)
         if not info:
             self.startRead.setText("观看第{}章".format(str(1)))
             return
@@ -359,7 +355,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         if self.lastEpsId >= 0:
             item = self.epsListWidget.item(self.lastEpsId)
             if item:
-                downloadIds = self.owner().downloadForm.GetDownloadCompleteEpsId(self.bookId)
+                downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
                 if self.lastEpsId in downloadIds:
                     item.setBackground(QColor(18, 161, 130))
                 else:
@@ -375,14 +371,14 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
     def ClickCategoriesItem(self, item):
         text = item.text()
-        self.owner().userForm.toolButton1.click()
-        self.owner().searchForm.searchEdit.setText("")
-        self.owner().searchForm.OpenSearchCategories(text)
+        QtOwner().owner.userForm.toolButton1.click()
+        QtOwner().owner.searchForm.searchEdit.setText("")
+        QtOwner().owner.searchForm.OpenSearchCategories(text)
         return
 
     def ClickTagsItem(self, item):
         text = item.text()
-        self.owner().searchForm.Search2(text)
+        QtOwner().owner.searchForm.Search2(text)
         return
 
     def SendComment(self):
@@ -391,15 +387,14 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
             return
         self.commentLine.setText("")
         self.loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SendComment(self.bookId, data), bakParam=x), callBack=self.SendCommentBack)
+        self.AddHttpTask(req.SendComment(self.bookId, data), callBack=self.SendCommentBack)
 
     def SendCommentBack(self, msg):
         try:
             data = json.loads(msg)
             if data.get("code") == 200:
                 self.ClearCommnetList()
-                self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetComments(self.bookId), bakParam=x),
-                                                self.GetCommnetBack, cleanFlag=self.closeFlag)
+                self.AddHttpTask(req.GetComments(self.bookId), self.GetCommnetBack)
             else:
                 self.loadingForm.close()
                 QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
@@ -436,8 +431,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
             item2.setSizeHint(widget2.sizeHint())
 
         self.loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id), bakParam=x),
-                                        self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetCommentsChildrenReq(widget.id), self.LoadCommentInfoBack, backParam=index)
 
     def LoadCommentInfoBack(self, msg, index):
         try:
@@ -485,7 +479,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         commentId = widget.id
         self.loadingForm.show()
         self.childrenListWidget.clear()
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.SendCommentChildrenReq(commentId, data), bakParam=x), callBack=self.SendCommentChildrenBack, backParam=index)
+        self.AddHttpTask(req.SendCommentChildrenReq(commentId, data), callBack=self.SendCommentChildrenBack, backParam=index)
 
     def SendCommentChildrenBack(self, msg, index):
         try:
@@ -500,9 +494,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
 
             data = json.loads(msg)
             if data.get("code") == 200:
-                self.owner().qtTask.AddHttpTask(
-                    lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id), bakParam=x),
-                    self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+                self.AddHttpTask(req.GetCommentsChildrenReq(widget.id), self.LoadCommentInfoBack, backParam=index)
             else:
                 self.loadingForm.close()
                 QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
@@ -520,8 +512,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo):
         if not widget:
             return
         self.loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetCommentsChildrenReq(widget.id, self.childrenListWidget.page + 1), bakParam=x),
-                                        self.LoadCommentInfoBack, backParam=index, cleanFlag=self.closeFlag)
+        self.AddHttpTask(req.GetCommentsChildrenReq(widget.id, self.childrenListWidget.page + 1), self.LoadCommentInfoBack, backParam=index)
         return
 
     def ClearCommnetList(self):

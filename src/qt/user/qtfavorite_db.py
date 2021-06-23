@@ -2,7 +2,6 @@ import time
 
 from PySide2.QtSql import QSqlQuery, QSqlDatabase
 
-from conf import config
 from src.user.user import User
 from src.util import Log
 

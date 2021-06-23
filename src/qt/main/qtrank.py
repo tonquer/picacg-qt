@@ -1,26 +1,24 @@
 import json
 
 from PySide2 import QtWidgets
-import weakref
 
-from ui.qtlistwidget import QtBookList
-from src.server import req, Server, Log
+from src.qt.qtmain import QtOwner
+from src.server import req, Log, QtTask
 from ui.rank import Ui_Rank
 
 
 class QtRank(QtWidgets.QWidget, Ui_Rank):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_Rank.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
-        self.h24BookList.InitBook("h24BookList", owner)
+        self.h24BookList.InitBook()
         self.h24BookList.doubleClicked.connect(self.OpenSearch)
 
-        self.d7BookList.InitBook("d7BookList", owner)
+        self.d7BookList.InitBook()
         self.d7BookList.doubleClicked.connect(self.OpenSearch)
 
-        self.d30BookList.InitBook("d30BookList", owner)
+        self.d30BookList.InitBook()
         self.d30BookList.doubleClicked.connect(self.OpenSearch)
         self.isInit = False
 
@@ -32,13 +30,13 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
         if self.isInit:
             return
         self.isInit = True
-        self.owner().loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.RankReq("H24"), bakParam=x), self.InitBack, backParam="H24")
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.RankReq("D7"), bakParam=x), self.InitBack, backParam="D7")
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.RankReq("D30"), bakParam=x), self.InitBack, backParam="D30")
+        QtOwner().owner.loadingForm.show()
+        QtTask().AddHttpTask(req.RankReq("H24"), self.InitBack, backParam="H24")
+        QtTask().AddHttpTask(req.RankReq("D7"), self.InitBack, backParam="D7")
+        QtTask().AddHttpTask(req.RankReq("D30"), self.InitBack, backParam="D30")
 
     def InitBack(self, raw, backParam):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         try:
             if backParam == "H24":
                 bookList = self.h24BookList
@@ -70,4 +68,4 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
         bookId = widget.id
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)

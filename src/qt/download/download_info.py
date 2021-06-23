@@ -1,16 +1,16 @@
-import imghdr
+import os
 import os
 import weakref
 
-
 from conf import config
 from src.index.book import BookMgr, Book
-from src.qt.util.qttask import QtTask
+from src.qt.util.qttask import QtTaskBase
+from src.server import req
 from src.util import ToolUtil, Log
 from src.util.status import Status
 
 
-class DownloadInfo(object):
+class DownloadInfo(QtTaskBase):
     Success = "下载完成"
     Reading = "获取信息"
     ReadingEps = "获取章节"
@@ -25,6 +25,7 @@ class DownloadInfo(object):
     ConvertSuccess = "转码成功"
 
     def __init__(self, parent):
+        QtTaskBase.__init__(self)
         self.bookId = ""     # 书籍id
         self.title = ""      # 标题
         self.savePath = ""   # 保存路径
@@ -81,9 +82,8 @@ class DownloadInfo(object):
 
     @speed.setter
     def speed(self, value):
-        if not self.curDownloadEpsInfo:
-            return 0
-        self.curDownloadEpsInfo.speedDownloadLen = value
+        if self.curDownloadEpsInfo:
+            self.curDownloadEpsInfo.speedDownloadLen = value
 
     @property
     def parent(self):
@@ -145,7 +145,7 @@ class DownloadInfo(object):
 
     def AddBookInfos(self):
         self.SetStatu(self.Reading)
-        QtTask().AddHttpTask(lambda x: BookMgr().AddBookById(self.bookId, x), self.AddBookInfosBack)
+        self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.AddBookInfosBack)
 
     def AddBookInfosBack(self, msg=""):
         if msg != Status.Ok:
@@ -165,7 +165,7 @@ class DownloadInfo(object):
 
     def AddBookEpsInfos(self):
         self.SetStatu(self.ReadingEps)
-        QtTask().AddHttpTask(lambda x: BookMgr().AddBookEpsInfo(self.bookId, x), self.AddBookEpsInfosBack)
+        self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.AddBookEpsInfosBack)
 
     def AddBookEpsInfosBack(self, msg):
         if msg != Status.Ok:
@@ -262,8 +262,9 @@ class DownloadInfo(object):
         self.parent.UpdateTableItem(self)
 
 
-class DownloadEpsInfo(object):
+class DownloadEpsInfo(QtTaskBase):
     def __init__(self, parent):
+        QtTaskBase.__init__(self)
         self._parent = weakref.ref(parent)
         self.epsId = 0        # 章节Id
         self.epsTitle = ""    # 章节名
@@ -295,7 +296,7 @@ class DownloadEpsInfo(object):
 
     def AddBookEpsPicInfos(self):
         self.parent.SetStatu(DownloadInfo.ReadingPicture)
-        QtTask().AddHttpTask(lambda x: BookMgr().AddBookEpsPicInfo(self.parent.bookId, self.epsId+1, x),
+        self.AddHttpTask(req.GetComicsBookOrderReq(self.parent.bookId, self.epsId+1),
                                         self.AddBookEpsPicInfosBack)
 
     def AddBookEpsPicInfosBack(self, status):
@@ -335,12 +336,11 @@ class DownloadEpsInfo(object):
                 self.curPreDownloadIndex += 1
             else:
                 isDownloadNext = False
-                QtTask().AddDownloadTask(picInfo.fileServer,
+                self.AddDownloadTask(picInfo.fileServer,
                                          picInfo.path,
                                          downloadCallBack=self.AddDownloadBack,
                                          completeCallBack=self.AddDownloadCompleteBack,
-                                         isSaveCache=False,
-                                         cleanFlag="download_{}".format(self.parent.bookId))
+                                         isSaveCache=False)
                 break
         self.parent.UpdateTableItem()
         if isDownloadNext:
@@ -400,8 +400,7 @@ class DownloadEpsInfo(object):
 
                 w, h = ToolUtil.GetPictureSize(data)
                 model = ToolUtil.GetDownloadScaleModel(w, h)
-                QtTask().AddConvertTask("", data, model, self.AddConvertBack,
-                                        cleanFlag="download_{}".format(self.parent.bookId))
+                self.AddConvertTask("", data, model, self.AddConvertBack)
                 break
         self.parent.UpdateTableItem()
         if isConvertNext:
@@ -436,8 +435,8 @@ class DownloadEpsInfo(object):
 
     def Pause(self):
         self.status = DownloadInfo.Pause
-        QtTask().CancelTasks(cleanFlag="download_{}".format(self.parent.bookId))
+        self.ClearTask()
         return
 
     def PauseConvert(self):
-        QtTask().CancelConver(cleanFlag="download_{}".format(self.parent.bookId))
+        self.ClearConvert()

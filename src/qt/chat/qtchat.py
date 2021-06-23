@@ -1,22 +1,21 @@
-import weakref
-
 from PySide2 import QtWidgets
 from PySide2.QtWidgets import QGridLayout
 
 from src.qt.chat.qtchatroom import QtChatRoom
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
+from src.server import req, Log, json, Status
 from ui.qtlistwidget import QtBookList
-from src.server import Server, QtTask, req, Log, json, Status
 
 
-class QtChat(QtWidgets.QWidget):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
-        self.owner = weakref.ref(owner)
+class QtChat(QtWidgets.QWidget, QtTaskBase):
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        QtTaskBase.__init__(self)
         self.gridLayout = QGridLayout(self)
         self.listWidget = QtBookList(None)
-        self.listWidget.InitUser(self.__class__.__name__, owner)
+        self.listWidget.InitUser()
         self.gridLayout.addWidget(self.listWidget)
-        self.closeFlag = self.__class__.__name__
         self.listWidget.doubleClicked.connect(self.OpenChatRoom)
         self.chatRoom = QtChatRoom()
         self.listWidget.setStyleSheet("""
@@ -26,14 +25,12 @@ class QtChat(QtWidgets.QWidget):
     def SwitchCurrent(self):
         if self.listWidget.count() > 0:
             return
-        self.owner().loadingForm.show()
-        QtTask().AddHttpTask(
-            lambda x: Server().Send(req.GetChatReq(), bakParam=x),
-            self.GetChatBack, cleanFlag=self.closeFlag)
+        QtOwner().owner.loadingForm.show()
+        self.AddHttpTask(req.GetChatReq(), self.GetChatBack)
         return
 
     def GetChatBack(self, data):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         try:
             data = json.loads(data)
             if data.get("code") == 200:
@@ -46,7 +43,7 @@ class QtChat(QtWidgets.QWidget):
                     self.listWidget.AddUserItem(info, index+1)
         except Exception as es:
             Log.Error(es)
-            self.owner().msgForm.ShowMsg(Status.UnKnowError)
+            QtOwner().owner.msgForm.ShowMsg(Status.UnKnowError)
         return
 
     def OpenChatRoom(self, modelIndex):

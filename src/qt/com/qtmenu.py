@@ -1,6 +1,8 @@
 from PySide2.QtGui import QCursor, Qt
 from PySide2.QtWidgets import QMenu, QApplication
 
+from src.qt.qtmain import QtOwner
+
 
 class QtBookListMenu(object):
     def __init__(self):
@@ -29,14 +31,14 @@ class QtBookListMenu(object):
         selected = self.bookList.selectedItems()
         for item in selected:
             widget = self.bookList.itemWidget(item)
-            self.owner().epsInfoForm.OpenEpsInfo(widget.GetId())
+            QtOwner().owner.epsInfoForm.OpenEpsInfo(widget.GetId())
         pass
 
     def OpenBookInfoHandler(self):
         selected = self.bookList.selectedItems()
         for item in selected:
             widget = self.bookList.itemWidget(item)
-            self.owner().bookInfoForm.OpenBook(widget.GetId())
+            QtOwner().owner.bookInfoForm.OpenBook(widget.GetId())
             return
 
     def CopyHandler(self):
@@ -74,4 +76,4 @@ class QtBookListMenu(object):
         bookId = widget.id
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)

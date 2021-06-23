@@ -2,31 +2,30 @@ import json
 import time
 
 from PySide2 import QtWidgets
-import weakref
-
 from PySide2.QtCore import QTimer
 
 from src.index.book import BookMgr
+from src.qt.qtmain import QtOwner
 from src.qt.user.qtfavorite_db import DbFavorite, QtFavoriteDb
-from src.server import Server, req
+from src.qt.util.qttask import QtTaskBase
+from src.server import req
 from src.user.user import User
 from src.util import Log
 from src.util.status import Status
 from ui.favorite import Ui_favorite
 
 
-class QtFavorite(QtWidgets.QWidget, Ui_favorite):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_favorite.__init__(self)
-
+        QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
 
         self.dealCount = 0
         self.dirty = False
 
-        self.bookList.InitBook(self.__class__.__name__, owner, self.LoadNextPage)
+        self.bookList.InitBook(self.LoadNextPage)
 
         self.sortList = ["dd", "da"]
         self.bookList.InstallDel()
@@ -69,11 +68,11 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
         self.RefreshData()
 
     def DelCallBack(self, bookIds):
-        self.owner().loadingForm.show()
+        QtOwner().owner.loadingForm.show()
 
         self.dealCount = len(bookIds)
         for bookId in bookIds:
-            self.owner().qtTask.AddHttpTask(lambda x: User().AddAndDelFavorites(bookId, x), self.DelAndFavoritesBack, bookId)
+            self.AddHttpTask(req.FavoritesAdd(bookId), self.DelAndFavoritesBack, bookId)
             info = BookMgr().books.get(bookId)
             if info:
                 info.isFavourite = False
@@ -84,7 +83,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
         self.dealCount -= 1
         self.dbMgr.DelFavorite(bookId)
         if self.dealCount <= 0:
-            self.owner().loadingForm.close()
+            QtOwner().owner.loadingForm.close()
             self.RefreshDataFocus()
 
     def AddFavorites(self, bookId):
@@ -101,8 +100,8 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
 
     def LoadPage(self, page):
         Log.Info("load favorite page:{}".format(page))
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.FavoritesReq(page, "da"), bakParam=x), self.UpdatePagesBack, page)
-        # self.owner().loadingForm.show()
+        self.AddHttpTask(req.FavoritesReq(page, "da"), self.UpdatePagesBack, page)
+        # QtOwner().owner.loadingForm.show()
 
     def JumpPage(self):
         page = int(self.spinBox.text())
@@ -178,7 +177,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
 
         self.msgLabel.setText("正在更新收藏, 剩余数量 {}".format(len(self.updateBookIds)))
         (sortId, bookId) = self.updateBookIds.pop()
-        self.owner().qtTask.AddHttpTask(lambda x: BookMgr().AddBookById(bookId, x), self.OpenBookBack, (sortId, bookId))
+        self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenBookBack, (sortId, bookId))
         pass
 
     def OpenBookBack(self, msg, v):
@@ -222,7 +221,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite):
             Log.Error(es)
             self._AddUpdateBookIds(sortId, bookId)
 
-        # self.owner().loadingForm.close()
+        # QtOwner().owner.loadingForm.close()
         # self.bookList.UpdateState()
         # if st == Status.Ok:
         #     pageNums = User().pages

@@ -1,28 +1,28 @@
 from PySide2 import QtWidgets
-import weakref
-
-from PySide2.QtWidgets import QCheckBox, QLabel
+from PySide2.QtWidgets import QCheckBox
 
 from src.index.category import CateGoryMgr
 from src.qt.com.langconv import Converter
 from src.qt.main.qtsearch_db import QtSearchDb
-from src.server import Server, req, Log, json
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
+from src.server import req, Log, json
 from ui.search import Ui_search
 
 
-class QtSearch(QtWidgets.QWidget, Ui_search):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_search.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
         self.index = 1
         self.data = ""
-        self.bookList.InitBook(self.__class__.__name__, owner, self.LoadNextPage)
+        self.bookList.InitBook(self.LoadNextPage)
 
         ## self.bookList.doubleClicked.connect(self.OpenSearch)
         self.categories = ""
-        self.searchDb = QtSearchDb(owner)
+        self.searchDb = QtSearchDb()
         self.searchEdit.words = self.searchDb.InitWord()
         nums, times = self.searchDb.InitUpdateInfo()
         self.numsLabel.setText(str(nums))
@@ -72,7 +72,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         return
 
     def Search2(self, text):
-        self.owner().userForm.toolButton1.click()
+        QtOwner().owner.userForm.toolButton1.click()
 
         if self.localBox.isChecked():
             self.searchEdit.setText(Converter('zh-hans').convert(text).replace("'", "\""))
@@ -92,7 +92,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         data = self.searchEdit.text()
         self.data = data
         if len(data) == len("5822a6e3ad7ede654696e482"):
-            self.owner().bookInfoForm.OpenBook(data)
+            QtOwner().owner.bookInfoForm.OpenBook(data)
             return
         # if not data:
         #     return
@@ -136,13 +136,13 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
             books = self.searchDb.Search(data, self.titleBox.isChecked(), self.authorBox.isChecked(), self.desBox.isChecked(), self.tagsBox.isChecked(), self.categoryBox.isChecked(), page, self.sortKey.currentIndex(), self.sortId.currentIndex())
             self.SendLocalBack(books, page)
         else:
-            self.owner().loadingForm.show()
+            QtOwner().owner.loadingForm.show()
             sort = ["dd", "da", "ld", "vd"]
             sortId = sort[self.comboBox.currentIndex()]
-            self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.AdvancedSearchReq(page, [], data, sortId), bakParam=x), self.SendSearchBack)
+            self.AddHttpTask(req.AdvancedSearchReq(page, [], data, sortId), self.SendSearchBack)
 
     def SendLocalBack(self, books, page):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         self.bookList.UpdateState()
         pages = 100
         self.bookList.UpdatePage(page, pages)
@@ -165,20 +165,17 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         self.SendSearchCategories(1)
 
     def SendSearchCategories(self, page):
-        self.owner().loadingForm.show()
+        QtOwner().owner.loadingForm.show()
         # TODO 搜索和分类检索不太一样，切页时会有点问题
         sort = ["dd", "da", "ld", "vd"]
         sortId = sort[self.comboBox.currentIndex()]
-        self.owner().qtTask.AddHttpTask(
-            lambda x: Server().Send(req.CategoriesSearchReq(page, self.categories, sortId), bakParam=x),
-            self.SendSearchBack)
+        self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
 
     def InitKeyWord(self):
-        self.owner().qtTask.AddHttpTask(
-            lambda x: Server().Send(req.GetKeywords(), bakParam=x), self.SendKeywordBack)
+        self.AddHttpTask(req.GetKeywords(), self.SendKeywordBack)
 
     def SendSearchBack(self, raw):
-        self.owner().loadingForm.close()
+        QtOwner().owner.loadingForm.close()
         try:
             self.bookList.UpdateState()
             data = json.loads(raw)
@@ -197,7 +194,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
                 self.CheckCategoryShowItem()
             else:
                 # QtWidgets.QMessageBox.information(self, '未搜索到结果', "未搜索到结果", QtWidgets.QMessageBox.Yes)
-                self.owner().msgForm.ShowError("未搜索到结果")
+                QtOwner().owner.msgForm.ShowError("未搜索到结果")
         except Exception as es:
             Log.Error(es)
         pass
@@ -227,7 +224,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         bookId = widget.id
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)
 
     def JumpPage(self):
         page = int(self.spinBox.text())
@@ -260,9 +257,9 @@ class QtSearch(QtWidgets.QWidget, Ui_search):
         isClick = self.categoryList.ClickItem(item)
         data = item.text()
         if isClick:
-            self.owner().msgForm.ShowMsg("屏蔽" + data)
+            QtOwner().owner.msgForm.ShowMsg("屏蔽" + data)
         else:
-            self.owner().msgForm.ShowMsg("取消屏蔽" + data)
+            QtOwner().owner.msgForm.ShowMsg("取消屏蔽" + data)
         self.CheckCategoryShowItem()
 
     def CheckCategoryShowItem(self):

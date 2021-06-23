@@ -5,7 +5,7 @@ import sys
 from PySide2.QtCore import QRectF, Qt, QPropertyAnimation, pyqtProperty, \
     QPoint, QParallelAnimationGroup, QEasingCurve
 from PySide2.QtGui import QPainter, QPainterPath, QColor, QPen
-from PySide2.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication,\
+from PySide2.QtWidgets import QLabel, QWidget, QVBoxLayout, QApplication, \
     QLineEdit, QPushButton
 
 

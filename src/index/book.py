@@ -1,8 +1,8 @@
 import os
 
 from src.server import Server, ToolUtil, Status
-from src.util import Singleton, Log
 from src.server import req
+from src.util import Singleton, Log
 
 
 # 一张图
@@ -52,10 +52,6 @@ class BookMgr(Singleton):
     def server(self):
         return Server()
 
-    # 加载一本书的详细信息
-    def AddBookById(self, bookId, bakParam):
-        self.server.Send(req.GetComicsBookReq(bookId), bakParam=bakParam)
-
     def AddBookByIdBack(self, backData):
         try:
             if backData.res.data.get("comic"):
@@ -72,10 +68,6 @@ class BookMgr(Singleton):
         except Exception as es:
             Log.Error(es)
             return Status.NetError
-
-    def AddBookEpsInfo(self, bookId, bakParam):
-        page = 1
-        self.server.Send(req.GetComicsBookEpsReq(bookId, page), bakParam=bakParam)
 
     def AddBookEpsInfoBack(self, backData):
         # 此处在线程中加载后续章节 TODO 章节太多时会导致太慢
@@ -112,16 +104,12 @@ class BookMgr(Singleton):
             info.eps.sort(key=lambda a: a.order)
 
             if nextPage <= pages:
-                self.server.Send(req.GetComicsBookEpsReq(bookId, nextPage), bakParam=backData.bakParam, isASync=False)
+                self.server.Send(req.GetComicsBookEpsReq(bookId, nextPage), backParam=backData.bakParam, isASync=False)
                 return Status.WaitLoad
             return Status.Ok
         except Exception as es:
             Log.Error(es)
             return Status.Error
-
-    def AddBookEpsPicInfo(self, bookId, index=1, bakParam=0):
-        page = 1
-        self.server.Send(req.GetComicsBookOrderReq(bookId, index, page), bakParam=bakParam)
 
     def AddBookEpsPicInfoBack(self, backData):
         # 此处在线程中加载后续分页 TODO 分页太多时会导致太慢
@@ -157,7 +145,7 @@ class BookMgr(Singleton):
                 nextPage = loadPage
 
             if nextPage <= pages:
-                self.server.Send(req.GetComicsBookOrderReq(bookId, epsId, nextPage), bakParam=backData.bakParam, isASync=False)
+                self.server.Send(req.GetComicsBookOrderReq(bookId, epsId, nextPage), backParam=backData.bakParam, isASync=False)
                 return Status.WaitLoad
             return Status.Ok
         except Exception as es:

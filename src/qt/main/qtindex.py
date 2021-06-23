@@ -1,34 +1,34 @@
 import json
-import weakref
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QPixmap, QIcon
 
 from resources.resources import DataMgr
-from ui.qtlistwidget import QtBookList
-from src.server import Server, req,  Log
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTaskBase
+from src.server import req, Log
 from src.user.user import User
 from ui.index import Ui_Index
 
 
-class QtIndex(QtWidgets.QWidget, Ui_Index):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_Index.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.owner = weakref.ref(owner)
         self.isInit = False
 
-        self.bookList1.InitBook("index1", owner)
+        self.bookList1.InitBook()
         self.bookList1.doubleClicked.connect(self.OpenSearch1)
 
-        self.bookList2.InitBook("index2", owner)
+        self.bookList2.InitBook()
         self.bookList2.doubleClicked.connect(self.OpenSearch2)
 
-        self.bookList3.InitBook("index3", owner)
+        self.bookList3.InitBook()
         self.bookList3.doubleClicked.connect(self.OpenSearch3)
 
         p = QPixmap()
@@ -58,16 +58,16 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
 
     def Init(self):
         self.isInit = True
-        self.owner().loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetCollectionsReq(), bakParam=x), self.InitBack)
+        QtOwner().owner.loadingForm.show()
+        self.AddHttpTask(req.GetCollectionsReq(), self.InitBack)
 
     def InitRandom(self):
-        self.owner().loadingForm.show()
-        self.owner().qtTask.AddHttpTask(lambda x: Server().Send(req.GetRandomReq(), bakParam=x), self.InitRandomBack)
+        QtOwner().owner.loadingForm.show()
+        self.AddHttpTask(req.GetRandomReq(), self.InitRandomBack)
 
     def InitBack(self, data):
         try:
-            self.owner().loadingForm.close()
+            QtOwner().owner.loadingForm.close()
             self.bookList1.clear()
             self.bookList2.clear()
             data = json.loads(data)
@@ -84,7 +84,7 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
 
     def InitRandomBack(self, data):
         try:
-            self.owner().loadingForm.close()
+            QtOwner().owner.loadingForm.close()
             data = json.loads(data)
             self.bookList3.clear()
             for v in data.get("data").get('comics'):
@@ -111,7 +111,7 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
         bookId = widget.id
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)
         return
 
     def OpenSearch2(self, modelIndex):
@@ -125,7 +125,7 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
         bookId = widget.id
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)
         return
 
     def OpenSearch3(self, modelIndex):
@@ -139,7 +139,7 @@ class QtIndex(QtWidgets.QWidget, Ui_Index):
         bookId = widget.id
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)
         return
 
     def SwitchButton1(self):

@@ -4,19 +4,17 @@ import os
 import random
 import time
 
-from PySide2 import QtWidgets, QtWebSockets
+from PySide2 import QtWidgets
 from PySide2.QtCore import Signal, QTimer, QSize, Qt, QEvent
-from PySide2.QtGui import QPixmap, QFont, QIcon, QTextCursor
-from PySide2.QtWidgets import QFileDialog, QLabel, QListWidgetItem, QMenu, QAction
+from PySide2.QtGui import QFont, QTextCursor
+from PySide2.QtWidgets import QListWidgetItem, QMenu, QAction
 
 from conf import config
-from resources import resources
 from src.qt.chat.chat_ws import ChatWebSocket
 from src.qt.chat.qtchatroommsg import QtChatRoomMsg
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qticon import IconList
 from src.qt.com.qtloading import QtLoading
-from src.qt.util.qttask import QtTask
 from src.user.user import User
 from src.util import Log, ToolUtil
 from src.util.status import Status
@@ -261,14 +259,12 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom):
         url = data.get("avatar")
         if url and config.IsLoadingPicture:
             if isinstance(url, dict):
-                QtTask().AddDownloadTask(url.get("fileServer"), url.get("path"), None, self.LoadingPictureComplete, True, self.indexMsgId, True, self.GetName())
+                self.AddDownloadTask(url.get("fileServer"), url.get("path"), None, self.LoadingPictureComplete, True, self.indexMsgId, True)
             else:
-                QtTask().AddDownloadTask(url, "", None, self.LoadingPictureComplete, True, self.indexMsgId, True,
-                                         self.GetName())
+                self.AddDownloadTask(url, "", None, self.LoadingPictureComplete, True, self.indexMsgId, True)
         character = data.get("character", "")
         if "pica-web.wakamoment.tk" not in character and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, self.indexMsgId, True,
-                                     self.GetName())
+            self.AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, self.indexMsgId, True)
         self.verticalLayout_2.addWidget(info)
         self.msgInfo[self.indexMsgId] = info
         self.indexMsgId += 1

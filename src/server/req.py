@@ -1,8 +1,8 @@
 import base64
-
-from src.util import ToolUtil
-from conf import config
 from urllib.parse import quote
+
+from conf import config
+from src.util import ToolUtil
 
 
 class ServerReq(object):
@@ -165,7 +165,7 @@ class GetComicsBookReq(ServerReq):
 
 # 获得一本书章节列表
 class GetComicsBookEpsReq(ServerReq):
-    def __init__(self, bookId="", page=""):
+    def __init__(self, bookId="", page="1"):
         url = config.Url + "comics/{}/eps?page={}".format(bookId, page)
         method = "GET"
         self.bookId = bookId
@@ -175,7 +175,7 @@ class GetComicsBookEpsReq(ServerReq):
 
 # 获得一个章节的图片信息
 class GetComicsBookOrderReq(ServerReq):
-    def __init__(self, bookId="", epsId="", page=""):
+    def __init__(self, bookId="", epsId="", page="1"):
         url = config.Url + "comics/{}/order/{}/pages?page={}".format(bookId, epsId, page)
         method = "GET"
         self.bookId = bookId

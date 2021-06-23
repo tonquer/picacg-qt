@@ -1,7 +1,5 @@
-import weakref
-
 from PySide2 import QtWidgets, QtCore
-from PySide2.QtCore import  QTimer
+from PySide2.QtCore import QTimer
 from PySide2.QtGui import QPixmap, QImage
 
 from resources import resources
@@ -13,7 +11,6 @@ class QtLoading(QtWidgets.QDialog, Ui_Loading):
         super(self.__class__, self).__init__(owner)
         Ui_Loading.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
         self.setWindowFlag(QtCore.Qt.Dialog)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)

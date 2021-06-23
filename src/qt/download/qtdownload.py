@@ -2,28 +2,23 @@ import os
 import shutil
 
 from PySide2 import QtWidgets
-import weakref
-
-from PySide2.QtCore import Qt, QTime, QTimer, QSettings, QUrl, QDir
+from PySide2.QtCore import Qt, QTimer, QUrl
 from PySide2.QtGui import QCursor, QDesktopServices
-from PySide2.QtSql import QSqlDatabase
 from PySide2.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem, QAction
 
 from conf import config
-from src.index.book import BookMgr
 from src.qt.download.download_db import DownloadDb
 from src.qt.download.download_info import DownloadInfo
+from src.qt.qtmain import QtOwner
 from src.util import Log, ToolUtil
-from src.util.status import Status
 from ui.download import Ui_download
 
 
 class QtDownload(QtWidgets.QWidget, Ui_download):
-    def __init__(self, owner):
-        super(self.__class__, self).__init__(owner)
+    def __init__(self):
+        super(self.__class__, self).__init__()
         Ui_download.__init__(self)
         self.setupUi(self)
-        self.owner = weakref.ref(owner)
         self.downloadingList = []  # 正在下载列表
         self.downloadList = []  # 下载队列
         self.downloadDict = {}  # bookId ：downloadInfo
@@ -374,7 +369,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
             task = self.downloadDict.get(bookId)
             if not task:
                 continue
-            self.owner().epsInfoForm.OpenEpsInfo(task.bookId)
+            QtOwner().owner.epsInfoForm.OpenEpsInfo(task.bookId)
 
         return
 
@@ -471,7 +466,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         bookId = self.tableWidget.item(row, col).text()
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)
 
     def StartAll(self):
         for row in range(self.tableWidget.rowCount()):

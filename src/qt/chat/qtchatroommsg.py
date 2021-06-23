@@ -1,5 +1,5 @@
 from PySide2 import QtWidgets
-from PySide2.QtCore import QEvent,  QProcess
+from PySide2.QtCore import QEvent, QProcess
 from PySide2.QtGui import QPixmap, Qt, QIcon, QCursor
 from PySide2.QtWidgets import QMenu, QApplication
 
