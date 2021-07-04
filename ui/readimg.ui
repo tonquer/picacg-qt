@@ -301,6 +301,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="fullButton">
+         <property name="text">
+          <string>全屏</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="returePage">
          <property name="minimumSize">
           <size>
@@ -434,8 +441,8 @@
    <slot>SwitchModel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>84</x>
-     <y>280</y>
+     <x>138</x>
+     <y>258</y>
     </hint>
     <hint type="destinationlabel">
      <x>305</x>
@@ -466,8 +473,8 @@
    <slot>SwitchPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>418</y>
+     <x>100</x>
+     <y>405</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -482,8 +489,8 @@
    <slot>SwitchPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>168</x>
-     <y>418</y>
+     <x>193</x>
+     <y>405</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -498,8 +505,8 @@
    <slot>CopyPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>157</x>
-     <y>476</y>
+     <x>169</x>
+     <y>435</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -546,8 +553,8 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>129</x>
-     <y>505</y>
+     <x>141</x>
+     <y>464</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
@@ -562,8 +569,8 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>166</x>
-     <y>533</y>
+     <x>178</x>
+     <y>522</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -578,12 +585,28 @@
    <slot>OpenWaifu()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>34</x>
-     <y>232</y>
+     <x>46</x>
+     <y>185</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
      <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fullButton</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>FullScreen()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>474</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>328</x>
+     <y>466</y>
     </hint>
    </hints>
   </connection>
@@ -601,6 +624,7 @@
   <slot>OpenLastEps()</slot>
   <slot>OpenNextEps()</slot>
   <slot>SwitchModel()</slot>
+  <slot>FullScreen()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>

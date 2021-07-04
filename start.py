@@ -26,6 +26,10 @@ from PySide2 import QtWidgets  # 导入PySide2部件
 from src.qt.qtmain import BikaQtMainWindow
 from src.util import Log
 
+# 此处不能删除
+from src.qt.main.qtsearch_db import DbBook as DbBook
+
+
 if __name__ == "__main__":
     Log.Init()
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象

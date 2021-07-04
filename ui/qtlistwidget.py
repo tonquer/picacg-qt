@@ -12,7 +12,8 @@ from src.index.category import CateGoryBase
 from src.qt.com.qtcomment import QtComment
 from src.qt.com.qtimg import  QtImgMgr
 from src.qt.main.qtsearch_db import DbBook
-from src.qt.util.qttask import QtTask
+from src.qt.qtmain import QtOwner
+from src.qt.util.qttask import QtTask, QtTaskBase
 from src.user.user import CategoryInfo
 from src.util import ToolUtil
 from src.util.status import Status
@@ -93,7 +94,6 @@ class ItemWidget(QWidget):
         # self.infoLabel.setAlignment(Qt.AlignRight)
         # layout2.addWidget(self.infoLabel)
 
-
         self.label = QLabel(title, self)
         self.label.setMinimumSize(210, 20)
         self.label.setMaximumSize(210, 150)
@@ -138,19 +138,18 @@ class ItemWidget(QWidget):
         return self.id
 
 
-class QtBookList(QListWidget):
+class QtBookList(QListWidget, QtTaskBase):
     def __init__(self, parent):
         QListWidget.__init__(self, parent)
+        QtTaskBase.__init__(self)
         self.page = 1
         self.pages = 1
-        self.name = ""
         self.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
         # self.verticalScrollBar().valueChanged.connect(self.OnMove)
         self.isLoadingPage = False
         self.LoadCallBack = None
         self.parentId = -1
         self.popMenu = None
-        self.owner = None
         QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
@@ -159,12 +158,7 @@ class QtBookList(QListWidget):
         # self.timer.setInterval(1000)
         # self.timer.timeout.connect(self.TimeOut)
 
-    def GetName(self):
-        return self.name + "-QtBookList"
-
-    def InitBook(self, name, owner, callBack=None):
-        self.name = name
-        self.owner = weakref.ref(owner)
+    def InitBook(self, callBack=None):
         self.resize(800, 600)
         self.setMinimumHeight(400)
         self.setFrameShape(self.NoFrame)  # 无边框
@@ -201,9 +195,7 @@ class QtBookList(QListWidget):
         action = self.popMenu.addAction("刪除")
         action.triggered.connect(self.DelHandler)
 
-    def InitUser(self, name, owner, callBack=None):
-        self.name = name
-        self.owner = weakref.ref(owner)
+    def InitUser(self, callBack=None):
         self.setFrameShape(self.NoFrame)  # 无边框
         self.LoadCallBack = callBack
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -255,8 +247,13 @@ class QtBookList(QListWidget):
             _id = v.get("_id")
             url = v.get("thumb", {}).get("fileServer")
             path = v.get("thumb", {}).get("path")
+            if not url:
+                url = v.get("icon", {}).get("fileServer")
+                path = v.get("icon", {}).get("path")
             finished = v.get("finished")
             categories = v.get('categories', [])
+            if not categories:
+                categoryStr = v.get("publisher")
             pagesCount = v.get("pagesCount")
             likesCount = str(v.get("totalLikes", ""))
 
@@ -301,7 +298,7 @@ class QtBookList(QListWidget):
             pagesCount = v.pages
             updated_at = v.updated_at
             likesCount = str(v.totalLikes)
-            info = self.owner().historyForm.GetHistory(_id)
+            info = QtOwner().owner.historyForm.GetHistory(_id)
             if info:
                 categoryStr = "上次观看到第{}章/{}章".format(info.epsId+1, v.epsCount)
 
@@ -317,8 +314,8 @@ class QtBookList(QListWidget):
             categoryStr = "分类：" + "，".join(categories)
 
         if updated_at:
-            timeArray, day = ToolUtil.GetDateStr(updated_at)
-            updateStr = "{}天前更新".format(day)
+            dayStr = ToolUtil.GetUpdateStr(updated_at)
+            updateStr = dayStr + "更新"
 
         iwidget = ItemWidget(_id, title, categoryStr, likesCount, updateStr, "")
         iwidget.url = url
@@ -328,7 +325,7 @@ class QtBookList(QListWidget):
         self.setItemWidget(item, iwidget)
         iwidget.picIcon.setText("图片加载中...")
         if url and path and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True, self.GetName())
+            self.AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True)
             pass
 
     def AddUserItem(self, info, floor):
@@ -372,23 +369,17 @@ class QtBookList(QListWidget):
         iwidget.url = url
         iwidget.path = path
         if createdTime:
-            timeArray, day = ToolUtil.GetDateStr(createdTime)
-            if day >= 1:
-                iwidget.dateLabel.setText("{}天前".format(str(day)))
-            else:
-                strTime = "{}:{}:{}".format(timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
-                iwidget.dateLabel.setText("{}".format(strTime))
-
+            dayStr = ToolUtil.GetUpdateStr(createdTime)
+            iwidget.dateLabel.setText(dayStr)
         iwidget.indexLabel.setText("{}楼".format(str(floor)))
 
         item = QListWidgetItem(self)
         item.setSizeHint(iwidget.sizeHint())
         self.setItemWidget(item, iwidget)
         if url and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True, self.GetName())
+            self.AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True)
         if "pica-web.wakamoment.tk" not in character and config.IsLoadingPicture:
-            QtTask().AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, index, True,
-                                     self.GetName())
+            self.AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, index, True)
 
     def LoadingPictureComplete(self, data, status, index):
         if status == Status.Ok:
@@ -416,7 +407,7 @@ class QtBookList(QListWidget):
         QListWidget.clear(self)
 
         # 防止异步加载时，信息错乱
-        QtTask().CancelTasks(self.GetName())
+        self.ClearTask()
 
     def SelectMenu(self, pos):
         index = self.indexAt(pos)
@@ -428,14 +419,14 @@ class QtBookList(QListWidget):
         selected = self.selectedItems()
         for item in selected:
             widget = self.itemWidget(item)
-            self.owner().epsInfoForm.OpenEpsInfo(widget.GetId())
+            QtOwner().owner.epsInfoForm.OpenEpsInfo(widget.GetId())
         pass
 
     def OpenBookInfoHandler(self):
         selected = self.selectedItems()
         for item in selected:
             widget = self.itemWidget(item)
-            self.owner().bookInfoForm.OpenBook(widget.GetId())
+            QtOwner().owner.bookInfoForm.OpenBook(widget.GetId())
             return
 
     def CopyHandler(self):
@@ -473,7 +464,7 @@ class QtBookList(QListWidget):
         bookId = widget.id
         if not bookId:
             return
-        self.owner().bookInfoForm.OpenBook(bookId)
+        QtOwner().owner.bookInfoForm.OpenBook(bookId)
 
     def OpenPicture(self):
         selected = self.selectedItems()
@@ -490,8 +481,7 @@ class QtBookList(QListWidget):
             if widget.url and config.IsLoadingPicture:
                 widget.picIcon.setPixmap(None)
                 widget.picIcon.setText("图片加载中")
-                QtTask().AddDownloadTask(widget.url, widget.path, None, self.LoadingPictureComplete, True, index, False,
-                                         self.GetName())
+                self.AddDownloadTask(widget.url, widget.path, None, self.LoadingPictureComplete, True, index, False)
                 pass
 
 

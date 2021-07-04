@@ -19,7 +19,7 @@ class Ui_User(object):
     def setupUi(self, User):
         if not User.objectName():
             User.setObjectName(u"User")
-        User.resize(801, 637)
+        User.resize(1059, 677)
         User.setMinimumSize(QSize(0, 0))
         self.gridLayout_2 = QGridLayout(User)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -406,6 +406,38 @@ class Ui_User(object):
 
         self.verticalLayout_2.addWidget(self.toolButton9)
 
+        self.toolButton10 = QToolButton(User)
+        self.buttonGroup.addButton(self.toolButton10)
+        self.toolButton10.setObjectName(u"toolButton10")
+        self.toolButton10.setMinimumSize(QSize(100, 40))
+        self.toolButton10.setMaximumSize(QSize(100, 16777215))
+        self.toolButton10.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+"QToolButton{\n"
+"    background:transparent;\n"
+"    color: rgb(0, 0, 2);\n"
+"    border-style: outset;\n"
+"    border-color: beige;\n"
+"    border-radius: 10px;\n"
+"}\n"
+"\n"
+"/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+" QToolButton:hover \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+"\n"
+" /* \u6309\u94ae\u88ab\u5355\u51fb\u540e\uff0c\u6309\u94ae\u989c\u8272 */\n"
+"QToolButton:checked {\n"
+"    background-color:rgb(42, 115, 175);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(255, 255, 0);\n"
+"}")
+        self.toolButton10.setCheckable(True)
+
+        self.verticalLayout_2.addWidget(self.toolButton10)
+
 
         self.verticalLayout.addLayout(self.verticalLayout_2)
 
@@ -446,5 +478,6 @@ class Ui_User(object):
         self.toolButton7.setText(QCoreApplication.translate("User", u"\u7559\u8a00\u677f", None))
         self.toolButton8.setText(QCoreApplication.translate("User", u"\u804a\u5929\u5ba4", None))
         self.toolButton9.setText(QCoreApplication.translate("User", u"\u9505\u8d34", None))
+        self.toolButton10.setText(QCoreApplication.translate("User", u"\u6e38\u620f\u533a", None))
     # retranslateUi
 

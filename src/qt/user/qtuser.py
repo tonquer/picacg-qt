@@ -46,6 +46,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.stackedWidget.addWidget(QtOwner().owner.leaveMsgForm)
         self.stackedWidget.addWidget(QtOwner().owner.chatForm)
         self.stackedWidget.addWidget(QtOwner().owner.friedForm)
+        self.stackedWidget.addWidget(QtOwner().owner.gameForm)
         self.buttonGroup.buttonClicked.connect(self.Switch)
         self.isHeadUp = False
 
@@ -77,7 +78,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         if msg == Status.Ok:
             self.signButton.setEnabled(False)
             self.signButton.setText("已签到")
-            QtTask().AddHttpTask(req.GetUserInfo(), self.owner().loginForm.UpdateUserBack)
+            QtTask().AddHttpTask(req.GetUserInfo(), QtOwner().owner.loginForm.UpdateUserBack)
             self.update()
         return
 

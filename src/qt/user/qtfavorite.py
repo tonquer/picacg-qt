@@ -11,7 +11,6 @@ from src.qt.util.qttask import QtTaskBase
 from src.server import req
 from src.user.user import User
 from src.util import Log
-from src.util.status import Status
 from ui.favorite import Ui_favorite
 
 
@@ -90,8 +89,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
         if bookId in self.dbMgr.allFavoriteIds:
             sortId = self.dbMgr.allFavoriteIds[bookId]
         else:
-            self.dbMgr.maxSortId += 1
-            sortId = self.dbMgr.maxSortId
+            sortId = self.dbMgr.UpdateSortId(bookId)
         self._AddUpdateBookIds(sortId, bookId)
 
     def LoadNextPage(self):
@@ -131,10 +129,10 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
                 bookId = bookInfo.get("_id")
                 self.reupdateBookIds.add(bookId)
 
-                if bookId in self.dbMgr.allFavoriteIds:
-                    continue
-                else:
-                    self.dbMgr.needUpdatefavorite.append(bookId)
+                # if bookId in self.dbMgr.allFavoriteIds:
+                #     continue
+                # else:
+                self.dbMgr.needUpdatefavorite.append(bookId)
             if pages > page:
                 loadPage = page + 1
             self.msgLabel.setText("正在加载收藏分页{}/{}".format(page, pages))
@@ -155,11 +153,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
             self.dbMgr.DelFavorite(bookId)
 
         for bookId in self.dbMgr.needUpdatefavorite:
-            if bookId in self.dbMgr.allFavoriteIds:
-                sortId = self.dbMgr.allFavoriteIds[bookId]
-            else:
-                self.dbMgr.maxSortId += 1
-                sortId = self.dbMgr.maxSortId
+            sortId = self.dbMgr.UpdateSortId(bookId)
             self._AddUpdateBookIds(sortId, bookId)
 
         return
@@ -178,49 +172,77 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
 
         self.msgLabel.setText("正在更新收藏, 剩余数量 {}".format(len(self.updateBookIds)))
         (sortId, bookId) = self.updateBookIds.pop()
-        self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenBookBack, (sortId, bookId))
+        # self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenBookBack, (sortId, bookId))
+        info = QtOwner().owner.searchForm.searchDb.Select(bookId)
+        if not info:
+            return
+
+        bookInfo = DbFavorite()
+        bookInfo.id = bookId
+        bookInfo.title = info.title
+        bookInfo.title2 = info.title2
+        bookInfo.lastUpdateTick = int(time.time())
+        bookInfo.description = info.description
+        bookInfo.created_at = info.created_at
+        bookInfo.updated_at = info.updated_at
+        bookInfo.chineseTeam = info.chineseTeam
+        bookInfo.author = info.author
+        bookInfo.finished = info.finished
+        bookInfo.likesCount = info.likesCount
+        bookInfo.pages = info.pages
+        bookInfo.epsCount = info.epsCount
+        bookInfo.tags = info.tags
+        bookInfo.tags = info.tags
+        bookInfo.categories = info.categories
+        bookInfo.path = info.path
+        bookInfo.fileServer = info.fileServer
+        bookInfo.originalName = info.originalName
+        bookInfo.totalLikes = info.totalLikes
+        bookInfo.totalViews = info.totalViews
+        bookInfo.sortId = sortId
+        self.dbMgr.UpdateFavorite(bookInfo)
         pass
 
-    def OpenBookBack(self, msg, v):
-        (sortId, bookId) = v
-        try:
-            info = BookMgr().books.get(bookId)
-            if msg == Status.Ok:
-                bookInfo = DbFavorite()
-                bookInfo.id = bookId
-                bookInfo.lastUpdateTick = int(time.time())
-                bookInfo.description = info.description.replace("'", "\"")
-                bookInfo.created_at = info.created_at
-                bookInfo.updated_at = info.updated_at
-                if hasattr(info, "chineseTeam"):
-                    bookInfo.chineseTeam = info.chineseTeam.replace("'", "\"")
-                bookInfo.author = info.author.replace("'", "\"")
-                bookInfo.finished = info.finished
-                bookInfo.likesCount = info.likesCount
-                bookInfo.pages = info.pagesCount
-                bookInfo.title = info.title.replace("'", "\"")
-                bookInfo.epsCount = info.epsCount
-                bookInfo.tags = info.tags
-                if bookInfo.tags:
-                    bookInfo.tags = json.dumps(bookInfo.tags)
-                bookInfo.categories = info.categories
-                if bookInfo.categories:
-                    bookInfo.categories = json.dumps(bookInfo.categories)
-                bookInfo.path = info.thumb.get("path", "")
-                bookInfo.fileServer = info.thumb.get("fileServer", "")
-                bookInfo.originalName = info.thumb.get("originalName", "").replace("'", "\"")
-                bookInfo.totalLikes = info.totalLikes
-                bookInfo.totalViews = info.totalViews
-                bookInfo.sortId = sortId
-                self.dbMgr.UpdateFavorite(bookInfo)
-                self.UpdatePageNum()
-            elif msg == Status.UnderReviewBook:
-                pass
-            else:
-                self._AddUpdateBookIds(sortId, bookId)
-        except Exception as es:
-            Log.Error(es)
-            self._AddUpdateBookIds(sortId, bookId)
+    # def OpenBookBack(self, msg, v):
+    #     (sortId, bookId) = v
+    #     try:
+    #         info = BookMgr().books.get(bookId)
+    #         if msg == Status.Ok:
+    #             bookInfo = DbFavorite()
+    #             bookInfo.id = bookId
+    #             bookInfo.lastUpdateTick = int(time.time())
+    #             bookInfo.description = info.description.replace("'", "\"")
+    #             bookInfo.created_at = info.created_at
+    #             bookInfo.updated_at = info.updated_at
+    #             if hasattr(info, "chineseTeam"):
+    #                 bookInfo.chineseTeam = info.chineseTeam.replace("'", "\"")
+    #             bookInfo.author = info.author.replace("'", "\"")
+    #             bookInfo.finished = info.finished
+    #             bookInfo.likesCount = info.likesCount
+    #             bookInfo.pages = info.pagesCount
+    #             bookInfo.title = info.title.replace("'", "\"")
+    #             bookInfo.epsCount = info.epsCount
+    #             bookInfo.tags = info.tags
+    #             if bookInfo.tags:
+    #                 bookInfo.tags = json.dumps(bookInfo.tags)
+    #             bookInfo.categories = info.categories
+    #             if bookInfo.categories:
+    #                 bookInfo.categories = json.dumps(bookInfo.categories)
+    #             bookInfo.path = info.thumb.get("path", "")
+    #             bookInfo.fileServer = info.thumb.get("fileServer", "")
+    #             bookInfo.originalName = info.thumb.get("originalName", "").replace("'", "\"")
+    #             bookInfo.totalLikes = info.totalLikes
+    #             bookInfo.totalViews = info.totalViews
+    #             bookInfo.sortId = sortId
+    #             self.dbMgr.UpdateFavorite(bookInfo)
+    #             self.UpdatePageNum()
+    #         elif msg == Status.UnderReviewBook:
+    #             pass
+    #         else:
+    #             self._AddUpdateBookIds(sortId, bookId)
+    #     except Exception as es:
+    #         Log.Error(es)
+    #         self._AddUpdateBookIds(sortId, bookId)
 
         # QtOwner().owner.loadingForm.close()
         # self.bookList.UpdateState()

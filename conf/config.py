@@ -1,5 +1,3 @@
-import sys
-
 BaseUrl = "http://68.183.234.72/"            # 获得ip列表接口
 Url = "https://picaapi.picacomic.com/"       # 域名
 ApiKey = "C69BAF41DA5ABD1FFEDC6D2FEA56B"     # apiKey
@@ -31,7 +29,9 @@ IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
 UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
-UpdateVersion = "v1.1.8"
+DatabaseUpdate = "https://raw.githubusercontent.com/tonquer/picacg-database/main/version.txt"
+DatabaseDownload = "https://raw.githubusercontent.com/tonquer/picacg-database/main/data/"
+UpdateVersion = "v1.1.9"
 
 # waifu2x
 CanWaifu2x = True

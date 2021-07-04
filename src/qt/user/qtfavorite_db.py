@@ -94,12 +94,17 @@ class QtFavoriteDb(object):
             # bookId, name, epsId, index, url, path
             bookId = query.value(0)
             lastUpdateTick = query.value(19)
-            sortId = query.value(20)
-            self.maxSortId = min(sortId, self.maxSortId)
-            if now - lastUpdateTick >= 600:
+            # sortId = query.value(20)
+            # self.maxSortId = min(sortId, self.maxSortId)
+            if now - lastUpdateTick >= 3600:
                 self.needUpdatefavorite.append(bookId)
-            self.allFavoriteIds[bookId] = sortId
+            self.allFavoriteIds[bookId] = 0
         return
+
+    def UpdateSortId(self, bookId):
+        self.maxSortId += 1
+        self.allFavoriteIds[bookId] = self.maxSortId
+        return self.maxSortId
 
     def UpdateFavorite(self, book):
         assert isinstance(book, DbFavorite)
@@ -181,3 +186,27 @@ class QtFavoriteDb(object):
             info.totalLikes = query.value(17)
             books.append(info)
         return books
+
+    def Update(self, addData):
+        self.db.transaction()
+        query = QSqlQuery(self.db)
+        for book in addData:
+            try:
+                if not book:
+                    continue
+                sql = "update favorite set title='{0}', author='{2}', chineseTeam='{3}', description='{4}', epsCount={5}, pages={6}, finished='{7}', likesCount={8}, categories='{9}', tags='{10}'," \
+                      "created_at='{11}', updated_at='{12}', path='{13}', fileServer='{14}', originalName='{15}', totalLikes={16}, totalViews={17} where id='{18}';" \
+                    .format(book.title, book.title2, book.author, book.chineseTeam, book.description,
+                            book.epsCount, book.pages, int(book.finished), book.likesCount,
+                            book.categories, book.tags, book.created_at, book.updated_at, book.path, book.fileServer,
+                            book.originalName, book.totalLikes, book.totalViews, book.id)
+                sql = sql.replace("\0", "")
+                suc = query.exec_(sql)
+                if not suc:
+                    a = query.lastError().text()
+                    Log.Warn(a)
+            except Exception as ex:
+                Log.Error(ex)
+
+        self.db.commit()
+        Log.Info("db: update favorite database, len:{} ".format(len(addData)))

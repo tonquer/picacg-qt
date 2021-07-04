@@ -76,6 +76,7 @@ class ToolUtil(object):
 
     @staticmethod
     def __ConFromNative(datas):
+        # 以下是IDA PRO反编译的混淆代码
         key = ""
 
         # v6 = datas[0]
@@ -98,10 +99,11 @@ class ToolUtil(object):
 
     @staticmethod
     def __SigFromNative():
+        return '~d}$Q7$eIni=V)9\\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn'
+        # 以下是IDA PRO反编译的混淆代码
         key = "~*}$#,$-\").=$)\",,#/-.'%(;$[,|@/&(#\"~%*!-?*\"-:*!!*,$\"%.&'*|%/*,*"
         key = list(key)
         # v5 = int[] 32bit
-
         # BYTE1(v5[0]) = 100;
         key[1] = chr(100)
         # LOWORD(v5[1]) = 14161;
@@ -167,6 +169,24 @@ class ToolUtil(object):
         now = int(time.time())
         day = int((int(now - time.timezone) / 86400) - (int(tick - time.timezone) / 86400))
         return time.localtime(tick), day
+
+    @staticmethod
+    def GetUpdateStr(createdTime):
+        timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%f%z")
+        now = int(time.time())
+        tick = int(time.mktime(timeArray)-time.timezone)
+        day = (now - tick) // (24*3600)
+        hour = (now - tick) // 3600
+        minute = (now - tick) // 60
+        second = (now - tick)
+        if day > 0:
+            return "{}天前".format(day)
+        elif hour > 0:
+            return "{}小时前".format(hour)
+        elif minute > 0:
+            return "{}分钟前".format(minute)
+        else:
+            return "{}秒前".format(second)
 
     @staticmethod
     def GetDownloadSize(downloadLen):
@@ -360,3 +380,24 @@ class ToolUtil(object):
         pic.loadFromData(resources.DataMgr.GetData("logo_round"))
         icon.addPixmap(pic, QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
+
+    @staticmethod
+    def DiffDays(d1, d2):
+        return (int(d1 - time.timezone) // 86400) - (int(d2 - time.timezone) // 86400)
+
+    @staticmethod
+    def GetCurZeroDatatime(tick):
+        from datetime import timedelta
+        from datetime import datetime
+        now = datetime.fromtimestamp(tick)
+        delta = timedelta(hours=now.hour, minutes=now.minute, seconds=now.second)
+        zeroDatetime = now - delta
+        return int(time.mktime(zeroDatetime.timetuple()))
+
+    @staticmethod
+    def GetTimeTickEx(strDatetime):
+        if not strDatetime:
+            return 0
+        timeArray = time.strptime(strDatetime, "%Y-%m-%d %H:%M:%S")
+        tick = int(time.mktime(timeArray))
+        return tick

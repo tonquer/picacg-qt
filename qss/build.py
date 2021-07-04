@@ -1,6 +1,5 @@
 import base64
 import os
-import subprocess
 
 fw = open("qss.py", "w+")
 fw.write("import base64\n\n\n")

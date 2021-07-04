@@ -24,14 +24,17 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         self.categories = ""
         self.searchDb = QtSearchDb()
         self.searchEdit.words = self.searchDb.InitWord()
-        nums, times = self.searchDb.InitUpdateInfo()
-        self.numsLabel.setText(str(nums))
-        self.timesLabel.setText(times)
 
+        self.UpdateDbInfo()
         self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
 
         self.keywordList.itemClicked.connect(self.ClickKeywordListItem)
         self.SetSearch()
+
+    def UpdateDbInfo(self):
+        nums, times, _ = self.searchDb.InitUpdateInfo()
+        self.numsLabel.setText(str(nums))
+        self.timesLabel.setText(times)
 
     def InitCategoryList(self):
         self.categoryList.clear()

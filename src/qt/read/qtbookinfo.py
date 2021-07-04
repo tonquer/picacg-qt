@@ -14,7 +14,6 @@ from src.qt.com.qtloading import QtLoading
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, Log, ToolUtil
-from src.user.user import User
 from src.util.status import Status
 from ui.bookinfo import Ui_BookInfo
 from ui.qtlistwidget import QtBookList
@@ -215,8 +214,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             name = info.thumb.get("originalName")
             self.url = fileServer
             self.path = path
-            timeArray, day = ToolUtil.GetDateStr(info.updated_at)
-            self.updateTick.setText(str(day) + "天前更新")
+            dayStr = ToolUtil.GetUpdateStr(info.updated_at)
+            self.updateTick.setText(str(dayStr) + "更新")
             if config.IsLoadingPicture:
 
                 self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
@@ -235,8 +234,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.pictureData = data
             pic = QtGui.QPixmap()
             pic.loadFromData(data)
-            pic.scaled(self.picture.size(), QtCore.Qt.KeepAspectRatio)
-            self.picture.setPixmap(pic)
+            newPic = pic.scaled(self.picture.size(), QtCore.Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.picture.setPixmap(newPic)
             # self.picture.setScaledContents(True)
             self.update()
         else:
@@ -310,7 +309,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         # self.download.setEnabled(False)
 
     def AddFavority(self):
-        User().AddAndDelFavorites(self.bookId)
+        self.AddHttpTask(req.FavoritesAdd(self.bookId))
         QtBubbleLabel.ShowMsgEx(self, "添加收藏成功")
         QtOwner().owner.favoriteForm.AddFavorites(self.bookId)
         self.favorites.setEnabled(False)

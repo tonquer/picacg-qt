@@ -49,7 +49,6 @@ class QtCustomSlider(QtWidgets.QSlider):
         w = self.width()
         size = int(w * self.value() / (self.maximum()))
         x2 = self.sliderPosition()
-        print(x, x2, w, size)
 
         if not (size-5 <= x <= size+5):
             self.setValue(int(pos * (self.maximum()) + self.minimum()))
@@ -387,3 +386,11 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.readImg.ShowImg()
         self.readImg.CheckLoadPicture()
         return
+
+    def FullScreen(self):
+        if self.readImg.windowState() == Qt.WindowFullScreen:
+            self.readImg.showNormal()
+            self.fullButton.setText("全屏")
+        else:
+            self.readImg.showFullScreen()
+            self.fullButton.setText("退出全屏")

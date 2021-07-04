@@ -84,27 +84,6 @@ class PunchInHandler(object):
             QtTask().taskBack.emit(backData.bakParam, st)
 
 
-@handler(req.FavoritesAdd)
-class FavoritesAddHandler(object):
-    def __call__(self, backData):
-        if backData.res.code == 200:
-            if backData.res.data.get("action") == "un_favourite":
-                pass
-            else:
-                pass
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, Status.Ok)
-
-
-@handler(req.FavoritesReq)
-class FavoritesAddHandler(object):
-    def __call__(self, backData):
-        # st, page = User().UpdateFavoritesBack(backData)
-        # time.sleep(0.1)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.CategoryReq)
 class CategoryHandler(object):
     def __call__(self, backData):
@@ -112,37 +91,6 @@ class CategoryHandler(object):
         CateGoryMgr().UpdateCateGoryBack(backData)
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, Status.Ok)
-
-
-@handler(req.AdvancedSearchReq)
-class AdvancedSearchHandler(object):
-    def __call__(self, backData):
-        if backData.res.code == 200:
-            for data in backData.res.data['comics']["docs"]:
-                pass
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
-@handler(req.CategoriesSearchReq)
-class CategoriesSearchHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
-@handler(req.RankReq)
-class RankHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
-@handler(req.GetComments)
-class GetCommentsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
 
 
 @handler(req.GetComicsBookEpsReq)
@@ -235,34 +183,6 @@ class CheckUpdateHandler(object):
                 QtTask().taskBack.emit(backData.bakParam, data)
 
 
-@handler(req.GetKeywords)
-class GetKeywordsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
-@handler(req.SendComment)
-class GetKeywordsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
-@handler(req.SendCommentChildrenReq)
-class SendCommentChildrenHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
-@handler(req.GetCommentsChildrenReq)
-class GetKeywordsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.SpeedTestReq)
 class SpeedTestHandler(object):
     def __call__(self, backData):
@@ -298,50 +218,30 @@ class SpeedTestHandler(object):
                     QtTask().taskBack.emit(backData.bakParam, "")
 
 
+@handler(req.FavoritesAdd)
+@handler(req.FavoritesReq)
+@handler(req.AdvancedSearchReq)
+@handler(req.CategoriesSearchReq)
+@handler(req.RankReq)
+@handler(req.GetComments)
+@handler(req.GetKeywords)
+@handler(req.SendComment)
+@handler(req.SendCommentChildrenReq)
+@handler(req.GetCommentsChildrenReq)
 @handler(req.GetChatReq)
-class GetChatHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.GetCollectionsReq)
-class GetCollectionsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.GetRandomReq)
-class GetRandomHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.GetAPPsReq)
-class GetAPPsHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.LoginAPPReq)
-class LoginAPPHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.AppInfoReq)
-class AppInfoHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
-
-
 @handler(req.AppCommentInfoReq)
-class AppCommentInfoReqHandler(object):
+@handler(req.GetGameReq)
+@handler(req.GetGameInfoReq)
+@handler(req.GetGameCommentsReq)
+@handler(req.SendGameCommentsReq)
+@handler(req.CheckUpdateDatabaseReq)
+@handler(req.DownloadDatabaseReq)
+class MsgHandler(object):
     def __call__(self, backData):
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)

@@ -1,6 +1,5 @@
 import base64
 import os
-import subprocess
 
 fw = open("resources.py", "w+")
 fw.write("import base64\n\n\n")
@@ -12,6 +11,8 @@ for root, dirs, filenames in os.walk("./"):
         if name[-3:] != "png":
             continue
         if len(name.split(".")) >= 3:
+            continue
+        if not os.path.isfile(name):
             continue
         f = open(name, "rb")
         # fw.write("def get():\r\n    return )

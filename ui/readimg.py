@@ -181,6 +181,11 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.pushButton_2)
 
+        self.fullButton = QPushButton(ReadImg)
+        self.fullButton.setObjectName(u"fullButton")
+
+        self.verticalLayout.addWidget(self.fullButton)
+
         self.returePage = QPushButton(ReadImg)
         self.returePage.setObjectName(u"returePage")
         self.returePage.setMinimumSize(QSize(0, 0))
@@ -267,6 +272,7 @@ class Ui_ReadImg(object):
         self.pushButton_2.clicked.connect(ReadImg.hide)
         self.returePage.clicked.connect(ReadImg.ReturnPage)
         self.checkBox.clicked.connect(ReadImg.OpenWaifu)
+        self.fullButton.clicked.connect(ReadImg.FullScreen)
 
         QMetaObject.connectSlotsByName(ReadImg)
     # setupUi
@@ -297,6 +303,7 @@ class Ui_ReadImg(object):
         self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u5bbd\u5ea6", None))
         self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00\u56fe\u7247\u5de5\u5177", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
+        self.fullButton.setText(QCoreApplication.translate("ReadImg", u"\u5168\u5c4f", None))
         self.returePage.setText(QCoreApplication.translate("ReadImg", u"\u8fd4\u56de", None))
         self.pushButton_4.setText(QCoreApplication.translate("ReadImg", u"\u4e0a\u4e00\u7ae0", None))
         self.pushButton_5.setText(QCoreApplication.translate("ReadImg", u"\u4e0b\u4e00\u7ae0", None))

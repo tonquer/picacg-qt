@@ -15,7 +15,7 @@ class ServerReq(object):
         self.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
 
 
-# 获得Ip
+# 获得分流Ip
 class InitReq(ServerReq):
     def __init__(self):
         url = config.BaseUrl + "init"
@@ -23,7 +23,7 @@ class InitReq(ServerReq):
         super(self.__class__, self).__init__(url, {}, {}, method)
 
 
-# 获得Image的Key
+# 获得分流 Image的Key
 class InitAndroidReq(ServerReq):
     def __init__(self):
         url = config.Url + "init?platform=android"
@@ -62,7 +62,7 @@ class RegisterReq(ServerReq):
                                              data, method)
 
 
-# 获得信息
+# 获得用户信息
 class GetUserInfo(ServerReq):
     def __init__(self):
         url = config.Url + "users/profile"
@@ -71,6 +71,7 @@ class GetUserInfo(ServerReq):
                                              {}, method)
 
 
+# 设置头像
 class SetAvatarInfoReq(ServerReq):
     def __init__(self, data, picFormat="jpg"):
         url = config.Url + "users/avatar"
@@ -85,6 +86,7 @@ class SetAvatarInfoReq(ServerReq):
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {"avatar": imgData}, method)
 
 
+# 设置称号
 class SetTitleReq(ServerReq):
     def __init__(self, userId, title):
         url = config.Url + "users/{}/title".format(userId)
@@ -215,6 +217,26 @@ class CheckUpdateReq(ServerReq):
         self.isParseRes = False
 
 
+# 检查更新
+class CheckUpdateDatabaseReq(ServerReq):
+    def __init__(self):
+        url = config.DatabaseUpdate
+        method = "GET"
+        super(self.__class__, self).__init__(url, {}, {}, method)
+        self.isParseRes = False
+
+
+# 下载
+class DownloadDatabaseReq(ServerReq):
+    def __init__(self, tick):
+        import time
+        day = time.strftime('%Y-%m-%d', time.localtime(tick))
+        url = config.DatabaseDownload + day + ".data"
+        method = "GET"
+        super(self.__class__, self).__init__(url, {}, {}, method)
+        self.isParseRes = False
+
+
 # 热词
 class GetKeywords(ServerReq):
     def __init__(self):
@@ -233,7 +255,7 @@ class SendComment(ServerReq):
                                              {"content": content}, method)
 
 
-# 发送评论
+# 发送子评论
 class SendCommentChildrenReq(ServerReq):
     def __init__(self, comentId="", content=""):
         url = config.Url + "comments/{}".format(comentId)
@@ -251,7 +273,7 @@ class GetCommentsChildrenReq(ServerReq):
                                              {}, method)
 
 
-# 下载图片
+# 测速
 class SpeedTestReq(ServerReq):
     Index = 0
     URLS = [
@@ -277,7 +299,7 @@ class SpeedTestReq(ServerReq):
                                              {}, method)
 
 
-# chat
+# 获取聊天频道
 class GetChatReq(ServerReq):
     def __init__(self):
         url = config.Url + "chat"
@@ -286,6 +308,7 @@ class GetChatReq(ServerReq):
                                              {}, method)
 
 
+# 获取神魔推荐
 class GetCollectionsReq(ServerReq):
     def __init__(self):
         url = config.Url + "collections"
@@ -293,6 +316,7 @@ class GetCollectionsReq(ServerReq):
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
 
 
+# 获取随机本子
 class GetRandomReq(ServerReq):
     def __init__(self):
         url = config.Url + "comics/random"
@@ -300,6 +324,7 @@ class GetRandomReq(ServerReq):
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
 
 
+# 获取小程序列表
 class GetAPPsReq(ServerReq):
     def __init__(self):
         url = config.Url + "pica-apps"
@@ -308,6 +333,7 @@ class GetAPPsReq(ServerReq):
         self.isParseRes = False
 
 
+# 锅贴登陆
 class LoginAPPReq(ServerReq):
     def __init__(self, url, token):
         url = url + "/?token=" + token
@@ -316,6 +342,7 @@ class LoginAPPReq(ServerReq):
         self.isParseRes = False
 
 
+# 锅贴列表
 class AppInfoReq(ServerReq):
     def __init__(self, token, page=0):
         url = "https://post-api.wikawika.xyz"
@@ -329,6 +356,7 @@ class AppInfoReq(ServerReq):
         super(self.__class__, self).__init__(url, header, {}, method)
 
 
+# 锅贴评论列表
 class AppCommentInfoReq(ServerReq):
     def __init__(self, id, token, page=0):
         url = "https://post-api.wikawika.xyz"
@@ -340,3 +368,39 @@ class AppCommentInfoReq(ServerReq):
             "token": token,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
+
+
+# 游戏区列表
+class GetGameReq(ServerReq):
+    def __init__(self, page=1):
+        url = config.Url + "games?page={}".format(page)
+        method = "Get"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+# 游戏区详情
+class GetGameInfoReq(ServerReq):
+    def __init__(self, gameId):
+        url = config.Url + "games/{}".format(gameId)
+        method = "Get"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+# 游戏区评论列表
+class GetGameCommentsReq(ServerReq):
+    def __init__(self, gameId, page=1):
+        url = config.Url + "games/{}/comments?page={}".format(gameId,page)
+        method = "Get"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+# 游戏区发送评论
+class SendGameCommentsReq(ServerReq):
+    def __init__(self, gameId, content):
+        url = config.Url + "games/{}/comments".format(gameId)
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {"content": content}, method)

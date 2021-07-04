@@ -1,3 +1,5 @@
+import base64
+import pickle
 import weakref
 
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
@@ -51,6 +53,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         from src.qt.menu.qtsetting import QtSetting
         from src.qt.util.qttask import QtTask
         from src.qt.user.qtuser import QtUser
+        from src.qt.game.qt_game import QtGame
+        from src.qt.game.qt_game_info import QtGameInfo
 
         self.userInfo = None
         self.setupUi(self)
@@ -75,6 +79,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.chatForm = QtChat()
         self.rankForm = QtRank()
         self.friedForm = QtFried()
+        self.gameForm = QtGame()
 
         self.loginForm = QtLogin()
         self.registerForm = QtRegister()
@@ -85,6 +90,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.userForm = QtUser()
         self.bookInfoForm = QtBookInfo()
+        self.gameInfoForm = QtGameInfo()
 
         self.epsInfoForm = QtEpsInfo()
 
@@ -114,6 +120,10 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.menusetting.triggered.connect(self.OpenSetting)
         self.menuabout.triggered.connect(self.OpenAbout)
+
+        self.curSubVersion = 0  # 当前子版本
+        self.curUpdateTick = 0  # 当前更新日时间戳
+
         # QtImgMgr().SetOwner(self)
     # def ClearExpiredCache(self):
     #     try:
@@ -167,6 +177,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
             self.downloadForm.autoConvert = False
             self.downloadForm.radioButton.setEnabled(False)
+            from src.qt.com.qtimg import QtImgMgr
             QtImgMgr().obj.checkBox.setEnabled(False)
             QtImgMgr().obj.changeButton.setEnabled(False)
             QtImgMgr().obj.changeButton.setEnabled(False)
@@ -176,6 +187,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.InitUpdate()
         self.loginForm.Init()
+        self.LoadDatabaseVersion()
         return
 
     def OpenSetting(self):
@@ -186,8 +198,17 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if action.text() == "about":
             self.aboutForm.show()
         elif action.text() == "waifu2x":
+            from src.qt.com.qtimg import QtImgMgr
             QtImgMgr().ShowImg("")
         pass
+
+    def LoadDatabaseVersion(self):
+        _, timeStr, version = self.searchForm.searchDb.InitUpdateInfo()
+        self.curSubVersion = version
+        self.curUpdateTick = ToolUtil.GetTimeTickEx(timeStr)
+        if self.curUpdateTick > 0:
+            self.InitUpdateDatabase()
+        return
 
     def InitUpdate(self):
         self.qtTask.AddHttpTask(req.CheckUpdateReq(), self.InitUpdateBack)
@@ -202,5 +223,66 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         except Exception as es:
             Log.Error(es)
 
+    def InitUpdateDatabase(self):
+        self.qtTask.AddHttpTask(req.CheckUpdateDatabaseReq(), self.InitUpdateDatabaseBack)
+
+    def InitUpdateDatabaseBack(self, data):
+        try:
+            updateTick = int(data)
+            self.CheckLoadNextDayData(updateTick)
+
+        except Exception as es:
+            Log.Error(es)
+
+    def CheckLoadNextDayData(self, newTick):
+        if newTick <= self.curUpdateTick:
+            return
+        day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
+        if day <= 0:
+            self.qtTask.AddHttpTask(req.DownloadDatabaseReq(newTick), self.DownloadDataBack, backParam=(newTick, newTick))
+        else:
+            self.curSubVersion = 0
+            self.qtTask.AddHttpTask(req.DownloadDatabaseReq(self.curUpdateTick), self.DownloadDataBack, backParam=(ToolUtil.GetCurZeroDatatime(self.curUpdateTick + 24*3600), newTick))
+        return
+
+    def DownloadDataBack(self, data, v):
+        updateTick, newTick = v
+        try:
+            Log.Info("db: check update, {}->{}->{}".format(self.curUpdateTick, updateTick, newTick))
+            if len(data) <= 20:
+                pass
+            elif data:
+                if ToolUtil.DiffDays(updateTick, self.curUpdateTick) <= 0:
+                    # 分割数据
+                    dataList = data.split("\r\n")
+                    dataList = list(filter(lambda data: data != "", dataList))
+                    rawList = dataList[self.curSubVersion:]
+                    self.curSubVersion = len(dataList)
+                else:
+                    # 全部更新
+                    rawList = data.split("\r\n")
+                addData = self.ParseBookInfo(rawList)
+                self.searchForm.searchDb.Update(addData, updateTick, self.curSubVersion)
+                self.favoriteForm.dbMgr.Update(addData)
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            self.curUpdateTick = updateTick
+            self.CheckLoadNextDayData(newTick)
+
     def Close(self):
         self.downloadForm.Close()
+
+    def ParseBookInfo(self, rawList):
+        infos = []
+        try:
+            for raw in rawList:
+                if not raw:
+                    continue
+                data = base64.b64decode(raw.encode('utf-8'))
+                book = pickle.loads(data)
+                infos.append(book)
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            return infos

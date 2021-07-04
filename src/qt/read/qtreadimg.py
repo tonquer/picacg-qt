@@ -1,5 +1,4 @@
 from PySide2 import QtWidgets
-from PySide2 import QtWidgets
 from PySide2.QtCore import Qt, QRectF, QPointF, QEvent, QSize
 from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import QDesktopWidget, QMessageBox
@@ -68,6 +67,13 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
     def qtTool(self):
         return self.frame.qtTool
 
+    def changeEvent(self, ev):
+        if self.windowState() == Qt.WindowMaximized:
+            self.showFullScreen()
+            self.frame.qtTool.fullButton.setText("退出全屏")
+            return
+        super(QtReadImg, self).changeEvent(ev)
+
     def closeEvent(self, a0) -> None:
         self.ReturnPage()
         QtOwner().owner.bookInfoForm.show()
@@ -111,7 +117,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             desktop = QDesktopWidget()
             self.resize(desktop.width()//4*3, desktop.height()-100)
             self.move(desktop.width()//8, 0)
-
+            self.isInit = True
         # historyInfo = self.owner().historyForm.GetHistory(bookId)
         # if historyInfo and historyInfo.epsId == epsId:
         #     self.curIndex = historyInfo.picIndex
@@ -330,6 +336,10 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             self.qtTool.NextPage()
             return
         elif ev.key() == Qt.Key_Escape:
+            if self.windowState() == Qt.WindowFullScreen:
+                self.showNormal()
+                self.frame.qtTool.fullButton.setText("全屏")
+                return
             self.qtTool.ReturnPage()
             return
         elif ev.key() == Qt.Key_Up:
