@@ -2,6 +2,8 @@
 - 哔咔漫画window客户端（现已支持Linux和macOS），界面使用QT。
 - 该项目仅供技术研究使用，请勿用于其他用途。
 - 如果觉得本项目对你有所帮助，请点个star关注，感谢支持
+- 如有使用中遇到问题，欢迎提ISSUE
+- 有任何建议或技术交流可以在Discussions讨论
 ## 功能
 - [x] 主页
   - [x] 魔推荐
@@ -112,4 +114,3 @@ rm -f dist/PicACG.app/Contents/MacOS/resources/*.py
 - https://github.com/nihui/waifu2x-ncnn-vulkan
 - https://github.com/PyQt5/PyQt
 - https://github.com/PyQt5/PyQtClient
-- 如有任何问题，欢迎提ISSUE
