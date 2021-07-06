@@ -87,7 +87,7 @@
 ## 如何编译
 1. git clone https://github.com/tonquer/picacg-windows.git
 2. 安装 Python 3.7+ (Mac 用户则只需要安装 [Xcode 12.4 及其命令行工具 (官方)](https://developer.apple.com/download/more/?name=Xcode%2012.4) ,安装后自带双架构 Python 3.8.2, 下载时需登录 iCloud 账号
-3. pip install -r requirements.tzt
+3. pip install -r requirements.txt
 4. 可以使用 pyinstaller -F -w start.py 打包成 exe
 ### 对于 macOS 用户
 ````bash
