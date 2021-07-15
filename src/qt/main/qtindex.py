@@ -23,13 +23,10 @@ class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
         self.isInit = False
 
         self.bookList1.InitBook()
-        self.bookList1.doubleClicked.connect(self.OpenSearch1)
 
         self.bookList2.InitBook()
-        self.bookList2.doubleClicked.connect(self.OpenSearch2)
 
         self.bookList3.InitBook()
-        self.bookList3.doubleClicked.connect(self.OpenSearch3)
 
         p = QPixmap()
         p.loadFromData(DataMgr().GetData("fold2"))
@@ -99,48 +96,6 @@ class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
                 bookList.AddBookItem(v)
         except Exception as es:
             Log.Error(es)
-
-    def OpenSearch1(self, modelIndex):
-        index = modelIndex.row()
-        item = self.bookList1.item(index)
-        if not item:
-            return
-        widget = self.bookList1.itemWidget(item)
-        if not widget:
-            return
-        bookId = widget.id
-        if not bookId:
-            return
-        QtOwner().owner.bookInfoForm.OpenBook(bookId)
-        return
-
-    def OpenSearch2(self, modelIndex):
-        index = modelIndex.row()
-        item = self.bookList2.item(index)
-        if not item:
-            return
-        widget = self.bookList2.itemWidget(item)
-        if not widget:
-            return
-        bookId = widget.id
-        if not bookId:
-            return
-        QtOwner().owner.bookInfoForm.OpenBook(bookId)
-        return
-
-    def OpenSearch3(self, modelIndex):
-        index = modelIndex.row()
-        item = self.bookList3.item(index)
-        if not item:
-            return
-        widget = self.bookList3.itemWidget(item)
-        if not widget:
-            return
-        bookId = widget.id
-        if not bookId:
-            return
-        QtOwner().owner.bookInfoForm.OpenBook(bookId)
-        return
 
     def SwitchButton1(self):
         isVisible = self.bookList1.isVisible()

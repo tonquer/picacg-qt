@@ -118,29 +118,17 @@ class Ui_Comment(object):
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout_3.setSizeConstraint(QLayout.SetDefaultConstraint)
-        self.starPic = QLabel(Comment)
-        self.starPic.setObjectName(u"starPic")
-        self.starPic.setMaximumSize(QSize(30, 30))
+        self.starButton = QToolButton(Comment)
+        self.starButton.setObjectName(u"starButton")
+        self.starButton.setStyleSheet(u"background-color:transparent;")
 
-        self.horizontalLayout_3.addWidget(self.starPic)
+        self.horizontalLayout_3.addWidget(self.starButton)
 
-        self.starLabel = QLabel(Comment)
-        self.starLabel.setObjectName(u"starLabel")
-        self.starLabel.setMaximumSize(QSize(40, 30))
+        self.commentButton = QToolButton(Comment)
+        self.commentButton.setObjectName(u"commentButton")
+        self.commentButton.setStyleSheet(u"background-color:transparent;")
 
-        self.horizontalLayout_3.addWidget(self.starLabel)
-
-        self.numPic = QLabel(Comment)
-        self.numPic.setObjectName(u"numPic")
-        self.numPic.setMaximumSize(QSize(30, 30))
-
-        self.horizontalLayout_3.addWidget(self.numPic)
-
-        self.numLabel = QLabel(Comment)
-        self.numLabel.setObjectName(u"numLabel")
-        self.numLabel.setMaximumSize(QSize(40, 30))
-
-        self.horizontalLayout_3.addWidget(self.numLabel)
+        self.horizontalLayout_3.addWidget(self.commentButton)
 
         self.horizontalSpacer_2 = QSpacerItem(30, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -152,6 +140,12 @@ class Ui_Comment(object):
 
         self.verticalLayout_2.addLayout(self.verticalLayout_3)
 
+        self.linkLabel = QLabel(Comment)
+        self.linkLabel.setObjectName(u"linkLabel")
+        self.linkLabel.setMaximumSize(QSize(16777215, 40))
+
+        self.verticalLayout_2.addWidget(self.linkLabel)
+
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
 
@@ -160,6 +154,8 @@ class Ui_Comment(object):
 
 
         self.retranslateUi(Comment)
+        self.starButton.clicked.connect(Comment.AddLike)
+        self.commentButton.clicked.connect(Comment.OpenComment)
 
         QMetaObject.connectSlotsByName(Comment)
     # setupUi
@@ -173,9 +169,8 @@ class Ui_Comment(object):
         self.levelLabel.setText(QCoreApplication.translate("Comment", u"LV", None))
         self.titleLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.commentLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
-        self.starPic.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
-        self.starLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
-        self.numPic.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
-        self.numLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
+        self.starButton.setText(QCoreApplication.translate("Comment", u"...", None))
+        self.commentButton.setText(QCoreApplication.translate("Comment", u"...", None))
+        self.linkLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
     # retranslateUi
 

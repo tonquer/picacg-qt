@@ -28,7 +28,10 @@ PreLoading = 5    # 预加载5页
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
+UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-windows/releases/latest"
 UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
+UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
+
 DatabaseUpdate = "https://raw.githubusercontent.com/tonquer/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/tonquer/picacg-database/main/data/"
 UpdateVersion = "v1.1.9"

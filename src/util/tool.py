@@ -148,6 +148,8 @@ class ToolUtil(object):
     @staticmethod
     def ParseFromData(desc, src):
         try:
+            if not src:
+                return
             if isinstance(src, str):
                 src = json.loads(src)
             for k, v in src.items():

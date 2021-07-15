@@ -14,7 +14,7 @@ from src.qt.com.qtimg import  QtImgMgr
 from src.qt.main.qtsearch_db import DbBook
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTask, QtTaskBase
-from src.user.user import CategoryInfo
+from src.user.user import CategoryInfo, User
 from src.util import ToolUtil
 from src.util.status import Status
 
@@ -148,6 +148,8 @@ class QtBookList(QListWidget, QtTaskBase):
         # self.verticalScrollBar().valueChanged.connect(self.OnMove)
         self.isLoadingPage = False
         self.LoadCallBack = None
+        self.OpenBack = None
+        self.LikeBack = None
         self.parentId = -1
         self.popMenu = None
         QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
@@ -195,9 +197,13 @@ class QtBookList(QListWidget, QtTaskBase):
         action = self.popMenu.addAction("刪除")
         action.triggered.connect(self.DelHandler)
 
-    def InitUser(self, callBack=None):
+    def InitUser(self, callBack=None, openBack=None, likeBack=None):
         self.setFrameShape(self.NoFrame)  # 无边框
         self.LoadCallBack = callBack
+        self.OpenBack = openBack
+        self.LikeBack = likeBack
+        self.setFocusPolicy(Qt.NoFocus)
+        self.setWindowFlags(self.windowFlags() &~ Qt.ItemIsSelectable)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     # def OnMove(self, action):
@@ -332,9 +338,11 @@ class QtBookList(QListWidget, QtTaskBase):
         content = info.get("content")
         if not content:
             content = info.get("description")
-
-        name = info.get("_user", {}).get("name")
-        avatar = info.get("_user", {}).get("avatar", {})
+        user = info.get("_user")
+        if not user:
+            user = User().userInfo
+        name = user.get("name")
+        avatar = user.get("avatar", {})
         if not avatar:
             avatar = info.get("avatar")
         createdTime = info.get("created_at", "")
@@ -344,9 +352,9 @@ class QtBookList(QListWidget, QtTaskBase):
         else:
             commnetId = info.get("url")
         likesCount = info.get("likesCount", "")
-        title = info.get("_user", {}).get("title", "")
-        level = info.get("_user", {}).get("level", 1)
-        character = info.get("_user", {}).get("character", "")
+        title = user.get("title", "")
+        level = user.get("level", 1)
+        character = user.get("character", "")
         if not avatar:
             url = ""
             path = ""
@@ -359,11 +367,21 @@ class QtBookList(QListWidget, QtTaskBase):
 
         index = self.count()
         iwidget = QtComment(self)
+
+        if isinstance(info.get("_comic"), dict):
+            iwidget.linkId = info.get("_comic").get("_id")
+            linkData = info.get("_comic").get("title", "")
+            iwidget.linkLabel.setText("<u><font color=#d5577c>{}</font></u>".format(linkData))
+            iwidget.linkLabel.setVisible(True)
+
+        if info.get("isLiked"):
+            iwidget.SetLike()
+
         iwidget.id = commnetId
         iwidget.commentLabel.setText(content)
         iwidget.nameLabel.setText(name)
-        iwidget.numLabel.setText("({})".format(commentsCount))
-        iwidget.starLabel.setText("({})".format(likesCount))
+        iwidget.commentButton.setText("({})".format(commentsCount))
+        iwidget.starButton.setText("({})".format(likesCount))
         iwidget.levelLabel.setText(" LV" + str(level) + " ")
         iwidget.titleLabel.setText(" " + title + " ")
         iwidget.url = url

@@ -10,4 +10,9 @@ class BaseRes(object):
         self.message = ""
         self.reqBak = None
         if isParseRes:
-            ToolUtil.ParseFromData(self, self.raw.text)
+            ToolUtil.ParseFromData(self, self.GetText())
+
+    def GetText(self):
+        if hasattr(self.raw, "text"):
+            return self.raw.text
+        return ""

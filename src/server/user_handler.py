@@ -166,6 +166,10 @@ class DownloadBookHandler(object):
 @handler(req.CheckUpdateReq)
 class CheckUpdateHandler(object):
     def __call__(self, backData):
+        if not backData.res.GetText() or backData.status == Status.NetError:
+            if backData.bakParam:
+                QtTask().taskBack.emit(backData.bakParam, "")
+            return
         updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", backData.res.raw.text)
         if updateInfo:
             data = updateInfo[0]
@@ -218,12 +222,15 @@ class SpeedTestHandler(object):
                     QtTask().taskBack.emit(backData.bakParam, "")
 
 
+@handler(req.GetUserCommentReq)
 @handler(req.FavoritesAdd)
 @handler(req.FavoritesReq)
 @handler(req.AdvancedSearchReq)
 @handler(req.CategoriesSearchReq)
 @handler(req.RankReq)
 @handler(req.GetComments)
+@handler(req.BookLikeReq)
+@handler(req.CommentsLikeReq)
 @handler(req.GetKeywords)
 @handler(req.SendComment)
 @handler(req.SendCommentChildrenReq)
@@ -239,6 +246,7 @@ class SpeedTestHandler(object):
 @handler(req.GetGameInfoReq)
 @handler(req.GetGameCommentsReq)
 @handler(req.SendGameCommentsReq)
+@handler(req.GameCommentsLikeReq)
 @handler(req.CheckUpdateDatabaseReq)
 @handler(req.DownloadDatabaseReq)
 class MsgHandler(object):

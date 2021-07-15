@@ -294,7 +294,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.modelBox.setCurrentIndex(index)
         self.label_2.setText("去噪等级：" + str(noise))
         self.label_3.setText("放大倍数：" + str(scale))
-        self.label_9.setText("转码模式：" + QtOwner().owner.settingForm.GetGpuName())
+        self.label_9.setText("转换模式：" + QtOwner().owner.settingForm.GetGpuName())
 
     def ReduceScalePic(self):
         self.readImg.zoom(1/1.1)

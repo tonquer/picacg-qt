@@ -13,14 +13,12 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
         Ui_Rank.__init__(self)
         self.setupUi(self)
         self.h24BookList.InitBook()
-        self.h24BookList.doubleClicked.connect(self.OpenSearch)
 
         self.d7BookList.InitBook()
-        self.d7BookList.doubleClicked.connect(self.OpenSearch)
 
         self.d30BookList.InitBook()
-        self.d30BookList.doubleClicked.connect(self.OpenSearch)
         self.isInit = False
+        self.tabWidget.setCurrentIndex(0)
 
     def SwitchCurrent(self):
         self.Init()
@@ -54,18 +52,3 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
         except Exception as es:
             Log.Error(es)
             self.isInit = False
-
-    def OpenSearch(self, modelIndex):
-        index = modelIndex.row()
-        bookIndex = self.tabWidget.currentIndex()
-        bookList = [self.h24BookList, self.d7BookList, self.d30BookList][bookIndex]
-        item = bookList.item(index)
-        if not item:
-            return
-        widget = bookList.itemWidget(item)
-        if not widget:
-            return
-        bookId = widget.id
-        if not bookId:
-            return
-        QtOwner().owner.bookInfoForm.OpenBook(bookId)

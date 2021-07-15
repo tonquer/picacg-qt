@@ -11,6 +11,7 @@ class QtFileData(object):
     DownloadError = "下载错误"
     DownloadReset = "重新下载"
 
+    WaifuWait =  "等待中"
     WaifuStateStart = "解码开始"
     WaifuStateCancle = "不解码"
     WaifuStateEnd = "解码完成"
@@ -28,6 +29,7 @@ class QtFileData(object):
         self.waifuDataSize = 0
         self.waifuData = None
         self.waifuTick = 0
+        self.waifu2xTaskId = 0
         self.model = {}
 
         self.downloadSize = 0
@@ -45,7 +47,7 @@ class QtFileData(object):
             self.state = self.DownloadError
             return
         if config.IsOpenWaifu:
-            self.waifuState = self.WaifuStateStart
+            self.waifuState = self.WaifuWait
         self.data = data
         self.w, self.h = ToolUtil.GetPictureSize(data)
         self.model = ToolUtil.GetLookScaleModel(self.w, self.h, category)

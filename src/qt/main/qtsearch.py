@@ -75,6 +75,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         return
 
     def Search2(self, text):
+        self.setFocus()
         QtOwner().owner.userForm.toolButton1.click()
 
         if self.localBox.isChecked():
@@ -160,6 +161,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         self.bookList.update()
 
     def OpenSearchCategories(self, categories):
+        self.setFocus()
         self.bookList.clear()
         self.categories = categories
         self.searchEdit.setPlaceholderText(categories)

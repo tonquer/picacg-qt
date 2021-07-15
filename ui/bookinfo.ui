@@ -259,36 +259,6 @@ QListWidget::item {
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_8">
-                   <item>
-                    <widget class="QLabel" name="label_6">
-                     <property name="maximumSize">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>爱心数：</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="likes">
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>爱心数</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_9">
                    <item>
                     <widget class="QLabel" name="label_7">
@@ -343,40 +313,50 @@ QListWidget::item {
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="download">
+                    <widget class="QToolButton" name="starButton">
                      <property name="minimumSize">
                       <size>
-                       <width>0</width>
+                       <width>40</width>
                        <height>40</height>
                       </size>
                      </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>40</height>
-                      </size>
+                     <property name="styleSheet">
+                      <string notr="true">background-color:transparent;</string>
                      </property>
                      <property name="text">
-                      <string>下载</string>
+                      <string/>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QPushButton" name="favorites">
+                    <widget class="QToolButton" name="favoriteButton">
                      <property name="minimumSize">
                       <size>
-                       <width>0</width>
+                       <width>40</width>
                        <height>40</height>
                       </size>
                      </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>40</height>
-                      </size>
+                     <property name="styleSheet">
+                      <string notr="true">background-color:transparent;</string>
                      </property>
                      <property name="text">
-                      <string>收藏</string>
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QToolButton" name="downloadButton">
+                     <property name="minimumSize">
+                      <size>
+                       <width>40</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">background-color:transparent;</string>
+                     </property>
+                     <property name="text">
+                      <string/>
                      </property>
                     </widget>
                    </item>
@@ -426,7 +406,7 @@ QListWidget::item {
               <string notr="true">QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }</string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="epsWidget">
               <attribute name="title">
@@ -469,38 +449,11 @@ QListWidget::item {
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="commentWidget">
+             <widget class="QtCommentList" name="commentWidget">
               <attribute name="title">
                <string>评论</string>
               </attribute>
-              <layout class="QGridLayout" name="commentLayout">
-               <item row="0" column="0">
-                <widget class="QtBookList" name="listWidget">
-                 <property name="styleSheet">
-                  <string notr="true">QListWidget {background-color:transparent;}
-QListWidget::item { border-bottom: 1px solid black; }</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_10">
-                 <item>
-                  <widget class="QLineEdit" name="commentLine">
-                   <property name="styleSheet">
-                    <string notr="true">background-color:transparent;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="commentButton">
-                   <property name="text">
-                    <string>发送评论</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
+              <layout class="QGridLayout" name="commentLayout"/>
              </widget>
             </widget>
            </item>
@@ -516,50 +469,19 @@ QListWidget::item { border-bottom: 1px solid black; }</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QtBookList</class>
-   <extends>QListWidget</extends>
-   <header location="global">.qtlistwidget.h</header>
-  </customwidget>
-  <customwidget>
    <class>QtCategoryList</class>
    <extends>QListWidget</extends>
    <header location="global">.qtlistwidget.h</header>
   </customwidget>
+  <customwidget>
+   <class>QtCommentList</class>
+   <extends>QWidget</extends>
+   <header location="global">.qt_comment_list.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>download</sender>
-   <signal>clicked()</signal>
-   <receiver>BookInfo</receiver>
-   <slot>AddDownload()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>374</x>
-     <y>300</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>646</x>
-     <y>360</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>favorites</sender>
-   <signal>clicked()</signal>
-   <receiver>BookInfo</receiver>
-   <slot>AddFavority()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>455</x>
-     <y>300</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>760</x>
-     <y>324</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>startRead</sender>
    <signal>clicked()</signal>
@@ -567,12 +489,60 @@ QListWidget::item { border-bottom: 1px solid black; }</string>
    <slot>StartRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>399</x>
-     <y>328</y>
+     <x>568</x>
+     <y>474</y>
     </hint>
     <hint type="destinationlabel">
      <x>313</x>
      <y>607</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>starButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddBookLike()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>366</x>
+     <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>821</x>
+     <y>447</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>favoriteButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddFavority()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>432</x>
+     <y>454</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>781</x>
+     <y>432</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>downloadButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddDownload()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>463</x>
+     <y>449</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>788</x>
+     <y>413</y>
     </hint>
    </hints>
   </connection>
@@ -581,5 +551,6 @@ QListWidget::item { border-bottom: 1px solid black; }</string>
   <slot>AddDownload()</slot>
   <slot>AddFavority()</slot>
   <slot>StartRead()</slot>
+  <slot>AddBookLike()</slot>
  </slots>
 </ui>

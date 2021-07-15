@@ -12,8 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from .qtlistwidget import QtBookList
 from .qtlistwidget import QtCategoryList
+from .qt_comment_list import QtCommentList
 
 
 class Ui_BookInfo(object):
@@ -180,23 +180,6 @@ class Ui_BookInfo(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_7)
 
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.label_6 = QLabel(self.page)
-        self.label_6.setObjectName(u"label_6")
-        self.label_6.setMaximumSize(QSize(40, 20))
-
-        self.horizontalLayout_8.addWidget(self.label_6)
-
-        self.likes = QLabel(self.page)
-        self.likes.setObjectName(u"likes")
-        self.likes.setMaximumSize(QSize(16777215, 20))
-
-        self.horizontalLayout_8.addWidget(self.likes)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_8)
-
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.label_7 = QLabel(self.page)
@@ -224,19 +207,26 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_2.addWidget(self.updateTick)
 
-        self.download = QPushButton(self.page)
-        self.download.setObjectName(u"download")
-        self.download.setMinimumSize(QSize(0, 40))
-        self.download.setMaximumSize(QSize(16777215, 40))
+        self.starButton = QToolButton(self.page)
+        self.starButton.setObjectName(u"starButton")
+        self.starButton.setMinimumSize(QSize(40, 40))
+        self.starButton.setStyleSheet(u"background-color:transparent;")
 
-        self.horizontalLayout_2.addWidget(self.download)
+        self.horizontalLayout_2.addWidget(self.starButton)
 
-        self.favorites = QPushButton(self.page)
-        self.favorites.setObjectName(u"favorites")
-        self.favorites.setMinimumSize(QSize(0, 40))
-        self.favorites.setMaximumSize(QSize(16777215, 40))
+        self.favoriteButton = QToolButton(self.page)
+        self.favoriteButton.setObjectName(u"favoriteButton")
+        self.favoriteButton.setMinimumSize(QSize(40, 40))
+        self.favoriteButton.setStyleSheet(u"background-color:transparent;")
 
-        self.horizontalLayout_2.addWidget(self.favorites)
+        self.horizontalLayout_2.addWidget(self.favoriteButton)
+
+        self.downloadButton = QToolButton(self.page)
+        self.downloadButton.setObjectName(u"downloadButton")
+        self.downloadButton.setMinimumSize(QSize(40, 40))
+        self.downloadButton.setStyleSheet(u"background-color:transparent;")
+
+        self.horizontalLayout_2.addWidget(self.downloadButton)
 
         self.startRead = QPushButton(self.page)
         self.startRead.setObjectName(u"startRead")
@@ -294,33 +284,10 @@ class Ui_BookInfo(object):
         self.epsLayout.addWidget(self.epsListWidget, 0, 0, 1, 1)
 
         self.tabWidget.addTab(self.epsWidget, "")
-        self.commentWidget = QWidget()
+        self.commentWidget = QtCommentList()
         self.commentWidget.setObjectName(u"commentWidget")
         self.commentLayout = QGridLayout(self.commentWidget)
         self.commentLayout.setObjectName(u"commentLayout")
-        self.listWidget = QtBookList(self.commentWidget)
-        self.listWidget.setObjectName(u"listWidget")
-        self.listWidget.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
-"QListWidget::item { border-bottom: 1px solid black; }")
-
-        self.commentLayout.addWidget(self.listWidget, 0, 0, 1, 1)
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.commentLine = QLineEdit(self.commentWidget)
-        self.commentLine.setObjectName(u"commentLine")
-        self.commentLine.setStyleSheet(u"background-color:transparent;")
-
-        self.horizontalLayout_10.addWidget(self.commentLine)
-
-        self.commentButton = QPushButton(self.commentWidget)
-        self.commentButton.setObjectName(u"commentButton")
-
-        self.horizontalLayout_10.addWidget(self.commentButton)
-
-
-        self.commentLayout.addLayout(self.horizontalLayout_10, 1, 0, 1, 1)
-
         self.tabWidget.addTab(self.commentWidget, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
@@ -337,11 +304,12 @@ class Ui_BookInfo(object):
 
 
         self.retranslateUi(BookInfo)
-        self.download.clicked.connect(BookInfo.AddDownload)
-        self.favorites.clicked.connect(BookInfo.AddFavority)
         self.startRead.clicked.connect(BookInfo.StartRead)
+        self.starButton.clicked.connect(BookInfo.AddBookLike)
+        self.favoriteButton.clicked.connect(BookInfo.AddFavority)
+        self.downloadButton.clicked.connect(BookInfo.AddDownload)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(BookInfo)
@@ -357,16 +325,14 @@ class Ui_BookInfo(object):
         self.description.setText(QCoreApplication.translate("BookInfo", u"\u63cf\u8ff0", None))
         self.label_4.setText(QCoreApplication.translate("BookInfo", u"\u5206\u7c7b\uff1a", None))
         self.label_5.setText(QCoreApplication.translate("BookInfo", u"Tags\uff1a", None))
-        self.label_6.setText(QCoreApplication.translate("BookInfo", u"\u7231\u5fc3\u6570\uff1a", None))
-        self.likes.setText(QCoreApplication.translate("BookInfo", u"\u7231\u5fc3\u6570", None))
         self.label_7.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570\uff1a", None))
         self.views.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570", None))
         self.updateTick.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
-        self.download.setText(QCoreApplication.translate("BookInfo", u"\u4e0b\u8f7d", None))
-        self.favorites.setText(QCoreApplication.translate("BookInfo", u"\u6536\u85cf", None))
+        self.starButton.setText("")
+        self.favoriteButton.setText("")
+        self.downloadButton.setText("")
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.epsWidget), QCoreApplication.translate("BookInfo", u"\u7ae0\u8282", None))
-        self.commentButton.setText(QCoreApplication.translate("BookInfo", u"\u53d1\u9001\u8bc4\u8bba", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.commentWidget), QCoreApplication.translate("BookInfo", u"\u8bc4\u8bba", None))
     # retranslateUi
 

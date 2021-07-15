@@ -71,6 +71,15 @@ class GetUserInfo(ServerReq):
                                              {}, method)
 
 
+# 获得我的评论
+class GetUserCommentReq(ServerReq):
+    def __init__(self, id="", page=1):
+        url = config.Url + "users/my-comments?page={}".format(str(page))
+        method = "GET"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
 # 设置头像
 class SetAvatarInfoReq(ServerReq):
     def __init__(self, data, picFormat="jpg"):
@@ -124,6 +133,15 @@ class FavoritesReq(ServerReq):
 class FavoritesAdd(ServerReq):
     def __init__(self, bookId):
         url = config.Url + "comics/{}/favourite".format(bookId)
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+# 添加爱心
+class BookLikeReq(ServerReq):
+    def __init__(self, bookId):
+        url = config.Url + "comics/{}/like".format(bookId)
         method = "POST"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
@@ -208,10 +226,18 @@ class GetComments(ServerReq):
                                              {}, method)
 
 
+# 评论点赞
+class CommentsLikeReq(ServerReq):
+    def __init__(self, commentId=""):
+        url = config.Url + "comments/{}/like".format(commentId)
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
 # 检查更新
 class CheckUpdateReq(ServerReq):
-    def __init__(self):
-        url = config.UpdateUrl
+    def __init__(self, url=config.UpdateUrl):
         method = "GET"
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
@@ -222,7 +248,12 @@ class CheckUpdateDatabaseReq(ServerReq):
     def __init__(self):
         url = config.DatabaseUpdate
         method = "GET"
-        super(self.__class__, self).__init__(url, {}, {}, method)
+        header = {
+            "Pragma": "No-cache",
+            "Cache-Control": "no-cache",
+            "Expires": '0'
+        }
+        super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
 
 
@@ -233,7 +264,12 @@ class DownloadDatabaseReq(ServerReq):
         day = time.strftime('%Y-%m-%d', time.localtime(tick))
         url = config.DatabaseDownload + day + ".data"
         method = "GET"
-        super(self.__class__, self).__init__(url, {}, {}, method)
+        header = {
+            "Pragma": "No-cache",
+            "Cache-Control": "no-cache",
+            "Expires": '0'
+        }
+        super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
 
 
@@ -393,6 +429,15 @@ class GetGameCommentsReq(ServerReq):
     def __init__(self, gameId, page=1):
         url = config.Url + "games/{}/comments?page={}".format(gameId,page)
         method = "Get"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+# 游戏区评论爱心
+class GameCommentsLikeReq(ServerReq):
+    def __init__(self, gameId):
+        url = config.Url + "games/{}/like".format(gameId)
+        method = "POST"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
 

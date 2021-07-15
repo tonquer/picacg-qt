@@ -81,8 +81,8 @@ class Ui_download(object):
         download.setWindowTitle(QCoreApplication.translate("download", u"Form", None))
         self.pushButton.setText(QCoreApplication.translate("download", u"\u5168\u90e8\u5f00\u59cb", None))
         self.pushButton_3.setText(QCoreApplication.translate("download", u"\u5168\u90e8\u6682\u505c", None))
-        self.pushButton_2.setText(QCoreApplication.translate("download", u"\u5f00\u59cb\u8f6c\u7801", None))
-        self.pushButton_4.setText(QCoreApplication.translate("download", u"\u6682\u505c\u8f6c\u7801", None))
-        self.radioButton.setText(QCoreApplication.translate("download", u"\u4e0b\u8f7d\u5b8c\u81ea\u52a8\u8f6c\u7801", None))
+        self.pushButton_2.setText(QCoreApplication.translate("download", u"\u5f00\u59cb\u8f6c\u6362", None))
+        self.pushButton_4.setText(QCoreApplication.translate("download", u"\u6682\u505c\u8f6c\u6362", None))
+        self.radioButton.setText(QCoreApplication.translate("download", u"\u4e0b\u8f7d\u5b8c\u81ea\u52a8\u8f6c\u6362", None))
     # retranslateUi
 

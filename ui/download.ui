@@ -48,14 +48,14 @@
        <item>
         <widget class="QPushButton" name="pushButton_2">
          <property name="text">
-          <string>开始转码</string>
+          <string>开始转换</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>暂停转码</string>
+          <string>暂停转换</string>
          </property>
         </widget>
        </item>
@@ -65,7 +65,7 @@
           <bool>true</bool>
          </property>
          <property name="text">
-          <string>下载完自动转码</string>
+          <string>下载完自动转换</string>
          </property>
          <property name="checked">
           <bool>true</bool>

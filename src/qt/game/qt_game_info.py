@@ -4,8 +4,7 @@ import json
 from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import Qt, QSize, QEvent
 from PySide2.QtGui import QFont, QPixmap
-from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
-    QVBoxLayout, QScroller, QAbstractItemView
+from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QAbstractItemView
 
 from conf import config
 from qss.qss import QssDataMgr
@@ -18,7 +17,6 @@ from src.server import req, Log, ToolUtil
 from src.util.status import Status
 from ui.bookinfo import Ui_BookInfo
 from ui.gameinfo import Ui_GameInfo
-from ui.qtlistwidget import QtBookList
 
 
 class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
@@ -28,6 +26,8 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         QtTaskBase.__init__(self)
         self.setupUi(self)
         self.loadingForm = QtLoading(self)
+        self.commentWidget.InitReq(req.GetGameCommentsReq, req.SendGameCommentsReq, req.GameCommentsLikeReq)
+        self.tabWidget.setCurrentIndex(0)
         self.gameId = ""
         self.url = ""
         self.path = ""
@@ -38,12 +38,8 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.msgForm = QtBubbleLabel(self)
         self.picture.installEventFilter(self)
         self.title.setWordWrap(True)
-        self.title.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.title.customContextMenuRequested.connect(self.CopyTitle)
-
-        self.description.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.description.customContextMenuRequested.connect(self.CopyDescription)
-
+        self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setWordWrap(True)
         self.description.setAlignment(Qt.AlignTop)
 
@@ -58,34 +54,9 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.epsListWidget.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
         self.epsListWidget.verticalScrollBar().setSingleStep(30)
-
-        self.listWidget.InitUser(self.LoadNextPage)
-        self.listWidget.doubleClicked.connect(self.OpenCommentInfo)
-
-        self.childrenListWidget = QtBookList(None)
-        self.childrenListWidget.InitUser(self.LoadChildrenNextPage)
-
-        self.childrenWidget = QtWidgets.QWidget()
         self.androidLink = ""
         self.iosLink = ""
-        layout = QHBoxLayout(self.childrenWidget)
 
-        label = QLabel()
-        label.setMinimumWidth(100)
-        layout.addWidget(label)
-        layout3 = QVBoxLayout()
-
-        layout2 = QHBoxLayout()
-        self.commentLine2 = QLineEdit()
-        self.commentButton2 = QPushButton("回复")
-        self.commentButton2.clicked.connect(self.SendCommentChildren)
-        layout2.addWidget(self.commentLine2)
-        layout2.addWidget(self.commentButton2)
-        layout3.addLayout(layout2)
-        layout3.addWidget(self.childrenListWidget)
-        layout.addLayout(layout3)
-
-        self.commentButton.clicked.connect(self.SendComment)
         self.listPictureInfo = {}
 
         # self.epsListWidget.clicked.connect(self.OpenReadImg)
@@ -159,7 +130,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.msgForm.ShowMsg("复制描述")
         return
 
-
     def OpenBook(self, gameId):
         self.gameId = gameId
         self.setWindowTitle(self.gameId)
@@ -223,7 +193,8 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
             self.updateTick.setText(dayStr + "更新")
             if config.IsLoadingPicture:
                 self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
-            self.AddHttpTask(req.GetGameCommentsReq(self.gameId), self.GetCommnetBack)
+            self.commentWidget.bookId = self.gameId
+            self.commentWidget.LoadComment()
             for index, pic in enumerate(data.get("data").get("game").get("screenshots", [])):
                 item = QListWidgetItem(self.epsListWidget)
                 self.epsListWidget.setItemWidget(item, QLabel("图片加载中"))
@@ -277,183 +248,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         if not data:
             return
         QtImgMgr().ShowImg(data)
-
-    # 加载评论
-    def GetCommnetBack(self, data):
-        try:
-            self.loadingForm.close()
-            self.listWidget.UpdateState()
-            msg = json.loads(data)
-            if msg.get("code") == 200:
-                comments = msg.get("data", {}).get("comments", {})
-                topComments = msg.get("data", {}).get("topComments", [])
-                page = int(comments.get("page", 1))
-                pages = int(comments.get("pages", 1))
-                limit = int(comments.get("limit", 1))
-                self.listWidget.UpdatePage(page, pages)
-                total = comments.get("total", 0)
-                self.tabWidget.setTabText(1, "评论({})".format(str(total)))
-                if page == 1:
-                    for index, info in enumerate(topComments):
-                        floor = "置顶"
-                        self.listWidget.AddUserItem(info, floor)
-
-                for index, info in enumerate(comments.get("docs")):
-                    floor = total - ((page - 1) * limit + index)
-                    self.listWidget.AddUserItem(info, floor)
-            return
-        except Exception as es:
-            Log.Error(es)
-
-    def LoadNextPage(self):
-        self.loadingForm.show()
-        self.AddHttpTask(req.GetGameCommentsReq(self.gameId, self.listWidget.page + 1), self.GetCommnetBack)
-        return
-
-    def SendComment(self):
-        data = self.commentLine.text()
-        if not data:
-            return
-        self.commentLine.setText("")
-        self.loadingForm.show()
-        self.AddHttpTask(req.SendGameCommentsReq(self.gameId, data), callBack=self.SendCommentBack)
-
-    def SendCommentBack(self, msg):
-        try:
-            data = json.loads(msg)
-            if data.get("code") == 200:
-                self.ClearCommnetList()
-                self.AddHttpTask(req.GetComments(self.gameId), self.GetCommnetBack)
-            else:
-                self.loadingForm.close()
-                QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
-            self.commentLine.setText("")
-        except Exception as es:
-            self.loadingForm.close()
-            Log.Error(es)
-
-    def OpenCommentInfo(self, modelIndex):
-        index = modelIndex.row()
-        item = self.listWidget.item(index)
-        if not item:
-            return
-        widget = self.listWidget.itemWidget(item)
-        if not widget:
-            return
-
-        self.childrenListWidget.clear()
-        self.childrenListWidget.UpdatePage(1, 1)
-        self.childrenListWidget.UpdateState()
-        if self.childrenListWidget.parentId == index:
-            # self.childrenWidget.hide()
-            self.childrenWidget.setParent(None)
-            widget.gridLayout.removeWidget(self.childrenWidget)
-            self.childrenListWidget.parentId = -1
-            item.setSizeHint(widget.sizeHint())
-            return
-        if self.childrenListWidget.parentId >= 0:
-            item2 = self.listWidget.item(self.childrenListWidget.parentId)
-            widget2 = self.listWidget.itemWidget(item2)
-            self.childrenWidget.setParent(None)
-            widget2.gridLayout.removeWidget(self.childrenWidget)
-            self.childrenListWidget.parentId = -1
-            item2.setSizeHint(widget2.sizeHint())
-
-        self.loadingForm.show()
-        self.AddHttpTask(req.GetCommentsChildrenReq(widget.id), self.LoadCommentInfoBack, backParam=index)
-
-    def LoadCommentInfoBack(self, msg, index):
-        try:
-            self.loadingForm.close()
-            item = self.listWidget.item(index)
-            if not item:
-                return
-            widget = self.listWidget.itemWidget(item)
-            if not widget:
-                return
-            self.childrenListWidget.UpdateState()
-            data = json.loads(msg)
-            self.childrenListWidget.parentId = index
-            widget.gridLayout.addWidget(self.childrenWidget, 1, 0, 1, 1)
-            if data.get("code") == 200:
-                comments = data.get("data", {}).get("comments", {})
-                page = int(comments.get("page", 1))
-                total = int(comments.get("total", 1))
-                pages = int(comments.get("pages", 1))
-                limit = int(comments.get("limit", 1))
-                self.childrenListWidget.UpdatePage(page, pages)
-                for index, info in enumerate(comments.get("docs")):
-                    floor = total - ((page - 1) * limit + index)
-                    self.childrenListWidget.AddUserItem(info, floor)
-
-                pass
-            self.listWidget.scrollToItem(item, self.listWidget.ScrollHint.PositionAtTop)
-            size = self.listWidget.size()
-            item.setSizeHint(size)
-        except Exception as es:
-            Log.Error(es)
-
-    def SendCommentChildren(self):
-        data = self.commentLine2.text()
-        if not data:
-            return
-        index = self.childrenListWidget.parentId
-        item = self.listWidget.item(index)
-        if not item:
-            return
-        widget = self.listWidget.itemWidget(item)
-        if not widget:
-            return
-        self.commentLine2.setText("")
-        commentId = widget.id
-        self.loadingForm.show()
-        self.childrenListWidget.clear()
-        self.AddHttpTask(req.SendCommentChildrenReq(commentId, data), callBack=self.SendCommentChildrenBack, backParam=index)
-
-    def SendCommentChildrenBack(self, msg, index):
-        try:
-            item = self.listWidget.item(index)
-            if not item:
-                self.loadingForm.close()
-                return
-            widget = self.listWidget.itemWidget(item)
-            if not widget:
-                self.loadingForm.close()
-                return
-
-            data = json.loads(msg)
-            if data.get("code") == 200:
-                self.AddHttpTask(req.GetCommentsChildrenReq(widget.id), self.LoadCommentInfoBack, backParam=index)
-            else:
-                self.loadingForm.close()
-                QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
-            self.commentLine.setText("")
-        except Exception as es:
-            self.loadingForm.close()
-            Log.Error(es)
-
-    def LoadChildrenNextPage(self):
-        index = self.childrenListWidget.parentId
-        item = self.listWidget.item(index)
-        if not item:
-            return
-        widget = self.listWidget.itemWidget(item)
-        if not widget:
-            return
-        self.loadingForm.show()
-        self.AddHttpTask(req.GetCommentsChildrenReq(widget.id, self.childrenListWidget.page + 1), self.LoadCommentInfoBack, backParam=index)
-        return
-
-    def ClearCommnetList(self):
-        if self.childrenListWidget.parentId >= 0:
-            item2 = self.listWidget.item(self.childrenListWidget.parentId)
-            widget2 = self.listWidget.itemWidget(item2)
-            self.childrenWidget.setParent(None)
-            widget2.gridLayout.removeWidget(self.childrenWidget)
-            self.childrenListWidget.parentId = -1
-            item2.setSizeHint(widget2.sizeHint())
-        self.childrenListWidget.clear()
-        self.listWidget.clear()
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:

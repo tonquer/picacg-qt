@@ -4,7 +4,7 @@ import threading
 import time
 from queue import Queue
 from types import FunctionType
-
+import json
 from PySide2.QtCore import Signal, QObject
 
 from conf import config
@@ -44,7 +44,7 @@ class QtDownloadTask(object):
         self.backParam = None
         self.cleanFlag = ""
         self.tick = 0
-        self.cacheAndLoadPath = ""   # 保存和加载
+        self.cacheAndLoadPath = ""   # 缓存和加载
         self.loadPath = ""  # 只加载
 
         self.imgData = b""
@@ -72,25 +72,27 @@ class QtTaskBase:
     # callBack(data)
     # callBack(data, backParam)
     def AddHttpTask(self, req, callBack=None, backParam=None):
-        QtTask().AddHttpTask(req, callBack, backParam, cleanFlag=self.__taskFlagId)
+        return QtTask().AddHttpTask(req, callBack, backParam, cleanFlag=self.__taskFlagId)
 
     # downloadCallBack(data, laveFileSize, backParam)
     # downloadCallBack(data, laveFileSize)
     # downloadCompleteBack(data, st)
     # downloadCompleteBack(data, st, backParam)
     def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, isSaveData=True, backParam=None, isSaveCache=True, filePath=""):
-        QtTask().AddDownloadTask(url, path, downloadCallBack, completeCallBack, isSaveData, backParam, isSaveCache, self.__taskFlagId, filePath)
+        return QtTask().AddDownloadTask(url, path, downloadCallBack, completeCallBack, isSaveData, backParam, isSaveCache, self.__taskFlagId, filePath)
 
     # completeCallBack(saveData, taskId, backParam, tick)
     def AddConvertTask(self, path, imgData, model, completeCallBack, backParam=None, filePath=""):
-        QtTask().AddConvertTask(path, imgData, model, completeCallBack, backParam, self.__taskFlagId, filePath)
+        return QtTask().AddConvertTask(path, imgData, model, completeCallBack, backParam, self.__taskFlagId, filePath)
 
     def ClearTask(self):
-        QtTask().CancelTasks(self.__taskFlagId)
+        return QtTask().CancelTasks(self.__taskFlagId)
 
     def ClearConvert(self):
-        QtTask().CancelConver(self.__taskFlagId)
+        return QtTask().CancelConver(self.__taskFlagId)
 
+    def ClearWaitConvertIds(self, taskIds):
+        return QtTask().ClearWaitConvertIds(taskIds)
 
 class QtTask(Singleton, threading.Thread):
 
@@ -197,12 +199,12 @@ class QtTask(Singleton, threading.Thread):
             if info.cleanFlag:
                 taskIds = self.flagToIds.get(info.cleanFlag, set())
                 taskIds.discard(info.taskId)
-
-            if info.backParam is None:
-                info.callBack(data)
-            else:
-                info.callBack(data, info.backParam)
-            del info.callBack
+            if info.callBack:
+                if info.backParam is None:
+                    info.callBack(data)
+                else:
+                    info.callBack(data, info.backParam)
+                del info.callBack
             del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)
@@ -278,7 +280,7 @@ class QtTask(Singleton, threading.Thread):
         info.imgData = imgData
         info.model = model
         if path:
-            a = hashlib.md5(path.encode("utf-8")).hexdigest()
+            a = hashlib.md5((path+json.dumps(model)).encode("utf-8")).hexdigest()
             path = os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath)
             path = os.path.join(path, a)
             info.cacheAndLoadPath = path
@@ -389,4 +391,13 @@ class QtTask(Singleton, threading.Thread):
         self.convertFlag.pop(cleanFlag)
         if config.CanWaifu2x:
             import waifu2x
-            waifu2x.delete(list(taskIds))
+            waifu2x.remove(list(taskIds))
+
+    def ClearWaitConvertIds(self, taskIds):
+        for taskId in taskIds:
+            if taskId in self.convertLoad:
+                del self.convertLoad[taskId]
+        Log.Info("cancel wait convert taskId, {}".format(taskIds))
+        if config.CanWaifu2x:
+            import waifu2x
+            waifu2x.removeWaitProc(list(taskIds))

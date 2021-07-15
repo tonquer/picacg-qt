@@ -19,7 +19,7 @@ class Ui_User(object):
     def setupUi(self, User):
         if not User.objectName():
             User.setObjectName(u"User")
-        User.resize(1059, 677)
+        User.resize(1059, 702)
         User.setMinimumSize(QSize(0, 0))
         self.gridLayout_2 = QGridLayout(User)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -69,12 +69,65 @@ class Ui_User(object):
 
         self.verticalLayout.addWidget(self.exp)
 
-        self.signButton = QPushButton(User)
+        self.signButton = QToolButton(User)
         self.signButton.setObjectName(u"signButton")
-        self.signButton.setEnabled(False)
-        self.signButton.setMaximumSize(QSize(100, 16777215))
+        self.signButton.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+"QToolButton{\n"
+"    background:transparent;\n"
+"    color: rgb(0, 0, 2);\n"
+"    border-style: outset;\n"
+"    border-color: beige;\n"
+"    border-radius: 10px;\n"
+"}\n"
+"\n"
+"/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+" QToolButton:hover \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+"\n"
+" /* \u6309\u94ae\u88ab\u5355\u51fb\u540e\uff0c\u6309\u94ae\u989c\u8272 */\n"
+"QToolButton:checked {\n"
+"    background-color:rgb(42, 115, 175);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(255, 255, 0);\n"
+"}")
 
         self.verticalLayout.addWidget(self.signButton)
+
+        self.toolButton11 = QToolButton(User)
+        self.buttonGroup = QButtonGroup(User)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.toolButton11)
+        self.toolButton11.setObjectName(u"toolButton11")
+        self.toolButton11.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+"QToolButton{\n"
+"    background:transparent;\n"
+"    color: rgb(0, 0, 2);\n"
+"    border-style: outset;\n"
+"    border-color: beige;\n"
+"    border-radius: 10px;\n"
+"}\n"
+"\n"
+"/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+" QToolButton:hover \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+"\n"
+" /* \u6309\u94ae\u88ab\u5355\u51fb\u540e\uff0c\u6309\u94ae\u989c\u8272 */\n"
+"QToolButton:checked {\n"
+"    background-color:rgb(42, 115, 175);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(255, 255, 0);\n"
+"}")
+        self.toolButton11.setCheckable(True)
+
+        self.verticalLayout.addWidget(self.toolButton11)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -84,8 +137,6 @@ class Ui_User(object):
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.toolButton0 = QToolButton(User)
-        self.buttonGroup = QButtonGroup(User)
-        self.buttonGroup.setObjectName(u"buttonGroup")
         self.buttonGroup.addButton(self.toolButton0)
         self.toolButton0.setObjectName(u"toolButton0")
         self.toolButton0.setMinimumSize(QSize(100, 40))
@@ -467,7 +518,8 @@ class Ui_User(object):
         self.level.setText(QCoreApplication.translate("User", u"level:", None))
         self.title.setText(QCoreApplication.translate("User", u"title", None))
         self.exp.setText(QCoreApplication.translate("User", u"exp", None))
-        self.signButton.setText(QCoreApplication.translate("User", u"\u5df2\u7b7e\u5230", None))
+        self.signButton.setText(QCoreApplication.translate("User", u"\u6253\u54d4\u5361", None))
+        self.toolButton11.setText(QCoreApplication.translate("User", u"\u6211\u7684\u8bc4\u8bba", None))
         self.toolButton0.setText(QCoreApplication.translate("User", u"\u4e3b\u9875", None))
         self.toolButton1.setText(QCoreApplication.translate("User", u"\u641c\u7d22", None))
         self.toolButton2.setText(QCoreApplication.translate("User", u"\u5206\u7c7b", None))

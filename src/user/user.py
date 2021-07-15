@@ -104,9 +104,12 @@ class User(Singleton):
                 if self.server.address:
                     self.server.Send(req.InitAndroidReq())
                 return Status.Ok
-            else:
-                Log.Info("登陆失败！！！, userId:{}, msg:{}".format(self.userId, backData.res.message))
+            elif backData.res.code == 400:
+                Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
                 return Status.UserError + backData.res.message
+            else:
+                Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
+                return Status.UnKnowError + "code:{}, ".format(backData.res.code) + backData.res.GetText()
         except Exception as es:
             Log.Error(es)
             return Status.NetError

@@ -118,12 +118,14 @@ class Server(Singleton, threading.Thread):
                 return
         except Exception as es:
             task.status = Status.NetError
-            Log.Error(es)
+            # Log.Error(es)
+            Log.Debug(es)
         try:
             self.handler.get(task.req.__class__)(task)
             if task.res.raw:
                 task.res.raw.close()
         except Exception as es:
+            Log.Warn("task: {}, error".format(task.req.__class__))
             Log.Error(es)
 
     def Post(self, task):
@@ -158,6 +160,7 @@ class Server(Singleton, threading.Thread):
         if request.headers == None:
             request.headers = {}
 
+        task.res = res.BaseRes("", False)
         r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout, verify=False)
         task.res = res.BaseRes(r, request.isParseRes)
         return task

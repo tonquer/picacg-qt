@@ -280,7 +280,7 @@
               <string notr="true">QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }</string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="epsWidget">
               <attribute name="title">
@@ -309,38 +309,11 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="commentWidget">
+             <widget class="QtCommentList" name="commentWidget">
               <attribute name="title">
                <string>评论</string>
               </attribute>
-              <layout class="QGridLayout" name="commentLayout">
-               <item row="0" column="0">
-                <widget class="QtBookList" name="listWidget">
-                 <property name="styleSheet">
-                  <string notr="true">QListWidget {background-color:transparent;}
-QListWidget::item { border-bottom: 1px solid black; }</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <layout class="QHBoxLayout" name="horizontalLayout_10">
-                 <item>
-                  <widget class="QLineEdit" name="commentLine">
-                   <property name="styleSheet">
-                    <string notr="true">background-color:transparent;</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="commentButton">
-                   <property name="text">
-                    <string>发送评论</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
+              <layout class="QGridLayout" name="commentLayout"/>
              </widget>
             </widget>
            </item>
@@ -356,9 +329,10 @@ QListWidget::item { border-bottom: 1px solid black; }</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QtBookList</class>
-   <extends>QListWidget</extends>
-   <header location="global">.qtlistwidget.h</header>
+   <class>QtCommentList</class>
+   <extends>QWidget</extends>
+   <header location="global">.qt_comment_list.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1059</width>
-    <height>677</height>
+    <height>702</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -132,19 +132,73 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="signButton">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>16777215</height>
-          </size>
+        <widget class="QToolButton" name="signButton">
+         <property name="styleSheet">
+          <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
          </property>
          <property name="text">
-          <string>已签到</string>
+          <string>打哔卡</string>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toolButton11">
+         <property name="styleSheet">
+          <string notr="true">/* 正常时，按钮颜色 */
+QToolButton{
+    background:transparent;
+    color: rgb(0, 0, 2);
+    border-style: outset;
+    border-color: beige;
+    border-radius: 10px;
+}
+
+/* 鼠标在按钮上时，按钮颜色 */
+ QToolButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+
+ /* 按钮被单击后，按钮颜色 */
+QToolButton:checked {
+    background-color:rgb(42, 115, 175);
+    border-radius: 10px;
+    color: rgb(255, 255, 0);
+}</string>
+         </property>
+         <property name="text">
+          <string>我的评论</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -749,12 +803,12 @@ QToolButton:checked {
    <slot>Sign()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>86</x>
-     <y>211</y>
+     <x>35</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>103</x>
-     <y>1</y>
+     <x>-12</x>
+     <y>140</y>
     </hint>
    </hints>
   </connection>

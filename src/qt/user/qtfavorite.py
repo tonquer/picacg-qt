@@ -11,6 +11,7 @@ from src.qt.util.qttask import QtTaskBase
 from src.server import req
 from src.user.user import User
 from src.util import Log
+from src.util.tool import time_me
 from ui.favorite import Ui_favorite
 
 
@@ -146,6 +147,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
                 self.LoadPageComplete()
 
     ## 完成所有的收藏加载
+    @time_me
     def LoadPageComplete(self):
         self.msgLabel.setText("更新完毕")
         delBookIds = set(self.dbMgr.allFavoriteIds.keys()) - self.reupdateBookIds

@@ -294,7 +294,7 @@ class Ui_ReadImg(object):
         self.modelBox.setItemText(2, QCoreApplication.translate("ReadImg", u"photo", None))
         self.modelBox.setItemText(3, QCoreApplication.translate("ReadImg", u"anime_style_art_rgb", None))
 
-        self.label_9.setText(QCoreApplication.translate("ReadImg", u"\u8f6c\u7801\u6a21\u5f0f\uff1aGPU", None))
+        self.label_9.setText(QCoreApplication.translate("ReadImg", u"\u8f6c\u6362\u6a21\u5f0f\uff1aGPU", None))
         self.resolutionWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
         self.sizeWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
         self.tickLabel.setText(QCoreApplication.translate("ReadImg", u"\u8017\u65f6\uff1a", None))

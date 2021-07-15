@@ -12,7 +12,7 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from .qtlistwidget import QtBookList
+from .qt_comment_list import QtCommentList
 
 
 class Ui_GameInfo(object):
@@ -176,33 +176,10 @@ class Ui_GameInfo(object):
         self.epsLayout.addWidget(self.epsListWidget, 0, 0, 1, 1)
 
         self.tabWidget.addTab(self.epsWidget, "")
-        self.commentWidget = QWidget()
+        self.commentWidget = QtCommentList()
         self.commentWidget.setObjectName(u"commentWidget")
         self.commentLayout = QGridLayout(self.commentWidget)
         self.commentLayout.setObjectName(u"commentLayout")
-        self.listWidget = QtBookList(self.commentWidget)
-        self.listWidget.setObjectName(u"listWidget")
-        self.listWidget.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
-"QListWidget::item { border-bottom: 1px solid black; }")
-
-        self.commentLayout.addWidget(self.listWidget, 0, 0, 1, 1)
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.commentLine = QLineEdit(self.commentWidget)
-        self.commentLine.setObjectName(u"commentLine")
-        self.commentLine.setStyleSheet(u"background-color:transparent;")
-
-        self.horizontalLayout_10.addWidget(self.commentLine)
-
-        self.commentButton = QPushButton(self.commentWidget)
-        self.commentButton.setObjectName(u"commentButton")
-
-        self.horizontalLayout_10.addWidget(self.commentButton)
-
-
-        self.commentLayout.addLayout(self.horizontalLayout_10, 1, 0, 1, 1)
-
         self.tabWidget.addTab(self.commentWidget, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
@@ -222,7 +199,7 @@ class Ui_GameInfo(object):
         self.iosButton.clicked.connect(GameInfo.CopyIos)
         self.androidButton.clicked.connect(GameInfo.CopyAndroid)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(GameInfo)
@@ -243,7 +220,6 @@ class Ui_GameInfo(object):
         self.androidButton.setText(QCoreApplication.translate("GameInfo", u"\u590d\u5236\u5b89\u5353\u4e0b\u8f7d\u5730\u5740", None))
         self.iosButton.setText(QCoreApplication.translate("GameInfo", u"\u590d\u5236IOS\u4e0b\u8f7d\u5730\u5740", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.epsWidget), QCoreApplication.translate("GameInfo", u"\u7ae0\u8282", None))
-        self.commentButton.setText(QCoreApplication.translate("GameInfo", u"\u53d1\u9001\u8bc4\u8bba", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.commentWidget), QCoreApplication.translate("GameInfo", u"\u8bc4\u8bba", None))
     # retranslateUi
 

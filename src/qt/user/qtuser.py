@@ -2,8 +2,10 @@ import re
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt, QEvent
+from PySide2.QtGui import QPixmap, QIcon
 
 from resources import resources
+from resources.resources import DataMgr
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.qtmain import QtOwner
 from src.server import req, QtTask
@@ -18,24 +20,19 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.setupUi(self)
         self.setWindowTitle("哔咔漫画")
 
+        q = QPixmap()
+        q.loadFromData(DataMgr.GetData("icon_bookmark_on"))
+        p = QPixmap()
+        p.loadFromData(DataMgr.GetData("icon_comment"))
+        self.signButton.setIcon(QIcon(q.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        self.signButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.toolButton11.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        self.toolButton11.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
         self.icon.SetPicture(resources.DataMgr.GetData("placeholder_avatar"))
         self.pictureData = None
         self.icon.installEventFilter(self)
-        # self.listWidget.currentRowChanged.connect(self.Switch)
-        # self.listWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        # self.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        # QScroller.grabGesture(self.listWidget, QScroller.LeftMouseButtonGesture)
-        # self.listWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
-        # self.listWidget.setFrameShape(self.listWidget.NoFrame)
-        # self.listWidget.setResizeMode(self.listWidget.Fixed)
-        # for name in ["主页", "搜索", "分类", "排行", "收藏", "历史记录", "下载", "留言板", "聊天室"]:
-        #     item = QListWidgetItem(
-        #         name,
-        #         self.listWidget
-        #     )
-        #     item.setSizeHint(QSize(16777215, 60))
-        #     item.setTextAlignment(Qt.AlignCenter)
-        #
+
         self.stackedWidget.addWidget(QtOwner().owner.indexForm)
         self.stackedWidget.addWidget(QtOwner().owner.searchForm)
         self.stackedWidget.addWidget(QtOwner().owner.categoryForm)
@@ -47,6 +44,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.stackedWidget.addWidget(QtOwner().owner.chatForm)
         self.stackedWidget.addWidget(QtOwner().owner.friedForm)
         self.stackedWidget.addWidget(QtOwner().owner.gameForm)
+        self.stackedWidget.addWidget(QtOwner().owner.myCommentForm)
         self.buttonGroup.buttonClicked.connect(self.Switch)
         self.isHeadUp = False
 
@@ -76,8 +74,9 @@ class QtUser(QtWidgets.QWidget, Ui_User):
     def SignBack(self, msg):
         QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
-            self.signButton.setEnabled(False)
-            self.signButton.setText("已签到")
+            # self.signButton.setEnabled(False)
+            self.signButton.setText("已打卡")
+            # self.signButton.setHidden(True)
             QtTask().AddHttpTask(req.GetUserInfo(), QtOwner().owner.loginForm.UpdateUserBack)
             self.update()
         return
@@ -88,9 +87,8 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.title.setText(title)
         self.level.setText("LV"+str(level))
         self.exp.setText("exp: " + str(exp))
-        if not sign:
-            self.signButton.setEnabled(True)
-            self.signButton.setText("签到")
+        if sign:
+            self.signButton.setText("已打卡")
         self.update()
 
     def UpdatePictureData(self, data):

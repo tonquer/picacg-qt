@@ -27,11 +27,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.curIndex = 0
 
         self.pictureData = {}
-        self.waitPicData = set()
         self.maxPic = 0
-
-        self.curPreLoadIndex = 0
-        self.maxPreLoad = config.PreLoading
 
         self.gridLayout = QtWidgets.QGridLayout(self)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -42,12 +38,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.ShowAndCloseTool)
         self.isStripModel = False
-
-        self.closeFlag = self.__class__.__name__   # 防止切换时异步加载图片错位
-
-        self.waifu2xIdToIndex = {}
-        self.indexToWaifu2xId = {}
-        self.waitWaifuPicData = set()
+        self.setWindowFlags(self.windowFlags() &~ Qt.WindowMaximizeButtonHint &~ Qt.WindowMinimizeButtonHint)
 
         self.category = []
         self.isInit = False
@@ -67,13 +58,6 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
     def qtTool(self):
         return self.frame.qtTool
 
-    def changeEvent(self, ev):
-        if self.windowState() == Qt.WindowMaximized:
-            self.showFullScreen()
-            self.frame.qtTool.fullButton.setText("退出全屏")
-            return
-        super(QtReadImg, self).changeEvent(ev)
-
     def closeEvent(self, a0) -> None:
         self.ReturnPage()
         QtOwner().owner.bookInfoForm.show()
@@ -89,10 +73,6 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.curIndex = 0
         self.frame.scaleCnt = 0
         self.pictureData.clear()
-        self.waifu2xIdToIndex.clear()
-        self.indexToWaifu2xId.clear()
-        self.waitWaifuPicData.clear()
-        self.waitPicData.clear()
         self.ClearTask()
         self.ClearConvert()
 
@@ -165,23 +145,57 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.AddHttpTask(req.GetComicsBookOrderReq(self.bookId, self.epsId+1), self.StartLoadPicUrlBack, isLastEps)
 
     def CheckLoadPicture(self):
-        i = 0
-        for i in range(self.curIndex, self.curIndex + self.maxPreLoad):
-            if i >= self.maxPic:
+        # i = 0
+        newDict = {}
+        needUp = False
+        removeTaskIds = []
+        
+        preLoadList = list(range(self.curIndex, self.curIndex + config.PreLoading))
+
+        # 预加载上一页
+        if len(preLoadList) >= 2 and self.curIndex > 0:
+            preLoadList.insert(2, self.curIndex-1)
+
+        for i, p in self.pictureData.items():
+            if i in preLoadList:
+                newDict[i] = p
+            else:
+                needUp = True
+                if p.waifu2xTaskId > 0:
+                    removeTaskIds.append(p.waifu2xTaskId)
+
+        if needUp:
+            self.pictureData.clear()
+            self.pictureData = newDict
+            self.ClearWaitConvertIds(removeTaskIds)
+
+        for i in preLoadList:
+            if i >= self.maxPic or i < 0:
                 continue
 
             bookInfo = BookMgr().books.get(self.bookId)
             epsInfo = bookInfo.eps[self.epsId]
             picInfo = epsInfo.pics[i]
-            if i not in self.pictureData:
-                # 防止重复请求
-                if i not in self.waitPicData:
-                    self.AddDownload(i, picInfo)
-            elif config.IsOpenWaifu and i not in self.waitWaifuPicData:
-                if not self.pictureData[i].data:
-                    continue
-                if not self.pictureData[i].waifuData:
+            p = self.pictureData.get(self.curIndex)
+            if not p:
+                self.AddDownload(i, picInfo)
+                break
+            elif p.status == p.Downloading or p.status == p.DownloadReset:
+                break
+
+        for i in preLoadList:
+            if i >= self.maxPic or i < 0:
+                continue                
+            if config.IsOpenWaifu:
+                p = self.pictureData.get(self.curIndex)
+                if not p or not p.data:
+                    break
+                if p.status == p.WaifuStateCancle or p.status == p.WaifuWait:
+                    p.status = p.WaifuStateStart
                     self.AddCovertData(picInfo, i)
+                    break
+                if p.status == p.WaifuStateStart:
+                    break
         pass
 
     def StartLoadPicUrlBack(self, msg, isLastEps):
@@ -221,14 +235,12 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         bookInfo = BookMgr().books.get(self.bookId)
         epsInfo = bookInfo.eps[self.epsId]
         picInfo = epsInfo.pics[index]
-        self.waitPicData.discard(index)
         if st != Status.Ok:
             p.state = p.DownloadReset
             self.AddDownload(index, picInfo)
         else:
             p.SetData(data, self.category)
-            if config.IsOpenWaifu:
-                self.AddCovertData(picInfo, index)
+            self.CheckLoadPicture()
             if index == self.curIndex:
                 self.ShowImg()
             return
@@ -366,26 +378,22 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             self.qtTool.hide()
 
     def Waifu2xBack(self, data, waifu2xId, index, tick):
-        self.waitWaifuPicData.discard(index)
-        if waifu2xId > 0:
-            self.waifu2xIdToIndex[waifu2xId] = index
-            self.indexToWaifu2xId[index] = waifu2xId
-        if waifu2xId not in self.waifu2xIdToIndex:
+        p = self.pictureData.get(index)
+        if waifu2xId <= 0 or not p:
             Log.Error("Not found waifu2xId ：{}, index: {}".format(str(waifu2xId), str(index)))
             return
-        p = self.pictureData.get(index)
         p.SetWaifuData(data, round(tick, 2))
         if index == self.curIndex:
             self.ShowImg()
 
     def AddCovertData(self, picInfo, i):
-        info = self.pictureData[i]
+        info = self.pictureData.get(i)
         if not info and info.data:
             return
         assert isinstance(info, QtFileData)
         # path = QtOwner().owner.downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
-        self.AddConvertTask(picInfo.path+str(info.model.get('model', 0)), info.data, info.model, self.Waifu2xBack, i)
-        self.waitWaifuPicData.add(i)
+        info.waifu2xTaskId = self.AddConvertTask(picInfo.path, info.data, info.model, self.Waifu2xBack, i)
+        self.qtTool.SetData(waifuState=info.waifuState)
 
     def AddDownload(self, i, picInfo):
         path = QtOwner().owner.downloadForm.GetDonwloadFilePath(self.bookId, self.epsId, i)
@@ -393,7 +401,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                                  downloadCallBack=self.UpdateProcessBar,
                                  completeCallBack=self.CompleteDownloadPic, backParam=i,
                                  isSaveCache=True, filePath=path)
-        self.waitPicData.add(i)
         if i not in self.pictureData:
             data = QtFileData()
             self.pictureData[i] = data
+        self.qtTool.SetData(state=self.pictureData[i].state)

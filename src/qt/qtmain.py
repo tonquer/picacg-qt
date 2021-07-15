@@ -55,6 +55,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         from src.qt.user.qtuser import QtUser
         from src.qt.game.qt_game import QtGame
         from src.qt.game.qt_game_info import QtGameInfo
+        from src.qt.user.qt_user_comment import QtUserComment
 
         self.userInfo = None
         self.setupUi(self)
@@ -80,6 +81,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.rankForm = QtRank()
         self.friedForm = QtFried()
         self.gameForm = QtGame()
+        self.myCommentForm = QtUserComment()
 
         self.loginForm = QtLogin()
         self.registerForm = QtRegister()
@@ -215,11 +217,26 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def InitUpdateBack(self, data):
         try:
+            if not data:
+                self.qtTask.AddHttpTask(req.CheckUpdateReq(config.UpdateUrlBack), self.InitUpdateBack2)
+                return
             r = QMessageBox.information(self, "更新", "当前版本{} ,检查到更新，是否前往更新\n{}".format(config.UpdateVersion,
                                                                                         data),
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if r == QMessageBox.Yes:
                 QDesktopServices.openUrl(QUrl(config.UpdateUrl2))
+        except Exception as es:
+            Log.Error(es)
+
+    def InitUpdateBack2(self, data):
+        try:
+            if not data:
+                return
+            r = QMessageBox.information(self, "更新", "当前版本{} ,检查到更新，是否前往更新\n{}".format(config.UpdateVersion,
+                                                                                        data),
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if r == QMessageBox.Yes:
+                QDesktopServices.openUrl(QUrl(config.UpdateUrl2Back))
         except Exception as es:
             Log.Error(es)
 
@@ -236,6 +253,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def CheckLoadNextDayData(self, newTick):
         if newTick <= self.curUpdateTick:
+            self.searchForm.UpdateDbInfo()
             return
         day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
         if day <= 0:

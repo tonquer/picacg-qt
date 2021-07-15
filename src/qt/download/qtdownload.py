@@ -30,7 +30,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.tableWidget.setColumnCount(10)
-        self.tableWidget.setHorizontalHeaderLabels(["id", "标题", "下载状态", "下载进度", "下载章节", "下载速度", "转码进度", "转码章节", "转码耗时", "转码状态"])
+        self.tableWidget.setHorizontalHeaderLabels(["id", "标题", "下载状态", "下载进度", "下载章节", "下载速度", "转换进度", "转换章节", "转换耗时", "转换状态"])
         self.timer = QTimer(self.tableWidget)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.UpdateTable)
@@ -62,10 +62,10 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         self.startAction = QAction("开始", self)
         self.startAction.triggered.connect(self.ClickStart)
 
-        self.startConvertAction = QAction("开始转码", self)
+        self.startConvertAction = QAction("开始转换", self)
         self.startConvertAction.triggered.connect(self.ClickConvertStart)
 
-        self.pauseConvertAction = QAction("暂停转码", self)
+        self.pauseConvertAction = QAction("暂停转换", self)
         self.pauseConvertAction.triggered.connect(self.ClickConvertPause)
 
         self.tableWidget.doubleClicked.connect(self.OpenBookInfo)

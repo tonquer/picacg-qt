@@ -20,8 +20,8 @@ class DownloadInfo(QtTaskBase):
     Error = "出错了"
     NotFound = "原始文件不存在"
 
-    Converting = "转码中"
-    ConvertSuccess = "转码成功"
+    Converting = "转换中"
+    ConvertSuccess = "转换成功"
 
     def __init__(self, parent):
         QtTaskBase.__init__(self)
@@ -273,7 +273,7 @@ class DownloadEpsInfo(QtTaskBase):
         self.resetCnt = 0
 
         self.curPreDownloadIndex = 0
-        self.curPreConvertId = 0   # 转码
+        self.curPreConvertId = 0   # 转换
         self.resetConvertCnt = 0
         self.status = DownloadInfo.Downloading
         self.tick = 0
