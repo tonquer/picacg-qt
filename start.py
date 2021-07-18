@@ -4,6 +4,7 @@ import sys
 import os
 
 # macOS 修复
+
 if sys.platform == 'darwin':
     # 确保工作区为当前可执行文件所在目录
     current_path = os.path.abspath(__file__)
@@ -27,7 +28,8 @@ from src.qt.qtmain import BikaQtMainWindow
 from src.util import Log
 
 # 此处不能删除
-from src.qt.main.qtsearch_db import DbBook as DbBook
+from src.server.sql_server import DbBook as DbBook
+DbBook()
 
 
 if __name__ == "__main__":

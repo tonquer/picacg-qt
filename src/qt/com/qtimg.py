@@ -1,7 +1,7 @@
 import os
 import time
 
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
 from PySide2.QtGui import QColor, QPainter, QPixmap, QDoubleValidator, \
     QIntValidator
@@ -74,7 +74,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
         self.graphicsView.setObjectName("graphicsView")
 
-        self.graphicsView.setBackgroundBrush(QColor(Qt.white))
+        # self.graphicsView.setBackgroundBrush(QColor(Qt.white))
         self.graphicsView.setCursor(Qt.OpenHandCursor)
         self.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -161,6 +161,12 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
     def keyReleaseEvent(self, ev):
         if ev.key() == Qt.Key_Escape:
             self.hide()
+            return
+        if ev.key() == Qt.Key_Plus or ev.key() == Qt.Key_Equal:
+            self.zoomIn()
+            return
+        if ev.key() == Qt.Key_Minus:
+            self.zoomOut()
             return
         super(self.__class__, self).keyReleaseEvent(ev)
 

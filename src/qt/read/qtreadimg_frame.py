@@ -5,7 +5,9 @@ from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint
 from PySide2.QtGui import QPainter, QColor, QPixmap
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame
 
+from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
+from src.qt.com.qt_git_label import QtGifLabel
 from src.qt.read.qtreadimg_tool import QtImgTool
 
 
@@ -20,7 +22,7 @@ class QtImgFrame(QFrame):
         self.graphicsView.setObjectName("graphicsView")
         self.qtTool = QtImgTool(self)
         self.qtTool.hide()
-        self.graphicsView.setBackgroundBrush(QColor(Qt.white))
+        # self.graphicsView.setBackgroundBrush(QColor(Qt.white))
         # self.graphicsView.setCursor(Qt.OpenHandCursor)
         self.graphicsView.setResizeAnchor(self.graphicsView.AnchorViewCenter)
         self.graphicsView.setTransformationAnchor(self.graphicsView.AnchorViewCenter)
@@ -53,6 +55,10 @@ class QtImgFrame(QFrame):
         self.startPos = QPoint()
         self.endPos = QPoint()
         self.process = DWaterProgress(self)
+        self.waifu2xProcess = QtGifLabel(self)
+        self.waifu2xProcess.setVisible(False)
+
+        self.waifu2xProcess.Init(DataMgr.GetData("loading_gif"))
         self.downloadSize = 1
         self.downloadMaxSize = 1
 
@@ -108,6 +114,7 @@ class QtImgFrame(QFrame):
         # w = max((w - 150)//2, 0)
         # h = max((h - 150)//2, 0)
         self.process.setGeometry(w-150, h-150, 150, 150)
+        self.waifu2xProcess.setGeometry(w-150, h-150, 150, 150)
         return
 
     def ScalePicture(self):

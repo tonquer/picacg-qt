@@ -36,10 +36,6 @@ class QtChat(QtWidgets.QWidget, QtTaskBase):
             if data.get("code") == 200:
                 infos = data.get("data", {}).get("chatList", {})
                 for index, info in enumerate(infos):
-                    name = info.get("title")
-                    content = info.get("description")
-                    # avatar = info.get("_user", {}).get("avatar", {})
-                    # createdTime = info.get("created_at")
                     self.listWidget.AddUserItem(info, index+1)
         except Exception as es:
             Log.Error(es)

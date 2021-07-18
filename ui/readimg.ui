@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>207</width>
-    <height>647</height>
+    <width>299</width>
+    <height>705</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,6 +91,9 @@
        </item>
        <item>
         <widget class="QLabel" name="resolutionLabel">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>分辨率：</string>
          </property>
@@ -150,35 +153,75 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox">
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>打开Waifu2x</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>噪点等级：3</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>放大倍数：2</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="5" column="0">
+          <widget class="QLabel" name="resolutionWaifu">
+           <property name="text">
+            <string>分辨率：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="noiseLabel">
+             <property name="text">
+              <string>3</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="noiseBox">
+             <item>
+              <property name="text">
+               <string>自动</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>0</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>2</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>3</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBox">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>打开Waifu2x</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="sizeWaifu">
+           <property name="text">
+            <string>大小：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
           <widget class="QLabel" name="label_8">
            <property name="maximumSize">
             <size>
@@ -191,66 +234,157 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QComboBox" name="modelBox">
-           <item>
-            <property name="text">
-             <string extracomment="效果好，不放大">cunet（不放大）</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string extracomment="效果好，2倍放大">cunet</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string extracomment="写真，速度快，2倍放大">photo</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string extracomment="动漫，速度快，2倍放大">anime_style_art_rgb</string>
-            </property>
-           </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>放大倍数：</string>
+           </property>
           </widget>
          </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="stateWaifu">
+           <property name="text">
+            <string>状态：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLabel" name="scaleLabel">
+             <property name="text">
+              <string>2</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDoubleSpinBox" name="scaleBox">
+             <property name="decimals">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <double>32.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>2.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>去噪等级：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="tickLabel">
+           <property name="text">
+            <string>耗时：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>转换模式：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <item>
+            <widget class="QLabel" name="modelLabel">
+             <property name="text">
+              <string>CUNET</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="modelBox">
+             <item>
+              <property name="text">
+               <string>自动</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>cunet</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>photo</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>anime_style_art_rgb</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="gpuLabel">
+           <property name="text">
+            <string>GPU</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="waifu2xRes">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLabel" name="waifu2xSize">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLabel" name="waifu2xTick">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QLabel" name="waifu2xStatus">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <widget class="QPushButton" name="waifu2xSave">
+             <property name="text">
+              <string>修改</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="waifu2xCancle">
+             <property name="text">
+              <string>保存</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_9">
-         <property name="text">
-          <string>转换模式：GPU</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="resolutionWaifu">
-         <property name="text">
-          <string>分辨率：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="sizeWaifu">
-         <property name="text">
-          <string>大小：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="tickLabel">
-         <property name="text">
-          <string>耗时：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="stateWaifu">
-         <property name="text">
-          <string>状态：</string>
-         </property>
-        </widget>
        </item>
        <item>
         <widget class="Line" name="line_2">
@@ -287,7 +421,43 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_10">
+         <item>
+          <widget class="QLabel" name="zoomLabel">
+           <property name="text">
+            <string>缩放（100%）</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSlider" name="zoomSlider">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="minimum">
+            <number>10</number>
+           </property>
+           <property name="maximum">
+            <number>200</number>
+           </property>
+           <property name="singleStep">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QPushButton" name="copyButton">
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>打开图片工具</string>
          </property>
@@ -425,28 +595,12 @@
    <slot>OpenNextEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>168</x>
-     <y>577</y>
+     <x>265</x>
+     <y>641</y>
     </hint>
     <hint type="destinationlabel">
-     <x>395</x>
+     <x>278</x>
      <y>422</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>modelBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>ReadImg</receiver>
-   <slot>SwitchModel()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>138</x>
-     <y>258</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>305</x>
-     <y>241</y>
     </hint>
    </hints>
   </connection>
@@ -457,8 +611,8 @@
    <slot>LastPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>615</y>
+     <x>100</x>
+     <y>681</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -473,8 +627,8 @@
    <slot>SwitchPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>100</x>
-     <y>405</y>
+     <x>113</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -489,8 +643,8 @@
    <slot>SwitchPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
-     <y>405</y>
+     <x>265</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -505,8 +659,8 @@
    <slot>CopyPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>435</y>
+     <x>181</x>
+     <y>483</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -521,8 +675,8 @@
    <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>168</x>
-     <y>615</y>
+     <x>265</x>
+     <y>681</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -537,11 +691,11 @@
    <slot>OpenLastEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>57</x>
-     <y>577</y>
+     <x>70</x>
+     <y>641</y>
     </hint>
     <hint type="destinationlabel">
-     <x>287</x>
+     <x>278</x>
      <y>437</y>
     </hint>
    </hints>
@@ -553,8 +707,8 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>141</x>
-     <y>464</y>
+     <x>153</x>
+     <y>512</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
@@ -569,8 +723,8 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>178</x>
-     <y>522</y>
+     <x>190</x>
+     <y>570</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -585,8 +739,8 @@
    <slot>OpenWaifu()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>46</x>
-     <y>185</y>
+     <x>59</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -601,12 +755,60 @@
    <slot>FullScreen()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>89</x>
-     <y>474</y>
+     <x>101</x>
+     <y>541</y>
     </hint>
     <hint type="destinationlabel">
-     <x>328</x>
+     <x>278</x>
      <y>466</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>waifu2xSave</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>Waifu2xSave()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>296</x>
+     <y>171</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>waifu2xCancle</sender>
+   <signal>clicked()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>Waifu2xCancle()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>221</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>409</x>
+     <y>203</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>zoomSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ReadImg</receiver>
+   <slot>ScalePicture()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>117</x>
+     <y>445</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>494</x>
+     <y>433</y>
     </hint>
    </hints>
   </connection>
@@ -625,6 +827,9 @@
   <slot>OpenNextEps()</slot>
   <slot>SwitchModel()</slot>
   <slot>FullScreen()</slot>
+  <slot>Waifu2xSave()</slot>
+  <slot>Waifu2xCancle()</slot>
+  <slot>ScalePicture()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>

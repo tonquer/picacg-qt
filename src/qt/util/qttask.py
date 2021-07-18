@@ -1,5 +1,6 @@
 import hashlib
 import os
+import pickle
 import threading
 import time
 from queue import Queue
@@ -17,6 +18,7 @@ class QtTaskQObject(QObject):
     taskBack = Signal(int, str)
     downloadBack = Signal(int, int, bytes)
     convertBack = Signal(int)
+    sqlBack = Signal(int, bytes)
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -74,6 +76,9 @@ class QtTaskBase:
     def AddHttpTask(self, req, callBack=None, backParam=None):
         return QtTask().AddHttpTask(req, callBack, backParam, cleanFlag=self.__taskFlagId)
 
+    def AddSqlTask(self, table, data, taskType, callBack=None, backParam=None):
+        return QtTask().AddSqlTask(table, data, taskType, callBack, backParam, cleanFlag=self.__taskFlagId)
+
     # downloadCallBack(data, laveFileSize, backParam)
     # downloadCallBack(data, laveFileSize)
     # downloadCompleteBack(data, st)
@@ -91,8 +96,12 @@ class QtTaskBase:
     def ClearConvert(self):
         return QtTask().CancelConver(self.__taskFlagId)
 
+    def ClearSql(self):
+        return QtTask().CancelSqlTasks(self.__taskFlagId)
+
     def ClearWaitConvertIds(self, taskIds):
         return QtTask().ClearWaitConvertIds(taskIds)
+
 
 class QtTask(Singleton, threading.Thread):
 
@@ -104,6 +113,7 @@ class QtTask(Singleton, threading.Thread):
         self.taskObj.taskBack.connect(self.HandlerTask2)
         self.taskObj.downloadBack.connect(self.HandlerDownloadTask)
         self.taskObj.convertBack.connect(self.HandlerConvertTask)
+        self.taskObj.sqlBack.connect(self.HandlerSqlTask)
 
         self.convertThread = threading.Thread(target=self.RunLoad)
         self.convertThread.setDaemon(True)
@@ -116,8 +126,11 @@ class QtTask(Singleton, threading.Thread):
         self.taskId = 0
         self.tasks = {}  # id: task
 
+        self.sqlTasks = {}
+
         self.flagToIds = {}  #
         self.convertFlag = {}
+        self.sqlFlagToIds = {}
 
     @property
     def convertBack(self):
@@ -126,6 +139,10 @@ class QtTask(Singleton, threading.Thread):
     @property
     def taskBack(self):
         return self.taskObj.taskBack
+
+    @property
+    def sqlBack(self):
+        return self.taskObj.sqlBack
 
     @property
     def downloadBack(self):
@@ -138,6 +155,21 @@ class QtTask(Singleton, threading.Thread):
 
     # def PutTask(self, task):
     #     self._inQueue.put(task)
+
+    def AddSqlTask(self, table, data, taskType, callBack=None, backParam=None, cleanFlag=None):
+        self.taskId += 1
+        info = QtHttpTask(self.taskId)
+        info.callBack = callBack
+        info.backParam = backParam
+        self.sqlTasks[self.taskId] = info
+        if cleanFlag:
+            info.cleanFlag = cleanFlag
+            taskIds = self.sqlFlagToIds.setdefault(cleanFlag, set())
+            taskIds.add(self.taskId)
+
+        from src.server.sql_server import SqlServer
+        SqlServer().AddSqlTask(table, taskType, data, self.taskId)
+        return
 
     def AddHttpTask(self, req, callBack=None, backParam=None, cleanFlag=None):
         self.taskId += 1
@@ -209,6 +241,27 @@ class QtTask(Singleton, threading.Thread):
         except Exception as es:
             Log.Error(es)
 
+    def HandlerSqlTask(self, taskId, data):
+        try:
+            data = pickle.loads(data)
+            info = self.sqlTasks.get(taskId)
+            if not info:
+                Log.Warn("[Task] not find taskId:{}, {}".format(taskId, data))
+                return
+            assert isinstance(info, QtHttpTask)
+            if info.cleanFlag:
+                taskIds = self.sqlFlagToIds.get(info.cleanFlag, set())
+                taskIds.discard(info.taskId)
+            if info.callBack:
+                if info.backParam is None:
+                    info.callBack(data)
+                else:
+                    info.callBack(data, info.backParam)
+                del info.callBack
+            del self.sqlTasks[taskId]
+        except Exception as es:
+            Log.Error(es)
+
     def HandlerDownloadTask(self, downlodaId, laveFileSize, data, isCallBack=True):
         info = self.downloadTask.get(downlodaId)
         if not info:
@@ -263,12 +316,21 @@ class QtTask(Singleton, threading.Thread):
         if not taskIds:
             return
         for taskId in taskIds:
-            if taskId in self.downloadTask:
-                del self.downloadTask[taskId]
+            if taskId in self.tasks:
+                del self.tasks[taskId]
 
             if taskId in self.downloadTask:
                 del self.downloadTask[taskId]
         self.flagToIds.pop(cleanFlag)
+
+    def CancelSqlTasks(self, cleanFlag):
+        taskIds = self.sqlFlagToIds.get(cleanFlag, set())
+        if not taskIds:
+            return
+        for taskId in taskIds:
+            if taskId in self.sqlTasks:
+                del self.sqlTasks[taskId]
+        self.sqlFlagToIds.pop(cleanFlag)
 
     def AddConvertTask(self, path, imgData, model, completeCallBack, backParam=None, cleanFlag=None, filePath=""):
         info = QtDownloadTask()
@@ -384,16 +446,20 @@ class QtTask(Singleton, threading.Thread):
         taskIds = self.convertFlag.get(cleanFlag, set())
         if not taskIds:
             return
+        removeIds = []
         for taskId in taskIds:
             if taskId in self.convertLoad:
                 del self.convertLoad[taskId]
-        Log.Info("cancel convert taskId, {}".format(taskIds))
+                removeIds.append(taskId)
+        Log.Info("cancel convert taskId, {}".format(removeIds))
         self.convertFlag.pop(cleanFlag)
         if config.CanWaifu2x:
             import waifu2x
-            waifu2x.remove(list(taskIds))
+            waifu2x.remove(removeIds)
 
     def ClearWaitConvertIds(self, taskIds):
+        if not taskIds:
+            return
         for taskId in taskIds:
             if taskId in self.convertLoad:
                 del self.convertLoad[taskId]

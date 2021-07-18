@@ -18,38 +18,18 @@ class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
         Ui_Index.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.isInit = False
 
-        self.bookList1.InitBook()
+        self.randomList.InitBook()
 
-        self.bookList2.InitBook()
+        self.godList.InitBook()
 
-        self.bookList3.InitBook()
-
-        p = QPixmap()
-        p.loadFromData(DataMgr().GetData("fold2"))
-        q = QPixmap()
-        q.loadFromData(DataMgr().GetData("fold1"))
-        self.toolButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.toolButton.setIcon(QIcon(p))
-        self.bookList1.setVisible(False)
-        self.toolButton_2.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.toolButton_2.setIcon(QIcon(p))
-        self.bookList2.setVisible(False)
-        self.toolButton_3.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.toolButton_3.setIcon(QIcon(q))
-        self.bookList3.setVisible(True)
-
-        self.toolButton.clicked.connect(self.SwitchButton1)
-        self.toolButton_2.clicked.connect(self.SwitchButton2)
-        self.toolButton_3.clicked.connect(self.SwitchButton3)
+        self.magicList.InitBook()
 
     def SwitchCurrent(self):
         if User().token:
             self.Init()
-            if not self.bookList3.count():
+            if not self.randomList.count():
                 self.InitRandom()
         pass
 
@@ -65,14 +45,14 @@ class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
     def InitBack(self, data):
         try:
             QtOwner().owner.loadingForm.close()
-            self.bookList1.clear()
-            self.bookList2.clear()
+            self.godList.clear()
+            self.magicList.clear()
             data = json.loads(data)
             for categroys in data.get("data").get("collections"):
                 if categroys.get("title") == "本子神推薦":
-                    bookList = self.bookList1
+                    bookList = self.godList
                 else:
-                    bookList = self.bookList2
+                    bookList = self.magicList
                 for v in categroys.get('comics'):
                     bookList.AddBookItem(v)
         except Exception as es:
@@ -83,9 +63,9 @@ class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
         try:
             QtOwner().owner.loadingForm.close()
             data = json.loads(data)
-            self.bookList3.clear()
+            self.randomList.clear()
             for v in data.get("data").get('comics'):
-                bookList = self.bookList3
+                bookList = self.randomList
                 title = v.get("title", "")
                 _id = v.get("_id")
                 url = v.get("thumb", {}).get("fileServer")
@@ -96,37 +76,3 @@ class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
                 bookList.AddBookItem(v)
         except Exception as es:
             Log.Error(es)
-
-    def SwitchButton1(self):
-        isVisible = self.bookList1.isVisible()
-        self.bookList1.setVisible(not isVisible)
-        p = QPixmap()
-        if isVisible:
-            p.loadFromData(DataMgr().GetData("fold2"))
-        else:
-            p.loadFromData(DataMgr().GetData("fold1"))
-        self.toolButton.setIcon(QIcon(p))
-        return
-
-    def SwitchButton2(self):
-        isVisible = self.bookList2.isVisible()
-        self.bookList2.setVisible(not isVisible)
-        p = QPixmap()
-        if isVisible:
-            p.loadFromData(DataMgr().GetData("fold2"))
-        else:
-            p.loadFromData(DataMgr().GetData("fold1"))
-        self.toolButton_2.setIcon(QIcon(p))
-
-        return
-
-    def SwitchButton3(self):
-        isVisible = self.bookList3.isVisible()
-        self.bookList3.setVisible(not isVisible)
-        p = QPixmap()
-        if isVisible:
-            p.loadFromData(DataMgr().GetData("fold2"))
-        else:
-            p.loadFromData(DataMgr().GetData("fold1"))
-        self.toolButton_3.setIcon(QIcon(p))
-        return

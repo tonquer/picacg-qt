@@ -63,6 +63,22 @@ class Ui_BookInfo(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
 
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.label_6 = QLabel(self.page)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setMaximumSize(QSize(40, 16777215))
+
+        self.horizontalLayout_8.addWidget(self.label_6)
+
+        self.idLabel = QLabel(self.page)
+        self.idLabel.setObjectName(u"idLabel")
+
+        self.horizontalLayout_8.addWidget(self.idLabel)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_8)
+
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalLayout_11 = QHBoxLayout()
@@ -197,6 +213,10 @@ class Ui_BookInfo(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_9)
 
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer)
+
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.updateTick = QLabel(self.page)
@@ -309,7 +329,7 @@ class Ui_BookInfo(object):
         self.favoriteButton.clicked.connect(BookInfo.AddFavority)
         self.downloadButton.clicked.connect(BookInfo.AddDownload)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(BookInfo)
@@ -320,6 +340,8 @@ class Ui_BookInfo(object):
         self.picture.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("BookInfo", u"\u6807\u9898\uff1a", None))
         self.title.setText(QCoreApplication.translate("BookInfo", u"\u6807\u9898", None))
+        self.label_6.setText(QCoreApplication.translate("BookInfo", u"id:", None))
+        self.idLabel.setText("")
         self.label_2.setText(QCoreApplication.translate("BookInfo", u"\u4f5c\u8005\uff1a", None))
         self.label_3.setText(QCoreApplication.translate("BookInfo", u"\u63cf\u8ff0\uff1a", None))
         self.description.setText(QCoreApplication.translate("BookInfo", u"\u63cf\u8ff0", None))

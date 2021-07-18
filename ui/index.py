@@ -19,105 +19,80 @@ class Ui_Index(object):
     def setupUi(self, Index):
         if not Index.objectName():
             Index.setObjectName(u"Index")
-        Index.resize(483, 507)
-        self.verticalLayout = QVBoxLayout(Index)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(6, 6, 6, 6)
-        self.scrollArea = QScrollArea(Index)
-        self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setAutoFillBackground(False)
-        self.scrollArea.setFrameShape(QFrame.NoFrame)
-        self.scrollArea.setWidgetResizable(True)
-        self.scrollAreaWidgetContents = QWidget()
-        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 471, 495))
-        self.gridLayout = QGridLayout(self.scrollAreaWidgetContents)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.toolButton = QToolButton(self.scrollAreaWidgetContents)
-        self.toolButton.setObjectName(u"toolButton")
+        Index.resize(1125, 808)
+        self.verticalLayout_3 = QVBoxLayout(Index)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.tabWidget = QTabWidget(Index)
+        self.tabWidget.setObjectName(u"tabWidget")
+        self.tabWidget.setStyleSheet(u"QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }")
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.verticalLayout_2 = QVBoxLayout(self.tab)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.randomList = QtBookList(self.tab)
+        self.randomList.setObjectName(u"randomList")
+        self.randomList.setStyleSheet(u"QListWidget {background-color:transparent;}")
 
-        self.gridLayout.addWidget(self.toolButton, 0, 0, 1, 1)
+        self.verticalLayout_2.addWidget(self.randomList)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.bookList1 = QtBookList(self.scrollAreaWidgetContents)
-        self.bookList1.setObjectName(u"bookList1")
-        self.bookList1.setStyleSheet(u"QListWidget {background-color:transparent;}")
+        self.horizontalSpacer = QSpacerItem(1080, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout.addWidget(self.bookList1)
+        self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.refreshButton = QPushButton(self.tab)
+        self.refreshButton.setObjectName(u"refreshButton")
 
-        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
-
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.bookList3 = QtBookList(self.scrollAreaWidgetContents)
-        self.bookList3.setObjectName(u"bookList3")
-        self.bookList3.setStyleSheet(u"QListWidget {background-color:transparent;}")
-
-        self.horizontalLayout_3.addWidget(self.bookList3)
+        self.horizontalLayout.addWidget(self.refreshButton)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_3, 6, 0, 1, 1)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
 
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.bookList2 = QtBookList(self.scrollAreaWidgetContents)
-        self.bookList2.setObjectName(u"bookList2")
-        self.bookList2.setStyleSheet(u"QListWidget {background-color:transparent;}")
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = QWidget()
+        self.tab_2.setObjectName(u"tab_2")
+        self.verticalLayout = QVBoxLayout(self.tab_2)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.godList = QtBookList(self.tab_2)
+        self.godList.setObjectName(u"godList")
+        self.godList.setStyleSheet(u"QListWidget {background-color:transparent;}")
 
-        self.horizontalLayout_2.addWidget(self.bookList2)
+        self.verticalLayout.addWidget(self.godList)
 
+        self.tabWidget.addTab(self.tab_2, "")
+        self.tab_3 = QWidget()
+        self.tab_3.setObjectName(u"tab_3")
+        self.verticalLayout_4 = QVBoxLayout(self.tab_3)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.magicList = QtBookList(self.tab_3)
+        self.magicList.setObjectName(u"magicList")
+        self.magicList.setStyleSheet(u"QListWidget {background-color:transparent;}")
 
-        self.gridLayout.addLayout(self.horizontalLayout_2, 3, 0, 1, 1)
+        self.verticalLayout_4.addWidget(self.magicList)
 
-        self.toolButton_2 = QToolButton(self.scrollAreaWidgetContents)
-        self.toolButton_2.setObjectName(u"toolButton_2")
+        self.tabWidget.addTab(self.tab_3, "")
 
-        self.gridLayout.addWidget(self.toolButton_2, 2, 0, 1, 1)
-
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.toolButton_3 = QToolButton(self.scrollAreaWidgetContents)
-        self.toolButton_3.setObjectName(u"toolButton_3")
-
-        self.horizontalLayout_4.addWidget(self.toolButton_3)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer)
-
-        self.pushButton = QPushButton(self.scrollAreaWidgetContents)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.horizontalLayout_4.addWidget(self.pushButton)
-
-
-        self.gridLayout.addLayout(self.horizontalLayout_4, 4, 0, 1, 1)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.gridLayout.addItem(self.verticalSpacer, 7, 0, 1, 1)
-
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-
-        self.verticalLayout.addWidget(self.scrollArea)
+        self.verticalLayout_3.addWidget(self.tabWidget)
 
 
         self.retranslateUi(Index)
-        self.pushButton.clicked.connect(Index.InitRandom)
+        self.refreshButton.clicked.connect(Index.InitRandom)
+
+        self.tabWidget.setCurrentIndex(0)
+
 
         QMetaObject.connectSlotsByName(Index)
     # setupUi
 
     def retranslateUi(self, Index):
         Index.setWindowTitle(QCoreApplication.translate("Index", u"Form", None))
-        self.toolButton.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u795e\u63a8\u8350", None))
-        self.toolButton_2.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u9b54\u63a8\u8350", None))
-        self.toolButton_3.setText(QCoreApplication.translate("Index", u"\u54d4\u5494\u968f\u673a\u672c\u5b50", None))
-        self.pushButton.setText(QCoreApplication.translate("Index", u"\u5237\u65b0", None))
+        self.refreshButton.setText(QCoreApplication.translate("Index", u"\u5237\u65b0\uff08F5\uff09", None))
 #if QT_CONFIG(shortcut)
-        self.pushButton.setShortcut(QCoreApplication.translate("Index", u"F5", None))
+        self.refreshButton.setShortcut(QCoreApplication.translate("Index", u"F5", None))
 #endif // QT_CONFIG(shortcut)
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("Index", u"\u968f\u673a\u672c\u5b50", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Index", u"\u54d4\u5494\u795e\u63a8\u8350", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Index", u"\u54d4\u5494\u9b54\u63a8\u8350", None))
     # retranslateUi
 

@@ -29,21 +29,28 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
     def LoadSetting(self):
         config.DownloadThreadNum = int(self.settings.value("DownloadThreadNum") or config.DownloadThreadNum)
         self.comboBox.setCurrentIndex(config.DownloadThreadNum-2)
-        config.ImageQuality = self.settings.value("ImageQuality") or config.ImageQuality
-        getattr(self, "quality_"+config.ImageQuality).setChecked(True)
-        httpProxy = self.settings.value("Proxy/Http") or config.HttpProxy
 
+        httpProxy = self.settings.value("Proxy/Http") or config.HttpProxy
         if httpProxy:
             config.HttpProxy = httpProxy
             self.httpEdit.setText(config.HttpProxy)
 
-        ChatProxy = self.settings.value("ChatProxy")
-        if ChatProxy is not None:
-            config.ChatProxy = int(ChatProxy)
-            self.checkBox_2.setChecked(bool(config.ChatProxy))
+        isProxy = self.settings.value("Proxy/IsHttp")
+        if isProxy is None:
+            isProxy = not not config.HttpProxy
+        config.IsHttpProxy = not not isProxy
+        self.httpProxy.setChecked(config.IsHttpProxy)
+        if not config.IsHttpProxy:
+            config.HttpProxy = ""
 
-        config.SavePath = self.settings.value("SavePath") or config.SavePath
+        config.ChatProxy = self.GetSettingV("ChatProxy", config.ChatProxy)
+        self.chatProxy.setChecked(bool(config.ChatProxy))
+
+        config.SavePath = self.GetSettingV("SavePath", config.SavePath)
         self.saveEdit.setText(config.SavePath)
+
+        config.PreLoading = self.GetSettingV("PreLoading", config.PreLoading)
+        self.preDownNum.setValue(config.PreLoading)
 
         x = self.settings.value("MainSize_x")
         y = self.settings.value("MainSize_y")
@@ -60,50 +67,51 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         if x and y:
             self.readSize = QSize(int(x), int(y))
 
-        v = self.settings.value("Waifu2x/Encode")
-        if v:
-            config.Encode = int(v)
+        config.Encode = self.GetSettingV("Waifu2x/Encode", 0)
+        self.encodeSelect.setCurrentIndex(config.Encode)
 
-        v = self.settings.value("Waifu2x/LookModel")
-        if v:
-            config.LookModel = int(v)
-        self.lookModel.setCurrentIndex(config.LookModel)
+        config.LookModel = self.GetSettingV("Waifu2x/LookModel", config.LookModel)
+        config.LookNoise = self.GetSettingV("Waifu2x/LookNoise", config.LookNoise)
+        config.LookScale = self.GetSettingV("Waifu2x/LookScale", config.LookScale)
+        self.readModel.setCurrentIndex(config.LookModel)
+        self.readNoise.setCurrentIndex(config.LookNoise+1)
+        self.readScale.setValue(config.LookScale)
 
-        v = self.settings.value("Waifu2x/DownloadModel")
-        if v:
-            config.DownloadModel = int(v)
-        self.downloadModel.setCurrentIndex(config.DownloadModel)
+        config.DownloadModel = self.GetSettingV("Waifu2x/DownloadModel", config.DownloadModel)
+        config.DownloadNoise = self.GetSettingV("Waifu2x/DownloadNoise", config.DownloadNoise)
+        config.DownloadScale = self.GetSettingV("Waifu2x/DownloadScale", config.DownloadScale)
+        config.DonwloadAuto = self.GetSettingV("Waifu2x/DonwloadAuto", config.DownloadAuto)
+        self.downModel.setCurrentIndex(config.DownloadModel)
+        self.downNoise.setCurrentIndex(config.DownloadNoise+1)
+        self.downScale.setValue(config.DownloadScale)
+        self.downAuto.setChecked(config.DownloadAuto)
 
-        v = self.settings.value("Waifu2x/LogIndex")
-        if v:
-            config.LogIndex = int(v)
+        config.LogIndex = self.GetSettingV("Waifu2x/LogIndex", config.LogIndex)
         self.logBox.setCurrentIndex(config.LogIndex)
         Log.UpdateLoggingLevel()
 
-        v = self.settings.value("Waifu2x/IsTips")
-        if v:
-            config.IsTips = int(v)
-
-        v = self.settings.value("Waifu2x/ChatSendAction")
-        if v:
-            config.ChatSendAction = int(v)
-        # v = self.settings.value("Waifu2x/Scale")
-        # if v:
-        #     config.Scale = int(v)
-        # self.scaleSelect.setCurrentIndex(0)
-
-        # v = self.settings.value("Waifu2x/Model")
-        # if v:
-        #     config.Model = int(v)
-        # self.noiseSelect.setCurrentIndex(config.Model-1)
-
-        v = self.settings.value("Waifu2x/Open")
-        if v:
-            config.IsOpenWaifu = False if v == "false" else True
+        config.IsTips = self.GetSettingV("Waifu2x/IsTips", config.IsTips)
+        config.ChatSendAction = self.GetSettingV("Waifu2x/ChatSendAction", config.ChatSendAction)
+        config.IsOpenWaifu = self.GetSettingV("Waifu2x/IsOpen", config.IsOpenWaifu)
         self.checkBox.setChecked(config.IsOpenWaifu)
 
         self.userId = self.settings.value("UserId")
         self.passwd = self.settings.value("Passwd")
+        return
+
+    def GetSettingV(self, key, defV=None):
+        v = self.settings.value(key)
+        if v:
+            if isinstance(defV, int):
+                return int(v)
+            elif isinstance(defV, float):
+                return float(v)
+            else:
+                return v
+        return defV
+
+    def SetSettingV(self, key, val):
+        self.settings.setValue(key, val)
         return
 
     def ExitSaveSetting(self, mainQsize, bookQsize, imgQsize, userId, passwd):
@@ -115,43 +123,56 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("ImgRead_y", imgQsize.height())
         self.settings.setValue("UserId", userId)
         self.settings.setValue("Passwd", passwd)
-        self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)
+        self.settings.setValue("Waifu2x/IsOpen", config.IsOpenWaifu)
         self.settings.setValue("Waifu2x/IsTips", config.IsTips)
         self.settings.setValue("Waifu2x/ChatSendAction", config.ChatSendAction)
 
     def SaveSetting(self):
         config.DownloadThreadNum = int(self.comboBox.currentText())
-        config.ImageQuality = self.buttonGroup.checkedButton().objectName().replace("quality_", "")
-        httpProxy = self.httpEdit.text()
+        config.HttpProxy = self.httpEdit.text()
         config.SavePath = self.saveEdit.text()
-        config.ChatProxy = 1 if self.checkBox_2.isChecked() else 0
+        config.ChatProxy = 1 if self.chatProxy.isChecked() else 0
+        config.IsHttpProxy = 1 if self.httpProxy.isChecked() else 0
+        config.PreLoading = self.preDownNum.value()
 
         self.settings.setValue("DownloadThreadNum", config.DownloadThreadNum)
-        self.settings.setValue("ImageQuality", config.ImageQuality)
-        config.HttpProxy = httpProxy
         self.settings.setValue("Proxy/Http", config.HttpProxy)
-
+        self.settings.setValue("Proxy/IsHttp", config.IsHttpProxy)
         self.settings.setValue("SavePath", config.SavePath)
         self.settings.setValue("ChatProxy", config.ChatProxy)
+        self.settings.setValue("PreLoading", config.PreLoading)
 
         config.Encode = self.encodeSelect.currentIndex()
         config.Waifu2xThread = int(self.threadSelect.currentIndex()) + 1
-        config.IsOpenWaifu = self.checkBox.isChecked()
-        config.LookModel = int(self.lookModel.currentIndex())
-        config.DownloadModel = int(self.downloadModel.currentIndex())
+        config.IsOpenWaifu = int(self.checkBox.isChecked())
+        config.DownloadModel = int(self.downModel.currentIndex())
         config.LogIndex = int(self.logBox.currentIndex())
 
-        self.settings.setValue("Waifu2x/Encode", config.Encode)
-        # self.settings.setValue("Waifu2x/Thread", config.Waifu2xThread)
-        # self.settings.setValue("Waifu2x/Scale", config.Scale)
-        # self.settings.setValue("Waifu2x/Model", config.Model)
-        self.settings.setValue("Waifu2x/Open", config.IsOpenWaifu)
-        self.settings.setValue("Waifu2x/LookModel", config.LookModel)
         self.settings.setValue("Waifu2x/DownloadModel", config.DownloadModel)
         self.settings.setValue("Waifu2x/LogIndex", config.LogIndex)
+        self.settings.setValue("Waifu2x/Encode", config.Encode)
+        self.settings.setValue("Waifu2x/IsOpen", config.IsOpenWaifu)
+
+        config.LookModel = self.readModel.currentIndex()
+        config.LookNoise = self.readNoise.currentIndex()-1
+        config.LookScale = self.readScale.value()
+        self.SetSettingV("Waifu2x/LookModel", config.LookModel)
+        self.SetSettingV("Waifu2x/LookNoise", config.LookNoise)
+        self.SetSettingV("Waifu2x/LookScale", config.LookScale)
+
+        config.DownloadModel = self.downModel.currentIndex()
+        config.DownloadNoise = self.downNoise.currentIndex()-1
+        config.DownloadScale = self.downScale.value()
+        config.DownloadAuto = int(self.downAuto.isChecked())
+        self.SetSettingV("Waifu2x/DownloadModel", config.DownloadModel)
+        self.SetSettingV("Waifu2x/DownloadNoise", config.DownloadNoise)
+        self.SetSettingV("Waifu2x/DownloadScale", config.DownloadScale)
+        self.SetSettingV("Waifu2x/DownloadAuto", config.DownloadAuto)
+
         Log.UpdateLoggingLevel()
         # QtWidgets.QMessageBox.information(self, '保存成功', "成功", QtWidgets.QMessageBox.Yes)
         QtBubbleLabel.ShowMsgEx(self, "保存成功")
+        self.LoadSetting()
 
     def SelectSavePath(self):
         url = QFileDialog.getExistingDirectory(self, "选择文件夹")

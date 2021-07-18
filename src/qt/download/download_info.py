@@ -201,7 +201,7 @@ class DownloadInfo(QtTaskBase):
             if self in self.parent.downloadingList:
                 self.parent.downloadingList.remove(self)
             self.parent.HandlerDownloadList()
-            if self.parent.autoConvert:
+            if config.DownloadAuto:
                 self.SetConvertStatu(self.Waiting)
                 self.parent.AddConvert(self.bookId)
             else:

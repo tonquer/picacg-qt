@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>482</width>
-    <height>382</height>
+    <width>616</width>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,104 +16,244 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
+       <item row="12" column="0">
+        <widget class="QLabel" name="label_16">
          <property name="text">
-          <string>下载线程数</string>
+          <string>waifu2x下载模式</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="2">
-        <widget class="QComboBox" name="encodeSelect"/>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>聊天室</string>
+         </property>
+        </widget>
        </item>
-       <item row="5" column="2">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>http代理</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_19">
+           <property name="text">
+            <string>放大倍数</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_17">
+           <property name="text">
+            <string>去噪等级</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_18">
+           <property name="text">
+            <string>模型</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QCheckBox" name="downAuto">
+           <property name="text">
+            <string>下载完后自动转换</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QComboBox" name="downNoise">
+           <item>
+            <property name="text">
+             <string>自动</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>3</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QComboBox" name="downModel">
+           <item>
+            <property name="text">
+             <string>自动</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cunet</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>photo</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>anime_style_art_rgb</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QDoubleSpinBox" name="downScale">
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <double>32.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>2.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="2">
         <widget class="QCheckBox" name="checkBox">
          <property name="text">
           <string>是否启用</string>
          </property>
         </widget>
        </item>
+       <item row="14" column="2">
+        <widget class="QComboBox" name="logBox">
+         <item>
+          <property name="text">
+           <string>WARN</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>INFO</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DEBUG</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QCheckBox" name="chatProxy">
+         <property name="text">
+          <string>启用代理</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QCheckBox" name="httpProxy">
+           <property name="text">
+            <string>启用代理</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="httpEdit">
+           <property name="placeholderText">
+            <string>http://127.0.0.1:10809</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item row="7" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>waifu2x线程数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>下载和缓存路径</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="Line" name="line_5">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="2">
+        <widget class="Line" name="line_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
         <widget class="QLabel" name="label_3">
          <property name="text">
           <string>解码器（需重启）</string>
          </property>
         </widget>
        </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_11">
-         <property name="text">
-          <string>看图时模型</string>
+       <item row="3" column="2">
+        <widget class="QSpinBox" name="preDownNum">
+         <property name="minimum">
+          <number>1</number>
          </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QCheckBox" name="checkBox_2">
-         <property name="text">
-          <string>启用代理</string>
+         <property name="value">
+          <number>10</number>
          </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>画质选择</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>下载时模型</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>线程数</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="2">
-        <widget class="QComboBox" name="lookModel">
-         <item>
-          <property name="text">
-           <string>自动</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>cunet（效果最好）</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>photo（写真）（速度快）</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>anime_style_art_rgb（动漫）（速度快）</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="8" column="2">
-        <widget class="QComboBox" name="threadSelect">
-         <item>
-          <property name="text">
-           <string>2</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item row="4" column="2">
@@ -134,92 +274,27 @@
          </item>
         </layout>
        </item>
-       <item row="10" column="2">
-        <widget class="QComboBox" name="downloadModel">
-         <item>
-          <property name="text">
-           <string>自动</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>cunet（效果好）</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>photo（写真）（速度快）</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>anime_style_art_rgb（动漫）（速度快）</string>
-          </property>
-         </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>Waifu2x看图模式</string>
+         </property>
         </widget>
        </item>
-       <item row="5" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>waifu2x设置</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="2">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QRadioButton" name="quality_original">
-           <property name="text">
-            <string>原画</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="quality_high">
-           <property name="text">
-            <string>高</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="quality_medium">
-           <property name="text">
-            <string>中</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="quality_low">
-           <property name="text">
-            <string>低</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-        </layout>
+       <item row="8" column="2">
+        <widget class="QComboBox" name="encodeSelect"/>
        </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="httpEdit">
-         <property name="placeholderText">
-          <string>http://127.0.0.1:10809</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_9">
+       <item row="14" column="0">
+        <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>聊天室</string>
+          <string>日志等级</string>
          </property>
         </widget>
        </item>
@@ -255,54 +330,162 @@
          </item>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>http代理</string>
+       <item row="9" column="2">
+        <widget class="Line" name="line_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_5">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>保存路径</string>
+          <string>看图预加载数</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="2">
-        <widget class="QComboBox" name="logBox">
-         <item>
-          <property name="text">
-           <string>WARN</string>
-          </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="text">
+          <string>下载线程数</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="2">
+          <widget class="QComboBox" name="readNoise">
+           <item>
+            <property name="text">
+             <string>自动</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>3</string>
+            </property>
+           </item>
+          </widget>
          </item>
-         <item>
-          <property name="text">
-           <string>INFO</string>
-          </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>去噪等级</string>
+           </property>
+          </widget>
          </item>
+         <item row="1" column="2">
+          <widget class="QComboBox" name="readModel">
+           <item>
+            <property name="text">
+             <string>自动</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cunet</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>photo</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>anime_style_art_rgb</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_15">
+           <property name="text">
+            <string>放大倍数</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>模型</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QDoubleSpinBox" name="readScale">
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <double>32.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>2.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="11" column="2">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QComboBox" name="threadSelect">
          <item>
           <property name="text">
-           <string>DEBUG</string>
+           <string>2</string>
           </property>
          </item>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>日志等级</string>
+       <item row="11" column="0">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="Line" name="line_7">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="Line" name="line_8">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="1" column="0">
-      <widget class="QDialogButtonBox" name="buttonBox">
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>
@@ -317,8 +500,8 @@
    <slot>SaveSetting()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>336</x>
-     <y>351</y>
+     <x>346</x>
+     <y>498</y>
     </hint>
     <hint type="destinationlabel">
      <x>242</x>
@@ -333,8 +516,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>217</x>
-     <y>351</y>
+     <x>227</x>
+     <y>498</y>
     </hint>
     <hint type="destinationlabel">
      <x>137</x>
@@ -349,8 +532,8 @@
    <slot>SelectSavePath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>418</x>
-     <y>120</y>
+     <x>602</x>
+     <y>173</y>
     </hint>
     <hint type="destinationlabel">
      <x>455</x>

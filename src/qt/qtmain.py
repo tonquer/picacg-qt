@@ -9,6 +9,7 @@ from PySide2.QtWidgets import QMessageBox, QDesktopWidget
 
 from conf import config
 from src.server import req, ToolUtil
+from src.server.sql_server import SqlServer
 from src.util import Log, Singleton
 from ui.main import Ui_MainWindow
 
@@ -25,6 +26,12 @@ class QtOwner(Singleton):
 
     def SetOwner(self, owner):
         self._owner = weakref.ref(owner)
+
+    def GetV(self, k, defV=""):
+        return self.owner.settingForm.GetSettingV(k, defV)
+
+    def SetV(self, k, v):
+        return self.owner.settingForm.SetSettingV(k, v)
 
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -68,6 +75,10 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # pix = pix.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         # self.setCursor(QCursor(pix))
         ToolUtil.SetIcon(self)
+
+        self.settingForm = QtSetting(self)
+        self.settingForm.LoadSetting()
+
         self.aboutForm = QtAbout()
 
         self.indexForm = QtIndex()
@@ -105,8 +116,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.stackedWidget.addWidget(self.loginForm)
         self.stackedWidget.addWidget(self.userForm)
 
-        self.settingForm = QtSetting(self)
-        self.settingForm.LoadSetting()
 
         if self.settingForm.mainSize:
             self.resize(self.settingForm.mainSize)
@@ -177,7 +186,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.msgForm.ShowError("waifu2x无法启用, "+config.ErrorMsg)
             self.settingForm.checkBox.setEnabled(False)
             self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
-            self.downloadForm.autoConvert = False
+            config.DownloadAuto = 0
             self.downloadForm.radioButton.setEnabled(False)
             from src.qt.com.qtimg import QtImgMgr
             QtImgMgr().obj.checkBox.setEnabled(False)
@@ -189,7 +198,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.InitUpdate()
         self.loginForm.Init()
-        self.LoadDatabaseVersion()
+        self.UpdateDbInfo()
         return
 
     def OpenSetting(self):
@@ -204,8 +213,16 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             QtImgMgr().ShowImg("")
         pass
 
-    def LoadDatabaseVersion(self):
-        _, timeStr, version = self.searchForm.searchDb.InitUpdateInfo()
+    def UpdateDbInfo(self):
+        from src.qt.util.qttask import QtTask
+        QtTask().AddSqlTask("book", "", SqlServer.TaskTypeSelectUpdate, self.UpdateDbInfoBack)
+
+    def UpdateDbInfoBack(self, data):
+        self.LoadDatabaseVersion(data)
+        return
+
+    def LoadDatabaseVersion(self, data):
+        _, timeStr, version = data
         self.curSubVersion = version
         self.curUpdateTick = ToolUtil.GetTimeTickEx(timeStr)
         if self.curUpdateTick > 0:
@@ -280,8 +297,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # 全部更新
                     rawList = data.split("\r\n")
                 addData = self.ParseBookInfo(rawList)
-                self.searchForm.searchDb.Update(addData, updateTick, self.curSubVersion)
-                self.favoriteForm.dbMgr.Update(addData)
+                from src.qt.util.qttask import QtTask
+                QtTask().AddSqlTask("book", (addData, updateTick, self.curSubVersion), SqlServer.TaskTypeUpdateBook)
         except Exception as es:
             Log.Error(es)
         finally:
@@ -290,6 +307,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def Close(self):
         self.downloadForm.Close()
+        SqlServer().Stop()
 
     def ParseBookInfo(self, rawList):
         infos = []

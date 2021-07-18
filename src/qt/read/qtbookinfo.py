@@ -4,9 +4,10 @@ from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import Qt, QSize, QEvent
 from PySide2.QtGui import QColor, QFont, QPixmap, QIcon
 from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
-    QVBoxLayout, QDesktopWidget
+    QVBoxLayout, QDesktopWidget, QScroller, QAbstractItemView
 
 from conf import config
+from qss.qss import QssDataMgr
 from resources.resources import DataMgr
 from src.index.book import BookMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
@@ -43,6 +44,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.title.setWordWrap(True)
         self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.autorList.itemClicked.connect(self.ClickTagsItem)
+        self.idLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setWordWrap(True)
         self.description.setAlignment(Qt.AlignTop)
@@ -76,6 +78,11 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         desktop = QDesktopWidget()
         self.resize(desktop.width()//4*1, desktop.height()//4*3)
         self.move(desktop.width()//8*3, desktop.height()//8*1)
+
+        QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
+        self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.epsListWidget.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
+        self.epsListWidget.verticalScrollBar().setSingleStep(30)
 
     def UpdateFavorityIcon(self):
         p = QPixmap()
@@ -144,6 +151,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             font.setPointSize(12)
             font.setBold(True)
             self.title.setFont(font)
+            self.idLabel.setText(info.id)
 
             self.bookName = info.title
             self.description.setText(info.description)
@@ -167,6 +175,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.UpdateFavorityIcon()
             self.UpdateLikeIcon()
             self.picture.setText("图片加载中...")
+            self.tabWidget.setTabText(1, "评论({})".format(str(info.commentsCount)))
             fileServer = info.thumb.get("fileServer")
             path = info.thumb.get("path")
             name = info.thumb.get("originalName")
@@ -216,8 +225,13 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.startRead.setEnabled(True)
         downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
         for index, epsInfo in enumerate(info.eps):
-            label = QLabel(epsInfo.title)
+            label = QLabel(str(index+1) + "-" + epsInfo.title)
             label.setAlignment(Qt.AlignCenter)
+            label.setStyleSheet("color: rgb(196, 95, 125);")
+            font = QFont()
+            font.setPointSize(12)
+            font.setBold(True)
+            label.setFont(font)
             # label.setWordWrap(True)
             # label.setContentsMargins(20, 10, 20, 10)
             item = QListWidgetItem(self.epsListWidget)
@@ -242,6 +256,10 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def AddBookLike(self):
         self.AddHttpTask(req.BookLikeReq(self.bookId))
         self.isLike = not self.isLike
+        if self.isLike:
+            self.starButton.setText(str(int(self.starButton.text()) + 1))
+        else:
+            self.starButton.setText(str(int(self.starButton.text()) - 1))
         self.UpdateLikeIcon()
 
     def AddFavority(self):

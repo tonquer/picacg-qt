@@ -11,7 +11,7 @@ from resources.resources import DataMgr
 from src.index.category import CateGoryBase
 from src.qt.com.qtcomment import QtComment
 from src.qt.com.qtimg import  QtImgMgr
-from src.qt.main.qtsearch_db import DbBook
+
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTask, QtTaskBase
 from src.user.user import CategoryInfo, User
@@ -236,7 +236,7 @@ class QtBookList(QListWidget, QtTaskBase):
     def UpdateState(self, isLoading=False):
         self.isLoadingPage = isLoading
 
-    def AddBookItem(self, v):
+    def AddBookItem(self, v, isShowHistory=False):
         index = self.count()
         pagesCount = ""
         finished = ""
@@ -247,7 +247,7 @@ class QtBookList(QListWidget, QtTaskBase):
         categoryStr = ""
 
         from src.qt.user.qthistory import QtHistoryData
-        from src.qt.user.qtfavorite_db import DbFavorite
+        from src.server.sql_server import DbBook
         if isinstance(v, dict):
             title = v.get("title", "")
             _id = v.get("_id")
@@ -269,10 +269,15 @@ class QtBookList(QListWidget, QtTaskBase):
             path = v.path
             _id = v.id
             finished = v.finished
-            categories = v.categories.split(",")
             pagesCount = v.pages
             likesCount = str(v.likesCount)
             updated_at = v.updated_at
+            if isShowHistory:
+                info = QtOwner().owner.historyForm.GetHistory(_id)
+                if info:
+                    categoryStr = "上次观看到第{}章/{}章".format(info.epsId+1, v.epsCount)
+            else:
+                categories = v.categories.split(",")
 
         elif isinstance(v, CateGoryBase):
             title = v.title
@@ -294,19 +299,6 @@ class QtBookList(QListWidget, QtTaskBase):
             title = v.name
             path = v.path
             url = v.url
-
-        elif isinstance(v, DbFavorite):
-            _id = v.id
-            title = v.title
-            path = v.path
-            url = v.fileServer
-            finished = v.finished
-            pagesCount = v.pages
-            updated_at = v.updated_at
-            likesCount = str(v.totalLikes)
-            info = QtOwner().owner.historyForm.GetHistory(_id)
-            if info:
-                categoryStr = "上次观看到第{}章/{}章".format(info.epsId+1, v.epsCount)
 
         else:
             assert False
@@ -376,6 +368,11 @@ class QtBookList(QListWidget, QtTaskBase):
 
         if info.get("isLiked"):
             iwidget.SetLike()
+
+        if commentsCount == "":
+            iwidget.commentButton.hide()
+            iwidget.starButton.hide()
+            iwidget.commentLabel.setTextInteractionFlags(Qt.TextSelectableByKeyboard)
 
         iwidget.id = commnetId
         iwidget.commentLabel.setText(content)

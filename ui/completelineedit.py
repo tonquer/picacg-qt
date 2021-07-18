@@ -66,6 +66,8 @@ class CompleteLineEdit(QLineEdit):
         strings2 = re.split('&|\|', strings)
         strings = strings2.pop() if len(strings2) > 0 else ""
         isSelf = False
+        from src.qt.com.langconv import Converter
+        strings = Converter('zh-hans').convert(strings)
         for data in self.words:
             assert isinstance(data, str)
             # if fuzz.token_sort_ratio(strings, data) >= 80:

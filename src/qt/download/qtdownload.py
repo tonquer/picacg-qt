@@ -73,9 +73,8 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         self.tableWidget.horizontalHeader().sectionClicked.connect(self.Sort)
         self.order = {}
 
-        self.autoConvert = True
         self.db = DownloadDb()
-
+        self.radioButton.setChecked(config.DownloadAuto)
         datas = self.db.LoadDownload(self)
         for task in datas.values():
             self.downloadDict[task.bookId] = task
@@ -122,8 +121,6 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         return os.path.join(savePath, "{:04}.{}".format(index + 1, "jpg"))
 
     def SwitchCurrent(self):
-        self.radioButton.setChecked(config.IsOpenWaifu)
-        self.SetAutoConvert()
         pass
 
     def UpdateTable(self):
@@ -527,7 +524,7 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
             task.SetConvertStatu(task.Pause)
 
     def SetAutoConvert(self):
-        self.autoConvert = self.radioButton.isChecked()
+        config.DownloadAuto = int(self.radioButton.isChecked())
 
     def Sort(self, col):
         order = self.order.get(col, 1)

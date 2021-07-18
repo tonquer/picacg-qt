@@ -3,10 +3,10 @@ from PySide2.QtWidgets import QCheckBox
 
 from src.index.category import CateGoryMgr
 from src.qt.com.langconv import Converter
-from src.qt.main.qtsearch_db import QtSearchDb
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, Log, json
+from src.server.sql_server import SqlServer
 from ui.search import Ui_search
 
 
@@ -22,8 +22,8 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
 
         ## self.bookList.doubleClicked.connect(self.OpenSearch)
         self.categories = ""
-        self.searchDb = QtSearchDb()
-        self.searchEdit.words = self.searchDb.InitWord()
+        self.searchEdit.words = []
+        self.InitWord()
 
         self.UpdateDbInfo()
         self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
@@ -32,9 +32,20 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         self.SetSearch()
 
     def UpdateDbInfo(self):
-        nums, times, _ = self.searchDb.InitUpdateInfo()
+        self.AddSqlTask("book", "", SqlServer.TaskTypeSelectUpdate, self.UpdateDbInfoBack)
+
+    def UpdateDbInfoBack(self, data):
+        nums, times, _ = data
         self.numsLabel.setText(str(nums))
         self.timesLabel.setText(times)
+        return
+
+    def InitWord(self):
+        self.AddSqlTask("book", "", SqlServer.TaskTypeSelectWord, self.InitWordBack)
+        return
+
+    def InitWordBack(self, data):
+        self.searchEdit.words = data
 
     def InitCategoryList(self):
         self.categoryList.clear()
@@ -124,6 +135,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
             self.titleBox.setEnabled(True)
             self.sortKey.setEnabled(True)
             self.sortId.setEnabled(True)
+            # self.comboBox.setEnabled(False)
         else:
             self.authorBox.setEnabled(False)
             self.desBox.setEnabled(False)
@@ -132,13 +144,15 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
             self.titleBox.setEnabled(False)
             self.sortKey.setEnabled(False)
             self.sortId.setEnabled(False)
+            # self.comboBox.setEnabled(True)
 
     def SendSearch(self, data, page):
         self.index = 1
         self.searchEdit.listView.hide()
         if self.localBox.isChecked():
-            books = self.searchDb.Search(data, self.titleBox.isChecked(), self.authorBox.isChecked(), self.desBox.isChecked(), self.tagsBox.isChecked(), self.categoryBox.isChecked(), page, self.sortKey.currentIndex(), self.sortId.currentIndex())
-            self.SendLocalBack(books, page)
+            QtOwner().owner.loadingForm.show()
+            sql = SqlServer.Search(data, self.titleBox.isChecked(), self.authorBox.isChecked(), self.desBox.isChecked(), self.tagsBox.isChecked(), self.categoryBox.isChecked(), page, self.sortKey.currentIndex(), self.sortId.currentIndex())
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
         else:
             QtOwner().owner.loadingForm.show()
             sort = ["dd", "da", "ld", "vd"]

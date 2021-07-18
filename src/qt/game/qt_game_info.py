@@ -118,7 +118,7 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.ClearTask()
         self.epsListWidget.clear()
         self.listPictureInfo.clear()
-        self.ClearCommnetList()
+        self.commentWidget.ClearCommnetList()
         self.icon_1.setVisible(False)
         self.icon_2.setVisible(False)
         self.icon_3.setVisible(False)
@@ -145,10 +145,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
 
     def OpenBookBack(self, data):
         self.loadingForm.close()
-        self.listWidget.UpdatePage(1, 1)
-        self.childrenListWidget.UpdatePage(1, 1)
-        self.childrenListWidget.UpdateState()
-        self.listWidget.UpdateState()
         try:
 
             data = json.loads(data)
@@ -241,7 +237,7 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
 
     def OpenListPicture(self, modelIndex):
         index = modelIndex.row()
-        item = self.listWidget.item(index)
+        item = self.epsListWidget.item(index)
         if not item:
             return
         data = self.listPictureInfo.get(index)

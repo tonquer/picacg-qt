@@ -8,7 +8,7 @@ fw.write("class DataMgr(object):\n")
 files = []
 for root, dirs, filenames in os.walk("./"):
     for name in filenames:
-        if name[-3:] != "png":
+        if name[-3:] != "png" and name[-3:] != "gif":
             continue
         if len(name.split(".")) >= 3:
             continue

@@ -221,13 +221,8 @@ class ToolUtil(object):
             return 2, 3
 
     @staticmethod
-    def GetLookScaleModel(w, h, category):
-        dot = w * h
-        # 条漫不放大
-
-        if max(w, h) >= 2561:
-            return ToolUtil.GetModelByIndex(0)
-        return ToolUtil.GetModelByIndex(ToolUtil.GetLookModel(category))
+    def GetLookScaleModel(category):
+        return ToolUtil.GetModelByIndex(config.LookNoise, config.LookScale, ToolUtil.GetLookModel(category))
 
     @staticmethod
     def GetDownloadScaleModel(w, h):
@@ -236,9 +231,7 @@ class ToolUtil(object):
         if not config.CanWaifu2x:
             return {}
         import waifu2x
-        if max(w, h) >= 2561:
-            return {"model": waifu2x.MODEL_ANIME_STYLE_ART_RGB_NOISE3, "scale": 1, "index": 0}
-        return ToolUtil.GetModelByIndex(config.DownloadModel)
+        return ToolUtil.GetModelByIndex(config.DownloadNoise, config.DownloadScale, config.DownloadModel)
 
     @staticmethod
     def GetPictureFormat(data):
@@ -317,41 +310,41 @@ class ToolUtil(object):
         else:
             return config.LookModel
 
-    @staticmethod
-    def GetDownloadModel():
-        if config.DownloadModel == 0:
-            return config.Model1
-        return getattr(config, "Model"+str(config.DownloadModel), config.Model1)
 
     @staticmethod
     def GetModelAndScale(model):
         if not model:
-            return 0, 1, 1
-        model = model.get('index', 0)
-        if model == 0:
-            return 0, 3, 1
-        elif model == 1:
-            return 1, 3, 2
-        elif model == 2:
-            return 2, 3, 2
-        elif model == 3:
-            return 3, 3, 2
-        return 0, 1, 1
+            return "cunet", 1, 1
+        index = model.get('index', 0)
+        scale = model.get('scale', 0)
+        noise = model.get('noise', 0)
+        if index == 0:
+            model = "anime_style_art_rgb"
+        elif index == 1:
+            model = "cunet"
+        elif index == 2:
+            model = "photo"
+        else:
+            model = "anime_style_art_rgb"
+        return  model, noise, scale
+
 
     @staticmethod
-    def GetModelByIndex(index):
+    def GetModelByIndex(noise, scale, index):
         if not config.CanWaifu2x:
             return {}
+        if noise < 0:
+            noise = 3
         import waifu2x
         if index == 0:
-            return {"model": waifu2x.MODEL_CUNET_NO_SCALE_NOISE3, "scale": 1, "index": index}
+            return {"model": getattr(waifu2x, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
         elif index == 1:
-            return {"model": waifu2x.MODEL_CUNET_NOISE3, "scale": 2, "index": index}
+            return {"model": getattr(waifu2x, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
         elif index == 2:
-            return {"model": waifu2x.MODEL_PHOTO_NOISE3, "scale": 2, "index": index}
+            return {"model": getattr(waifu2x, "MODEL_PHOTO_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
         elif index == 3:
-            return {"model": waifu2x.MODEL_ANIME_STYLE_ART_RGB_NOISE3, "scale": 2, "index": index}
-        return {"model": waifu2x.MODEL_CUNET_NOISE3, "scale": 2, "index": index}
+            return {"model": getattr(waifu2x, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+        return {"model": getattr(waifu2x, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
 
     @staticmethod
     def GetCanSaveName(name):

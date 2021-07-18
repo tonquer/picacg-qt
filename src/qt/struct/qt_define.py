@@ -50,7 +50,7 @@ class QtFileData(object):
             self.waifuState = self.WaifuWait
         self.data = data
         self.w, self.h = ToolUtil.GetPictureSize(data)
-        self.model = ToolUtil.GetLookScaleModel(self.w, self.h, category)
+        self.model = ToolUtil.GetLookScaleModel(category)
         self.state = self.DownloadSuc
         self.size = len(data)
 

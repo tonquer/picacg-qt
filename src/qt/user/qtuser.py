@@ -23,11 +23,21 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         q = QPixmap()
         q.loadFromData(DataMgr.GetData("icon_bookmark_on"))
         p = QPixmap()
-        p.loadFromData(DataMgr.GetData("icon_comment"))
+        p.loadFromData(DataMgr.GetData("icon_comic"))
         self.signButton.setIcon(QIcon(q.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
         self.signButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.toolButton11.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
         self.toolButton11.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        p = QPixmap()
+        p.loadFromData(DataMgr.GetData("icon_like"))
+        self.toolButton4.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        self.toolButton4.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        p = QPixmap()
+        p.loadFromData(DataMgr.GetData("icon_comicviewer_nightfilter_on"))
+        self.toolButton5.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        self.toolButton5.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
         self.icon.SetPicture(resources.DataMgr.GetData("placeholder_avatar"))
         self.pictureData = None
@@ -74,7 +84,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
     def SignBack(self, msg):
         QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
-            # self.signButton.setEnabled(False)
+            self.signButton.setEnabled(False)
             self.signButton.setText("已打卡")
             # self.signButton.setHidden(True)
             QtTask().AddHttpTask(req.GetUserInfo(), QtOwner().owner.loginForm.UpdateUserBack)
@@ -89,6 +99,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.exp.setText("exp: " + str(exp))
         if sign:
             self.signButton.setText("已打卡")
+            self.signButton.setEnabled(False)
         self.update()
 
     def UpdatePictureData(self, data):
