@@ -65,9 +65,9 @@ jobs:
         cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64/waifu2x.pyd .\
     - name: Build
       run: |
-        pyinstaller -F -i resources\logo_round.png start.py --add-binary "waifu2x.pyd;."
+        pyinstaller -F -i resources\icon.ico start.py --add-binary "waifu2x.pyd;."
         mv dist/start.exe "dist/start(debug).exe"
-        pyinstaller -F -w -i resources\logo_round.png start.py --add-binary "waifu2x.pyd;." 
+        pyinstaller -F -w -i resources\icon.ico start.py --add-binary "waifu2x.pyd;." 
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path models -Destination bika/
