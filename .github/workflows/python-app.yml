@@ -25,9 +25,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Waifu2x
+      run: |
+        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py39-ubuntu-x86_64.zip'
+        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py39-ubuntu-x86_64.zip
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-ubuntu-x86_64/waifu2x.so ./
     - name: Build
       run: |
-        pyinstaller -F -w start.py --add-binary lib/waifu2x.so:.
+        pyinstaller -F -w start.py --add-binary waifu2x.so:.
         mv dist bika
         cp -r data models resources bika/
         rm bika/resources/*.py -rf
@@ -53,15 +58,21 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r requirements.txt
+    - name: Waifu2x
+      run: |
+        Invoke-WebRequest -Uri 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip '
+        -OutFile waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip
+        7z x .\waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64/waifu2x.pyd ./
     - name: Build
       run: |
-        pyinstaller -F start.py --add-binary lib/waifu2x.pyd:.
-        mv dist/start.exe dist/start(debug).exe
-        pyinstaller -F -w start.py --add-binary lib/waifu2x.pyd:.
+        pyinstaller -F start.py --add-binary waifu2x.pyd:.
+        mv dist/start.exe "dist/start(debug).exe"
+        pyinstaller -F -w start.py --add-binary waifu2x.pyd:.
         mv dist bika
-        Copy-Item -Verbose -Path data -Destination bika/
-        Copy-Item -Verbose -Path models -Destination bika/
-        Copy-Item -Verbose -Path resources -Destination bika/
+        Copy-Item -Verbose -Recurse -Path data -Destination bika/
+        Copy-Item -Verbose -Recurse -Path models -Destination bika/
+        Copy-Item -Verbose -Recurse -Path resources -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
         7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
     - name: Upload
@@ -87,6 +98,11 @@ jobs:
         pip install pyinstaller
         pip install -r requirements.txt
         brew install create-dmg
+    - name: Waifu2x
+      run: |
+        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py39-macos-x86_64.zip'
+        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py39-macos-x86_64.zip
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-macos-x86_64/waifu2x.so ./
     - name: Build
       run: |
         pyinstaller --clean --log-level TRACE --onedir --name PicACG \
