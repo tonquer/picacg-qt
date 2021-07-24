@@ -12,6 +12,7 @@ ThreadNum = 10                                # 线程
 DownloadThreadNum = 5                        # 下载线程
 ImageQuality = "original"                    # 画质，original, low, medium, high
 Uuid = "defaultUuid"
+IsHttpProxy = 0
 HttpProxy = ""                               # 代理
 ChatProxy = 1                             # 聊天室启用代理
 ChatSavePath = "chat"
@@ -23,7 +24,7 @@ ResetCnt = 5                  # 下载重试次数
 IsUseCache = True             # 是否使用cache
 CachePathDir = "cache"        # cache目录
 # CacheExpired = 24 * 60 * 60    # cache过期时间24小时
-PreLoading = 5    # 预加载5页
+PreLoading = 10    # 预加载5页
 
 IsLoadingPicture = True
 
@@ -34,7 +35,7 @@ UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/tonquer/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/tonquer/picacg-database/main/data/"
-UpdateVersion = "v1.1.9"
+UpdateVersion = "v1.2.0"
 
 # waifu2x
 CanWaifu2x = True
@@ -44,17 +45,20 @@ Encode = 0
 Waifu2xThread = 2
 Format = "jpg"
 Waifu2xPath = "waifu2x"
-IsOpenWaifu = False
+IsOpenWaifu = 0
 
-LookModel = 0       # 默认值
-DownloadModel = 0   # 默认值
 LogIndex = 0
 IsTips = 1
 
 ChatSendAction = 2
 
-Model0 = "cunet"     # 通用
-Model1 = "cunet"     # 通用
-Model2 = "photo"     # 写真
-Model3 = "anime_style_art_rgb"  # 动漫
+DownloadModel = 0
+DownloadNoise = 3
+DownloadScale = 2.0
+DownloadAuto = 0
+
+LookModel = 0
+LookNoise = 3
+LookScale = 2.0
+
 
