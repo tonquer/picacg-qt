@@ -62,12 +62,12 @@ jobs:
       run: |
         Invoke-WebRequest -Uri 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip ' -OutFile 'waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip'
         7z x .\waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64/waifu2x.pyd .\
     - name: Build
       run: |
-        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64/waifu2x.pyd .\
-        pyinstaller -F -i resources\logo_round.png --add-binary waifu2x.pyd;. start.py
+        pyinstaller -F -i resources\logo_round.png start.py --add-binary "waifu2x.pyd;."
         mv dist/start.exe "dist/start(debug).exe"
-        pyinstaller -F -w -i resources\logo_round.png --add-binary waifu2x.pyd;. start.py
+        pyinstaller -F -w -i resources\logo_round.png start.py --add-binary "waifu2x.pyd;." 
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path models -Destination bika/
