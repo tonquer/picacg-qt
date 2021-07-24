@@ -10,7 +10,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  ubuntu:
     runs-on: ubuntu-latest
     env:
       PACKAGENAME: bika_py39_ubuntu_x86_64
@@ -25,14 +25,91 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
+    - name: Build
       run: |
         pyinstaller -F -w start.py --add-binary lib/waifu2x.so:.
         mv dist bika
         cp -r data models resources bika/
+        rm bika/resources/*.py -rf
         tar -zcvf ${{ env.PACKAGENAME }}.tar.gz bika/
-    - name: upload
+    - name: Upload
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.PACKAGENAME }}
         path: ${{ env.PACKAGENAME }}.tar.gz
+
+  windows:
+    runs-on: windows-latest
+    env:
+      PACKAGENAME: bika_py39_windows_x86_64
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+    - name: Build
+      run: |
+        pyinstaller -F start.py --add-binary lib/waifu2x.pyd:.
+        mv dist/start.exe dist/start(debug).exe
+        pyinstaller -F -w start.py --add-binary lib/waifu2x.pyd:.
+        mv dist bika
+        Copy-Item -Verbose -Path data -Destination bika/
+        Copy-Item -Verbose -Path models -Destination bika/
+        Copy-Item -Verbose -Path resources -Destination bika/
+        Remove-Item bika/resources/*.py -r -fo
+        7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}.zip
+
+
+  macos:
+    runs-on: macos-latest
+    env:
+      PACKAGENAME: bika_py39_macos_x86_64
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+        brew install create-dmg
+    - name: Build
+      run: |
+        pyinstaller --clean --log-level TRACE --onedir --name PicACG \
+            --add-binary waifu2x.so:. --hidden-import PySide2 --hidden-import requests \
+            --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
+            --hidden-import conf --hidden-import resources --hidden-import src \
+            --hidden-import src.index --hidden-import src.qt --hidden-import src.qt.chat \
+            --hidden-import src.qt.com --hidden-import src.qt.download \
+            --hidden-import src.qt.main --hidden-import src.qt.menu \
+            --hidden-import src.qt.read --hidden-import src.qt.struct --hidden-import src.qt.game\
+            --hidden-import src.qt.user --hidden-import src.qt.util --hidden-import src.server \
+            --hidden-import src.user --hidden-import src.util --hidden-import ui \
+            --hidden-import qss --strip --windowed -i Icon.icns \
+            start.py
+        rm -rf dist/PicACG
+        cp Icon.icns dist/
+        ln -s /Applications/   dist/Applications
+        cp -avf data models resources dist/PicACG.app/Contents/MacOS
+        rm -rf dist/PicACG.app/Contents/MacOS/resources/*.py
+        create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
+            --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}.dmg
