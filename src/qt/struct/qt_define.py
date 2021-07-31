@@ -32,6 +32,9 @@ class QtFileData(object):
         self.waifu2xTaskId = 0
         self.model = {}
 
+        self.cacheImage = None
+        self.cacheWaifu2x = False
+
         self.downloadSize = 0
 
     @property

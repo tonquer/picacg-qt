@@ -10,6 +10,7 @@ from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
 from src.qt.com.qt_git_label import QtGifLabel
 from src.qt.read.qtreadimg_tool import QtImgTool
+from src.util.tool import time_me
 
 
 class QtImgFrame(QFrame):
@@ -62,6 +63,7 @@ class QtImgFrame(QFrame):
 
         self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
         self.pixMapList = []
+        self.graphicsItemList = [self.graphicsItem1, self.graphicsItem2, self.graphicsItem3]
 
         self.scaleCnt = 2
         self.startPos = QPoint()
@@ -141,7 +143,7 @@ class QtImgFrame(QFrame):
         if action != QAbstractSlider.SliderMove:
             return
         value = self.graphicsView.verticalScrollBar().value()
-        print(value)
+        # print(value)
 
         if self.oldValue == value:
             return
@@ -191,13 +193,22 @@ class QtImgFrame(QFrame):
             return
         if not self.qtTool.isStripModel and index > 0:
             self.pixMapList[index] = QPixmap()
+            self.graphicsItemList[index].setPixmap(None)
         else:
             self.pixMapList[index] = data
-        self.ScaleGraphicsItem()
+            scale = (1 + self.scaleCnt * 0.1)
+            self.graphicsItemList[index].setPixmap(data.scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            height1 = self.graphicsItem1.pixmap().size().height()
+            width1 = self.graphicsItem1.pixmap().size().width()
+            width2 = self.graphicsItem2.pixmap().size().width()
+            width3 = self.graphicsItem3.pixmap().size().width()
+            height2 = self.graphicsItem2.pixmap().size().height()
+            self.graphicsItem1.setPos((self.width() - width1) / 2, 0)
+            self.graphicsItem2.setPos((self.width() - width2) / 2, 0 + height1)
+            self.graphicsItem3.setPos((self.width() - width3) / 2, 0 + height1 + height2)
+        # self.ScaleGraphicsItem()
 
     def ScaleGraphicsItem(self):
-        pos = self.graphicsGroup.pos()
-        # self.graphicsGroup.setPos(0, 0)
         scale = (1+self.scaleCnt*0.1)
         self.graphicsItem1.setPixmap(self.pixMapList[0].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         self.graphicsItem2.setPixmap(self.pixMapList[1].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
@@ -207,7 +218,7 @@ class QtImgFrame(QFrame):
         width2 = self.graphicsItem2.pixmap().size().width()
         width3 = self.graphicsItem3.pixmap().size().width()
         height2 = self.graphicsItem2.pixmap().size().height()
-        print(self.width()-width1, height1, self.pixMapList[0].height(), self.graphicsItem1.pixmap().width(), self.pixMapList[0].width())
+        # print(self.width()-width1, height1, self.pixMapList[0].height(), self.graphicsItem1.pixmap().width(), self.pixMapList[0].width())
         self.graphicsItem1.setPos((self.width()-width1)/2, 0)
         self.graphicsItem2.setPos((self.width()-width2)/2, 0+height1)
         self.graphicsItem3.setPos((self.width()-width3)/2, 0+height1 + height2)
@@ -266,5 +277,5 @@ class QtImgFrame(QFrame):
             subValue = self.graphicsView.verticalScrollBar().value() -height
             self.readImg.ShowImg()
             self.readImg.ShowOtherPage()
-            print(subValue)
+            # print(subValue)
             self.graphicsView.verticalScrollBar().setValue(subValue)

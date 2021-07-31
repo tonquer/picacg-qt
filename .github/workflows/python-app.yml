@@ -13,13 +13,13 @@ jobs:
   ubuntu:
     runs-on: ubuntu-latest
     env:
-      PACKAGENAME: bika_py39_ubuntu_x86_64
+      PACKAGENAME: bika_py37_ubuntu_x86_64
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.7
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -27,9 +27,9 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Waifu2x
       run: |
-        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py39-ubuntu-x86_64.zip'
-        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py39-ubuntu-x86_64.zip -d waifu2x-ncnn-vulkan-python-v1.0.2-py39-ubuntu-x86_64
-        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-ubuntu-x86_64/waifu2x.so ./
+        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64.zip'
+        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64.zip -d waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64/waifu2x.so ./
     - name: Build
       run: |
         pyinstaller -F -w start.py --add-binary waifu2x.so:.
@@ -46,13 +46,13 @@ jobs:
   windows:
     runs-on: windows-latest
     env:
-      PACKAGENAME: bika_py39_windows_x86_64
+      PACKAGENAME: bika_py37_windows_x86_64
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.7
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -60,9 +60,9 @@ jobs:
         pip install -r requirements.txt
     - name: Waifu2x
       run: |
-        Invoke-WebRequest -Uri 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip ' -OutFile 'waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip'
-        7z x .\waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64.zip "-owaifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64"
-        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-windows-x64/waifu2x.pyd .\
+        Invoke-WebRequest -Uri 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64.zip ' -OutFile 'waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64.zip'
+        7z x .\waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64.zip "-owaifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64"
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64/waifu2x.pyd .\
     - name: Build
       run: |
         pyinstaller -F -i resources\icon.ico start.py --add-binary "waifu2x.pyd;."
@@ -84,13 +84,13 @@ jobs:
   macos:
     runs-on: macos-latest
     env:
-      PACKAGENAME: bika_py39_macos_x86_64
+      PACKAGENAME: bika_py37_macos_x86_64
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.7
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -99,9 +99,9 @@ jobs:
         brew install create-dmg
     - name: Waifu2x
       run: |
-        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py39-macos-x86_64.zip'
-        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py39-macos-x86_64.zip -d waifu2x-ncnn-vulkan-python-v1.0.2-py39-macos-x86_64
-        cp waifu2x-ncnn-vulkan-python-v1.0.2-py39-macos-x86_64/waifu2x.so ./
+        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64.zip'
+        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64.zip -d waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64/waifu2x.so ./
     - name: Build
       run: |
         pyinstaller --clean --log-level TRACE --onedir --name PicACG \

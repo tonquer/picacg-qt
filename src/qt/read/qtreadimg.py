@@ -1,6 +1,6 @@
 from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import Qt, QRectF, QPointF, QEvent, QSize
-from PySide2.QtGui import QPixmap, QMatrix
+from PySide2.QtGui import QPixmap, QMatrix, QImage
 from PySide2.QtWidgets import QDesktopWidget, QMessageBox
 
 from conf import config
@@ -14,6 +14,7 @@ from src.qt.util.qttask import QtTaskBase
 from src.server import req
 from src.util import ToolUtil, Log
 from src.util.status import Status
+from src.util.tool import time_me, CTime
 
 
 class QtReadImg(QtWidgets.QWidget, QtTaskBase):
@@ -261,6 +262,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                 self.CheckLoadPicture()
             return
 
+    @time_me
     def ShowOtherPage(self, isShowWaifu=True):
         for index in range(self.curIndex+1, self.curIndex+3):
             p = self.pictureData.get(index)
@@ -271,20 +273,31 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             assert isinstance(p, QtFileData)
             if not isShowWaifu:
                 p2 = p.data
+                if not p.cacheImage or p.cacheWaifu2x:
+                    p.cacheImage = QImage()
+                    p.cacheWaifu2x = False
+                    p.cacheImage.loadFromData(p2)
 
             elif p.waifuData:
                 p2 = p.waifuData
+                if not p.cacheImage or not p.cacheWaifu2x:
+                    p.cacheImage = QImage()
+                    p.cacheWaifu2x = True
+                    p.cacheImage.loadFromData(p2)
             else:
                 p2 = p.data
+                if not p.cacheImage:
+                    p.cacheImage = QImage()
+                    p.cacheWaifu2x = False
+                    p.cacheImage.loadFromData(p2)
 
-            pixMap = QPixmap()
-            if config.IsLoadingPicture:
-                pixMap.loadFromData(p2)
+            pixMap = QPixmap(p.cacheImage)
 
             self.frame.SetPixIem(index-self.curIndex, pixMap)
         # self.frame.ScalePicture()
         return True
 
+    @time_me
     def ShowImg(self, isShowWaifu=True):
         p = self.pictureData.get(self.curIndex)
 
@@ -305,12 +318,20 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             p2 = p.data
             self.frame.waifu2xProcess.hide()
             self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
+            if not p.cacheImage or p.cacheWaifu2x:
+                p.cacheImage = QImage()
+                p.cacheWaifu2x = False
+                p.cacheImage.loadFromData(p2)
 
         elif p.waifuData:
             p2 = p.waifuData
             self.frame.waifu2xProcess.hide()
             self.qtTool.SetData(waifuSize=p.waifuQSize, waifuDataLen=p.waifuDataSize,
                                 waifuTick=p.waifuTick)
+            if not p.cacheImage or not p.cacheWaifu2x:
+                p.cacheImage = QImage()
+                p.cacheWaifu2x = True
+                p.cacheImage.loadFromData(p2)
 
         else:
             p2 = p.data
@@ -318,14 +339,17 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                 self.frame.waifu2xProcess.show()
             else:
                 self.frame.waifu2xProcess.hide()
+            if not p.cacheImage:
+                p.cacheImage = QImage()
+                p.cacheWaifu2x = False
+                p.cacheImage.loadFromData(p2)
 
         self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
         self.qtTool.UpdateText(p.model)
+        t = CTime()
+        pixMap = QPixmap(p.cacheImage)
 
-        pixMap = QPixmap()
-        if config.IsLoadingPicture:
-            pixMap.loadFromData(p2)
-
+        t.Refresh(self.__class__.__name__)
         self.frame.SetPixIem(0, pixMap)
         # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
         # self.frame.ScalePicture()
@@ -377,7 +401,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Right:
             self.qtTool.OpenNextEps()
             return
-        print(ev.modifiers, ev.key())
+        # print(ev.modifiers, ev.key())
         if ev.key() == Qt.Key_Plus or ev.key() == Qt.Key_Equal:
             self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value()+10)
             return

@@ -104,6 +104,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.horizontalLayout_7.addWidget(self.slider)
         self.SetWaifu2xCancle()
         self.scaleBox.installEventFilter(self)
+        self.zoomSlider.setMaximum(500)
 
     @property
     def imgFrame(self):
@@ -402,7 +403,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
     def ScalePicture(self, value):
         self.zoomLabel.setText("缩放（{}%）".format(str(value)))
         self.readImg.zoom(value//10-10)
-
 
     def eventFilter(self, obj, ev):
         if obj == self.scaleBox:
