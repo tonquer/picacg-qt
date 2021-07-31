@@ -1,9 +1,10 @@
 import weakref
 
 from PySide2 import QtWidgets
-from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint
+from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint, QSize
 from PySide2.QtGui import QPainter, QColor, QPixmap
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame, QGraphicsItemGroup, QGraphicsItem, \
+    QAbstractSlider, QAbstractItemView
 
 from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
@@ -34,14 +35,24 @@ class QtImgFrame(QFrame):
         self.graphicsView.setCacheMode(self.graphicsView.CacheBackground)
         self.graphicsView.setViewportUpdateMode(self.graphicsView.SmartViewportUpdate)
 
-        self.graphicsItem = QGraphicsPixmapItem()
-        self.graphicsItem.setFlags(QGraphicsPixmapItem.ItemIsFocusable)
+        self.graphicsItem1 = QGraphicsPixmapItem()
+        self.graphicsItem1.setFlags(QGraphicsPixmapItem.ItemIsFocusable)
+
+        self.graphicsItem2 = QGraphicsPixmapItem()
+        self.graphicsItem2.setFlags(QGraphicsPixmapItem.ItemIsFocusable)
+
+        self.graphicsItem3 = QGraphicsPixmapItem()
+        self.graphicsItem3.setFlags(QGraphicsPixmapItem.ItemIsFocusable)
+
+        self.graphicsGroup = QGraphicsItemGroup()
+        self.graphicsGroup.setFlag(QGraphicsItem.ItemIsFocusable)
+        self.graphicsGroup.addToGroup(self.graphicsItem1)
+        self.graphicsGroup.addToGroup(self.graphicsItem2)
+        self.graphicsGroup.addToGroup(self.graphicsItem3)
 
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.graphicsView.setScene(self.graphicsScene)
-        self.graphicsItem.setTransformationMode(Qt.SmoothTransformation)
-
-        self.graphicsScene.addItem(self.graphicsItem)
+        self.graphicsScene.addItem(self.graphicsGroup)
 
         self.graphicsView.setMinimumSize(10, 10)
 
@@ -50,8 +61,9 @@ class QtImgFrame(QFrame):
         # self.graphicsItem.installSceneEventFilter(self.graphicsItem)
 
         self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
-        self.pixMap = QPixmap()
-        self.scaleCnt = 0
+        self.pixMapList = []
+
+        self.scaleCnt = 2
         self.startPos = QPoint()
         self.endPos = QPoint()
         self.process = DWaterProgress(self)
@@ -61,6 +73,11 @@ class QtImgFrame(QFrame):
         self.waifu2xProcess.Init(DataMgr.GetData("loading_gif"))
         self.downloadSize = 1
         self.downloadMaxSize = 1
+        self.oldValue = -1
+        self.graphicsView.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
+        self.graphicsView.verticalScrollBar().setSingleStep(100)
+        self.graphicsView.verticalScrollBar().setPageStep(100)
+        self.graphicsView.setSceneRect(0, 0, self.width(), self.height())
 
     @property
     def readImg(self):
@@ -73,6 +90,24 @@ class QtImgFrame(QFrame):
                 # print(ev, ev.button())
                 self.startPos = ev.screenPos()
                 return ev.ignore()
+            elif ev.type() == QEvent.GraphicsSceneWheel:
+                return True
+            elif ev.type() == QEvent.KeyPress:
+                if ev.key() == Qt.Key_Down:
+                    point = self.graphicsGroup.pos()
+                    # if point.y() > 0:
+                    #     return True
+                    # self.UpdatePos(point, -200)
+                    self.graphicsView.verticalScrollBar().setValue(self.graphicsView.verticalScrollBar().value()+100)
+                    self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value())
+                elif ev.key() == Qt.Key_Up:
+                    point = self.graphicsGroup.pos()
+                    # if point.y() < 0:
+                    #     return True
+                    # self.UpdatePos(point, 200)
+                    self.graphicsView.verticalScrollBar().setValue(self.graphicsView.verticalScrollBar().value()-100)
+                    self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value())
+                return True
             elif ev.type() == QEvent.GraphicsSceneMouseRelease:
                 # print(ev, self.width(), self.height(), self.readImg.pos())
                 self.endPos = ev.screenPos()
@@ -102,6 +137,29 @@ class QtImgFrame(QFrame):
         self.ScaleFrame()
         self.ScalePicture()
 
+    def OnActionTriggered(self, action):
+        if action != QAbstractSlider.SliderMove:
+            return
+        value = self.graphicsView.verticalScrollBar().value()
+        print(value)
+
+        if self.oldValue == value:
+            return
+        self.UpdateScrollBar(value)
+
+    def UpdateScrollBar(self, value):
+        self.UpdatePos(value-self.oldValue)
+        self.graphicsView.verticalScrollBar().setMinimum(-100)
+        if self.readImg.curIndex >= self.readImg.maxPic - 1:
+            self.graphicsView.verticalScrollBar().setMaximum(value)
+        elif not self.qtTool.isStripModel:
+            self.graphicsView.verticalScrollBar().setMaximum(self.graphicsItem1.pixmap().size().height()-100)
+        else:
+            self.graphicsView.verticalScrollBar().setMaximum(100000)
+        self.graphicsView.verticalScrollBar().setSingleStep(self.height()//5)
+        self.graphicsView.verticalScrollBar().setPageStep(self.height()//5)
+        self.oldValue = value
+
     def ScaleFrame(self):
         size = self.size()
         w = size.width()
@@ -118,41 +176,41 @@ class QtImgFrame(QFrame):
         return
 
     def ScalePicture(self):
-        if self.readImg.isStripModel:
-            self.graphicsItem.setPos(0, 0)
-        rect = QRectF(self.graphicsItem.pos(), QSizeF(
-                self.pixMap.size()))
-        unity = self.graphicsView.transform().mapRect(QRectF(0, 0, 1, 1))
-        width = unity.width()
-        height = unity.height()
-        if width <= 0 or height <= 0:
+        self.graphicsView.setSceneRect(0, 0, self.width(), self.height())
+        if not self.pixMapList:
             return
-        self.graphicsView.scale(1 / width, 1 / height)
-        viewRect = self.graphicsView.viewport().rect()
-        sceneRect = self.graphicsView.transform().mapRect(rect)
-        if sceneRect.width() <= 0 or sceneRect.height() <= 0:
+        self.ScaleGraphicsItem()
+
+        self.graphicsView.verticalScrollBar().setMinimum(-100)
+        self.graphicsView.verticalScrollBar().setMaximum(100000)
+        self.graphicsView.verticalScrollBar().setSingleStep(self.height()//5)
+        self.graphicsView.verticalScrollBar().setPageStep(self.height()//5)
+
+    def SetPixIem(self, index, data):
+        if not data:
             return
-        x_ratio = viewRect.width() / sceneRect.width()
-        y_ratio = viewRect.height() / sceneRect.height()
-        if not self.readImg.isStripModel:
-            x_ratio = y_ratio = min(x_ratio, y_ratio)
+        if not self.qtTool.isStripModel and index > 0:
+            self.pixMapList[index] = QPixmap()
         else:
-            x_ratio = y_ratio = max(x_ratio, y_ratio)
+            self.pixMapList[index] = data
+        self.ScaleGraphicsItem()
 
-        self.graphicsView.scale(x_ratio, y_ratio)
-        if self.readImg.isStripModel:
-            height2 = self.pixMap.size().height() / 2
-            height3 = self.graphicsView.size().height()/2
-            height3 = height3/x_ratio
-            p = self.graphicsItem.pos()
-            self.graphicsItem.setPos(p.x(), p.y()+height2-height3)
-
-        self.graphicsView.centerOn(rect.center())
-        for _ in range(abs(self.scaleCnt)):
-            if self.scaleCnt > 0:
-                self.graphicsView.scale(1.1, 1.1)
-            else:
-                self.graphicsView.scale(1/1.1, 1/1.1)
+    def ScaleGraphicsItem(self):
+        pos = self.graphicsGroup.pos()
+        # self.graphicsGroup.setPos(0, 0)
+        scale = (1+self.scaleCnt*0.1)
+        self.graphicsItem1.setPixmap(self.pixMapList[0].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.graphicsItem2.setPixmap(self.pixMapList[1].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        self.graphicsItem3.setPixmap(self.pixMapList[2].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        height1 = self.graphicsItem1.pixmap().size().height()
+        width1 = self.graphicsItem1.pixmap().size().width()
+        width2 = self.graphicsItem2.pixmap().size().width()
+        width3 = self.graphicsItem3.pixmap().size().width()
+        height2 = self.graphicsItem2.pixmap().size().height()
+        print(self.width()-width1, height1, self.pixMapList[0].height(), self.graphicsItem1.pixmap().width(), self.pixMapList[0].width())
+        self.graphicsItem1.setPos((self.width()-width1)/2, 0)
+        self.graphicsItem2.setPos((self.width()-width2)/2, 0+height1)
+        self.graphicsItem3.setPos((self.width()-width3)/2, 0+height1 + height2)
 
     def UpdateProcessBar(self, info):
         if info:
@@ -165,3 +223,48 @@ class QtImgFrame(QFrame):
             self.downloadSize = 0
             self.downloadMaxSize = 1
             self.process.setValue(0)
+
+    def InitPixMap(self):
+        pixMap1 = QPixmap()
+        pixMap2 = QPixmap()
+        pixMap3 = QPixmap()
+        self.pixMapList = []
+        self.pixMapList.append(pixMap1)
+        self.pixMapList.append(pixMap2)
+        self.pixMapList.append(pixMap3)
+        self.graphicsGroup.setPos(0, 0)
+
+    def UpdatePixMap(self):
+        if not self.pixMapList:
+            return
+        self.ScaleGraphicsItem()
+        return
+
+    def UpdatePos(self, value):
+        # scale = (1+self.scaleCnt*0.1)
+        if not self.qtTool.isStripModel:
+            return
+        height = self.graphicsItem1.pixmap().size().height()
+        ## 切换上一图片
+        if value < 0 and self.graphicsView.verticalScrollBar().value() < 0:
+            if self.readImg.curIndex <= 0:
+                return
+            self.readImg.curIndex -= 1
+            subValue = self.graphicsView.verticalScrollBar().value()
+            self.readImg.ShowImg()
+            self.readImg.ShowOtherPage()
+            height = self.graphicsItem1.pixmap().size().height()
+            subValue += height
+            self.graphicsView.verticalScrollBar().setValue(subValue)
+            pass
+
+        ## 切换下一图片
+        elif value > 0 and self.graphicsItem1.pixmap().size().height() > 0 and self.graphicsView.verticalScrollBar().value() > height:
+            if self.readImg.curIndex >= self.readImg.maxPic - 1:
+                return
+            self.readImg.curIndex += 1
+            subValue = self.graphicsView.verticalScrollBar().value() -height
+            self.readImg.ShowImg()
+            self.readImg.ShowOtherPage()
+            print(subValue)
+            self.graphicsView.verticalScrollBar().setValue(subValue)

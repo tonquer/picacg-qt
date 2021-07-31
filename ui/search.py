@@ -287,6 +287,8 @@ class Ui_search(object):
         self.jumpPage.clicked.connect(search.JumpPage)
         self.comboBox.currentIndexChanged.connect(search.ChangeSort)
         self.localBox.clicked.connect(search.SetSearch)
+        self.sortKey.currentIndexChanged.connect(search.ChangeSort)
+        self.sortId.currentIndexChanged.connect(search.ChangeSort)
 
         QMetaObject.connectSlotsByName(search)
     # setupUi

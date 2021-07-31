@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1059</width>
-    <height>702</height>
+    <height>712</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -143,7 +143,7 @@
           <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -181,7 +181,7 @@ QToolButton:checked {
           <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -231,7 +231,7 @@ QToolButton:checked {
           <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -281,7 +281,7 @@ QToolButton:checked {
           <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -349,7 +349,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -402,7 +402,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -452,7 +452,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -502,7 +502,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -552,7 +552,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -602,7 +602,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -652,7 +652,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -702,7 +702,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;
@@ -752,7 +752,7 @@ QToolButton:checked {
             <string notr="true">/* 正常时，按钮颜色 */
 QToolButton{
     background:transparent;
-    color: rgb(0, 0, 2);
+    color: rgb(196, 95, 125);
     border-style: outset;
     border-color: beige;
     border-radius: 10px;

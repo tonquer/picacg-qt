@@ -229,6 +229,7 @@ class SpeedTestHandler(object):
 @handler(req.CategoriesSearchReq)
 @handler(req.RankReq)
 @handler(req.GetComments)
+@handler(req.GetComicsRecommendation)
 @handler(req.BookLikeReq)
 @handler(req.CommentsLikeReq)
 @handler(req.GetKeywords)

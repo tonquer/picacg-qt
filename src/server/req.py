@@ -12,6 +12,7 @@ class ServerReq(object):
         self.params = params
         self.method = method
         self.isParseRes = True
+        self.useImgProxy = True
         self.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
 
 
@@ -204,6 +205,16 @@ class GetComicsBookOrderReq(ServerReq):
                                              {}, method)
 
 
+# 获得推荐信息
+class GetComicsRecommendation(ServerReq):
+    def __init__(self, bookId=""):
+        url = config.Url + "comics/{}/recommendation".format(bookId)
+        method = "GET"
+        self.bookId = bookId
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
 # 下载图片
 class DownloadBookReq(ServerReq):
     def __init__(self, url, path="", isSaveCache=False):
@@ -241,6 +252,7 @@ class CheckUpdateReq(ServerReq):
         method = "GET"
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
+        self.useImgProxy = False
 
 
 # 检查更新
@@ -255,6 +267,7 @@ class CheckUpdateDatabaseReq(ServerReq):
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
+        self.useImgProxy = False
 
 
 # 下载
@@ -271,6 +284,7 @@ class DownloadDatabaseReq(ServerReq):
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
+        self.useImgProxy = False
 
 
 # 热词

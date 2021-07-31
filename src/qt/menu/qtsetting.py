@@ -1,9 +1,14 @@
+import base64
+
 from PySide2 import QtWidgets
 from PySide2.QtCore import QSettings, Qt, QSize
+from PySide2.QtGui import QPalette, QColor
 from PySide2.QtWidgets import QFileDialog
 
 from conf import config
+from qss.qss import QssDataMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.qtmain import QtOwner
 from src.util import Log
 from ui.setting import Ui_Setting
 
@@ -21,6 +26,9 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.userId = ""
         self.passwd = ""
         self.gpuInfos = []
+        # for text in QssDataMgr.files:
+        #     self.themeBox.addItem(text)
+
 
     def show(self):
         self.LoadSetting()
@@ -92,17 +100,25 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
         config.IsTips = self.GetSettingV("Waifu2x/IsTips", config.IsTips)
         config.ChatSendAction = self.GetSettingV("Waifu2x/ChatSendAction", config.ChatSendAction)
-        config.IsOpenWaifu = self.GetSettingV("Waifu2x/IsOpen", config.IsOpenWaifu)
+        config.IsOpenWaifu = self.GetSettingV("Waifu2x/IsOpen2", config.IsOpenWaifu)
         self.checkBox.setChecked(config.IsOpenWaifu)
 
         self.userId = self.settings.value("UserId")
-        self.passwd = self.settings.value("Passwd")
+        self.passwd = self.settings.value("Passwd2")
+        self.passwd = base64.b64decode(self.passwd).decode("utf-8") if self.passwd else self.passwd
+        themId = self.GetSettingV("ThemeId", 0)
+        self.themeBox.setCurrentIndex(themId)
+        self.SetTheme()
         return
 
     def GetSettingV(self, key, defV=None):
         v = self.settings.value(key)
         if v:
             if isinstance(defV, int):
+                if v == "true" or v == "True":
+                    return 1
+                elif v == "false" or v == "False":
+                    return 0
                 return int(v)
             elif isinstance(defV, float):
                 return float(v)
@@ -122,12 +138,28 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("ImgRead_x", imgQsize.width())
         self.settings.setValue("ImgRead_y", imgQsize.height())
         self.settings.setValue("UserId", userId)
-        self.settings.setValue("Passwd", passwd)
-        self.settings.setValue("Waifu2x/IsOpen", config.IsOpenWaifu)
-        self.settings.setValue("Waifu2x/IsTips", config.IsTips)
+        self.settings.setValue("Passwd", base64.b64encode(passwd.encode("utf-8")))
+        self.settings.setValue("Passwd2", base64.b64encode(passwd.encode("utf-8")))
+        self.settings.setValue("Waifu2x/IsOpen2", int(config.IsOpenWaifu))
+        self.settings.setValue("Waifu2x/IsTips", int(config.IsTips))
         self.settings.setValue("Waifu2x/ChatSendAction", config.ChatSendAction)
 
+    def SetTheme(self):
+        index = self.themeBox.currentIndex()
+        if index == 0:
+            QtOwner().owner.app.setPalette(QPalette())
+            QtOwner().owner.app.setStyleSheet("")
+            return
+        elif index == 1:
+            text = "flatblack"
+        else:
+            text = "flatwhite"
+        data = QssDataMgr().GetData(text)
+        QtOwner().owner.app.setPalette(QPalette(QColor(data[20:27])))
+        QtOwner().owner.app.setStyleSheet(data)
+
     def SaveSetting(self):
+
         config.DownloadThreadNum = int(self.comboBox.currentText())
         config.HttpProxy = self.httpEdit.text()
         config.SavePath = self.saveEdit.text()
@@ -151,7 +183,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("Waifu2x/DownloadModel", config.DownloadModel)
         self.settings.setValue("Waifu2x/LogIndex", config.LogIndex)
         self.settings.setValue("Waifu2x/Encode", config.Encode)
-        self.settings.setValue("Waifu2x/IsOpen", config.IsOpenWaifu)
+        self.settings.setValue("Waifu2x/IsOpen2", config.IsOpenWaifu)
 
         config.LookModel = self.readModel.currentIndex()
         config.LookNoise = self.readNoise.currentIndex()-1
@@ -168,6 +200,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.SetSettingV("Waifu2x/DownloadNoise", config.DownloadNoise)
         self.SetSettingV("Waifu2x/DownloadScale", config.DownloadScale)
         self.SetSettingV("Waifu2x/DownloadAuto", config.DownloadAuto)
+
+        self.SetSettingV("ThemeId", self.themeBox.currentIndex())
 
         Log.UpdateLoggingLevel()
         # QtWidgets.QMessageBox.information(self, '保存成功', "成功", QtWidgets.QMessageBox.Yes)

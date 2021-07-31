@@ -1,5 +1,5 @@
-from PySide2.QtCore import QByteArray, QBuffer
-from PySide2.QtGui import QMovie
+from PySide2.QtCore import QByteArray, QBuffer, QRect
+from PySide2.QtGui import QMovie, Qt, QPainter
 from PySide2.QtWidgets import QLabel
 
 
@@ -9,6 +9,8 @@ class QtGifLabel(QLabel):
         self.movie = QMovie()
         self.byteArray = None
         self.bBuffer = None
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(Qt.FramelessWindowHint)
 
     def Init(self, data):
 

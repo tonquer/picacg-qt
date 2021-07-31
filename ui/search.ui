@@ -587,6 +587,38 @@ QListWidget::item {
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>sortKey</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>search</receiver>
+   <slot>ChangeSort()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>415</x>
+     <y>526</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>529</x>
+     <y>724</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sortId</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>search</receiver>
+   <slot>ChangeSort()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>493</x>
+     <y>519</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>547</x>
+     <y>662</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>Search()</slot>

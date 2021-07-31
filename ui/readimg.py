@@ -248,13 +248,14 @@ class Ui_ReadImg(object):
         self.buttonGroup.setObjectName(u"buttonGroup")
         self.buttonGroup.addButton(self.radioButton)
         self.radioButton.setObjectName(u"radioButton")
-        self.radioButton.setChecked(True)
+        self.radioButton.setChecked(False)
 
         self.horizontalLayout_4.addWidget(self.radioButton)
 
         self.radioButton_2 = QRadioButton(ReadImg)
         self.buttonGroup.addButton(self.radioButton_2)
         self.radioButton_2.setObjectName(u"radioButton_2")
+        self.radioButton_2.setChecked(True)
 
         self.horizontalLayout_4.addWidget(self.radioButton_2)
 
@@ -274,7 +275,7 @@ class Ui_ReadImg(object):
         self.zoomSlider.setMinimum(10)
         self.zoomSlider.setMaximum(200)
         self.zoomSlider.setSingleStep(10)
-        self.zoomSlider.setValue(100)
+        self.zoomSlider.setValue(120)
         self.zoomSlider.setOrientation(Qt.Horizontal)
 
         self.horizontalLayout_10.addWidget(self.zoomSlider)
@@ -429,9 +430,9 @@ class Ui_ReadImg(object):
         self.waifu2xStatus.setText("")
         self.waifu2xSave.setText(QCoreApplication.translate("ReadImg", u"\u4fee\u6539", None))
         self.waifu2xCancle.setText(QCoreApplication.translate("ReadImg", u"\u4fdd\u5b58", None))
-        self.radioButton.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u9ad8\u5ea6", None))
-        self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u94fa\u6ee1\u5bbd\u5ea6", None))
-        self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08100%\uff09", None))
+        self.radioButton.setText(QCoreApplication.translate("ReadImg", u"\u5de6\u53f3\u7ffb\u9875", None))
+        self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u4e0a\u4e0b\u7ffb\u9875", None))
+        self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08120%\uff09", None))
         self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00\u56fe\u7247\u5de5\u5177", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
         self.fullButton.setText(QCoreApplication.translate("ReadImg", u"\u5168\u5c4f", None))

@@ -72,6 +72,12 @@ class QtCustomSlider(QtWidgets.QSlider):
     def leaveEvent(self, event):
         super(self.__class__, self).leaveEvent(event)
 
+    def keyPressEvent(self, event):
+        return
+
+    def keyReleaseEvent(self, event) -> None:
+        return
+
 
 class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
@@ -97,6 +103,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.slider = QtCustomSlider(self)
         self.horizontalLayout_7.addWidget(self.slider)
         self.SetWaifu2xCancle()
+        self.scaleBox.installEventFilter(self)
 
     @property
     def imgFrame(self):
@@ -107,8 +114,8 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         return self.imgFrame.readImg
 
     @property
-    def graphicsItem(self):
-        return self.imgFrame.graphicsItem
+    def graphicsGroup(self):
+        return self.imgFrame.graphicsGroup
 
     @property
     def curIndex(self):
@@ -145,7 +152,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.scaleCnt = value
 
     def NextPage(self):
-        self.graphicsItem.setPos(0, 0)
+        self.graphicsGroup.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().books.get(bookId)
@@ -162,11 +169,12 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
+        self.readImg.ShowOtherPage()
         t.Refresh(self.__class__.__name__)
         return
 
     def LastPage(self):
-        self.graphicsItem.setPos(0, 0)
+        self.graphicsGroup.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().books.get(bookId)
@@ -182,16 +190,22 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
+        self.readImg.ShowOtherPage()
         return
 
     def SwitchPicture(self):
         if self.radioButton.isChecked():
             self.isStripModel = False
+            self.imgFrame.SetPixIem(1, None)
+            self.imgFrame.SetPixIem(2, None)
+            self.zoomSlider.setValue(100)
+            self.scaleCnt = 0
         else:
             self.isStripModel = True
-        self.graphicsItem.setPos(0, 0)
-        self.zoomSlider.setValue(100)
-        self.scaleCnt = 0
+            self.readImg.ShowOtherPage()
+            self.zoomSlider.setValue(120)
+            self.scaleCnt = 2
+        self.graphicsGroup.setPos(0, 0)
         self.imgFrame.ScalePicture()
 
     def ReturnPage(self):
@@ -251,37 +265,17 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             QtBubbleLabel.ShowErrorEx(owner, "下载未完成")
             return
         QtImgMgr().ShowImg(p.data)
-        # clipboard = QApplication.clipboard()
-        # owner = self.readImg
-        #
-        # if self.checkBox.isChecked():
-        #     p = owner.pictureData.get(owner.curIndex)
-        #     if not p or not p.waifuData:
-        #         QtBubbleLabel.ShowErrorEx(owner, "解码还未完成")
-        #         return
-        #     img = QImage()
-        #     img.loadFromData(p.waifuData)
-        #     clipboard.setImage(img)
-        #     QtBubbleLabel.ShowMsgEx(owner, "复制成功")
-
-        # else:
-        #     p = owner.pictureData.get(owner.curIndex)
-        #     if not p or not p.data:
-        #         QtBubbleLabel.ShowErrorEx(owner, "下载未完成")
-        #         return
-        #     img = QImage()
-        #     img.loadFromData(p.data)
-        #     clipboard.setImage(img)
-        #     QtBubbleLabel.ShowMsgEx(owner, "复制成功")
         return
 
     def OpenWaifu(self):
         if self.checkBox.isChecked():
-            config.IsOpenWaifu = True
+            config.IsOpenWaifu = 1
             self.readImg.ShowImg(True)
+            self.readImg.ShowOtherPage(True)
         else:
-            config.IsOpenWaifu = False
+            config.IsOpenWaifu = 0
             self.readImg.ShowImg(False)
+            self.readImg.ShowOtherPage(False)
 
         return
 
@@ -350,6 +344,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
+        self.readImg.ShowOtherPage()
 
     def InitSlider(self, maxIndex):
         self.slider.setMinimum(1)
@@ -387,8 +382,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             data.scaleW, data.scaleH = 0, 0
             data.waifuTick = 0
 
-            self.readImg.ShowImg()
-            self.readImg.CheckLoadPicture()
+        self.readImg.ShowImg()
+        self.readImg.ShowOtherPage()
+        self.readImg.CheckLoadPicture()
 
         self.SetWaifu2xCancle(False)
 
@@ -408,7 +404,13 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.readImg.zoom(value//10-10)
 
 
-
+    def eventFilter(self, obj, ev):
+        if obj == self.scaleBox:
+            if ev.type() == QEvent.KeyRelease:
+                return True
+            elif ev.type() == QEvent.KeyPress:
+                return True
+        return False
 
 
 

@@ -37,7 +37,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.setMinimumSize(300, 300)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.ShowAndCloseTool)
-        self.isStripModel = False
+        self.isStripModel = True
         self.setWindowFlags(self.windowFlags() &~ Qt.WindowMaximizeButtonHint &~ Qt.WindowMinimizeButtonHint)
 
         self.category = []
@@ -51,8 +51,8 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         return self.frame.graphicsView
 
     @property
-    def graphicsItem(self):
-        return self.frame.graphicsItem
+    def graphicsGroup(self):
+        return self.frame.graphicsGroup
 
     @property
     def qtTool(self):
@@ -71,8 +71,12 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.epsId = 0
         self.maxPic = 0
         self.curIndex = 0
-        self.qtTool.zoomSlider.setValue(100)
-        self.frame.scaleCnt = 0
+        if not self.isStripModel:
+            self.qtTool.zoomSlider.setValue(100)
+            self.frame.scaleCnt = 0
+        else:
+            self.qtTool.zoomSlider.setValue(120)
+            self.frame.scaleCnt = 2
         self.pictureData.clear()
         self.ClearTask()
         self.ClearConvert()
@@ -87,14 +91,15 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             self.category.extend(info.categories)
         self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
         self.qtTool.SetData(isInit=True)
-        self.graphicsItem.setPixmap(QPixmap())
+        # self.graphicsGroup.setPixmap(QPixmap())
+        self.frame.InitPixMap()
+        self.frame.UpdatePixMap()
         self.qtTool.SetData()
         # self.qtTool.show()
         self.bookId = bookId
         self.epsId = epsId
         self.AddHistory()
 
-        self.graphicsItem.setPos(0, 0)
         if not self.isInit:
             desktop = QDesktopWidget()
             self.resize(desktop.width()//4*3, desktop.height()-100)
@@ -133,7 +138,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                     点击上方区域
                     点击右键
                 缩放：
-                    按+,-或者ctrl+鼠标滚轮
+                    按+,-
                 退出：
                     使用键盘ESC
             """)
@@ -249,16 +254,44 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             p.SetData(data, self.category)
             if index == self.curIndex:
                 self.ShowImg()
+            elif self.isStripModel and self.curIndex < index <= self.curIndex + 2:
+                self.ShowOtherPage()
+                self.CheckLoadPicture()
             else:
                 self.CheckLoadPicture()
             return
+
+    def ShowOtherPage(self, isShowWaifu=True):
+        for index in range(self.curIndex+1, self.curIndex+3):
+            p = self.pictureData.get(index)
+            if not p or (not p.data):
+                self.frame.SetPixIem(index-self.curIndex, None)
+                return
+
+            assert isinstance(p, QtFileData)
+            if not isShowWaifu:
+                p2 = p.data
+
+            elif p.waifuData:
+                p2 = p.waifuData
+            else:
+                p2 = p.data
+
+            pixMap = QPixmap()
+            if config.IsLoadingPicture:
+                pixMap.loadFromData(p2)
+
+            self.frame.SetPixIem(index-self.curIndex, pixMap)
+        # self.frame.ScalePicture()
+        return True
 
     def ShowImg(self, isShowWaifu=True):
         p = self.pictureData.get(self.curIndex)
 
         if not p or (not p.data):
             self.qtTool.SetData(state=QtFileData.Downloading)
-            self.graphicsItem.setPixmap(QPixmap())
+            self.frame.SetPixIem(0, None)
+
             self.qtTool.modelBox.setEnabled(False)
             self.frame.UpdateProcessBar(None)
             self.frame.process.show()
@@ -289,12 +322,13 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
         self.qtTool.UpdateText(p.model)
 
-        self.frame.pixMap = QPixmap()
+        pixMap = QPixmap()
         if config.IsLoadingPicture:
-            self.frame.pixMap.loadFromData(p2)
-        self.graphicsItem.setPixmap(self.frame.pixMap)
-        self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.frame.pixMap.width(), self.frame.pixMap.height())))
-        self.frame.ScalePicture()
+            pixMap.loadFromData(p2)
+
+        self.frame.SetPixIem(0, pixMap)
+        # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
+        # self.frame.ScalePicture()
         self.CheckLoadPicture()
         return True
 
@@ -303,27 +337,6 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             return True
         else:
             return super(self.__class__, self).eventFilter(obj, ev)
-
-    def wheelEvent(self, event):
-        if event.modifiers() == Qt.ControlModifier:
-            if event.angleDelta().y() > 0:
-                self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value() + 10)
-            else:
-                self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value() - 10)
-        else:
-            if event.angleDelta().y() > 0:
-                # self.zoomIn()
-                point = self.graphicsItem.pos()
-                if point.y() > 0:
-                    return
-                self.graphicsItem.setPos(point.x(), point.y()+100)
-            else:
-                # self.zoomOut()
-                point = self.graphicsItem.pos()
-
-                if point.y() < 0:
-                    return
-                self.graphicsItem.setPos(point.x(), point.y()-100)
 
     def zoomIn(self):
         """放大"""
@@ -349,12 +362,13 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         #     return
         if self.frame.scaleCnt == scaleV:
             return
-        for _ in range(abs(scaleV - self.frame.scaleCnt)):
-            if scaleV - self.frame.scaleCnt > 0:
-                self.graphicsView.scale(1.1, 1.1)
-            else:
-                self.graphicsView.scale(1/1.1, 1/1.1)
+        # for _ in range(abs(scaleV - self.frame.scaleCnt)):
+        #     if scaleV - self.frame.scaleCnt > 0:
+        #         self.graphicsView.scale(1.1, 1.1)
+        #     else:
+        #         self.graphicsView.scale(1/1.1, 1/1.1)
         self.frame.scaleCnt = scaleV
+        self.frame.ScalePicture()
 
     def keyReleaseEvent(self, ev):
         if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Left:
@@ -383,14 +397,14 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                 return
             self.qtTool.ReturnPage()
             return
-        elif ev.key() == Qt.Key_Up:
-            point = self.graphicsItem.pos()
-            self.graphicsItem.setPos(point.x(), point.y()+50)
-            return
-        elif ev.key() == Qt.Key_Down:
-            point = self.graphicsItem.pos()
-            self.graphicsItem.setPos(point.x(), point.y()-50)
-            return
+        # elif ev.key() == Qt.Key_Up:
+        #     point = self.graphicsItem.pos()
+        #     self.graphicsItem.setPos(point.x(), point.y()+50)
+        #     return
+        # elif ev.key() == Qt.Key_Down:
+        #     point = self.graphicsItem.pos()
+        #     self.graphicsItem.setPos(point.x(), point.y()-50)
+        #     return
         super(self.__class__, self).keyReleaseEvent(ev)
 
     def AddHistory(self):
@@ -415,6 +429,9 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         if index == self.curIndex:
             self.qtTool.SetData(waifuState=p.waifuState)
             self.ShowImg()
+        elif self.isStripModel and self.curIndex < index <= self.curIndex + 2:
+            self.ShowOtherPage()
+            self.CheckLoadPicture()
         else:
             self.CheckLoadPicture()
 

@@ -4,6 +4,9 @@ import sys
 import os
 
 # macOS 修复
+from PySide2.QtGui import QPalette, QColor
+
+from qss.qss import QssDataMgr
 
 if sys.platform == 'darwin':
     # 确保工作区为当前可执行文件所在目录
@@ -36,8 +39,9 @@ if __name__ == "__main__":
     Log.Init()
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
     # app.addLibraryPath("./resources")
-    main = BikaQtMainWindow()
-
+    main = BikaQtMainWindow(app)
+    # main.setPalette(QPalette(QColor("#464646")))
+    # main.setStyleSheet(QssDataMgr().GetData("darkblack"))
     main.show()  # 显示窗体
     main.Init()
     sts = app.exec_()

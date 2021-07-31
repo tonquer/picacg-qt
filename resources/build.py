@@ -6,15 +6,15 @@ fw.write("import base64\n\n\n")
 fw.write("class DataMgr(object):\n")
 
 files = []
-for root, dirs, filenames in os.walk("./"):
+for root, dirs, filenames in os.walk("../resources2/"):
     for name in filenames:
         if name[-3:] != "png" and name[-3:] != "gif":
             continue
         if len(name.split(".")) >= 3:
             continue
-        if not os.path.isfile(name):
+        if not os.path.isfile(root+name):
             continue
-        f = open(name, "rb")
+        f = open(root+name, "rb")
         # fw.write("def get():\r\n    return )
         i = 0
         data = base64.b64encode(f.read())

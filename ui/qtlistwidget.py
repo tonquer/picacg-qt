@@ -371,6 +371,8 @@ class QtBookList(QListWidget, QtTaskBase):
 
         if commentsCount == "":
             iwidget.commentButton.hide()
+
+        if likesCount == "":
             iwidget.starButton.hide()
             iwidget.commentLabel.setTextInteractionFlags(Qt.TextSelectableByKeyboard)
 

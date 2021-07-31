@@ -135,7 +135,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
             self.titleBox.setEnabled(True)
             self.sortKey.setEnabled(True)
             self.sortId.setEnabled(True)
-            # self.comboBox.setEnabled(False)
+            self.comboBox.setEnabled(False)
         else:
             self.authorBox.setEnabled(False)
             self.desBox.setEnabled(False)
@@ -144,7 +144,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
             self.titleBox.setEnabled(False)
             self.sortKey.setEnabled(False)
             self.sortId.setEnabled(False)
-            # self.comboBox.setEnabled(True)
+            self.comboBox.setEnabled(True)
 
     def SendSearch(self, data, page):
         self.index = 1
@@ -188,7 +188,12 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         # TODO 搜索和分类检索不太一样，切页时会有点问题
         sort = ["dd", "da", "ld", "vd"]
         sortId = sort[self.comboBox.currentIndex()]
-        self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
+        if self.localBox.isChecked():
+            QtOwner().owner.loadingForm.show()
+            sql = SqlServer.Search(self.categories, False, False, False, False, True, 1, self.sortKey.currentIndex(), self.sortId.currentIndex())
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=1)
+        else:
+            self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
 
     def InitKeyWord(self):
         self.AddHttpTask(req.GetKeywords(), self.SendKeywordBack)

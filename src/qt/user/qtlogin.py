@@ -42,6 +42,8 @@ class QtLogin(QtWidgets.QWidget, Ui_Login, QtTaskBase):
             # self.close()
             QtOwner().owner.stackedWidget.setCurrentIndex(1)
             self.InitUser()
+
+            QtOwner().owner.UpdateDbInfo()
             QtOwner().owner.userForm.toolButton0.click()
             QtOwner().owner.searchForm.InitKeyWord()
             QtOwner().owner.indexForm.Init()

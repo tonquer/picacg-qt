@@ -35,10 +35,11 @@ class QtOwner(Singleton):
 
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
-    def __init__(self):
+    def __init__(self, app):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         QtOwner().SetOwner(self)
+        self._app = weakref.ref(app)
         from src.qt.chat.qtchat import QtChat
         from src.qt.main.qt_fried import QtFried
         from src.qt.main.qtindex import QtIndex
@@ -131,9 +132,13 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.menusetting.triggered.connect(self.OpenSetting)
         self.menuabout.triggered.connect(self.OpenAbout)
-
+        # self.setStyleSheet("background-color:#242629;")
         self.curSubVersion = 0  # 当前子版本
         self.curUpdateTick = 0  # 当前更新日时间戳
+
+    @property
+    def app(self):
+        return self._app()
 
         # QtImgMgr().SetOwner(self)
     # def ClearExpiredCache(self):
@@ -167,12 +172,14 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.settingForm.ExitSaveSetting(self.size(), self.bookInfoForm.size(), self.qtReadImg.size(), userId, passwd)
 
     def Init(self):
+        IsCanUse = False
         if config.CanWaifu2x:
             import waifu2x
             stat = waifu2x.init()
             if stat < 0:
                 self.msgForm.ShowError("waifu2x初始化错误")
             else:
+                IsCanUse = True
                 gpuInfo = waifu2x.getGpuInfo()
                 if gpuInfo:
                     self.settingForm.SetGpuInfos(gpuInfo)
@@ -184,6 +191,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # self.msgForm.ShowMsg("waifu2x初始化成功\n" + waifu2x.getVersion())
         else:
             self.msgForm.ShowError("waifu2x无法启用, "+config.ErrorMsg)
+
+        if not IsCanUse:
             self.settingForm.checkBox.setEnabled(False)
             self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
             config.DownloadAuto = 0
@@ -198,7 +207,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.InitUpdate()
         self.loginForm.Init()
-        self.UpdateDbInfo()
         return
 
     def OpenSetting(self):
