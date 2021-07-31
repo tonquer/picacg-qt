@@ -73,12 +73,12 @@ jobs:
         Copy-Item -Verbose -Recurse -Path models -Destination bika/
         Copy-Item -Verbose -Recurse -Path resources -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
-        7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
+        # 7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.PACKAGENAME }}
-        path: ${{ env.PACKAGENAME }}.zip
+        path: bika
 
 
   macos:
@@ -123,8 +123,9 @@ jobs:
         rm -rf dist/PicACG.app/Contents/MacOS/resources/*.py
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
             --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
+        zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.PACKAGENAME }}
-        path: ${{ env.PACKAGENAME }}.dmg
+        path: bika.zip
