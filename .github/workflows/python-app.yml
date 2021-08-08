@@ -73,12 +73,16 @@ jobs:
         Copy-Item -Verbose -Recurse -Path models -Destination bika/
         Copy-Item -Verbose -Recurse -Path resources -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
+        cp LICENSE bika\
+        cp README.md bika\
+        mkdir ${{ env.PACKAGENAME }}
+        mv bika ${{ env.PACKAGENAME }}
         # 7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.PACKAGENAME }}
-        path: bika
+        path: ${{ env.PACKAGENAME }}
 
 
   macos:

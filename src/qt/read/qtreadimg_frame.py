@@ -4,11 +4,12 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint, QSize
 from PySide2.QtGui import QPainter, QColor, QPixmap
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame, QGraphicsItemGroup, QGraphicsItem, \
-    QAbstractSlider, QAbstractItemView
+    QAbstractSlider, QAbstractItemView, QScroller
 
 from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
 from src.qt.com.qt_git_label import QtGifLabel
+from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.read.qtreadimg_tool import QtImgTool
 from src.util.tool import time_me
 
@@ -76,6 +77,7 @@ class QtImgFrame(QFrame):
         self.downloadSize = 1
         self.downloadMaxSize = 1
         self.oldValue = -1
+        QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
         self.graphicsView.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
         self.graphicsView.verticalScrollBar().setSingleStep(100)
         self.graphicsView.verticalScrollBar().setPageStep(100)
@@ -91,7 +93,7 @@ class QtImgFrame(QFrame):
             if ev.type() == QEvent.GraphicsSceneMousePress:
                 # print(ev, ev.button())
                 self.startPos = ev.screenPos()
-                return ev.ignore()
+                return False
             elif ev.type() == QEvent.GraphicsSceneWheel:
                 return True
             elif ev.type() == QEvent.KeyPress:
@@ -131,7 +133,7 @@ class QtImgFrame(QFrame):
                             elif curPos.x() <= self.width()/3:
                                 self.qtTool.LastPage()
 
-                return ev.ignore()
+                return False
         return super(self.__class__, self).eventFilter(obj, ev)
 
     def resizeEvent(self, event) -> None:
@@ -145,19 +147,11 @@ class QtImgFrame(QFrame):
         value = self.graphicsView.verticalScrollBar().value()
         # print(value)
 
-        if self.oldValue == value:
-            return
         self.UpdateScrollBar(value)
 
     def UpdateScrollBar(self, value):
         self.UpdatePos(value-self.oldValue)
-        self.graphicsView.verticalScrollBar().setMinimum(-100)
-        if self.readImg.curIndex >= self.readImg.maxPic - 1:
-            self.graphicsView.verticalScrollBar().setMaximum(value)
-        elif not self.qtTool.isStripModel:
-            self.graphicsView.verticalScrollBar().setMaximum(self.graphicsItem1.pixmap().size().height()-100)
-        else:
-            self.graphicsView.verticalScrollBar().setMaximum(100000)
+        self.ResetScrollBar()
         self.graphicsView.verticalScrollBar().setSingleStep(self.height()//5)
         self.graphicsView.verticalScrollBar().setPageStep(self.height()//5)
         self.oldValue = value
@@ -183,14 +177,18 @@ class QtImgFrame(QFrame):
             return
         self.ScaleGraphicsItem()
 
-        self.graphicsView.verticalScrollBar().setMinimum(-100)
-        self.graphicsView.verticalScrollBar().setMaximum(100000)
+        self.ResetScrollBar()
         self.graphicsView.verticalScrollBar().setSingleStep(self.height()//5)
         self.graphicsView.verticalScrollBar().setPageStep(self.height()//5)
 
+    def ResetScrollBar(self):
+        width1 = self.graphicsItem1.pixmap().size().width()
+        width2 = self.graphicsItem2.pixmap().size().width()
+        width3 = self.graphicsItem3.pixmap().size().width()
+        self.graphicsView.verticalScrollBar().setMinimum(-100)
+        self.graphicsView.verticalScrollBar().setMaximum(width1 + width2 + 100)
+
     def SetPixIem(self, index, data):
-        if not data:
-            return
         if not self.qtTool.isStripModel and index > 0:
             self.pixMapList[index] = QPixmap()
             self.graphicsItemList[index].setPixmap(None)
@@ -255,6 +253,11 @@ class QtImgFrame(QFrame):
         # scale = (1+self.scaleCnt*0.1)
         if not self.qtTool.isStripModel:
             return
+
+        if value >= 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
+            QtBubbleLabel().ShowMsgEx(self.readImg, "已经到最后一页")
+            return
+
         height = self.graphicsItem1.pixmap().size().height()
         ## 切换上一图片
         if value < 0 and self.graphicsView.verticalScrollBar().value() < 0:

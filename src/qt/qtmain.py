@@ -316,6 +316,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def Close(self):
         self.downloadForm.Close()
         SqlServer().Stop()
+        from src.qt.util.qttask import QtTask
+        QtTask().Stop()
 
     def ParseBookInfo(self, rawList):
         infos = []

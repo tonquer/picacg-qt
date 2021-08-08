@@ -34,5 +34,6 @@ class CateGoryMgr(Singleton):
             newInfo = CateGoryBase()
             ToolUtil.ParseFromData(newInfo, info)
             self.idToCateGoryBase.append(newInfo)
+            print("\""+newInfo.title+"\",", )
         Log.Info("初始化目录成功。。。")
         return

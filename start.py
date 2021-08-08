@@ -4,6 +4,8 @@ import sys
 import os
 
 # macOS 修复
+import time
+
 from PySide2.QtGui import QPalette, QColor
 
 from qss.qss import QssDataMgr
@@ -39,7 +41,11 @@ if __name__ == "__main__":
     Log.Init()
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
     # app.addLibraryPath("./resources")
-    main = BikaQtMainWindow(app)
+    try:
+        main = BikaQtMainWindow(app)
+    except Exception as es:
+        print(es)
+        exit(-111)
     # main.setPalette(QPalette(QColor("#464646")))
     # main.setStyleSheet(QssDataMgr().GetData("darkblack"))
     main.show()  # 显示窗体
@@ -48,4 +54,5 @@ if __name__ == "__main__":
     main.Close()
     if config.CanWaifu2x:
         waifu2x.stop()
+    time.sleep(1)
     sys.exit(sts)  # 运行程序

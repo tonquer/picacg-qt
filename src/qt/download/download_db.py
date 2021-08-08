@@ -72,8 +72,8 @@ class DownloadDb(object):
               "VALUES ('{0}', '{1}', {2}, {3}, '{4}', '{5}', '{6}', '{7}', '{8}') " \
               "ON CONFLICT(bookId) DO UPDATE SET downloadEpsIds='{1}', curDownloadEpsId={2}, curConvertEpsId={3}, " \
               "title = '{4}', savePath = '{5}', convertPath= '{6}', status = '{7}', convertStatus = '{8}'".\
-            format(task.bookId, json.dumps(task.downloadEpsIds), task.curDownloadEpsId, task.curConvertEpsId, task.title.replace("'", "\""),
-                   task.savePath, task.convertPath, task.status, task.convertStatus)
+            format(task.bookId, json.dumps(task.downloadEpsIds), task.curDownloadEpsId, task.curConvertEpsId, task.title.replace("'", "''"),
+                   task.savePath.replace("'", "''"), task.convertPath.replace("'", "''"), task.status, task.convertStatus)
 
         suc = query.exec_(sql)
         if not suc:
@@ -87,7 +87,7 @@ class DownloadDb(object):
               "VALUES ('{0}', {1}, '{2}', {3}, {4}, {5}) " \
               "ON CONFLICT(bookId, epsId) DO UPDATE SET epsTitle='{2}', picCnt={3}, curPreDownloadIndex={4}, " \
               "curPreConvertId = {5}".\
-            format(info.parent.bookId, info.epsId, info.epsTitle, info.picCnt, info.curPreDownloadIndex,
+            format(info.parent.bookId, info.epsId, info.epsTitle.replace("'", "''"), info.picCnt, info.curPreDownloadIndex,
                    info.curPreConvertId)
 
         suc = query.exec_(sql)

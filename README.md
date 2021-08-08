@@ -1,5 +1,5 @@
-# picacg-windows | [ehentai-windows](https://github.com/tonquer/ehentai-windows)
-- 哔咔漫画window客户端（现已支持Linux和macOS），界面使用QT。
+# picacg-windows(哔咔漫画) | [ehentai-windows(E绅士)](https://github.com/tonquer/ehentai-windows)
+- 哔咔漫画PC客户端（支持window、Linux和macOS），界面使用QT。
 - 该项目仅供技术研究使用，请勿用于其他用途。
 - 如果觉得本项目对你有所帮助，请点个star关注，感谢支持
 - 如有使用中遇到问题，欢迎提ISSUE
@@ -57,7 +57,8 @@
 - waifu2x是用来提高图片分辨率和去噪点的功能， 介绍 "https://github.com/nagadomi/waifu2x"
 - waifu2x-python，修改了waifu2x-ncnn-vulkan部分功能
 - 由于bika限制上传图片的大小，所以部分图片（尤其是彩图）放在电脑大屏幕上观看会非常糊，所有通过waifu2x功能让图片在电脑上有更好的观感。
-- waifu2x功能使用的是 "https://github.com/tonquer/waifu2x-ncnn-vulkan-python" 改进而来，打包成lib目录下的waifu2x.pyd。
+- waifu2x功能使用的是 "https://github.com/tonquer/waifu2x-ncnn-vulkan-python" 。
+- 显卡性能太弱的不建议开启此功能。
 
 ## 如何使用
   ### Windows (测试使用win10)

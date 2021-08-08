@@ -31,6 +31,45 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         self.keywordList.itemClicked.connect(self.ClickKeywordListItem)
         self.SetSearch()
 
+        self.allCategorise = [
+                    "嗶咔漢化",
+                    "全彩",
+                    "長篇",
+                    "同人",
+                    "短篇",
+                    "圓神領域",
+                    "碧藍幻想",
+                    "CG雜圖",
+                    "英語 ENG",
+                    "生肉",
+                    "純愛",
+                    "百合花園",
+                    "耽美花園",
+                    "偽娘哲學",
+                    "後宮閃光",
+                    "扶他樂園",
+                    "單行本",
+                    "姐姐系",
+                    "妹妹系",
+                    "SM",
+                    "性轉換",
+                    "足の恋",
+                    "人妻",
+                    "NTR",
+                    "強暴",
+                    "非人類",
+                    "艦隊收藏",
+                    "Love Live",
+                    "SAO 刀劍神域",
+                    "Fate",
+                    "東方",
+                    "WEBTOON",
+                    "禁書目錄",
+                    "歐美",
+                    "Cosplay",
+                    "重口地帶",
+        ]
+
     def UpdateDbInfo(self):
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectUpdate, self.UpdateDbInfoBack)
 
@@ -188,10 +227,10 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         # TODO 搜索和分类检索不太一样，切页时会有点问题
         sort = ["dd", "da", "ld", "vd"]
         sortId = sort[self.comboBox.currentIndex()]
-        if self.localBox.isChecked():
+        if self.localBox.isChecked() and self.categories in self.allCategorise:
             QtOwner().owner.loadingForm.show()
             sql = SqlServer.Search(self.categories, False, False, False, False, True, 1, self.sortKey.currentIndex(), self.sortId.currentIndex())
-            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=1)
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
         else:
             self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
 

@@ -6,7 +6,8 @@ import time
 from queue import Queue
 from types import FunctionType
 import json
-from PySide2.QtCore import Signal, QObject
+from PySide2.QtCore import Signal, QObject, QThread
+from PySide2.QtGui import QImage
 
 from conf import config
 from src.util import Singleton, Log
@@ -19,6 +20,7 @@ class QtTaskQObject(QObject):
     downloadBack = Signal(int, int, bytes)
     convertBack = Signal(int)
     sqlBack = Signal(int, bytes)
+    imageBack = Signal(int, QImage)
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -90,6 +92,9 @@ class QtTaskBase:
     def AddConvertTask(self, path, imgData, model, completeCallBack, backParam=None, filePath=""):
         return QtTask().AddConvertTask(path, imgData, model, completeCallBack, backParam, self.__taskFlagId, filePath)
 
+    def AddQImageTask(self, data, callBack=None, backParam=None):
+        return QtTask().AddQImageTask(data, callBack, backParam, cleanFlag=self.__taskFlagId)
+
     def ClearTask(self):
         return QtTask().CancelTasks(self.__taskFlagId)
 
@@ -102,6 +107,9 @@ class QtTaskBase:
     def ClearWaitConvertIds(self, taskIds):
         return QtTask().ClearWaitConvertIds(taskIds)
 
+    def ClearQImageTask(self):
+        return QtTask().CancelImageTasks(self.__taskFlagId)
+
 
 class QtTask(Singleton, threading.Thread):
 
@@ -109,11 +117,18 @@ class QtTask(Singleton, threading.Thread):
         Singleton.__init__(self)
         threading.Thread.__init__(self)
         self._inQueue = Queue()
+        self._imageQueue = Queue()
         self.taskObj = QtTaskQObject()
         self.taskObj.taskBack.connect(self.HandlerTask2)
         self.taskObj.downloadBack.connect(self.HandlerDownloadTask)
         self.taskObj.convertBack.connect(self.HandlerConvertTask)
         self.taskObj.sqlBack.connect(self.HandlerSqlTask)
+        self.taskObj.imageBack.connect(self.HandlerImageTask)
+
+        self.imageThreadList = []
+        self.imageThread = threading.Thread(target=self._RunConvertQImg)
+        self.imageThread.setDaemon(True)
+        self.imageThread.start()
 
         self.convertThread = threading.Thread(target=self.RunLoad)
         self.convertThread.setDaemon(True)
@@ -127,10 +142,12 @@ class QtTask(Singleton, threading.Thread):
         self.tasks = {}  # id: task
 
         self.sqlTasks = {}
+        self.imageTasks = {}
 
         self.flagToIds = {}  #
         self.convertFlag = {}
         self.sqlFlagToIds = {}
+        self.imageFlagToIds = {}
 
     @property
     def convertBack(self):
@@ -147,6 +164,10 @@ class QtTask(Singleton, threading.Thread):
     @property
     def downloadBack(self):
         return self.taskObj.downloadBack
+
+    @property
+    def imageBack(self):
+        return self.taskObj.imageBack
 
     def GetDownloadData(self, downloadId):
         if downloadId not in self.downloadTask:
@@ -384,6 +405,9 @@ class QtTask(Singleton, threading.Thread):
             while True:
                 try:
                     taskId = self._inQueue.get(False)
+                    if taskId < 0:
+                        break
+
                     if taskId not in self.convertLoad:
                         continue
                     task = self.convertLoad.get(taskId)
@@ -467,3 +491,70 @@ class QtTask(Singleton, threading.Thread):
         if config.CanWaifu2x:
             import waifu2x
             waifu2x.removeWaitProc(list(taskIds))
+
+    def _RunConvertQImg(self):
+        while True:
+            try:
+                taskId, data = self._imageQueue.get(True)
+            except Exception as es:
+                continue
+            self._imageQueue.task_done()
+
+            if taskId < 0:
+                break
+
+            q = QImage()
+            try:
+                if not data:
+                    return
+                q.loadFromData(data)
+            except Exception as es:
+                Log.Error(es)
+            finally:
+                self.imageBack.emit(taskId, q)
+
+    def AddQImageTask(self, data, callBack=None, backParam=None, cleanFlag=None):
+        self.taskId += 1
+        info = QtHttpTask(self.taskId)
+        info.callBack = callBack
+        info.backParam = backParam
+        self.imageTasks[self.taskId] = info
+        if cleanFlag:
+            info.cleanFlag = cleanFlag
+            taskIds = self.imageFlagToIds.setdefault(cleanFlag, set())
+            taskIds.add(self.taskId)
+        self._imageQueue.put((self.taskId, data))
+        return
+
+    def HandlerImageTask(self, taskId, data):
+        try:
+            info = self.imageTasks.get(taskId)
+            if not info:
+                Log.Warn("[Task] not find taskId:{}, {}".format(taskId, data))
+                return
+            assert isinstance(info, QtHttpTask)
+            if info.cleanFlag:
+                taskIds = self.imageFlagToIds.get(info.cleanFlag, set())
+                taskIds.discard(info.taskId)
+            if info.callBack:
+                if info.backParam is None:
+                    info.callBack(data)
+                else:
+                    info.callBack(data, info.backParam)
+                del info.callBack
+            del self.imageTasks[taskId]
+        except Exception as es:
+            Log.Error(es)
+
+    def CancelImageTasks(self, cleanFlag):
+        taskIds = self.imageFlagToIds.get(cleanFlag, set())
+        if not taskIds:
+            return
+        for taskId in taskIds:
+            if taskId in self.imageTasks:
+                del self.imageTasks[taskId]
+        self.imageFlagToIds.pop(cleanFlag)
+
+    def Stop(self):
+        self._imageQueue.put((-1, None))
+        self._inQueue .put(-1)

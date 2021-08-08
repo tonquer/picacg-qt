@@ -7,6 +7,7 @@ from src.util import ToolUtil
 
 class QtFileData(object):
     Downloading = "开始下载"
+    Converting = "转换中"
     DownloadSuc = "下载完成"
     DownloadError = "下载错误"
     DownloadReset = "重新下载"
@@ -33,7 +34,7 @@ class QtFileData(object):
         self.model = {}
 
         self.cacheImage = None
-        self.cacheWaifu2x = False
+        self.cacheWaifu2xImage = None
 
         self.downloadSize = 0
 

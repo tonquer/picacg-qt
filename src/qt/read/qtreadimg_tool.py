@@ -3,7 +3,7 @@ import weakref
 from PySide2 import QtWidgets
 from PySide2.QtCore import QEvent, Qt
 from PySide2.QtCore import QSize
-from PySide2.QtGui import QPalette
+from PySide2.QtGui import QPalette, QPixmap
 from PySide2.QtGui import Qt
 from PySide2.QtWidgets import QLabel
 
@@ -197,8 +197,8 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
     def SwitchPicture(self):
         if self.radioButton.isChecked():
             self.isStripModel = False
-            self.imgFrame.SetPixIem(1, None)
-            self.imgFrame.SetPixIem(2, None)
+            self.imgFrame.SetPixIem(1, QPixmap())
+            self.imgFrame.SetPixIem(2, QPixmap())
             self.zoomSlider.setValue(100)
             self.scaleCnt = 0
         else:
@@ -378,6 +378,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
                 continue
             data.model = model
             data.waifuData = None
+            data.cacheWaifu2xImage = None
             data.waifuState = data.WaifuWait
             data.waifuDataSize = 0
             data.scaleW, data.scaleH = 0, 0

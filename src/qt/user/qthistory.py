@@ -93,7 +93,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
         sql = "INSERT INTO history(bookId, name, epsId, picIndex, url, path, tick) " \
               "VALUES ('{0}', '{1}', {2}, {3}, '{4}', '{5}', {6}) " \
               "ON CONFLICT(bookId) DO UPDATE SET name='{1}', epsId={2}, picIndex={3}, url = '{4}', path='{5}', tick={6}".\
-            format(bookId, name.replace("'", "\""), epsId, index, url, path, tick)
+            format(bookId, name.replace("'", "''"), epsId, index, url, path, tick)
         suc = query.exec_(sql)
         if not suc:
             Log.Warn(query.lastError().text())

@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import traceback
 
 from conf import config
 
@@ -51,6 +52,7 @@ class Log(object):
 
     @staticmethod
     def Warn(data):
+        Log.logger.warning(traceback.extract_stack()[-2])
         Log.logger.warning(data)
 
     @staticmethod
@@ -68,4 +70,5 @@ class Log(object):
         #     message += '         local params:{}\n'.format(frame.f_locals)
         #     cur_tb = cur_tb.tb_next
         # Log.logger.error(message)
+        Log.logger.warning(traceback.extract_stack()[-2])
         Log.logger.error(es, exc_info=True)
