@@ -53,13 +53,6 @@
 - [x] 锅贴
 - [ ] 画廊
 
-## waifu2x功能
-- waifu2x是用来提高图片分辨率和去噪点的功能， 介绍 "https://github.com/nagadomi/waifu2x"
-- waifu2x-python，修改了waifu2x-ncnn-vulkan部分功能
-- 由于bika限制上传图片的大小，所以部分图片（尤其是彩图）放在电脑大屏幕上观看会非常糊，所有通过waifu2x功能让图片在电脑上有更好的观感。
-- waifu2x功能使用的是 "https://github.com/tonquer/waifu2x-ncnn-vulkan-python" 。
-- 显卡性能太弱的不建议开启此功能。
-
 ## 如何使用
   ### Windows (测试使用win10)
   1. 下载最新的版本 https://github.com/tonquer/picacg-windows/releases
@@ -113,8 +106,34 @@
   ````
   * 打包完成以后可以在 dist 目录下找到应用程序 (.app)
 
+## 界面
+* 代理设置
+![代理设置](example/代理设置.gif)
+
+* 分流登录
+![分流登录](example/分流登录.gif)
+
+* 搜索
+![搜索](example/搜索.gif)
+
+* 漫画详情
+![漫画详情](example/漫画详情.gif)
+
+* 下载
+![下载](example/下载.gif)
+
+* waifu2x
+![waifu2x](example/waifu2x.gif)
+
 ## 感谢以下项目
-- https://github.com/nagadomi/waifu2x
-- https://github.com/nihui/waifu2x-ncnn-vulkan
-- https://github.com/PyQt5/PyQt
-- https://github.com/PyQt5/PyQtClient
+  ### waifu2x功能
+  - https://github.com/nagadomi/waifu2x
+  - https://github.com/nihui/waifu2x-ncnn-vulkan
+  - https://github.com/tonquer/waifu2x-ncnn-vulkan-python
+  ### Qt功能
+  - https://github.com/PyQt5/PyQt
+  - https://github.com/PyQt5/PyQtClient
+  ### Qt皮肤
+  - https://github.com/satchelwu/QSS-Skin-Builder
+  ### Qt实现平滑滚动
+  - https://github.com/zhiyiYo/Groove
