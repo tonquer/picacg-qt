@@ -1,14 +1,15 @@
 import weakref
 
 from PySide2 import QtWidgets
-from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint, QSize
-from PySide2.QtGui import QPainter, QColor, QPixmap
+from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint, QSize, QRect
+from PySide2.QtGui import QPainter, QColor, QPixmap, QFont, QFontMetrics
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame, QGraphicsItemGroup, QGraphicsItem, \
     QAbstractSlider, QAbstractItemView, QScroller
 
 from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
 from src.qt.com.qt_git_label import QtGifLabel
+from src.qt.com.qt_scroll import QtComGraphicsView
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.read.qtreadimg_tool import QtImgTool
 from src.util.tool import time_me
@@ -18,7 +19,7 @@ class QtImgFrame(QFrame):
     def __init__(self, readImg):
         QFrame.__init__(self)
         self._readImg = weakref.ref(readImg)
-        self.graphicsView = QtWidgets.QGraphicsView(self)
+        self.graphicsView = QtComGraphicsView(self)
         self.graphicsView.setTransformationAnchor(self.graphicsView.AnchorUnderMouse)
         self.graphicsView.setResizeAnchor(self.graphicsView.AnchorUnderMouse)
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
@@ -77,15 +78,20 @@ class QtImgFrame(QFrame):
         self.downloadSize = 1
         self.downloadMaxSize = 1
         self.oldValue = -1
-        QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
+        # QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
         self.graphicsView.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
-        self.graphicsView.verticalScrollBar().setSingleStep(100)
-        self.graphicsView.verticalScrollBar().setPageStep(100)
+        # self.graphicsView.verticalScrollBar().setSingleStep(100)
+        # self.graphicsView.verticalScrollBar().setPageStep(100)
         self.graphicsView.setSceneRect(0, 0, self.width(), self.height())
+        self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
 
     @property
     def readImg(self):
         return self._readImg()
+
+    def OnValueChange(self, value):
+        # print(value)
+        return
 
     def eventFilter(self, obj, ev):
         # print(obj, ev)
@@ -94,8 +100,6 @@ class QtImgFrame(QFrame):
                 # print(ev, ev.button())
                 self.startPos = ev.screenPos()
                 return False
-            elif ev.type() == QEvent.GraphicsSceneWheel:
-                return True
             elif ev.type() == QEvent.KeyPress:
                 if ev.key() == Qt.Key_Down:
                     point = self.graphicsGroup.pos()
@@ -152,8 +156,8 @@ class QtImgFrame(QFrame):
     def UpdateScrollBar(self, value):
         self.UpdatePos(value-self.oldValue)
         self.ResetScrollBar()
-        self.graphicsView.verticalScrollBar().setSingleStep(self.height()//5)
-        self.graphicsView.verticalScrollBar().setPageStep(self.height()//5)
+        self.graphicsView.verticalScrollBar().setSingleStep(60)
+        self.graphicsView.verticalScrollBar().setPageStep(60)
         self.oldValue = value
 
     def ScaleFrame(self):
@@ -178,8 +182,8 @@ class QtImgFrame(QFrame):
         self.ScaleGraphicsItem()
 
         self.ResetScrollBar()
-        self.graphicsView.verticalScrollBar().setSingleStep(self.height()//5)
-        self.graphicsView.verticalScrollBar().setPageStep(self.height()//5)
+        self.graphicsView.verticalScrollBar().setSingleStep(60)
+        self.graphicsView.verticalScrollBar().setPageStep(60)
 
     def ResetScrollBar(self):
         width1 = self.graphicsItem1.pixmap().size().width()
@@ -188,12 +192,32 @@ class QtImgFrame(QFrame):
         self.graphicsView.verticalScrollBar().setMinimum(-100)
         self.graphicsView.verticalScrollBar().setMaximum(width1 + width2 + 100)
 
+    def MakePixItem(self, index):
+        text = str(index+1)
+        font = QFont()
+        font.setPointSize(64)
+        fm = QFontMetrics(font)
+
+        p = QPixmap(self.width()//2, self.height()//2)
+        rect = QRect(self.width()//4-fm.width(text)//2, self.height()//4 - fm.height()//2, self.width()//2+fm.width(text)//2, self.height()//4+fm.height()//2)
+        p.fill(Qt.transparent)
+        painter = QPainter(p)
+        painter.setFont(font)
+        painter.setPen(Qt.white)
+        painter.drawText(rect, text)
+        return p
+
     def SetPixIem(self, index, data):
         if not self.qtTool.isStripModel and index > 0:
             self.pixMapList[index] = QPixmap()
             self.graphicsItemList[index].setPixmap(None)
         else:
-            self.pixMapList[index] = data
+            if not data and self.readImg.curIndex+index < self.readImg.maxPic:
+                data = self.MakePixItem(self.readImg.curIndex+index)
+                self.pixMapList[index] = data
+            else:
+
+                self.pixMapList[index] = data
             scale = (1 + self.scaleCnt * 0.1)
             self.graphicsItemList[index].setPixmap(data.scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             height1 = self.graphicsItem1.pixmap().size().height()

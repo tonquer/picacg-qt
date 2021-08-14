@@ -18,8 +18,8 @@ class QtLogin(QtWidgets.QWidget, Ui_Login, QtTaskBase):
         QtTaskBase.__init__(self)
         self.setupUi(self)
         self.setWindowTitle("登陆")
-        self.buttonGroup = QtWidgets.QButtonGroup(self)
-        self.buttonGroup.addButton(self.selectIp1)
+        # self.buttonGroup = QtWidgets.QButtonGroup(self)
+        # self.buttonGroup.addButton(self.selectIp1)
         self.selectIp1.setChecked(True)
 
         self.speedTest = []
@@ -85,17 +85,17 @@ class QtLogin(QtWidgets.QWidget, Ui_Login, QtTaskBase):
     def InitBack(self, msg):
         QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
-            for index, ip in enumerate(User().addresss, 2):
-                selectIp = QtWidgets.QRadioButton(self)
-                selectIp.setObjectName("selectIp"+str(index))
-                self.buttonGroup.addButton(selectIp)
-                count = self.gridLayout_4.rowCount()
-                self.gridLayout_4.addWidget(selectIp, count, 0, 1, 1)
-                selectIp.setText("分流" + str(index))
+            # for index, ip in enumerate(User().addresss, 2):
+            #     selectIp = QtWidgets.QRadioButton(self)
+            #     selectIp.setObjectName("selectIp"+str(index))
+                # self.buttonGroup.addButton(selectIp)
+                # count = self.gridLayout_4.rowCount()
+                # self.gridLayout_4.addWidget(selectIp, count, 0, 1, 1)
+                # selectIp.setText("分流" + str(index))
             self.update()
         else:
             # QtWidgets.QMessageBox.information(self, , QtWidgets.QMessageBox.Yes)
-            QtOwner().owner.msgForm.ShowError("无法获取哔咔分流列表")
+            QtOwner().owner.msgForm.ShowError("无法更新哔咔分流列表")
         pass
 
     def SetSelectIp(self):

@@ -43,10 +43,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
             config.HttpProxy = httpProxy
             self.httpEdit.setText(config.HttpProxy)
 
-        isProxy = self.settings.value("Proxy/IsHttp")
-        if isProxy is None:
-            isProxy = not not config.HttpProxy
-        config.IsHttpProxy = not not isProxy
+        config.IsHttpProxy = self.GetSettingV("Proxy/IsHttp", config.IsHttpProxy)
         self.httpProxy.setChecked(config.IsHttpProxy)
         if not config.IsHttpProxy:
             config.HttpProxy = ""
@@ -113,18 +110,22 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
     def GetSettingV(self, key, defV=None):
         v = self.settings.value(key)
-        if v:
-            if isinstance(defV, int):
-                if v == "true" or v == "True":
-                    return 1
-                elif v == "false" or v == "False":
-                    return 0
-                return int(v)
-            elif isinstance(defV, float):
-                return float(v)
-            else:
-                return v
-        return defV
+        try:
+            if v:
+                if isinstance(defV, int):
+                    if v == "true" or v == "True":
+                        return 1
+                    elif v == "false" or v == "False":
+                        return 0
+                    return int(v)
+                elif isinstance(defV, float):
+                    return float(v)
+                else:
+                    return v
+            return defV
+        except Exception as es:
+            Log.Error(es)
+        return v
 
     def SetSettingV(self, key, val):
         self.settings.setValue(key, val)

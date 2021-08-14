@@ -1,4 +1,5 @@
 import os
+import time
 
 from PySide2.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QRectF, Property
 from PySide2.QtGui import QPen, QPainterPath, QPainter, QColor
@@ -10,6 +11,8 @@ from src.util import Log
 class QtBubbleLabel(QWidget):
     BackgroundColor = QColor(195, 195, 195)
     BorderColor = QColor(150, 150, 150)
+
+    ShowMsgTick = {}
 
     def __init__(self, *args, **kwargs):
         super(QtBubbleLabel, self).__init__(*args, **kwargs)
@@ -103,10 +106,15 @@ class QtBubbleLabel(QWidget):
 
     @staticmethod
     def ShowMsgEx(owner, text):
+        msgTick = QtBubbleLabel.ShowMsgTick.get(owner.__class__.__name__, 0)
+        CurTick = int(time.time())
+        if msgTick >= CurTick:
+            return
         data = QtBubbleLabel(owner)
         data.setText(text)
         data.setStyleSheet("color:black")
         data.show()
+        QtBubbleLabel.ShowMsgTick[owner.__class__.__name__] = CurTick
 
     def ShowError(self, text):
         self.stop()
@@ -116,10 +124,15 @@ class QtBubbleLabel(QWidget):
 
     @staticmethod
     def ShowErrorEx(owner, text):
+        msgTick = QtBubbleLabel.ShowMsgTick.get(owner.__class__.__name__, 0)
+        CurTick = int(time.time())
+        if msgTick >= CurTick:
+            return
         data = QtBubbleLabel(owner)
         data.setText(text)
         data.setStyleSheet("color:red")
         data.show()
+        QtBubbleLabel.ShowMsgTick[owner.__class__.__name__] = CurTick
 
     @staticmethod
     def OpenPicture(self, path="."):

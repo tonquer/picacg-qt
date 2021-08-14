@@ -83,7 +83,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.ClearConvert()
         self.ClearQImageTask()
 
-    def OpenPage(self, bookId, epsId, name, isLastEps=False):
+    def OpenPage(self, bookId, epsId, name, isLastEps=False, pageIndex=-1):
         if not bookId:
             return
         self.Clear()
@@ -115,7 +115,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         # self.AddHistory()
         self.epsName = name
         self.loadingForm.show()
-        self.StartLoadPicUrl(isLastEps)
+        self.StartLoadPicUrl(isLastEps, pageIndex)
         self.setWindowTitle(self.epsName)
         self.show()
         if config.IsTips:
@@ -152,8 +152,8 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         QtOwner().owner.bookInfoForm.LoadHistory()
         return
 
-    def StartLoadPicUrl(self, isLastEps=False):
-        self.AddHttpTask(req.GetComicsBookOrderReq(self.bookId, self.epsId+1), self.StartLoadPicUrlBack, isLastEps)
+    def StartLoadPicUrl(self, isLastEps=False, pageIndex=-1):
+        self.AddHttpTask(req.GetComicsBookOrderReq(self.bookId, self.epsId+1), self.StartLoadPicUrlBack, (isLastEps, pageIndex))
 
     def CheckLoadPicture(self):
         # i = 0
@@ -212,15 +212,19 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                     break
         pass
 
-    def StartLoadPicUrlBack(self, msg, isLastEps):
+    def StartLoadPicUrlBack(self, msg, v):
+        isLastEps, pageIndex = v
         if msg != Status.Ok:
-            self.StartLoadPicUrl(isLastEps)
+            self.StartLoadPicUrl(isLastEps, pageIndex)
         else:
             bookInfo = BookMgr().books.get(self.bookId)
             epsInfo = bookInfo.eps[self.epsId]
             self.maxPic = len(epsInfo.pics)
             if isLastEps:
                 self.curIndex = self.maxPic - 1
+            elif 0 < pageIndex < self.maxPic:
+                self.curIndex = pageIndex
+                QtBubbleLabel().ShowMsgEx(self, "继续阅读第{}页".format(pageIndex+1))
             self.qtTool.UpdateSlider()
             self.CheckLoadPicture()
             self.qtTool.InitSlider(self.maxPic)

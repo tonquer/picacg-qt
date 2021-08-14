@@ -183,6 +183,12 @@ class Ui_Setting(object):
 
         self.horizontalLayout_5.addWidget(self.httpEdit)
 
+        self.toolButton = QToolButton(Setting)
+        self.toolButton.setObjectName(u"toolButton")
+        self.toolButton.setCheckable(False)
+
+        self.horizontalLayout_5.addWidget(self.toolButton)
+
 
         self.gridLayout_3.addLayout(self.horizontalLayout_5, 2, 2, 1, 1)
 
@@ -387,8 +393,18 @@ class Ui_Setting(object):
 
         self.label_12.setText(QCoreApplication.translate("Setting", u"Waifu2x\u770b\u56fe\u6a21\u5f0f", None))
         self.label_3.setText(QCoreApplication.translate("Setting", u"\u89e3\u7801\u5668\uff08\u9700\u91cd\u542f\uff09", None))
+#if QT_CONFIG(tooltip)
+        self.httpProxy.setToolTip(QCoreApplication.translate("Setting", u"<html><head/><body><p>\u8bf7\u586b\u5199\u4f60\u7684\u4ee3\u7406\u8f6f\u4ef6\u63d0\u4f9b\u7684\u4ee3\u7406\u5730\u5740</p><p>\u5982:</p><p>v2ray\u53ef\u80fd\u662f http://127.0.0.1:10809</p><p>shadowsocks\u53ef\u80fd\u662f http://127.0.0.1:1080</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.httpProxy.setText(QCoreApplication.translate("Setting", u"\u542f\u7528\u4ee3\u7406", None))
-        self.httpEdit.setPlaceholderText(QCoreApplication.translate("Setting", u"http://127.0.0.1:10809", None))
+#if QT_CONFIG(tooltip)
+        self.httpEdit.setToolTip(QCoreApplication.translate("Setting", u"<html><head/><body><p>\u8bf7\u586b\u5199\u4f60\u7684\u4ee3\u7406\u8f6f\u4ef6\u63d0\u4f9b\u7684\u4ee3\u7406\u5730\u5740</p><p>\u5982:</p><p>v2ray\u53ef\u80fd\u662f http://127.0.0.1:10809</p><p>shadowsocks\u53ef\u80fd\u662f http://127.0.0.1:1080</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.httpEdit.setPlaceholderText("")
+#if QT_CONFIG(tooltip)
+        self.toolButton.setToolTip(QCoreApplication.translate("Setting", u"<html><head/><body><p>\u8bf7\u586b\u5199\u4f60\u7684\u4ee3\u7406\u8f6f\u4ef6\u63d0\u4f9b\u7684\u4ee3\u7406\u5730\u5740</p><p>\u5982:</p><p>v2ray\u53ef\u80fd\u662f http://127.0.0.1:10809</p><p>shadowsocks\u53ef\u80fd\u662f http://127.0.0.1:1080</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.toolButton.setText(QCoreApplication.translate("Setting", u"?", None))
         self.label_5.setText(QCoreApplication.translate("Setting", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84", None))
         self.label_16.setText(QCoreApplication.translate("Setting", u"waifu2x\u4e0b\u8f7d\u6a21\u5f0f", None))
         self.chatProxy.setText(QCoreApplication.translate("Setting", u"\u542f\u7528\u4ee3\u7406", None))

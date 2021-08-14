@@ -166,7 +166,7 @@
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background:#eeA2A4;</string>
+              <string notr="true">color: rgb(196, 95, 125);</string>
              </property>
              <property name="text">
               <string>LV</string>
@@ -188,7 +188,7 @@
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background:#eeA2A4;</string>
+              <string notr="true">color: rgb(196, 95, 125);</string>
              </property>
              <property name="text">
               <string>TextLabel</string>

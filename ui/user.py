@@ -42,30 +42,40 @@ class Ui_User(object):
         self.name = QLabel(User)
         self.name.setObjectName(u"name")
         self.name.setMaximumSize(QSize(100, 16777215))
-        self.name.setAlignment(Qt.AlignCenter)
+        font = QFont()
+        font.setPointSize(12)
+        self.name.setFont(font)
+        self.name.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.name.setMargin(3)
 
         self.verticalLayout.addWidget(self.name)
 
         self.level = QLabel(User)
         self.level.setObjectName(u"level")
         self.level.setMaximumSize(QSize(100, 16777215))
-        self.level.setStyleSheet(u"background:#eeA2A4;")
-        self.level.setAlignment(Qt.AlignCenter)
+        self.level.setFont(font)
+        self.level.setStyleSheet(u"color: rgb(196, 95, 125);")
+        self.level.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.level.setMargin(3)
 
         self.verticalLayout.addWidget(self.level)
 
         self.title = QLabel(User)
         self.title.setObjectName(u"title")
         self.title.setMaximumSize(QSize(100, 16777215))
-        self.title.setStyleSheet(u"background:#eeA2A4;")
-        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setFont(font)
+        self.title.setStyleSheet(u"color: rgb(196, 95, 125);")
+        self.title.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.title.setMargin(3)
 
         self.verticalLayout.addWidget(self.title)
 
         self.exp = QLabel(User)
         self.exp.setObjectName(u"exp")
         self.exp.setMaximumSize(QSize(100, 16777215))
-        self.exp.setAlignment(Qt.AlignCenter)
+        self.exp.setFont(font)
+        self.exp.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.exp.setMargin(3)
 
         self.verticalLayout.addWidget(self.exp)
 

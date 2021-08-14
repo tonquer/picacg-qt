@@ -34,6 +34,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.path = ""
         self.bookName = ""
         self.lastEpsId = -1
+        self.lastIndex = 0
         self.pictureData = None
         self.isFavorite = False
         self.isLike = False
@@ -276,7 +277,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         index = modelIndex.row()
         self.OpenReadIndex(index)
 
-    def OpenReadIndex(self, index):
+    def OpenReadIndex(self, index, pageIndex=-1):
         item = self.epsListWidget.item(index)
         if not item:
             return
@@ -285,12 +286,12 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             return
         name = widget.text()
         self.hide()
-        QtOwner().owner.qtReadImg.OpenPage(self.bookId, index, name)
+        QtOwner().owner.qtReadImg.OpenPage(self.bookId, index, name, pageIndex=pageIndex)
         # self.stackedWidget.setCurrentIndex(1)
 
     def StartRead(self):
         if self.lastEpsId >= 0:
-            self.OpenReadIndex(self.lastEpsId)
+            self.OpenReadIndex(self.lastEpsId, self.lastIndex)
         else:
             self.OpenReadIndex(0)
         return
@@ -301,7 +302,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.startRead.setText("观看第{}章".format(str(1)))
             return
         if self.lastEpsId == info.epsId:
-            self.startRead.setText("上次看到第{}章".format(str(self.lastEpsId + 1)))
+            self.lastIndex = info.picIndex
+            self.startRead.setText("上次看到第{}章{}页".format(str(self.lastEpsId + 1), str(info.picIndex+1)))
             return
 
         if self.lastEpsId >= 0:
@@ -319,7 +321,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         item.setBackground(QColor(238, 162, 164))
         self.epsListWidget.update()
         self.lastEpsId = info.epsId
-        self.startRead.setText("上次看到第{}章".format(str(self.lastEpsId+1)))
+        self.lastIndex = info.picIndex
+        self.startRead.setText("上次看到第{}章{}页".format(str(self.lastEpsId+1), str(info.picIndex+1)))
 
     def ClickCategoriesItem(self, item):
         text = item.text()

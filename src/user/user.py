@@ -39,8 +39,8 @@ class User(Singleton):
 
         self.avatar = {}
 
-        self.addresss = []  # 列表
-
+        self.addresss = ['104.20.180.50', '104.20.181.50']  # 列表
+        self.imageServer = 'storage.wikawika.xyz'
         self.searchCache = []
 
     @property
@@ -73,6 +73,8 @@ class User(Singleton):
 
     def InitImageServer(self, backData):
         try:
+            if self.server.address:
+                self.server.imageServer = self.imageServer
             if backData.res.code == 200:
                 # 选择了分流才设置
                 if self.server.address:

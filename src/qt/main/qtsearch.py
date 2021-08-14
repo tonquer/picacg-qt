@@ -229,7 +229,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         sortId = sort[self.comboBox.currentIndex()]
         if self.localBox.isChecked() and self.categories in self.allCategorise:
             QtOwner().owner.loadingForm.show()
-            sql = SqlServer.Search(self.categories, False, False, False, False, True, 1, self.sortKey.currentIndex(), self.sortId.currentIndex())
+            sql = SqlServer.Search(self.categories, False, False, False, False, True, page, self.sortKey.currentIndex(), self.sortId.currentIndex())
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
         else:
             self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)

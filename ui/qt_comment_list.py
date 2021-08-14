@@ -2,6 +2,7 @@ import json
 import weakref
 
 from PySide2 import QtWidgets
+from PySide2.QtCore import QEvent
 from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
@@ -100,6 +101,7 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
             if widget.id != cfgId:
                 continue
 
+            self.listWidget.SetWheelStatus(True)
             self.childrenListWidget.clear()
             self.childrenListWidget.UpdatePage(1, 1)
             self.childrenListWidget.UpdateState()
@@ -201,6 +203,9 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
             widget = self.listWidget.itemWidget(item)
             if not widget:
                 return
+            self.listWidget.ClearWheelEvent()
+            self.listWidget.SetWheelStatus(False)
+
             self.childrenListWidget.UpdateState()
             data = json.loads(msg)
             self.childrenListWidget.parentId = index
@@ -224,6 +229,7 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
             Log.Error(es)
 
     def ClearCommnetList(self):
+        self.listWidget.SetWheelStatus(True)
         if self.childrenListWidget.parentId >= 0:
             item2 = self.listWidget.item(self.childrenListWidget.parentId)
             widget2 = self.listWidget.itemWidget(item2)
@@ -246,6 +252,7 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
             page = int(self.spinBox.text())
             if page > self.listWidget.pages:
                 return
+            self.listWidget.SetWheelStatus(True)
             self.listWidget.page = page
             self.listWidget.clear()
             self.loadingForm2.show()

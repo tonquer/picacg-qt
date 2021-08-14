@@ -87,7 +87,7 @@ class Ui_Comment(object):
         self.levelLabel.setObjectName(u"levelLabel")
         self.levelLabel.setMinimumSize(QSize(0, 20))
         self.levelLabel.setMaximumSize(QSize(16777215, 20))
-        self.levelLabel.setStyleSheet(u"background:#eeA2A4;")
+        self.levelLabel.setStyleSheet(u"color: rgb(196, 95, 125);")
 
         self.horizontalLayout_4.addWidget(self.levelLabel)
 
@@ -95,7 +95,7 @@ class Ui_Comment(object):
         self.titleLabel.setObjectName(u"titleLabel")
         self.titleLabel.setMinimumSize(QSize(0, 20))
         self.titleLabel.setMaximumSize(QSize(16777215, 20))
-        self.titleLabel.setStyleSheet(u"background:#eeA2A4;")
+        self.titleLabel.setStyleSheet(u"color: rgb(196, 95, 125);")
 
         self.horizontalLayout_4.addWidget(self.titleLabel)
 
