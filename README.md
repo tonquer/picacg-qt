@@ -111,7 +111,7 @@
 ![代理设置](example/代理设置.gif)
 
 * 分流登录
-![分流登录](example/分流登录.gif)
+![分流登录](example/登录.gif)
 
 * 搜索
 ![搜索](example/搜索.gif)
