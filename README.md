@@ -107,11 +107,9 @@
   * 打包完成以后可以在 dist 目录下找到应用程序 (.app)
 
 ## 界面
-* 代理设置
-![代理设置](example/代理设置.gif)
 
-* 分流登录
-![分流登录](example/登录.gif)
+* 登录
+![登录](example/登录.gif)
 
 * 搜索
 ![搜索](example/搜索.gif)
@@ -121,6 +119,9 @@
 
 * 下载
 ![下载](example/下载.gif)
+
+* 看图
+![看图](example/看图.gif)
 
 * waifu2x
 ![waifu2x](example/waifu2x.gif)
