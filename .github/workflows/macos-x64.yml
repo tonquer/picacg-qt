@@ -1,0 +1,60 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: macos-x64
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    env:
+      PACKAGENAME: bika_py37_macos_x86_64
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements.txt
+        brew install create-dmg
+    - name: Waifu2x
+      run: |
+        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64.zip'
+        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64.zip -d waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64
+        cp waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64/waifu2x.so ./
+    - name: Build
+      run: |
+        pyinstaller --clean --log-level TRACE --onedir --name PicACG \
+            --add-binary waifu2x.so:. --hidden-import PySide2 --hidden-import requests \
+            --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
+            --hidden-import conf --hidden-import resources --hidden-import src \
+            --hidden-import src.index --hidden-import src.qt --hidden-import src.qt.chat \
+            --hidden-import src.qt.com --hidden-import src.qt.download \
+            --hidden-import src.qt.main --hidden-import src.qt.menu \
+            --hidden-import src.qt.read --hidden-import src.qt.struct --hidden-import src.qt.game\
+            --hidden-import src.qt.user --hidden-import src.qt.util --hidden-import src.server \
+            --hidden-import src.user --hidden-import src.util --hidden-import ui \
+            --hidden-import qss --strip --windowed -i Icon.icns \
+            start.py
+        rm -rf dist/PicACG
+        cp Icon.icns dist/
+        ln -s /Applications/   dist/Applications
+        cp -avf data models resources dist/PicACG.app/Contents/MacOS
+        rm -rf dist/PicACG.app/Contents/MacOS/resources/*.py
+        create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
+            --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
+        zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
+    # - name: Upload
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: ${{ env.PACKAGENAME }}
+    #     path: bika.zip
