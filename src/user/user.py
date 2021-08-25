@@ -77,9 +77,9 @@ class User(Singleton):
                 self.server.imageServer = self.imageServer
             if backData.res.code == 200:
                 # 选择了分流才设置
-                if self.server.address:
-                    self.server.imageServer = ToolUtil.GetUrlHost(backData.res.data["imageServer"])
-                    Log.Info("初始化图片服务器成功, info:{}".format(self.server.imageServer))
+                # if self.server.address:
+                #     self.server.imageServer = ToolUtil.GetUrlHost(backData.res.data["imageServer"])
+                #     Log.Info("初始化图片服务器成功, info:{}".format(self.server.imageServer))
 
                 return Status.Ok
             else:
@@ -103,8 +103,8 @@ class User(Singleton):
                 self.token = backData.res.data.get("token")
                 self.server.token = self.token
                 Log.Info("登陆成功，userId: {}".format(self.userId))
-                if self.server.address:
-                    self.server.Send(req.InitAndroidReq())
+                # if self.server.address:
+                    # self.server.Send(req.InitAndroidReq())
                 return Status.Ok
             elif backData.res.code == 400:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))

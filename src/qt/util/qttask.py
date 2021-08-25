@@ -211,6 +211,8 @@ class QtTask(Singleton, threading.Thread):
         return
 
     def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, isSaveData=True, backParam=None, isSaveCache=True, cleanFlag=None, filePath=""):
+        if not url:
+            return
         self.taskId += 1
         data = QtDownloadTask(self.taskId)
         data.downloadCallBack = downloadCallBack

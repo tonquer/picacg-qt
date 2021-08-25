@@ -13,6 +13,7 @@ from qss.qss import QssDataMgr
 from resources.resources import DataMgr
 from src.index.category import CateGoryBase
 from src.qt.com.qt_scroll import SmoothMode
+from src.qt.com.qt_user_info import QtUserInfo
 from src.qt.com.qtcomment import QtComment
 from src.qt.com.qtimg import  QtImgMgr
 
@@ -453,6 +454,8 @@ class QtBookList(QListWidget, QtTaskBase):
             url = avatar.get("fileServer", "")
             path = avatar.get("path", "")
 
+        slogan = user.get("slogan", "")
+
         index = self.count()
         iwidget = QtComment(self)
 
@@ -471,7 +474,7 @@ class QtBookList(QListWidget, QtTaskBase):
         if likesCount == "":
             iwidget.starButton.hide()
             iwidget.commentLabel.setTextInteractionFlags(Qt.TextSelectableByKeyboard)
-
+        iwidget.setToolTip(slogan)
         iwidget.id = commnetId
         iwidget.commentLabel.setText(content)
         iwidget.nameLabel.setText(name)
@@ -485,6 +488,46 @@ class QtBookList(QListWidget, QtTaskBase):
             dayStr = ToolUtil.GetUpdateStr(createdTime)
             iwidget.dateLabel.setText(dayStr)
         iwidget.indexLabel.setText("{}楼".format(str(floor)))
+
+        item = QListWidgetItem(self)
+        item.setSizeHint(iwidget.sizeHint())
+        self.setItemWidget(item, iwidget)
+        if url and config.IsLoadingPicture:
+            self.AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True)
+        if "pica-web.wakamoment.tk" not in character and config.IsLoadingPicture:
+            self.AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, index, True)
+
+    def AddUserKindItem(self, info, floor):
+        content = info.get("slogan", "")
+        name = info.get("name")
+        avatar = info.get("avatar", {})
+        commnetId = info.get('_id', "")
+        title = info.get("title", "")
+        level = info.get("level", 1)
+        character = info.get("character", "")
+        if not avatar:
+            url = ""
+            path = ""
+        elif isinstance(avatar, str):
+            url = avatar
+            path = ""
+        else:
+            url = avatar.get("fileServer", "")
+            path = avatar.get("path", "")
+
+        index = self.count()
+        iwidget = QtUserInfo(self)
+
+        iwidget.setToolTip(info.get("slogan", ""))
+        iwidget.id = commnetId
+        iwidget.commentLabel.setText(content)
+        iwidget.nameLabel.setText(name)
+        iwidget.starButton.setText("({})".format(info.get('comicsUploaded')))
+        iwidget.levelLabel.setText(" LV" + str(level) + " ")
+        iwidget.titleLabel.setText(" " + title + " ")
+        iwidget.url = url
+        iwidget.path = path
+        iwidget.indexLabel.setText("第{}".format(str(floor)))
 
         item = QListWidgetItem(self)
         item.setSizeHint(iwidget.sizeHint())

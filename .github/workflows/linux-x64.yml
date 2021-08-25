@@ -37,8 +37,9 @@ jobs:
         cp -r data models resources bika/
         rm bika/resources/*.py -rf
         tar -zcvf ${{ env.PACKAGENAME }}.tar.gz bika/
-    # - name: Upload
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: ${{ env.PACKAGENAME }}
-    #     path: ${{ env.PACKAGENAME }}.tar.gz
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}.tar.gz
+        retention-days: 7

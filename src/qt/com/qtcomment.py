@@ -47,6 +47,7 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         self.linkLabel.setVisible(False)
         self.linkLabel.installEventFilter(self)
         self.starButton.setCursor(Qt.PointingHandCursor)
+        self.nameLabel.setCursor(Qt.PointingHandCursor)
         self.commentButton.setCursor(Qt.PointingHandCursor)
 
     def SetLike(self, isLike=True):

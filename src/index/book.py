@@ -64,7 +64,7 @@ class BookMgr(Singleton):
             else:
                 if backData.res.message == "under review":
                     return Status.UnderReviewBook
-                return Status.NetError
+                return Status.NotFoundBook
         except Exception as es:
             Log.Error(es)
             return Status.NetError

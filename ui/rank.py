@@ -59,11 +59,24 @@ class Ui_Rank(object):
         self.d30Layout.addWidget(self.d30BookList, 0, 0, 1, 1)
 
         self.tabWidget.addTab(self.tab_2, "")
+        self.tab_4 = QWidget()
+        self.tab_4.setObjectName(u"tab_4")
+        self.gridLayout = QGridLayout(self.tab_4)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.kindList = QtBookList(self.tab_4)
+        self.kindList.setObjectName(u"kindList")
+        self.kindList.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
+"QListWidget::item { border-bottom: 1px solid black; }")
+
+        self.gridLayout.addWidget(self.kindList, 0, 0, 1, 1)
+
+        self.tabWidget.addTab(self.tab_4, "")
 
         self.gridLayout_2.addWidget(self.tabWidget, 0, 0, 1, 1)
 
 
         self.retranslateUi(Rank)
+        self.tabWidget.currentChanged.connect(Rank.SwitchPage)
 
         self.tabWidget.setCurrentIndex(0)
 
@@ -76,5 +89,6 @@ class Ui_Rank(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("Rank", u"24\u5c0f\u65f6", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Rank", u"7\u65e5", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Rank", u"30\u65e5", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QCoreApplication.translate("Rank", u"\u9a91\u58eb\u699c", None))
     # retranslateUi
 

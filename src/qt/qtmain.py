@@ -64,6 +64,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         from src.qt.game.qt_game import QtGame
         from src.qt.game.qt_game_info import QtGameInfo
         from src.qt.user.qt_user_comment import QtUserComment
+        from src.qt.user.qt_login_proxy import QtLoginProxy
 
         self.userInfo = None
         self.setupUi(self)
@@ -96,6 +97,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.myCommentForm = QtUserComment()
 
         self.loginForm = QtLogin()
+        self.loginProxyForm = QtLoginProxy()
         self.registerForm = QtRegister()
 
         self.historyForm = QtHistory()
@@ -209,8 +211,11 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.loginForm.Init()
         return
 
-    def OpenSetting(self):
-        self.settingForm.show()
+    def OpenSetting(self, action):
+        if action.text() == "proxy":
+            self.loginProxyForm.show()
+        else:
+            self.settingForm.show()
         pass
 
     def OpenAbout(self, action):

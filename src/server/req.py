@@ -15,6 +15,19 @@ class ServerReq(object):
         self.useImgProxy = True
         self.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
 
+    def __str__(self):
+        if config.LogIndex == 0:
+            return ""
+        headers = dict()
+        headers.update(self.headers)
+        if config.LogIndex == 1 and "authorization" in headers:
+            headers["authorization"] = "**********"
+        params = dict()
+        params.update(self.params)
+        if config.LogIndex == 1 and "password" in params:
+            params["password"] = "******"
+        return "{}, url:{}, proxy:{}, method:{}, headers:{}, params:{}".format(self.__class__.__name__, self.url, self.proxy, self.method, headers, params)
+
 
 # 获得分流Ip
 class InitReq(ServerReq):
@@ -75,6 +88,7 @@ class GetUserInfo(ServerReq):
 # 获得我的评论
 class GetUserCommentReq(ServerReq):
     def __init__(self, id="", page=1):
+        self.id = id
         url = config.Url + "users/my-comments?page={}".format(str(page))
         method = "GET"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
@@ -174,6 +188,14 @@ class RankReq(ServerReq):
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
 
 
+# 骑士榜
+class KnightRankReq(ServerReq):
+    def __init__(self):
+        url = config.Url + "comics/knight-leaderboard"
+        method = "GET"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method), {}, method)
+
+
 # 获得一本书
 class GetComicsBookReq(ServerReq):
     def __init__(self, bookId=""):
@@ -241,6 +263,15 @@ class GetComments(ServerReq):
 class CommentsLikeReq(ServerReq):
     def __init__(self, commentId=""):
         url = config.Url + "comments/{}/like".format(commentId)
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+# 评论举报
+class CommentsReportReq(ServerReq):
+    def __init__(self, commentId=""):
+        url = config.Url + "comments/{}/report".format(commentId)
         method = "POST"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
@@ -341,6 +372,19 @@ class SpeedTestReq(ServerReq):
         if SpeedTestReq.Index >= len(SpeedTestReq.URLS):
             SpeedTestReq.Index = 0
         method = "Download"
+        header = ToolUtil.GetHeader(url, method)
+        header['cache-control'] = 'no-cache'
+        header['expires'] = '0'
+        header['pragma'] = 'no-cache'
+        super(self.__class__, self).__init__(url, header,
+                                             {}, method)
+
+
+# 测试Ping
+class SpeedTestPingReq(ServerReq):
+    def __init__(self):
+        url = config.Url + "categories"
+        method = "GET"
         header = ToolUtil.GetHeader(url, method)
         header['cache-control'] = 'no-cache'
         header['expires'] = '0'

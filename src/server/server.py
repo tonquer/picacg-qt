@@ -4,6 +4,10 @@ from queue import Queue
 
 import requests
 import urllib3
+from requests import ConnectTimeout
+from requests.exceptions import ProxyError, RequestException
+from urllib3.exceptions import ConnectTimeoutError
+from urllib3.util.ssl_ import is_ipaddress
 
 import src.server.req as req
 import src.server.res as res
@@ -88,16 +92,28 @@ class Server(Singleton, threading.Thread):
         if token:
             request.headers["authorization"] = token
 
-        if self.address:
-            host = ToolUtil.GetUrlHost(request.url)
-            if host in config.Url:
-                request.url = request.url.replace(host, self.address).replace("https://", "http://")
-                request.headers["Host"] = host
-            elif self.imageServer and request.useImgProxy:
-                request.url = request.url.replace(host, self.imageServer)
+        host = ToolUtil.GetUrlHost(request.url)
+        if self.address and host in config.ApiDomain:
+            request.headers["Host"] = host
+            request.url = request.url.replace(host, self.address)
+            # TODO CloudFlare指定Ip目前不能用Https
+            request.url = request.url.replace("https://", "http://")
 
-        if request.method.lower() in ["post", "put"]:
-            request.headers["Content-Type"] = "application/json; charset=UTF-8"
+        if self.imageServer and host in config.ImageDomain:
+            if is_ipaddress(self.imageServer):
+                request.headers["Host"] = host
+
+                # TODO CloudFlare指定Ip目前不能用Https
+                request.url = request.url.replace("https://", "http://")
+
+                # TODO 访问封面，301跳转后会失败，临时手动跳转
+                if "static/tobeimg/" in request.url:
+                    request.headers["Host"] = "img.tipatipa.xyz"
+                    request.url = request.url.replace("static/tobeimg/", "")
+            else:
+                request.headers["Host"] = self.imageServer
+
+            request.url = request.url.replace(host, self.imageServer)
 
     def Send(self, request, token="", backParam="", isASync=True):
         self.__DealHeaders(request, token)
@@ -108,6 +124,7 @@ class Server(Singleton, threading.Thread):
 
     def _Send(self, task):
         try:
+            Log.Info("request-> backId:{} {}".format(task.bakParam, task.req))
             if task.req.method.lower() == "post":
                 self.Post(task)
             elif task.req.method.lower() == "get":
@@ -119,7 +136,10 @@ class Server(Singleton, threading.Thread):
         except Exception as es:
             task.status = Status.NetError
             # Log.Error(es)
+            Log.Warn(task.req.url + " " + es.__repr__())
             Log.Debug(es)
+        finally:
+            Log.Info("response-> backId:{}, {}".format(task.bakParam, task.res))
         try:
             self.handler.get(task.req.__class__)(task)
             if task.res.raw:
@@ -190,23 +210,39 @@ class Server(Singleton, threading.Thread):
 
             if request.headers == None:
                 request.headers = {}
-
+            Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
             r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, stream=True, timeout=task.timeout, verify=False)
             # task.res = res.BaseRes(r)
+            # print(r.elapsed.total_seconds())
             task.res = r
         except Exception as es:
+            Log.Warn(task.req.url + " " + es.__repr__())
             task.status = Status.NetError
         self.handler.get(task.req.__class__)(task)
         if task.res:
             task.res.close()
 
-    def TestSpeed(self, request, bakParams="", testAddress=""):
+    def TestSpeed(self, request, bakParams="", testAddress="", testImageServer=""):
         bakAddress = self.address
         self.address = testAddress
-        if testAddress:
-            self.imageServer = "storage.wikawika.xyz"
+        backImageServer = self.imageServer
+        self.imageServer = testImageServer
         self.__DealHeaders(request, "")
+        self.address = bakAddress
+        self.imageServer = backImageServer
         self.address = bakAddress
         task = Task(request, bakParams)
         task.timeout = 2
         self._downloadQueue.put(task)
+
+    def TestSpeedPing(self, request, bakParams="", testAddress="", testImageServer=""):
+        bakAddress = self.address
+        self.address = testAddress
+        backImageServer = self.imageServer
+        self.imageServer = testImageServer
+        self.__DealHeaders(request, "")
+        self.address = bakAddress
+        self.imageServer = backImageServer
+        task = Task(request, bakParams)
+        task.timeout = 2
+        self._inQueue.put(task)

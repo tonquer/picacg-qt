@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>455</width>
-    <height>332</height>
+    <height>343</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,62 +31,59 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="8" column="0">
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_5">
+       <item row="2" column="0">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>如果不能连接和看图，请尝试其他分流</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="text">
-            <string>直连</string>
+            <string>帐号</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="selectIp1">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="autoFillBackground">
-            <bool>false</bool>
+         <item>
+          <widget class="QLineEdit" name="userIdEdit">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>30</height>
+            </size>
            </property>
            <property name="text">
-            <string>分流1</string>
+            <string/>
            </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>代理</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QRadioButton" name="selectIp2">
-           <property name="text">
-            <string>分流2</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QRadioButton" name="selectIp3">
-           <property name="text">
-            <string>分流3</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
           </widget>
          </item>
         </layout>
@@ -127,22 +124,8 @@
          </item>
         </layout>
        </item>
-       <item row="5" column="0">
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <layout class="QVBoxLayout" name="verticalLayout_2"/>
-       </item>
-       <item row="7" column="0">
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
        </item>
        <item row="6" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -202,59 +185,16 @@
             </size>
            </property>
            <property name="text">
-            <string>测速</string>
+            <string>代理与分流</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
-        <widget class="Line" name="line">
+       <item row="7" column="0">
+        <widget class="Line" name="line_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="minimumSize">
-            <size>
-             <width>50</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>帐号</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="userIdEdit">
-           <property name="minimumSize">
-            <size>
-             <width>300</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>如果不能连接和看图，请尝试其他分流</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -308,7 +248,6 @@
   <tabstop>passwdEdit</tabstop>
   <tabstop>loginButton</tabstop>
   <tabstop>registerButton</tabstop>
-  <tabstop>selectIp1</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -319,8 +258,8 @@
    <slot>Login()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>198</x>
-     <y>134</y>
+     <x>159</x>
+     <y>241</y>
     </hint>
     <hint type="destinationlabel">
      <x>203</x>
@@ -335,8 +274,8 @@
    <slot>OpenRegister()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>354</x>
-     <y>134</y>
+     <x>276</x>
+     <y>241</y>
     </hint>
     <hint type="destinationlabel">
      <x>145</x>
@@ -348,15 +287,15 @@
    <sender>testSpeedButton</sender>
    <signal>clicked()</signal>
    <receiver>Login</receiver>
-   <slot>SpeedTest()</slot>
+   <slot>OpenProxy()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>170</y>
+     <x>353</x>
+     <y>228</y>
     </hint>
     <hint type="destinationlabel">
-     <x>20</x>
-     <y>222</y>
+     <x>476</x>
+     <y>186</y>
     </hint>
    </hints>
   </connection>
@@ -365,6 +304,7 @@
   <slot>Login()</slot>
   <slot>OpenRegister()</slot>
   <slot>SpeedTest()</slot>
+  <slot>OpenProxy()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>

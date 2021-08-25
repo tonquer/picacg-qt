@@ -47,7 +47,7 @@ Format = "jpg"
 Waifu2xPath = "waifu2x"
 IsOpenWaifu = 0
 
-LogIndex = 0
+LogIndex = 0   # Warn Info Debug
 IsTips = 1
 
 ChatSendAction = 2
@@ -61,4 +61,26 @@ LookModel = 0
 LookNoise = 3
 LookScale = 2.0
 
+# 代理与分流相关
+ProxyUrl = "https://github.com/tonquer/picacg-windows/discussions/48"
 
+ProxySelectIndex = 1
+
+Address = ['104.20.180.50', '104.20.181.50']  # 分类2，3 Ip列表
+ImageServer = 'storage.wikawika.xyz'          # 分流2，3 使用的图片服务器
+
+ApiDomain = [
+    "picaapi.picacomic.com",
+]
+
+ImageDomain = [
+    "storage.wikawika.xyz",
+    "storage1.picacomic.com",
+    "img.tipatipa.xyz",
+    "img.picacomic.com",
+    "pica-pica.wikawika.xyz"
+]
+
+# https://www.cloudflare.com/zh-cn/ips/
+# https://cloud.tencent.com/developer/article/1675133
+PreferCDNIP = "1.0.0.1"   # CloudFlare的优选Ip，

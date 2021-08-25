@@ -72,6 +72,9 @@ class ToolUtil(object):
             "app-build-version": config.BuildVersion,
             "user-agent": config.Agent,
         }
+        if method.lower() in ["post", "put"]:
+            header["Content-Type"] = "application/json; charset=UTF-8"
+
         return header
 
     @staticmethod

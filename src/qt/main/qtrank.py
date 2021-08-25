@@ -11,18 +11,28 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
     def __init__(self):
         super(self.__class__, self).__init__()
         Ui_Rank.__init__(self)
+
+        self.isInitKind = False
         self.setupUi(self)
         self.h24BookList.InitBook()
 
         self.d7BookList.InitBook()
 
         self.d30BookList.InitBook()
+
+        self.kindList.InitUser()
         self.isInit = False
         self.tabWidget.setCurrentIndex(0)
 
     def SwitchCurrent(self):
         self.Init()
         pass
+
+    def SwitchPage(self, index):
+        if index == 3 and not self.isInitKind:
+            QtOwner().owner.loadingForm.show()
+            QtTask().AddHttpTask(req.KnightRankReq(), self.InitKindBack)
+        return
 
     def Init(self):
         if self.isInit:
@@ -49,6 +59,18 @@ class QtRank(QtWidgets.QWidget, Ui_Rank):
             if data.get("code") == 200:
                 for v in data.get("data").get("comics"):
                     bookList.AddBookItem(v)
+        except Exception as es:
+            Log.Error(es)
+            self.isInit = False
+
+    def InitKindBack(self, raw):
+        QtOwner().owner.loadingForm.close()
+        try:
+            data = json.loads(raw)
+            if data.get("code") == 200:
+                self.isInitKind = True
+                for index, v in enumerate(data.get("data").get("users")):
+                    self.kindList.AddUserKindItem(v, index+1)
         except Exception as es:
             Log.Error(es)
             self.isInit = False

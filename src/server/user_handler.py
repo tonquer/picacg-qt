@@ -124,6 +124,15 @@ class GetComicsBookHandler(object):
             QtTask().taskBack.emit(backData.bakParam, st)
 
 
+@handler(req.SpeedTestPingReq)
+class SpeedTestPingHandler(object):
+    def __call__(self, backData):
+        if hasattr(backData.res.raw, "elapsed"):
+            QtTask().taskBack.emit(backData.bakParam, str(backData.res.raw.elapsed.total_seconds()))
+        else:
+            QtTask().taskBack.emit(backData.bakParam, str(0))
+
+
 @handler(req.DownloadBookReq)
 class DownloadBookHandler(object):
     def __call__(self, backData):
@@ -204,13 +213,12 @@ class SpeedTestHandler(object):
                 fileSize = int(r.headers.get('Content-Length', 0))
                 getSize = 0
                 now = time.time()
-                consume = 1
-                for chunk in r.iter_content(chunk_size=10240):
+                for chunk in r.iter_content(chunk_size=1024):
                     getSize += len(chunk)
-                    consume = time.time() - now
-                    if consume >= 2:
-                        break
-
+                    # consume = time.time() - now
+                    # if consume >= 5.0:
+                    #     break
+                consume = time.time() - now
                 downloadSize = getSize / consume
                 speed = ToolUtil.GetDownloadSize(downloadSize)
                 if backData.bakParam:
@@ -228,10 +236,12 @@ class SpeedTestHandler(object):
 @handler(req.AdvancedSearchReq)
 @handler(req.CategoriesSearchReq)
 @handler(req.RankReq)
+@handler(req.KnightRankReq)
 @handler(req.GetComments)
 @handler(req.GetComicsRecommendation)
 @handler(req.BookLikeReq)
 @handler(req.CommentsLikeReq)
+@handler(req.CommentsReportReq)
 @handler(req.GetKeywords)
 @handler(req.SendComment)
 @handler(req.SendCommentChildrenReq)

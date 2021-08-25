@@ -45,8 +45,9 @@ jobs:
         mkdir ${{ env.PACKAGENAME }}
         mv bika ${{ env.PACKAGENAME }}
         7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
-    # - name: Upload
-    #   uses: actions/upload-artifact@v2
-    #   with:
-    #     name: ${{ env.PACKAGENAME }}
-    #     path: ${{ env.PACKAGENAME }}
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}
+        retention-days: 7

@@ -67,6 +67,21 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>骑士榜</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QtBookList" name="kindList">
+         <property name="styleSheet">
+          <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item { border-bottom: 1px solid black; }</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -79,5 +94,25 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>Rank</receiver>
+   <slot>SwitchPage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>199</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>462</x>
+     <y>27</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>SwitchPage()</slot>
+ </slots>
 </ui>

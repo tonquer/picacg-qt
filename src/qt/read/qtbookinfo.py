@@ -47,8 +47,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.autorList.itemClicked.connect(self.ClickTagsItem)
         self.idLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.description.setWordWrap(True)
-        self.description.setAlignment(Qt.AlignTop)
+        # self.description.setWordWrap(True)
+        # self.description.setAlignment(Qt.AlignTop)
         p = QPixmap()
         p.loadFromData(DataMgr.GetData("ic_get_app_black_36dp"))
         self.downloadButton.setIcon(QIcon(p))
@@ -84,6 +84,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.epsListWidget.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
         self.epsListWidget.verticalScrollBar().setSingleStep(30)
+
+        self.user_icon.radius = 50
 
     def UpdateFavorityIcon(self):
         p = QPixmap()
@@ -155,7 +157,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.idLabel.setText(info.id)
 
             self.bookName = info.title
-            self.description.setText(info.description)
+            self.description.setPlainText(info.description)
             # self.isFinished.setText("完本" if info.finished else "未完本")
 
             for name in info.categories:
@@ -185,17 +187,26 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             dayStr = ToolUtil.GetUpdateStr(info.updated_at)
             self.updateTick.setText(str(dayStr) + "更新")
             if config.IsLoadingPicture:
-
                 self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
             self.commentWidget.bookId = self.bookId
             self.commentWidget.LoadComment()
             self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)
+            creator = info._creator
+            self.user_name.setText(creator.get("name"))
+            url2 = creator.get("avatar").get("fileServer")
+            path2 = creator.get("avatar").get("path")
+            if url2:
+                self.AddDownloadTask(url2, path2, None, self.LoadingPictureComplete)
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             self.msgForm.ShowError(msg)
             self.hide()
         return
+
+    def LoadingPictureComplete(self, data, status):
+        if status == Status.Ok:
+            self.user_icon.SetPicture(data)
 
     def UpdatePicture(self, data, status):
         if status == Status.Ok:

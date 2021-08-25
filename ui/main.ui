@@ -48,6 +48,7 @@
      <string>设置</string>
     </property>
     <addaction name="actionsetting"/>
+    <addaction name="actionproxy"/>
    </widget>
    <widget class="QMenu" name="menuabout">
     <property name="title">
@@ -73,6 +74,11 @@
   <action name="actionimg_convert">
    <property name="text">
     <string>waifu2x</string>
+   </property>
+  </action>
+  <action name="actionproxy">
+   <property name="text">
+    <string>proxy</string>
    </property>
   </action>
  </widget>

@@ -39,36 +39,24 @@ class Log(object):
         formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
         fh.setFormatter(formatter)
         Log.logger.addHandler(fh)
-
+        Log.Debug = Log.logger.debug
+        Log.Info = Log.logger.info
+        Log.Warn = Log.logger.warning
+        Log.Error = Log.logger.exception
         return
 
     @staticmethod
-    def Debug(data):
-        Log.logger.debug(data)
+    def Debug(es):
+        Log.logger.debug(es)
 
     @staticmethod
-    def Info(data):
-        Log.logger.info(data)
+    def Info(es):
+        Log.logger.info(es, exc_info=True)
 
     @staticmethod
-    def Warn(data):
-        Log.logger.warning(traceback.extract_stack()[-2])
-        Log.logger.warning(data)
+    def Warn(es):
+        Log.logger.warning(es, exc_info=True)
 
     @staticmethod
     def Error(es):
-        # import traceback
-        # import sys
-        # traceback.print_exc(file=sys.stdout)
-        # message = ''
-        # message += 'Exception: {}\n'.format(e)
-        # message += '  Traceback info: \n'
-        # while cur_tb is not None:
-        #     frame = cur_tb.tb_frame
-        #     code = frame.f_code
-        #     message += '    File: {}, line: {}, in: {}\n'.format(code.co_filename, str(frame.f_lineno), code.co_name)
-        #     message += '         local params:{}\n'.format(frame.f_locals)
-        #     cur_tb = cur_tb.tb_next
-        # Log.logger.error(message)
-        Log.logger.warning(traceback.extract_stack()[-2])
         Log.logger.error(es, exc_info=True)
