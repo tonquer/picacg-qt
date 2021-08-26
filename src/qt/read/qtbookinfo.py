@@ -16,6 +16,7 @@ from src.qt.com.qtloading import QtLoading
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, Log, ToolUtil
+from src.server.sql_server import SqlServer
 from src.util.status import Status
 from ui.bookinfo import Ui_BookInfo
 from ui.qtlistwidget import QtBookList
@@ -131,7 +132,13 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.Clear()
         self.show()
         self.loadingForm.show()
-        self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenBookBack)
+        self.OpenLocalBack()
+
+    def OpenLocalBack(self):
+        self.AddSqlTask("book", self.bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack)
+
+    def SendLocalBack(self, books):
+        self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookBack)
 
     def OpenBookBack(self, msg):
         self.loadingForm.close()
@@ -139,8 +146,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.tagsList.clear()
         self.autorList.clear()
         info = BookMgr().books.get(self.bookId)
-        if msg == Status.Ok and info:
-            # self.autor.setText(info.author)
+        if info:
             self.autorList.AddItem(info.author)
             if hasattr(info, "chineseTeam"):
                 self.autorList.AddItem(info.chineseTeam)
@@ -158,21 +164,13 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
             self.bookName = info.title
             self.description.setPlainText(info.description)
-            # self.isFinished.setText("完本" if info.finished else "未完本")
 
             for name in info.categories:
                 self.categoriesList.AddItem(name)
-            # self.categories.setText(','.join(info.categories))
-            # self.tags.setText(','.join(info.tags))
             for name in info.tags:
                 self.tagsList.AddItem(name)
             self.starButton.setText(str(info.totalLikes))
             self.views.setText(str(info.totalViews))
-
-            # if info.isFavourite:
-            #     self.favorites.setEnabled(False)
-            # else:
-            #     self.favorites.setEnabled(True)
             self.isFavorite = info.isFavourite
             self.isLike = info.isLiked
             self.UpdateFavorityIcon()
@@ -192,13 +190,14 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.commentWidget.LoadComment()
             self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)
-            creator = info._creator
-            self.user_name.setText(creator.get("name"))
-            url2 = creator.get("avatar").get("fileServer")
-            path2 = creator.get("avatar").get("path")
-            if url2:
-                self.AddDownloadTask(url2, path2, None, self.LoadingPictureComplete)
-        else:
+            if hasattr(info, "_creator"):
+                creator = info._creator
+                self.user_name.setText(creator.get("name"))
+                url2 = creator.get("avatar").get("fileServer")
+                path2 = creator.get("avatar").get("path")
+                if url2:
+                    self.AddDownloadTask(url2, path2, None, self.LoadingPictureComplete)
+        elif msg != Status.Ok:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             self.msgForm.ShowError(msg)
             self.hide()

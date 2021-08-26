@@ -43,6 +43,7 @@ class SqlServer(Singleton):
     TaskTypeSelectWord = 101
     TaskTypeSelectUpdate = 102
     TaskTypeSelectFavorite = 103
+    TaskTypeCacheBook = 104
     TaskTypeUpdateBook = 2
     TaskTypeUpdateFavorite= 3
     TaskTypeClose = 4
@@ -91,6 +92,8 @@ class SqlServer(Singleton):
                     self._SelectUpdateInfo(conn, data, backId)
                 elif taskType == self.TaskTypeSelectFavorite:
                     self._SelectFavoriteIds(conn, data, backId)
+                elif taskType == self.TaskTypeCacheBook:
+                    self._SelectCacheBook(conn, data, backId)
                 elif taskType == self.TaskTypeUpdateFavorite:
                     self._UpdateFavorite(conn, data, backId)
                 elif taskType == self.TaskTypeUpdateBook:
@@ -168,6 +171,39 @@ class SqlServer(Singleton):
         allFavoriteIds = []
         for data in cur.fetchall():
             allFavoriteIds.append(data[0])
+        data = pickle.dumps(allFavoriteIds)
+        if backId:
+            from src.qt.util.qttask import QtTask
+            QtTask().sqlBack.emit(backId, data)
+
+    def _SelectCacheBook(self, conn, bookId, backId):
+        cur = conn.cursor()
+        cur.execute("select * from book where id ='{}'".format(bookId))
+        allFavoriteIds = []
+        for data in cur.fetchall():
+            info = DbBook()
+            info.id = data[0]
+            info.title = data[1]
+            info.title2 = data[2]
+            info.author = data[3]
+            info.chineseTeam = data[4]
+            info.description = data[5]
+            info.epsCount = data[6]
+            info.pages = data[7]
+            info.finished = data[8]
+            info.likesCount = data[9]
+            info.categories = data[10]
+            info.tags = data[11]
+            info.created_at = data[12]
+            info.updated_at = data[13]
+            info.path = data[14]
+            info.fileServer = data[15]
+            info.originalName = data[16]
+            info.totalLikes = data[17]
+            info.totalViews = data[18]
+            from src.index.book import BookMgr
+            BookMgr().AddBookByDb(info)
+            allFavoriteIds.append(info)
         data = pickle.dumps(allFavoriteIds)
         if backId:
             from src.qt.util.qttask import QtTask

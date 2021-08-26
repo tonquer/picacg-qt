@@ -53,6 +53,8 @@ class BookMgr(Singleton):
         return Server()
 
     def AddBookByIdBack(self, backData):
+        if backData.status != Status.Ok:
+            return backData.status
         try:
             if backData.res.data.get("comic"):
                 info = self.books.get(backData.res.data['comic']['_id'])
@@ -68,6 +70,37 @@ class BookMgr(Singleton):
         except Exception as es:
             Log.Error(es)
             return Status.NetError
+
+    def AddBookByDb(self, dbBook):
+        from src.server.sql_server import DbBook
+        assert isinstance(dbBook, DbBook)
+        if dbBook.id in self.books:
+            return
+        info = Book()
+        info._id = dbBook.id
+        info.title = dbBook.title
+        info.author = dbBook.author
+        info.description = dbBook.description
+        info.epsCount = dbBook.epsCount
+        info.finished = dbBook.finished
+        info.pagesCount = dbBook.pages
+        info.categories = dbBook.categories
+        info.chineseTeam = dbBook.chineseTeam
+        info.likesCount = dbBook.likesCount
+        info.tags = dbBook.tags.split(",")
+        info.isLiked = False
+        info.isFavorite = False
+        info.updated_at = dbBook.updated_at
+        info.created_at = dbBook.created_at
+        info.categories = dbBook.categories.split(",")
+        info.thumb = {}
+        info.thumb["fileServer"] = dbBook.fileServer
+        info.thumb["path"] = dbBook.path
+        info.thumb["originalName"] = dbBook.originalName
+        info.totalLikes = dbBook.totalLikes
+        info.totalViews = dbBook.totalViews
+        self.books[info.id] = info
+        return
 
     def AddBookEpsInfoBack(self, backData):
         # 此处在线程中加载后续章节 TODO 章节太多时会导致太慢

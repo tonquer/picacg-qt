@@ -7,6 +7,7 @@ from src.qt.com.qtloading import QtLoading
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req
+from src.server.sql_server import SqlServer
 from src.util.status import Status
 from ui.qtepsinfo import Ui_EpsInfo
 
@@ -40,12 +41,19 @@ class QtEpsInfo(QtWidgets.QWidget, Ui_EpsInfo, QtTaskBase):
         self.bookId = bookId
         self.epsListWidget.clear()
         if bookId not in BookMgr().books:
-            self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookInfoBack)
+            self.OpenLocalBack()
         else:
             self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.OpenEpsInfoBack)
 
+    def OpenLocalBack(self):
+        self.AddSqlTask("book", self.bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack)
+
+    def SendLocalBack(self, books):
+        self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookInfoBack)
+
     def OpenBookInfoBack(self, msg):
-        if msg == Status.Ok:
+        info = BookMgr().books.get(self.bookId)
+        if info:
             self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.OpenEpsInfoBack)
         else:
             self.loadingForm.close()

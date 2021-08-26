@@ -40,7 +40,7 @@ class Ui_BookInfo(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.picture = QLabel(self.page)
         self.picture.setObjectName(u"picture")
-        self.picture.setMinimumSize(QSize(240, 320))
+        self.picture.setMinimumSize(QSize(300, 400))
 
         self.horizontalLayout.addWidget(self.picture)
 
@@ -215,16 +215,20 @@ class Ui_BookInfo(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_9)
 
-        self.horizontalLayout_14 = QHBoxLayout()
-        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
-        self.horizontalLayout_15 = QHBoxLayout()
-        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
+
+
+        self.gridLayout_3.addLayout(self.horizontalLayout, 0, 0, 1, 1)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.user_icon = HeadLabel(self.page)
         self.user_icon.setObjectName(u"user_icon")
         self.user_icon.setMinimumSize(QSize(50, 50))
         self.user_icon.setMaximumSize(QSize(50, 50))
 
-        self.horizontalLayout_15.addWidget(self.user_icon)
+        self.horizontalLayout_10.addWidget(self.user_icon)
 
         self.verticalLayout_5 = QVBoxLayout()
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
@@ -239,13 +243,7 @@ class Ui_BookInfo(object):
         self.verticalLayout_5.addWidget(self.updateTick)
 
 
-        self.horizontalLayout_15.addLayout(self.verticalLayout_5)
-
-
-        self.horizontalLayout_14.addLayout(self.horizontalLayout_15)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_14)
+        self.horizontalLayout_10.addLayout(self.verticalLayout_5)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
@@ -282,13 +280,10 @@ class Ui_BookInfo(object):
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_10.addLayout(self.horizontalLayout_2)
 
 
-        self.horizontalLayout.addLayout(self.verticalLayout_2)
-
-
-        self.gridLayout_3.addLayout(self.horizontalLayout, 0, 0, 1, 1)
+        self.gridLayout_3.addLayout(self.horizontalLayout_10, 1, 0, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout_3)
