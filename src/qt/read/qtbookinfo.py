@@ -200,7 +200,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         elif msg != Status.Ok:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             self.msgForm.ShowError(msg)
-            self.hide()
         return
 
     def LoadingPictureComplete(self, data, status):
