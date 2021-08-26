@@ -89,7 +89,8 @@ class BookMgr(Singleton):
         info.likesCount = dbBook.likesCount
         info.tags = dbBook.tags.split(",")
         info.isLiked = False
-        info.isFavorite = False
+        info.isFavourite = False
+        info.commentsCount = 0
         info.updated_at = dbBook.updated_at
         info.created_at = dbBook.created_at
         info.categories = dbBook.categories.split(",")
