@@ -4,9 +4,6 @@ from queue import Queue
 
 import requests
 import urllib3
-from requests import ConnectTimeout
-from requests.exceptions import ProxyError, RequestException
-from urllib3.exceptions import ConnectTimeoutError
 from urllib3.util.ssl_ import is_ipaddress
 
 import src.server.req as req
@@ -16,6 +13,30 @@ from src.util import ToolUtil, Singleton, Log
 from src.util.status import Status
 
 urllib3.disable_warnings()
+
+
+from urllib3.util import connection
+_orig_create_connection = connection.create_connection
+
+host_table = {}
+
+
+def _dns_resolver(host):
+    if host in host_table:
+        address = host_table[host]
+        Log.Info("自定义DNS 解析被调用, host:{}->{}".format(host, address))
+        return address
+    else:
+        return host
+
+
+def patched_create_connection(address, *args, **kwargs):
+    host, port = address
+    hostname = _dns_resolver(host)
+    return _orig_create_connection((hostname, port), *args, **kwargs)
+
+
+connection.create_connection = patched_create_connection
 
 
 def handler(request):
@@ -86,34 +107,56 @@ class Server(Singleton, threading.Thread):
                 Log.Error(es)
         pass
 
+    def UpdateDns(self, address, imageAddress):
+        self.imageServer = imageAddress
+        self.address = address
+        for domain in config.ApiDomain:
+            if is_ipaddress(address):
+                host_table[domain] = address
+            elif not address and domain in host_table:
+                host_table.pop(domain)
+
+        for domain in config.ImageDomain:
+            if is_ipaddress(imageAddress):
+                host_table[domain] = imageAddress
+            elif not imageAddress and domain in host_table:
+                host_table.pop(domain)
+        # 换一个，清空pool
+        self.session = requests.session()
+        return
+
     def __DealHeaders(self, request, token):
         if self.token:
             request.headers["authorization"] = self.token
         if token:
             request.headers["authorization"] = token
-
         host = ToolUtil.GetUrlHost(request.url)
-        if self.address and host in config.ApiDomain:
-            request.headers["Host"] = host
-            request.url = request.url.replace(host, self.address)
-            # TODO CloudFlare指定Ip目前不能用Https
-            request.url = request.url.replace("https://", "http://")
-
         if self.imageServer and host in config.ImageDomain:
-            if is_ipaddress(self.imageServer):
-                request.headers["Host"] = host
+            if not is_ipaddress(self.imageServer):
+                request.url = request.url.replace(host, self.imageServer)
 
-                # TODO CloudFlare指定Ip目前不能用Https
-                request.url = request.url.replace("https://", "http://")
-
-                # TODO 访问封面，301跳转后会失败，临时手动跳转
-                if "static/tobeimg/" in request.url:
-                    request.headers["Host"] = "img.tipatipa.xyz"
-                    request.url = request.url.replace("static/tobeimg/", "")
-            else:
-                request.headers["Host"] = self.imageServer
-
-            request.url = request.url.replace(host, self.imageServer)
+        # host = ToolUtil.GetUrlHost(request.url)
+        # if self.address and host in config.ApiDomain:
+        #     request.headers["Host"] = host
+        #     request.url = request.url.replace(host, self.address)
+        #     # TODO CloudFlare指定Ip目前不能用Https
+        #     request.url = request.url.replace("https://", "http://")
+        #
+        # if self.imageServer and host in config.ImageDomain:
+        #     if is_ipaddress(self.imageServer):
+        #         request.headers["Host"] = host
+        #
+        #         # TODO CloudFlare指定Ip目前不能用Https
+        #         request.url = request.url.replace("https://", "http://")
+        #
+        #         # TODO 访问封面，301跳转后会失败，临时手动跳转
+        #         if "static/tobeimg/" in request.url:
+        #             request.headers["Host"] = "img.tipatipa.xyz"
+        #             request.url = request.url.replace("static/tobeimg/", "")
+        #     else:
+        #         request.headers["Host"] = self.imageServer
+        #
+        #     request.url = request.url.replace(host, self.imageServer)
 
     def Send(self, request, token="", backParam="", isASync=True):
         self.__DealHeaders(request, token)
@@ -124,7 +167,7 @@ class Server(Singleton, threading.Thread):
 
     def _Send(self, task):
         try:
-            Log.Info("request-> backId:{} {}".format(task.bakParam, task.req))
+            Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
             if task.req.method.lower() == "post":
                 self.Post(task)
             elif task.req.method.lower() == "get":
@@ -139,7 +182,7 @@ class Server(Singleton, threading.Thread):
             Log.Warn(task.req.url + " " + es.__repr__())
             Log.Debug(es)
         finally:
-            Log.Info("response-> backId:{}, {}".format(task.bakParam, task.res))
+            Log.Info("response-> backId:{}, {}, {}".format(task.bakParam, task.req.__class__.__name__, task.res))
         try:
             self.handler.get(task.req.__class__)(task)
             if task.res.raw:
@@ -222,27 +265,14 @@ class Server(Singleton, threading.Thread):
         if task.res:
             task.res.close()
 
-    def TestSpeed(self, request, bakParams="", testAddress="", testImageServer=""):
-        bakAddress = self.address
-        self.address = testAddress
-        backImageServer = self.imageServer
-        self.imageServer = testImageServer
+    def TestSpeed(self, request, bakParams=""):
         self.__DealHeaders(request, "")
-        self.address = bakAddress
-        self.imageServer = backImageServer
-        self.address = bakAddress
         task = Task(request, bakParams)
         task.timeout = 2
         self._downloadQueue.put(task)
 
-    def TestSpeedPing(self, request, bakParams="", testAddress="", testImageServer=""):
-        bakAddress = self.address
-        self.address = testAddress
-        backImageServer = self.imageServer
-        self.imageServer = testImageServer
+    def TestSpeedPing(self, request, bakParams=""):
         self.__DealHeaders(request, "")
-        self.address = bakAddress
-        self.imageServer = backImageServer
         task = Task(request, bakParams)
         task.timeout = 2
         self._inQueue.put(task)

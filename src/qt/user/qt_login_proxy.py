@@ -67,21 +67,23 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         self.StartSpeedPing()
 
     def StartSpeedPing(self):
-        for v in self.speedTest:
-            address, imageProxy, isHttpProxy, i = v
-            httpProxy = self.httpLine.text()
-            if isHttpProxy and not httpProxy:
-                label = getattr(self, "label"+str(i))
-                label.setText("无代理")
-                self.speedPingNum += 1
-                continue
+        if len(self.speedTest) <= self.speedPingNum:
+            self.StartSpeedTest()
+            return
+        address, imageProxy, isHttpProxy, i = self.speedTest[self.speedPingNum]
+        httpProxy = self.httpLine.text()
+        if isHttpProxy and not httpProxy:
+            label = getattr(self, "label"+str(i))
+            label.setText("无代理")
+            self.speedPingNum += 1
 
-            request = req.SpeedTestPingReq()
-            if isHttpProxy:
-                request.proxy = {"http": httpProxy, "https": httpProxy}
-            else:
-                request.proxy = ""
-            self.AddHttpTask(lambda x: Server().TestSpeedPing(request, x, address, imageProxy), self.SpeedTestPingBack, i)
+        request = req.SpeedTestPingReq()
+        if isHttpProxy:
+            request.proxy = {"http": httpProxy, "https": httpProxy}
+        else:
+            request.proxy = ""
+        Server().UpdateDns(address, imageProxy)
+        self.AddHttpTask(lambda x: Server().TestSpeedPing(request, x), self.SpeedTestPingBack, i)
         return
 
     def SpeedTestPingBack(self, data, i):
@@ -91,12 +93,12 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         else:
             label.setText("<font color=#d71345>{}</font>".format("fail") + "/")
         self.speedPingNum += 1
-        if self.speedPingNum >= len(self.speedTest):
-            self.StartSpeedTest()
+        self.StartSpeedPing()
         return
 
     def StartSpeedTest(self):
         if len(self.speedTest) <= self.speedIndex:
+            self.UpdateServer()
             self.SetEnabled(True)
             return
 
@@ -110,13 +112,12 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
             return
 
         request = req.SpeedTestReq()
-        # token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDEyMjg3YzYxYWFlODJmZDJjMGQzNTUiLCJlbWFpbCI6InRvbnF1ZXIyIiwicm9sZSI6Im1lbWJlciIsIm5hbWUiOiJ0b25xdWVyMiIsInZlcnNpb24iOiIyLjIuMS4zLjMuNCIsImJ1aWxkVmVyc2lvbiI6IjQ1IiwicGxhdGZvcm0iOiJhbmRyb2lkIiwiaWF0IjoxNjE0MjQxODY1LCJleHAiOjE2MTQ4NDY2NjV9.ZUmRP319zREBHk3ax_dJh-qeUDFLmOg_RQBPAMWN8II"
-        testIp = address
         if isHttpProxy:
             request.proxy = {"http": httpProxy, "https": httpProxy}
         else:
             request.proxy = ""
-        self.AddHttpTask(lambda x: Server().TestSpeed(request, x, testIp, imageProxy), self.SpeedTestBack, i)
+        Server().UpdateDns(address, imageProxy)
+        self.AddHttpTask(lambda x: Server().TestSpeed(request, x), self.SpeedTestBack, i)
         return
 
     def SpeedTestBack(self, data, i):
@@ -142,17 +143,18 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
 
     def UpdateServer(self):
         if config.ProxySelectIndex == 1:
-            Server().imageServer = ""
-            Server().address = ""
+            imageServer = ""
+            address = ""
         elif config.ProxySelectIndex == 2:
-            Server().imageServer = config.ImageServer
-            Server().address = config.Address[0]
+            imageServer = config.ImageServer
+            address = config.Address[0]
         elif config.ProxySelectIndex == 3:
-            Server().imageServer = config.ImageServer
-            Server().address = config.Address[1]
+            imageServer = config.ImageServer
+            address = config.Address[1]
         else:
-            Server().imageServer = config.PreferCDNIP
-            Server().address = config.PreferCDNIP
+            imageServer = config.PreferCDNIP
+            address = config.PreferCDNIP
+        Server().UpdateDns(address, imageServer)
         Log.Info("update proxy, setId:{}, image server:{}, address:{}".format(config.ProxySelectIndex, Server().imageServer, Server().address))
 
     def SaveSetting(self):

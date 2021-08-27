@@ -27,6 +27,8 @@ class QtBubbleLabel(QWidget):
         layout.addWidget(self.label)
         self._desktop = QApplication.instance().desktop()
         self.animationGroup = QParallelAnimationGroup(self)
+        self.opacityAnimation = None
+        self.moveAnimation = None
 
     def setText(self, text):
         self.label.setText(text)
@@ -38,6 +40,8 @@ class QtBubbleLabel(QWidget):
         self.hide()
         self.animationGroup.stop()
         self.animationGroup.clear()
+        self.opacityAnimation = None
+        self.moveAnimation = None
         self.close()
 
     def show(self):
@@ -71,6 +75,8 @@ class QtBubbleLabel(QWidget):
         self.animationGroup.addAnimation(moveAnimation)
         self.animationGroup.finished.connect(self.close)  # 动画结束时关闭窗口
         self.animationGroup.start()
+        self.opacityAnimation = opacityAnimation
+        self.moveAnimation = moveAnimation
 
     def paintEvent(self, event):
         super(QtBubbleLabel, self).paintEvent(event)
