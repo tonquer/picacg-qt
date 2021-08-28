@@ -27,8 +27,10 @@ jobs:
   release:
     needs: [setup]
     runs-on: ubuntu-latest
+    outputs:
+      Up_Url: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - name: create-release
+      - name: create_release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -78,7 +80,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ needs.release.steps.create_release.outputs.upload_url }}
+        upload_url: ${{ needs.release.outputs.Up_Url }}
         asset_path: ${{ env.PACKAGENAME }}.tar.gz
         asset_name: ${{ env.PACKAGENAME }}.tar.gz
         asset_content_type: application/gzip
@@ -137,7 +139,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ needs.release.steps.create_release.outputs.upload_url }}
+        upload_url: ${{ needs.release.outputs.Up_Url }}
         asset_path: ${{ env.PACKAGENAME }}.dmg
         asset_name: ${{ env.PACKAGENAME }}.dmg
         asset_content_type: application/gzip
@@ -188,7 +190,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ needs.release.steps.create_release.outputs.upload_url }}
+        upload_url: ${{ needs.release.outputs.Up_Url }}
         asset_path: ${{ env.PACKAGENAME }}.zip
         asset_name: ${{ env.PACKAGENAME }}.zip
         asset_content_type: application/zip
