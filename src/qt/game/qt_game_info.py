@@ -26,7 +26,7 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         QtTaskBase.__init__(self)
         self.setupUi(self)
         self.loadingForm = QtLoading(self)
-        self.commentWidget.InitReq(req.GetGameCommentsReq, req.SendGameCommentsReq, req.GameCommentsLikeReq)
+        self.commentWidget.InitReq(req.GetGameCommentsReq, req.SendGameCommentsReq, req.GameCommentsLikeReq, req.CommentsReportReq)
         self.tabWidget.setCurrentIndex(0)
         self.gameId = ""
         self.url = ""

@@ -47,8 +47,14 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         self.linkLabel.setVisible(False)
         self.linkLabel.installEventFilter(self)
         self.starButton.setCursor(Qt.PointingHandCursor)
-        self.nameLabel.setCursor(Qt.PointingHandCursor)
+        # self.nameLabel.setCursor(Qt.PointingHandCursor)
         self.commentButton.setCursor(Qt.PointingHandCursor)
+
+        q = QPixmap()
+        q.loadFromData(DataMgr.GetData("icon_comment_reply"))
+        self.killButton.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        self.killButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.killButton.setCursor(Qt.PointingHandCursor)
 
     def SetLike(self, isLike=True):
         p = QPixmap()
@@ -96,6 +102,14 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         try:
             if self.parent().parent().LikeBack:
                 self.parent().parent().LikeBack(self.id)
+        except Exception as es:
+            Log.Error(es)
+        return
+
+    def KillComment(self):
+        try:
+            if self.parent().parent().KillBack:
+                self.parent().parent().KillBack(self.id)
         except Exception as es:
             Log.Error(es)
         return

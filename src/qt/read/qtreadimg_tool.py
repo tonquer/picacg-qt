@@ -104,7 +104,18 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.horizontalLayout_7.addWidget(self.slider)
         self.SetWaifu2xCancle()
         self.scaleBox.installEventFilter(self)
+        self.radioButton.installEventFilter(self)
+        self.radioButton_2.installEventFilter(self)
+        self.radioButton_3.installEventFilter(self)
+        self.radioButton_4.installEventFilter(self)
         self.zoomSlider.setMaximum(500)
+        self.buttonGroup.buttonClicked.connect(self.SwitchPicture)
+        self.buttonGroup.setId(self.radioButton, 1)
+        self.buttonGroup.setId(self.radioButton_2, 2)
+        self.buttonGroup.setId(self.radioButton_3, 3)
+        self.buttonGroup.setId(self.radioButton_4, 4)
+        # self.buttonGroup.setId(self.radioButton_5, 5)
+        # self.buttonGroup.setId(self.radioButton_6, 6)
 
     @property
     def imgFrame(self):
@@ -131,12 +142,12 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         return self.readImg.maxPic
 
     @property
-    def isStripModel(self):
-        return self.readImg.isStripModel
+    def stripModel(self):
+        return self.readImg.stripModel
 
-    @isStripModel.setter
-    def isStripModel(self, value):
-        self.readImg.isStripModel = value
+    @stripModel.setter
+    def stripModel(self, value):
+        self.readImg.stripModel = value
 
     def Show(self, size):
         self.show()
@@ -153,6 +164,13 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.scaleCnt = value
 
     def NextPage(self):
+        from src.qt.read.qtreadimg import ReadMode
+        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]:
+            self._LastPage()
+        else:
+            self._NextPage()
+
+    def _NextPage(self):
         self.graphicsGroup.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
@@ -166,7 +184,14 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             QtBubbleLabel.ShowMsgEx(self.readImg, "已经最后一页")
             return
         t = CTime()
-        self.curIndex += 1
+
+        from src.qt.read.qtreadimg import ReadMode
+        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+            self.curIndex += 2
+            self.curIndex = min(self.curIndex, self.maxPic-1)
+        else:
+            self.curIndex += 1
+
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
@@ -175,6 +200,13 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         return
 
     def LastPage(self):
+        from src.qt.read.qtreadimg import ReadMode
+        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]:
+            self._NextPage()
+        else:
+            self._LastPage()
+
+    def _LastPage(self):
         self.graphicsGroup.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
@@ -187,7 +219,14 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
                 return
             QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一页")
             return
-        self.curIndex -= 1
+
+        from src.qt.read.qtreadimg import ReadMode
+        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+            self.curIndex -= 2
+            self.curIndex = max(self.curIndex, 0)
+        else:
+            self.curIndex -= 1
+
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
@@ -195,18 +234,28 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         return
 
     def SwitchPicture(self):
-        if self.radioButton.isChecked():
-            self.isStripModel = False
+        from src.qt.read.qtreadimg import ReadMode
+        self.graphicsGroup.setPos(0, 0)
+
+        self.stripModel = ReadMode(self.buttonGroup.checkedId())
+        if self.stripModel == ReadMode.LeftRight:
             self.imgFrame.SetPixIem(1, QPixmap())
             self.imgFrame.SetPixIem(2, QPixmap())
             self.zoomSlider.setValue(100)
             self.scaleCnt = 0
-        else:
-            self.isStripModel = True
+        elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+            self.zoomSlider.setValue(100)
+            self.scaleCnt = 0
+            self.imgFrame.SetPixIem(0, QPixmap())
+            self.imgFrame.SetPixIem(1, QPixmap())
+            self.imgFrame.SetPixIem(2, QPixmap())
+            self.readImg.CheckLoadPicture()
+            self.readImg.ShowImg()
             self.readImg.ShowOtherPage()
+        else:
             self.zoomSlider.setValue(120)
             self.scaleCnt = 2
-        self.graphicsGroup.setPos(0, 0)
+            self.readImg.ShowOtherPage()
         self.imgFrame.ScalePicture()
 
     def ReturnPage(self):
@@ -217,12 +266,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         QtOwner().owner.bookInfoForm.LoadHistory()
         self.readImg.Clear()
         return
-
-    def eventFilter(self, obj, ev):
-        if ev.type() == QEvent.KeyPress:
-            return True
-        else:
-            return super(self.__class__, self).eventFilter(obj, ev)
 
     def SetData(self, pSize=None, dataLen=0, state="", waifuSize=None, waifuDataLen=0, waifuState="", waifuTick=0, isInit=False):
         self.UpdateSlider()
@@ -406,11 +449,10 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.readImg.zoom(value//10-10)
 
     def eventFilter(self, obj, ev):
-        if obj == self.scaleBox:
-            if ev.type() == QEvent.KeyRelease:
-                return True
-            elif ev.type() == QEvent.KeyPress:
-                return True
+        if ev.type() == QEvent.KeyRelease:
+            return True
+        elif ev.type() == QEvent.KeyPress:
+            return True
         return False
 
 

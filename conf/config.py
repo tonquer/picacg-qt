@@ -35,7 +35,7 @@ UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/tonquer/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/tonquer/picacg-database/main/data/"
-UpdateVersion = "v1.2.2"
+UpdateVersion = "v1.2.3"
 
 # waifu2x
 CanWaifu2x = True
@@ -46,6 +46,8 @@ Waifu2xThread = 2
 Format = "jpg"
 Waifu2xPath = "waifu2x"
 IsOpenWaifu = 0
+
+ThemeText = ""  # 主题
 
 LogIndex = 0   # Warn Info Debug
 IsTips = 1
@@ -65,6 +67,7 @@ LookScale = 2.0
 ProxyUrl = "https://github.com/tonquer/picacg-windows/discussions/48"
 
 ProxySelectIndex = 1
+IsUseHttps = 1   # 使用Https
 
 Address = ['104.20.180.50', '104.20.181.50']  # 分类2，3 Ip列表
 ImageServer = 'storage.wikawika.xyz'          # 分流2，3 使用的图片服务器
@@ -78,7 +81,8 @@ ImageDomain = [
     "storage1.picacomic.com",
     "img.tipatipa.xyz",
     "img.picacomic.com",
-    "pica-pica.wikawika.xyz"
+    "pica-pica.wikawika.xyz",
+    "www.picacomic.com"
 ]
 
 # https://www.cloudflare.com/zh-cn/ips/

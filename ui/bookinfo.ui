@@ -358,6 +358,19 @@ QListWidget::item {
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
                   <widget class="QToolButton" name="starButton">
                    <property name="minimumSize">
                     <size>
@@ -537,8 +550,8 @@ QListWidget::item {
    <slot>StartRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>568</x>
-     <y>474</y>
+     <x>519</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>313</x>
@@ -553,8 +566,8 @@ QListWidget::item {
    <slot>AddBookLike()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>366</x>
-     <y>460</y>
+     <x>346</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>821</x>
@@ -569,8 +582,8 @@ QListWidget::item {
    <slot>AddFavority()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>432</x>
-     <y>454</y>
+     <x>392</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>781</x>
@@ -585,12 +598,28 @@ QListWidget::item {
    <slot>AddDownload()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>463</x>
-     <y>449</y>
+     <x>438</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>788</x>
      <y>413</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tabWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>BookInfo</receiver>
+   <slot>ChangeTab()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>502</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>967</x>
+     <y>487</y>
     </hint>
    </hints>
   </connection>
@@ -600,5 +629,6 @@ QListWidget::item {
   <slot>AddFavority()</slot>
   <slot>StartRead()</slot>
   <slot>AddBookLike()</slot>
+  <slot>ChangeTab()</slot>
  </slots>
 </ui>

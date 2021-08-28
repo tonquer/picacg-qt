@@ -30,6 +30,7 @@ class DbBook(object):
         self.path = ""            # 路径
         self.fileServer = ""             # 路径
         self.originalName = ""    # 封面名
+        self.creator = ""          # 上传者
         self.totalLikes = 0        #
         self.totalViews = 0        #
 
@@ -128,7 +129,7 @@ class SqlServer(Singleton):
             info.updated_at = data[13]
             info.path = data[14]
             info.fileServer = data[15]
-            info.originalName = data[16]
+            info.creator = data[16]
             info.totalLikes = data[17]
             info.totalViews = data[18]
             books.append(info)
@@ -159,6 +160,11 @@ class SqlServer(Singleton):
                 nums = data[1]
                 time = data[2]
                 version = data[3]
+
+        cur.execute("select count(*) from book")
+        for data in cur.fetchall():
+            nums = data[0]
+
         data = pickle.dumps((nums, time, version))
         if backId:
             from src.qt.util.qttask import QtTask
@@ -178,7 +184,8 @@ class SqlServer(Singleton):
 
     def _SelectCacheBook(self, conn, bookId, backId):
         cur = conn.cursor()
-        cur.execute("select * from book where id ='{}'".format(bookId))
+        cur.execute("select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book where id ='{}'".format(bookId))
         allFavoriteIds = []
         for data in cur.fetchall():
             info = DbBook()
@@ -198,7 +205,7 @@ class SqlServer(Singleton):
             info.updated_at = data[13]
             info.path = data[14]
             info.fileServer = data[15]
-            info.originalName = data[16]
+            info.creator = data[16]
             info.totalLikes = data[17]
             info.totalViews = data[18]
             from src.index.book import BookMgr
@@ -223,12 +230,12 @@ class SqlServer(Singleton):
                 if not book:
                     continue
                 sql = "replace INTO book(id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                      "created_at, updated_at, path, fileServer, originalName, totalLikes, totalViews) " \
+                      "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews) " \
                       "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9}, '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', {17}, {18}); " \
                     .format(book.id, book.title, book.title2, book.author, book.chineseTeam, book.description,
                             book.epsCount, book.pages, int(book.finished), book.likesCount,
                             book.categories, book.tags, book.created_at, book.updated_at, book.path, book.fileServer,
-                            book.originalName, book.totalLikes, book.totalViews)
+                            book.creator, book.totalLikes, book.totalViews)
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
             except Exception as ex:
@@ -255,7 +262,8 @@ class SqlServer(Singleton):
     @staticmethod
     def SearchFavorite(page, sortKey=0, sortId=0):
         from src.user.user import User
-        sql = "select book.* from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
+        sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
             User().userId)
         if sortKey == 0:
             sql += "ORDER BY book.updated_at "
@@ -281,36 +289,37 @@ class SqlServer(Singleton):
         return sql
 
     @staticmethod
-    def Search(wordList, isTitle, isAutor, isDes, isTag, isCategory, page, sortKey=0, sortId=0):
+    def Search(wordList, isTitle, isAutor, isDes, isTag, isCategory, isCreator, page, sortKey=0, sortId=0):
         data = ""
         wordList2 = wordList.split("|")
         for words in wordList2:
             data2 = ""
             for word in words.split("&"):
-                word = Converter('zh-hans').convert(word)
-                if not word:
-                    continue
                 data3 = ""
                 if isTitle:
-                    data3 += " title2 like '%{}%' or ".format(word)
+                    data3 += " title2 like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
                 if isAutor:
-                    data3 += " author like '%{}%' or ".format(word)
-                    data3 += " chineseTeam like '%{}%' or ".format(word)
+                    data3 += " author like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
+                    data3 += " chineseTeam like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
                 if isDes:
-                    data3 += " description like '%{}%' or ".format(word)
+                    data3 += " description like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
                 if isTag:
-                    data3 += " tags like '%{}%' or ".format(word)
+                    data3 += " tags like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
                 if isCategory:
-                    data3 += " categories like '%{}%' or ".format(word)
+                    data3 += " categories like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
+                if isCreator:
+                    data3 += " creator = '{}' or".format(word)
                 data3 = data3.strip("or ")
                 data2 += "({}) and ".format(data3)
             data2 = data2.strip("and ")
             if data2:
                 data += " or ({})".format(data2)
         if data:
-            sql = "SELECT * FROM book WHERE 0 {}".format(data)
+            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 0 {}".format(data)
         else:
-            sql = "SELECT * FROM book WHERE 1 "
+            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 1 "
         if sortKey == 0:
             sql += "ORDER BY updated_at "
         elif sortKey == 1:

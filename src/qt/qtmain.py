@@ -4,7 +4,7 @@ import weakref
 
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
 from PySide2.QtCore import QTimer, QUrl
-from PySide2.QtGui import QDesktopServices
+from PySide2.QtGui import QDesktopServices, Qt
 from PySide2.QtWidgets import QMessageBox, QDesktopWidget
 
 from conf import config
@@ -78,6 +78,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.setCursor(QCursor(pix))
         ToolUtil.SetIcon(self)
 
+        self.qtReadImg = QtReadImg()
         self.settingForm = QtSetting(self)
         self.settingForm.LoadSetting()
 
@@ -102,7 +103,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.historyForm = QtHistory()
 
-        self.qtReadImg = QtReadImg()
 
         self.userForm = QtUser()
         self.bookInfoForm = QtBookInfo()
@@ -271,6 +271,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             Log.Error(es)
 
     def InitUpdateDatabase(self):
+        self.searchForm.SetUpdateText("正在更新", "#7fb80e", False)
         self.qtTask.AddHttpTask(req.CheckUpdateDatabaseReq(), self.InitUpdateDatabaseBack)
 
     def InitUpdateDatabaseBack(self, data):
@@ -280,10 +281,12 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         except Exception as es:
             Log.Error(es)
+            self.searchForm.SetUpdateText("无法连接 raw.githubusercontent.com", "#d71345", True)
 
     def CheckLoadNextDayData(self, newTick):
         if newTick <= self.curUpdateTick:
             self.searchForm.UpdateDbInfo()
+            self.searchForm.SetUpdateText("已更新", "#7fb80e", True)
             return
         day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
         if day <= 0:
@@ -296,6 +299,9 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def DownloadDataBack(self, data, v):
         updateTick, newTick = v
         try:
+            if not data:
+                self.searchForm.SetUpdateText("无法连接 raw.githubusercontent.com", "#d71345", True)
+                return
             Log.Info("db: check update, {}->{}->{}".format(self.curUpdateTick, updateTick, newTick))
             if len(data) <= 20:
                 pass

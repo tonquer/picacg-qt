@@ -247,6 +247,10 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
+
         self.starButton = QToolButton(self.page)
         self.starButton.setObjectName(u"starButton")
         self.starButton.setMinimumSize(QSize(40, 40))
@@ -345,6 +349,7 @@ class Ui_BookInfo(object):
         self.starButton.clicked.connect(BookInfo.AddBookLike)
         self.favoriteButton.clicked.connect(BookInfo.AddFavority)
         self.downloadButton.clicked.connect(BookInfo.AddDownload)
+        self.tabWidget.currentChanged.connect(BookInfo.ChangeTab)
 
         self.tabWidget.setCurrentIndex(0)
 

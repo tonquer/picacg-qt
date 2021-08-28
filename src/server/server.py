@@ -24,7 +24,7 @@ host_table = {}
 def _dns_resolver(host):
     if host in host_table:
         address = host_table[host]
-        Log.Info("自定义DNS 解析被调用, host:{}->{}".format(host, address))
+        Log.Info("dns parse, host:{}->{}".format(host, address))
         return address
     else:
         return host
@@ -134,6 +134,9 @@ class Server(Singleton, threading.Thread):
         if self.imageServer and host in config.ImageDomain:
             if not is_ipaddress(self.imageServer):
                 request.url = request.url.replace(host, self.imageServer)
+
+        if not config.IsUseHttps:
+            request.url = request.url.replace("https://", "http://")
 
         # host = ToolUtil.GetUrlHost(request.url)
         # if self.address and host in config.ApiDomain:

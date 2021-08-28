@@ -3,7 +3,7 @@ import weakref
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import QEvent
-from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton
+from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
 
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtloading import QtLoading
@@ -22,12 +22,13 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
         self.reqSendComment = None
         self.reqGetComment = None
         self.reqLikeComment = None
+        self.reqKillComment = None
         self.loadingForm2 = QtLoading(self)
         self.bookId = ""
-        self.listWidget.InitUser(self.LoadNextPage, self.OpenCommentInfo, self.AddLike)
+        self.listWidget.InitUser(self.LoadNextPage, self.OpenCommentInfo, self.AddLike, self.KillComment)
 
         self.childrenListWidget = QtBookList(None)
-        self.childrenListWidget.InitUser(self.LoadChildrenNextPage, likeBack=self.AddLike)
+        self.childrenListWidget.InitUser(self.LoadChildrenNextPage, likeBack=self.AddLike, killBack=self.KillComment)
         self.childrenWidget = QtWidgets.QWidget()
         layout = QHBoxLayout(self.childrenWidget)
 
@@ -46,10 +47,11 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
         layout3.addWidget(self.childrenListWidget)
         layout.addLayout(layout3)
 
-    def InitReq(self, reqGetComment, reqSendComment, reqLikeComment):
+    def InitReq(self, reqGetComment, reqSendComment, reqLikeComment, reqKillComment):
         self.reqSendComment = reqSendComment
         self.reqGetComment = reqGetComment
         self.reqLikeComment = reqLikeComment
+        self.reqKillComment = reqKillComment
 
     def SendCommentChildren(self):
         data = self.commentLine2.text()
@@ -181,6 +183,49 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
             widget.SetLike(isLike)
             widget.update()
         self.update()
+
+    def KillComment(self, cfgId):
+        for index in range(self.listWidget.count()):
+            item = self.listWidget.item(index)
+            if not item:
+                continue
+            widget = self.listWidget.itemWidget(item)
+            if not widget:
+                continue
+            if widget.id != cfgId:
+                continue
+            r = QMessageBox.information(self, "举报", "是否举报{} ,\n评论：\n{}\n".format(widget.nameLabel.text(),
+                                                                                        widget.commentLabel.text()),
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if r == QMessageBox.Yes:
+                self.loadingForm2.show()
+                self.AddHttpTask(self.reqKillComment(widget.id), self.KillCommentBack, backParam=cfgId)
+
+        for index in range(self.childrenListWidget.count()):
+            item = self.childrenListWidget.item(index)
+            if not item:
+                continue
+            widget = self.childrenListWidget.itemWidget(item)
+            if not widget:
+                continue
+            if widget.id != cfgId:
+                continue
+            r = QMessageBox.information(self, "举报", "是否举报{} ,\n评论：\n{}\n".format(widget.nameLabel.text(),
+                                                                                        widget.commentLabel.text()),
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if r == QMessageBox.Yes:
+                self.loadingForm2.show()
+                self.AddHttpTask(self.reqKillComment(widget.id), self.KillCommentBack, backParam=cfgId)
+
+    def KillCommentBack(self, data, backId):
+        self.loadingForm2.close()
+        try:
+            data = json.loads(data)
+            if data.get("code") != 200:
+                return
+            QtBubbleLabel().ShowMsgEx(self.parent(), data.get('data').get("message"))
+        except Exception as es:
+            Log.Error(es)
 
     def LoadChildrenNextPage(self):
         index = self.childrenListWidget.parentId

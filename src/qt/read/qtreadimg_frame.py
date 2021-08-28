@@ -6,6 +6,7 @@ from PySide2.QtGui import QPainter, QColor, QPixmap, QFont, QFontMetrics
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame, QGraphicsItemGroup, QGraphicsItem, \
     QAbstractSlider, QAbstractItemView, QScroller
 
+from conf import config
 from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
 from src.qt.com.qt_git_label import QtGifLabel
@@ -58,6 +59,9 @@ class QtImgFrame(QFrame):
         self.graphicsScene.addItem(self.graphicsGroup)
 
         self.graphicsView.setMinimumSize(10, 10)
+
+        self.graphicsView.update()
+        self.graphicsScene.update()
 
         self.graphicsScene.installEventFilter(self)
         # self.graphicsView.installEventFilter(self)
@@ -189,8 +193,13 @@ class QtImgFrame(QFrame):
         width1 = self.graphicsItem1.pixmap().size().width()
         width2 = self.graphicsItem2.pixmap().size().width()
         width3 = self.graphicsItem3.pixmap().size().width()
-        self.graphicsView.verticalScrollBar().setMinimum(-100)
-        self.graphicsView.verticalScrollBar().setMaximum(width1 + width2 + 100)
+        from src.qt.read.qtreadimg import ReadMode
+        if self.qtTool.stripModel == ReadMode.UpDown:
+            self.graphicsView.verticalScrollBar().setMinimum(-100)
+            self.graphicsView.verticalScrollBar().setMaximum(width1 + width2 + 100)
+        else:
+            self.graphicsView.verticalScrollBar().setMinimum(0)
+            self.graphicsView.verticalScrollBar().setMaximum(0)
 
     def MakePixItem(self, index):
         text = str(index+1)
@@ -203,47 +212,119 @@ class QtImgFrame(QFrame):
         p.fill(Qt.transparent)
         painter = QPainter(p)
         painter.setFont(font)
-        painter.setPen(Qt.white)
+        if config.ThemeText == "flatblack":
+            painter.setPen(Qt.white)
+        else:
+            painter.setPen(Qt.black)
         painter.drawText(rect, text)
         return p
 
     def SetPixIem(self, index, data):
-        if not self.qtTool.isStripModel and index > 0:
-            self.pixMapList[index] = QPixmap()
-            self.graphicsItemList[index].setPixmap(None)
+
+        from src.qt.read.qtreadimg import ReadMode
+        if self.qtTool.stripModel == ReadMode.LeftRight:
+            if index > 0:
+                self.pixMapList[index] = QPixmap()
+                self.graphicsItemList[index].setPixmap(None)
+            else:
+                if not data and self.readImg.curIndex + index < self.readImg.maxPic:
+                    data = self.MakePixItem(self.readImg.curIndex + index)
+                    self.pixMapList[index] = data
+                else:
+                    self.pixMapList[index] = data
+                # scale = (1 + self.scaleCnt * 0.1)
+                # self.graphicsItemList[index].setPixmap(
+                #     data.scaled(min(self.width(), self.width() * scale), self.height() * scale, Qt.KeepAspectRatio,
+                #                 Qt.SmoothTransformation))
+                # width1 = self.graphicsItem1.pixmap().size().width()
+                # height1 = self.graphicsItem1.pixmap().size().width()
+                # self.graphicsItem1.setPos((self.width() - width1) / 2, max((self.height() - height1) // 2, 0))
+
+        elif self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+            if not data and self.readImg.curIndex+index < self.readImg.maxPic:
+                data = self.MakePixItem(self.readImg.curIndex+index)
+                self.pixMapList[index] = data
+            else:
+                self.pixMapList[index] = data
+            # scale = (1 + self.scaleCnt * 0.1)
+            # self.graphicsItemList[index].setPixmap(data.scaled(min(self.width()//2, self.width()//2*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            # width1 = self.graphicsItem1.pixmap().size().width()
+            # height1 = self.graphicsItem1.pixmap().size().width()
+            # height2 = self.graphicsItem2.pixmap().size().width()
+            # self.graphicsItem1.setPos((self.width()//2 - width1), max((self.height() - height1) // 2, 0))
+            # self.graphicsItem2.setPos((self.width()//2), max((self.height() - height2) // 2, 0))
         else:
             if not data and self.readImg.curIndex+index < self.readImg.maxPic:
                 data = self.MakePixItem(self.readImg.curIndex+index)
                 self.pixMapList[index] = data
             else:
-
                 self.pixMapList[index] = data
+            # scale = (1 + self.scaleCnt * 0.1)
+            # self.graphicsItemList[index].setPixmap(data.scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            # height1 = self.graphicsItem1.pixmap().size().height()
+            # width1 = self.graphicsItem1.pixmap().size().width()
+            # width2 = self.graphicsItem2.pixmap().size().width()
+            # width3 = self.graphicsItem3.pixmap().size().width()
+            # height2 = self.graphicsItem2.pixmap().size().height()
+            # self.graphicsItem1.setPos((self.width() - width1) / 2, 0)
+            # self.graphicsItem2.setPos((self.width() - width2) / 2, 0 + height1)
+            # self.graphicsItem3.setPos((self.width() - width3) / 2, 0 + height1 + height2)
+        self.ScaleGraphicsItem()
+
+    def ScaleGraphicsItem(self):
+
+
+        # print(self.width()-width1, height1, self.pixMapList[0].height(), self.graphicsItem1.pixmap().width(), self.pixMapList[0].width())
+        from src.qt.read.qtreadimg import ReadMode
+        if self.qtTool.stripModel == ReadMode.LeftRight:
             scale = (1 + self.scaleCnt * 0.1)
-            self.graphicsItemList[index].setPixmap(data.scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.graphicsItem1.setPixmap(
+                self.pixMapList[0].scaled(min(self.width(), self.width() * scale), self.height() * scale,
+                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
             height1 = self.graphicsItem1.pixmap().size().height()
             width1 = self.graphicsItem1.pixmap().size().width()
             width2 = self.graphicsItem2.pixmap().size().width()
             width3 = self.graphicsItem3.pixmap().size().width()
             height2 = self.graphicsItem2.pixmap().size().height()
-            self.graphicsItem1.setPos((self.width() - width1) / 2, 0)
-            self.graphicsItem2.setPos((self.width() - width2) / 2, 0 + height1)
-            self.graphicsItem3.setPos((self.width() - width3) / 2, 0 + height1 + height2)
-        # self.ScaleGraphicsItem()
-
-    def ScaleGraphicsItem(self):
-        scale = (1+self.scaleCnt*0.1)
-        self.graphicsItem1.setPixmap(self.pixMapList[0].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.graphicsItem2.setPixmap(self.pixMapList[1].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.graphicsItem3.setPixmap(self.pixMapList[2].scaled(min(self.width(), self.width()*scale), self.height()*scale, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        height1 = self.graphicsItem1.pixmap().size().height()
-        width1 = self.graphicsItem1.pixmap().size().width()
-        width2 = self.graphicsItem2.pixmap().size().width()
-        width3 = self.graphicsItem3.pixmap().size().width()
-        height2 = self.graphicsItem2.pixmap().size().height()
-        # print(self.width()-width1, height1, self.pixMapList[0].height(), self.graphicsItem1.pixmap().width(), self.pixMapList[0].width())
-        self.graphicsItem1.setPos((self.width()-width1)/2, 0)
-        self.graphicsItem2.setPos((self.width()-width2)/2, 0+height1)
-        self.graphicsItem3.setPos((self.width()-width3)/2, 0+height1 + height2)
+            self.graphicsItem1.setPos((self.width()-width1)/2, max((self.height() - height1) // 2, 0))
+        elif self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+            scale = (1 + self.scaleCnt * 0.1)
+            self.graphicsItem1.setPixmap(
+                self.pixMapList[0].scaled(min(self.width()//2, self.width()//2*scale), self.height()*scale,
+                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.graphicsItem2.setPixmap(
+                self.pixMapList[1].scaled(min(self.width()//2, self.width()//2*scale), self.height()*scale,
+                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            height1 = self.graphicsItem1.pixmap().size().height()
+            width1 = self.graphicsItem1.pixmap().size().width()
+            width2 = self.graphicsItem2.pixmap().size().width()
+            width3 = self.graphicsItem3.pixmap().size().width()
+            height2 = self.graphicsItem2.pixmap().size().height()
+            if self.qtTool.stripModel == ReadMode.LeftRightDouble:
+                self.graphicsItem1.setPos((self.width()//2 - width1), max((self.height() - height1) // 2, 0))
+                self.graphicsItem2.setPos(self.width()//2, max((self.height() - height2) // 2, 0))
+            else:
+                self.graphicsItem2.setPos((self.width()//2 - width1), max((self.height() - height1) // 2, 0))
+                self.graphicsItem1.setPos(self.width()//2, max((self.height() - height2) // 2, 0))
+        else:
+            scale = (1 + self.scaleCnt * 0.1)
+            self.graphicsItem1.setPixmap(
+                self.pixMapList[0].scaled(min(self.width(), self.width() * scale), self.height() * scale,
+                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.graphicsItem2.setPixmap(
+                self.pixMapList[1].scaled(min(self.width(), self.width() * scale), self.height() * scale,
+                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.graphicsItem3.setPixmap(
+                self.pixMapList[2].scaled(min(self.width(), self.width() * scale), self.height() * scale,
+                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            height1 = self.graphicsItem1.pixmap().size().height()
+            width1 = self.graphicsItem1.pixmap().size().width()
+            width2 = self.graphicsItem2.pixmap().size().width()
+            width3 = self.graphicsItem3.pixmap().size().width()
+            height2 = self.graphicsItem2.pixmap().size().height()
+            self.graphicsItem1.setPos((self.width()-width1)/2, 0)
+            self.graphicsItem2.setPos((self.width()-width2)/2, 0+height1)
+            self.graphicsItem3.setPos((self.width()-width3)/2, 0+height1 + height2)
 
     def UpdateProcessBar(self, info):
         if info:
@@ -274,8 +355,10 @@ class QtImgFrame(QFrame):
         return
 
     def UpdatePos(self, value):
+
+        from src.qt.read.qtreadimg import ReadMode
         # scale = (1+self.scaleCnt*0.1)
-        if not self.qtTool.isStripModel:
+        if self.qtTool.stripModel != ReadMode.UpDown:
             return
 
         if value >= 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
@@ -300,7 +383,11 @@ class QtImgFrame(QFrame):
         elif value > 0 and self.graphicsItem1.pixmap().size().height() > 0 and self.graphicsView.verticalScrollBar().value() > height:
             if self.readImg.curIndex >= self.readImg.maxPic - 1:
                 return
-            self.readImg.curIndex += 1
+            if self.qtTool.stripModel == ReadMode.RightLeftDouble:
+                self.readImg.curIndex += 2
+                self.readImg.curIndex = min(self.readImg.curIndex, self.readImg.maxPic)
+            else:
+                self.readImg.curIndex += 1
             subValue = self.graphicsView.verticalScrollBar().value() -height
             self.readImg.ShowImg()
             self.readImg.ShowOtherPage()

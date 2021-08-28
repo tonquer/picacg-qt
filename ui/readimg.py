@@ -17,9 +17,9 @@ class Ui_ReadImg(object):
     def setupUi(self, ReadImg):
         if not ReadImg.objectName():
             ReadImg.setObjectName(u"ReadImg")
-        ReadImg.resize(299, 705)
+        ReadImg.resize(326, 705)
         ReadImg.setAutoFillBackground(False)
-        ReadImg.setStyleSheet(u"")
+        ReadImg.setStyleSheet(u"#ReadImg{background-color:white;}")
         self.gridLayout_2 = QGridLayout(ReadImg)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_2.setContentsMargins(4, 4, 4, 4)
@@ -241,6 +241,13 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.line_2)
 
+        self.label_5 = QLabel(ReadImg)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setStyleSheet(u"color: #ee2a24")
+        self.label_5.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_5)
+
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.radioButton = QRadioButton(ReadImg)
@@ -255,12 +262,29 @@ class Ui_ReadImg(object):
         self.radioButton_2 = QRadioButton(ReadImg)
         self.buttonGroup.addButton(self.radioButton_2)
         self.radioButton_2.setObjectName(u"radioButton_2")
-        self.radioButton_2.setChecked(True)
 
         self.horizontalLayout_4.addWidget(self.radioButton_2)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout_12 = QHBoxLayout()
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.radioButton_3 = QRadioButton(ReadImg)
+        self.buttonGroup.addButton(self.radioButton_3)
+        self.radioButton_3.setObjectName(u"radioButton_3")
+        self.radioButton_3.setChecked(True)
+
+        self.horizontalLayout_12.addWidget(self.radioButton_3)
+
+        self.radioButton_4 = QRadioButton(ReadImg)
+        self.buttonGroup.addButton(self.radioButton_4)
+        self.radioButton_4.setObjectName(u"radioButton_4")
+
+        self.horizontalLayout_12.addWidget(self.radioButton_4)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_12)
 
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
@@ -282,6 +306,13 @@ class Ui_ReadImg(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_10)
+
+        self.line_3 = QFrame(ReadImg)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_3)
 
         self.copyButton = QPushButton(ReadImg)
         self.copyButton.setObjectName(u"copyButton")
@@ -376,8 +407,6 @@ class Ui_ReadImg(object):
         self.retranslateUi(ReadImg)
         self.pushButton_5.clicked.connect(ReadImg.OpenNextEps)
         self.lastPage.clicked.connect(ReadImg.LastPage)
-        self.radioButton.clicked.connect(ReadImg.SwitchPicture)
-        self.radioButton_2.clicked.connect(ReadImg.SwitchPicture)
         self.copyButton.clicked.connect(ReadImg.CopyPicture)
         self.nextPage.clicked.connect(ReadImg.NextPage)
         self.pushButton_4.clicked.connect(ReadImg.OpenLastEps)
@@ -430,8 +459,11 @@ class Ui_ReadImg(object):
         self.waifu2xStatus.setText("")
         self.waifu2xSave.setText(QCoreApplication.translate("ReadImg", u"\u4fee\u6539", None))
         self.waifu2xCancle.setText(QCoreApplication.translate("ReadImg", u"\u4fdd\u5b58", None))
-        self.radioButton.setText(QCoreApplication.translate("ReadImg", u"\u5de6\u53f3\u7ffb\u9875", None))
-        self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u4e0a\u4e0b\u7ffb\u9875", None))
+        self.label_5.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u6a21\u5f0f", None))
+        self.radioButton.setText(QCoreApplication.translate("ReadImg", u"\u5de6\u53f3", None))
+        self.radioButton_2.setText(QCoreApplication.translate("ReadImg", u"\u5de6\u53f3\u53cc\u9875", None))
+        self.radioButton_3.setText(QCoreApplication.translate("ReadImg", u"\u4e0a\u4e0b\u6eda\u52a8", None))
+        self.radioButton_4.setText(QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u53cc\u9875", None))
         self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08120%\uff09", None))
         self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00\u56fe\u7247\u5de5\u5177", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))

@@ -45,8 +45,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
         config.IsHttpProxy = self.GetSettingV("Proxy/IsHttp", config.IsHttpProxy)
         self.httpProxy.setChecked(config.IsHttpProxy)
-        if not config.IsHttpProxy:
-            config.HttpProxy = ""
+        # if not config.IsHttpProxy:
+        #     config.HttpProxy = ""
 
         config.ChatProxy = self.GetSettingV("ChatProxy", config.ChatProxy)
         self.chatProxy.setChecked(bool(config.ChatProxy))
@@ -155,9 +155,17 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
             text = "flatblack"
         else:
             text = "flatwhite"
+        config.ThemeText = text
+
         data = QssDataMgr().GetData(text)
         QtOwner().owner.app.setPalette(QPalette(QColor(data[20:27])))
         QtOwner().owner.app.setStyleSheet(data)
+        if text == "flatblack":
+            QtOwner().owner.qtReadImg.qtTool.setAutoFillBackground(True)
+            QtOwner().owner.qtReadImg.qtTool.setStyleSheet("#ReadImg{background-color:white;}")
+        elif text == "flatwhite":
+            QtOwner().owner.qtReadImg.qtTool.setAutoFillBackground(True)
+            QtOwner().owner.qtReadImg.qtTool.setStyleSheet("#ReadImg{background-color:black;}")
 
     def SaveSetting(self):
 

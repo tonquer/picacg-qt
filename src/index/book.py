@@ -109,6 +109,8 @@ class BookMgr(Singleton):
             r = backData.res
             bookId = backData.req.bookId
             info = self.books.get(bookId)
+            if r.message == "under review":
+                return Status.UnderReviewBook
             info.epsCount = r.data['eps']["total"]
             page = r.data['eps']["page"]
 

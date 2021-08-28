@@ -177,9 +177,15 @@ class ToolUtil(object):
 
     @staticmethod
     def GetUpdateStr(createdTime):
+        if not createdTime:
+            return ""
         timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%f%z")
-        now = int(time.time())
         tick = int(time.mktime(timeArray)-time.timezone)
+        return ToolUtil.GetUpdateStrByTick(tick)
+
+    @staticmethod
+    def GetUpdateStrByTick(tick):
+        now = int(time.time())
         day = (now - tick) // (24*3600)
         hour = (now - tick) // 3600
         minute = (now - tick) // 60
@@ -192,6 +198,7 @@ class ToolUtil(object):
             return "{}分钟前".format(minute)
         else:
             return "{}秒前".format(second)
+
 
     @staticmethod
     def GetDownloadSize(downloadLen):

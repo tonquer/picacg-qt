@@ -35,6 +35,7 @@ class QtUserInfo(QtWidgets.QWidget, Ui_UserInfo):
         self.nameLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.titleLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.commentLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.picIcon.setCursor(Qt.PointingHandCursor)
 
     def SetLike(self, isLike=True):
         p = QPixmap()
@@ -62,8 +63,8 @@ class QtUserInfo(QtWidgets.QWidget, Ui_UserInfo):
                 if obj == self.picIcon:
                     if self.pictureData:
                         QtImgMgr().ShowImg(self.pictureData)
-                elif obj == self.linkLabel and self.linkId:
-                    QtOwner().owner.bookInfoForm.OpenBook(self.linkId)
+                elif obj == self.nameLabel:
+                    QtOwner().owner.searchForm.SearchCreator(self.nameLabel.text())
                 return True
             else:
                 return False

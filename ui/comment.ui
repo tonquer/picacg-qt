@@ -208,6 +208,13 @@
              </property>
             </spacer>
            </item>
+           <item>
+            <widget class="QToolButton" name="killButton">
+             <property name="text">
+              <string>举报</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
          <item>
@@ -300,8 +307,8 @@
    <slot>AddLike()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>170</y>
+     <x>162</x>
+     <y>147</y>
     </hint>
     <hint type="destinationlabel">
      <x>108</x>
@@ -316,8 +323,8 @@
    <slot>OpenComment()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>195</x>
-     <y>172</y>
+     <x>208</x>
+     <y>147</y>
     </hint>
     <hint type="destinationlabel">
      <x>257</x>
@@ -325,9 +332,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>killButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Comment</receiver>
+   <slot>KillComment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>615</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>775</x>
+     <y>37</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>AddLike()</slot>
   <slot>OpenComment()</slot>
+  <slot>KillComment()</slot>
  </slots>
 </ui>

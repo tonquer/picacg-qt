@@ -33,6 +33,14 @@ class QtComGraphicsView(QGraphicsView):
         self.qEventParam = []
 
     def wheelEvent(self, e):
+        from src.qt.read.qtreadimg import ReadMode
+        if self.parent().qtTool.stripModel not in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll]:
+            if e.angleDelta().y() < 0:
+                self.parent().qtTool.NextPage()
+            else:
+                self.parent().qtTool.LastPage()
+            return
+
         if self.smoothMode == SmoothMode.NO_SMOOTH:
             super().wheelEvent(e)
             return

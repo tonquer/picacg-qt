@@ -28,7 +28,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         Ui_BookInfo.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.commentWidget.InitReq(req.GetComments, req.SendComment, req.CommentsLikeReq)
+        self.commentWidget.InitReq(req.GetComments, req.SendComment, req.CommentsLikeReq, req.CommentsReportReq)
         self.loadingForm = QtLoading(self)
         self.bookId = ""
         self.url = ""
@@ -45,7 +45,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.picture.installEventFilter(self)
         self.title.setWordWrap(True)
         self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.autorList.itemClicked.connect(self.ClickTagsItem)
+        self.autorList.itemClicked.connect(self.ClickAutorItem)
         self.idLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
         # self.description.setWordWrap(True)
@@ -85,8 +85,13 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.epsListWidget.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
         self.epsListWidget.verticalScrollBar().setSingleStep(30)
-
+        self.user_name.setCursor(Qt.PointingHandCursor)
+        self.user_icon.setCursor(Qt.PointingHandCursor)
+        self.user_name.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.user_icon.radius = 50
+        self.userIconData = None
+        self.user_name.installEventFilter(self)
+        self.user_icon.installEventFilter(self)
 
     def UpdateFavorityIcon(self):
         p = QPixmap()
@@ -132,6 +137,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.Clear()
         self.show()
         self.loadingForm.show()
+        self.tabWidget.setCurrentIndex(0)
         self.OpenLocalBack()
 
     def OpenLocalBack(self):
@@ -187,7 +193,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             if config.IsLoadingPicture:
                 self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
             self.commentWidget.bookId = self.bookId
-            self.commentWidget.LoadComment()
+
             self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)
             if hasattr(info, "_creator"):
@@ -197,14 +203,20 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                 path2 = creator.get("avatar").get("path")
                 if url2:
                     self.AddDownloadTask(url2, path2, None, self.LoadingPictureComplete)
-        elif msg != Status.Ok:
+        else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             self.msgForm.ShowError(msg)
+
             self.hide()
+
+        if msg == Status.UnderReviewBook:
+            self.msgForm.ShowError(msg)
+
         return
 
     def LoadingPictureComplete(self, data, status):
         if status == Status.Ok:
+            self.userIconData = data
             self.user_icon.SetPicture(data)
 
     def UpdatePicture(self, data, status):
@@ -226,6 +238,8 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.lastEpsId = -1
             self.LoadHistory()
             return
+        else:
+            self.msgForm.ShowError("章节加载失败, {}".format(st))
         return
 
     def UpdateEpsData(self):
@@ -336,21 +350,30 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
     def ClickCategoriesItem(self, item):
         text = item.text()
-        QtOwner().owner.userForm.toolButton1.click()
-        QtOwner().owner.searchForm.searchEdit.setText("")
-        QtOwner().owner.searchForm.OpenSearchCategories(text)
+        QtOwner().owner.searchForm.SearchCategories(text)
+        return
+
+    def ClickAutorItem(self, item):
+        text = item.text()
+        QtOwner().owner.searchForm.SearchAutor(text)
         return
 
     def ClickTagsItem(self, item):
         text = item.text()
-        QtOwner().owner.searchForm.Search2(text)
+        QtOwner().owner.searchForm.SearchTags(text)
         return
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                if self.pictureData:
-                    QtImgMgr().ShowImg(self.pictureData)
+                if obj == self.picture:
+                    if self.pictureData:
+                        QtImgMgr().ShowImg(self.pictureData)
+                elif obj == self.user_icon:
+                    if self.userIconData:
+                        QtImgMgr().ShowImg(self.userIconData)
+                elif obj == self.user_name:
+                    QtOwner().owner.searchForm.SearchCreator(self.user_name.text())
                 return True
             else:
                 return False
@@ -362,3 +385,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         if Qt.Key_Escape == key:
             self.close()
         return super(self.__class__, self).keyPressEvent(ev)
+
+    def ChangeTab(self, index):
+        if index == 1:
+            self.commentWidget.loadingForm2.show()
+            self.commentWidget.LoadComment()
+        return

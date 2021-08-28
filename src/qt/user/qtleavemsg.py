@@ -11,7 +11,7 @@ class QtLeaveMsg(QtCommentList):
 
         self.commentButton.clicked.connect(self.SendComment)
         self.bookId = "5822a6e3ad7ede654696e482"
-        self.InitReq(req.GetComments, req.SendComment, req.CommentsLikeReq)
+        self.InitReq(req.GetComments, req.SendComment, req.CommentsLikeReq, req.CommentsReportReq)
 
     def SwitchCurrent(self):
         self.loadingForm2.show()

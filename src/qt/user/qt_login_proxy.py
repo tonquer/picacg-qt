@@ -33,12 +33,15 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
     def SetEnabled(self, enabled):
         self.testSpeedButton.setEnabled(enabled)
         self.saveButton.setEnabled(enabled)
+        self.proxyBox.setEnabled(enabled)
         self.httpLine.setEnabled(enabled)
         self.cdnIp.setEnabled(enabled)
         self.radioButton_1.setEnabled(enabled)
         self.radioButton_2.setEnabled(enabled)
         self.radioButton_3.setEnabled(enabled)
         self.radioButton_4.setEnabled(enabled)
+        self.cdnIp.setEnabled(enabled)
+        self.httpsBox.setEnabled(enabled)
 
     def SpeedTest(self):
         self.speedIndex = 0
@@ -64,6 +67,8 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
             self.speedTest.append((PreferCDNIP, PreferCDNIP, True, i))
             i += 1
 
+        self.SetEnabled(False)
+        config.IsUseHttps = int(self.httpsBox.isChecked())
         self.StartSpeedPing()
 
     def StartSpeedPing(self):
@@ -134,7 +139,10 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
     def LoadSetting(self):
         config.PreferCDNIP = QtOwner().owner.settingForm.GetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)
         config.ProxySelectIndex = QtOwner().owner.settingForm.GetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
+        config.IsUseHttps = QtOwner().owner.settingForm.GetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
         httpProxy = QtOwner().owner.settingForm.GetSettingV("Proxy/Http", config.HttpProxy)
+
+        self.httpsBox.setChecked(config.IsUseHttps)
         self.proxyBox.setChecked(config.IsHttpProxy)
         self.httpLine.setText(httpProxy)
         button = getattr(self, "radioButton_{}".format(config.ProxySelectIndex))
@@ -162,10 +170,13 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         config.IsHttpProxy = int(self.proxyBox.isChecked())
         httpProxy = self.httpLine.text()
         config.ProxySelectIndex = self.buttonGroup.checkedId()
+        config.IsUseHttps = int(self.httpsBox.isChecked())
+
         QtOwner().owner.settingForm.SetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
         QtOwner().owner.settingForm.SetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)
         QtOwner().owner.settingForm.SetSettingV("Proxy/Http", httpProxy)
         QtOwner().owner.settingForm.SetSettingV("Proxy/IsHttp", config.IsHttpProxy)
+        QtOwner().owner.settingForm.SetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
         self.UpdateServer()
         QtBubbleLabel().ShowMsgEx(self, "保存成功")
         self.close()

@@ -12,8 +12,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
-from .qtlistwidget import QtBookList
 from .qtlistwidget import QtCategoryList
+from .qtlistwidget import QtBookList
 from .completelineedit import CompleteLineEdit
 
 
@@ -66,6 +66,11 @@ class Ui_search(object):
         self.categoryBox.setChecked(True)
 
         self.horizontalLayout_2.addWidget(self.categoryBox)
+
+        self.creatorBox = QCheckBox(search)
+        self.creatorBox.setObjectName(u"creatorBox")
+
+        self.horizontalLayout_2.addWidget(self.creatorBox)
 
         self.sortKey = QComboBox(search)
         self.sortKey.addItem("")
@@ -121,6 +126,19 @@ class Ui_search(object):
         self.timesLabel.setObjectName(u"timesLabel")
 
         self.horizontalLayout_2.addWidget(self.timesLabel)
+
+        self.line_3 = QFrame(search)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.VLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout_2.addWidget(self.line_3)
+
+        self.sucLabel = QToolButton(search)
+        self.sucLabel.setObjectName(u"sucLabel")
+        self.sucLabel.setStyleSheet(u"background-color:transparent;")
+
+        self.horizontalLayout_2.addWidget(self.sucLabel)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -289,6 +307,7 @@ class Ui_search(object):
         self.localBox.clicked.connect(search.SetSearch)
         self.sortKey.currentIndexChanged.connect(search.ChangeSort)
         self.sortId.currentIndexChanged.connect(search.ChangeSort)
+        self.sucLabel.clicked.connect(search.Update)
 
         QMetaObject.connectSlotsByName(search)
     # setupUi
@@ -301,6 +320,7 @@ class Ui_search(object):
         self.authorBox.setText(QCoreApplication.translate("search", u"\u4f5c\u8005", None))
         self.tagsBox.setText(QCoreApplication.translate("search", u"tags", None))
         self.categoryBox.setText(QCoreApplication.translate("search", u"\u5206\u7c7b", None))
+        self.creatorBox.setText(QCoreApplication.translate("search", u"\u4e0a\u4f20\u8005", None))
         self.sortKey.setItemText(0, QCoreApplication.translate("search", u"\u66f4\u65b0\u65f6\u95f4", None))
         self.sortKey.setItemText(1, QCoreApplication.translate("search", u"\u521b\u5efa\u65f6\u95f4", None))
         self.sortKey.setItemText(2, QCoreApplication.translate("search", u"\u7231\u5fc3\u6570", None))
@@ -315,6 +335,7 @@ class Ui_search(object):
         self.numsLabel.setText(QCoreApplication.translate("search", u"TextLabel", None))
         self.label_2.setText(QCoreApplication.translate("search", u"\u66f4\u65b0\u65f6\u95f4\uff1a", None))
         self.timesLabel.setText(QCoreApplication.translate("search", u"TextLabel", None))
+        self.sucLabel.setText(QCoreApplication.translate("search", u"\u6b63\u5728\u66f4\u65b0", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("search", u"\u65b0\u5230\u65e7", None))
         self.comboBox.setItemText(1, QCoreApplication.translate("search", u"\u65e7\u5230\u65b0", None))
         self.comboBox.setItemText(2, QCoreApplication.translate("search", u"\u6700\u591a\u7231\u5fc3", None))

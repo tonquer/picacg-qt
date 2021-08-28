@@ -103,6 +103,11 @@ class Ui_Comment(object):
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
 
+        self.killButton = QToolButton(Comment)
+        self.killButton.setObjectName(u"killButton")
+
+        self.horizontalLayout_4.addWidget(self.killButton)
+
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
 
@@ -156,6 +161,7 @@ class Ui_Comment(object):
         self.retranslateUi(Comment)
         self.starButton.clicked.connect(Comment.AddLike)
         self.commentButton.clicked.connect(Comment.OpenComment)
+        self.killButton.clicked.connect(Comment.KillComment)
 
         QMetaObject.connectSlotsByName(Comment)
     # setupUi
@@ -168,6 +174,7 @@ class Ui_Comment(object):
         self.nameLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.levelLabel.setText(QCoreApplication.translate("Comment", u"LV", None))
         self.titleLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
+        self.killButton.setText(QCoreApplication.translate("Comment", u"\u4e3e\u62a5", None))
         self.commentLabel.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.starButton.setText(QCoreApplication.translate("Comment", u"...", None))
         self.commentButton.setText(QCoreApplication.translate("Comment", u"...", None))

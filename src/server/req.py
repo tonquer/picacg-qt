@@ -13,7 +13,10 @@ class ServerReq(object):
         self.method = method
         self.isParseRes = True
         self.useImgProxy = True
-        self.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
+        if config.IsHttpProxy:
+            self.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
+        else:
+            self.proxy = {}
 
     def __str__(self):
         if config.LogIndex == 0:
@@ -389,6 +392,7 @@ class SpeedTestPingReq(ServerReq):
         header['cache-control'] = 'no-cache'
         header['expires'] = '0'
         header['pragma'] = 'no-cache'
+        header["authorization"] = ""
         super(self.__class__, self).__init__(url, header,
                                              {}, method)
 

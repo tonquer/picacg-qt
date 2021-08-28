@@ -155,6 +155,7 @@ class QtBookList(QListWidget, QtTaskBase):
         self.LoadCallBack = None
         self.OpenBack = None
         self.LikeBack = None
+        self.KillBack = None
         self.parentId = -1
         self.popMenu = None
         QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
@@ -293,11 +294,12 @@ class QtBookList(QListWidget, QtTaskBase):
         action = self.popMenu.addAction("刪除")
         action.triggered.connect(self.DelHandler)
 
-    def InitUser(self, callBack=None, openBack=None, likeBack=None):
+    def InitUser(self, callBack=None, openBack=None, likeBack=None, killBack=None):
         self.setFrameShape(self.NoFrame)  # 无边框
         self.LoadCallBack = callBack
         self.OpenBack = openBack
         self.LikeBack = likeBack
+        self.KillBack = killBack
         self.setFocusPolicy(Qt.NoFocus)
         self.setWindowFlags(self.windowFlags() &~ Qt.ItemIsSelectable)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -396,6 +398,7 @@ class QtBookList(QListWidget, QtTaskBase):
             title = v.name
             path = v.path
             url = v.url
+            categoryStr = "{}看过".format(ToolUtil.GetUpdateStrByTick(v.tick))
 
         else:
             assert False
@@ -423,17 +426,28 @@ class QtBookList(QListWidget, QtTaskBase):
             self.AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True)
             pass
 
-    def AddUserItem(self, info, floor):
+    def AddUserItem(self, info, floor, hideKillButton=False):
         content = info.get("content")
         if not content:
             content = info.get("description")
-        user = info.get("_user")
-        if not user:
-            user = User().userInfo
-        name = user.get("name")
-        avatar = user.get("avatar", {})
-        if not avatar:
+        if info.get("title"):
+            name = info.get("title")
             avatar = info.get("avatar")
+            slogan = ""
+            level = ""
+            title = ""
+            character = ""
+        else:
+            user = info.get("_user")
+            if not user:
+                user = User().userInfo
+            name = user.get("name")
+            avatar = user.get("avatar", {})
+            title = user.get("title", "")
+            level = user.get("level", 1)
+            character = user.get("character", "")
+            slogan = user.get("slogan", "")
+
         createdTime = info.get("created_at", "")
         commentsCount = info.get("commentsCount", "")
         if info.get('_id', ""):
@@ -441,9 +455,7 @@ class QtBookList(QListWidget, QtTaskBase):
         else:
             commnetId = info.get("url")
         likesCount = info.get("likesCount", "")
-        title = user.get("title", "")
-        level = user.get("level", 1)
-        character = user.get("character", "")
+
         if not avatar:
             url = ""
             path = ""
@@ -454,8 +466,6 @@ class QtBookList(QListWidget, QtTaskBase):
             url = avatar.get("fileServer", "")
             path = avatar.get("path", "")
 
-        slogan = user.get("slogan", "")
-
         index = self.count()
         iwidget = QtComment(self)
 
@@ -464,6 +474,7 @@ class QtBookList(QListWidget, QtTaskBase):
             linkData = info.get("_comic").get("title", "")
             iwidget.linkLabel.setText("<u><font color=#d5577c>{}</font></u>".format(linkData))
             iwidget.linkLabel.setVisible(True)
+            iwidget.killButton.setVisible(False)
 
         if info.get("isLiked"):
             iwidget.SetLike()
@@ -474,6 +485,8 @@ class QtBookList(QListWidget, QtTaskBase):
         if likesCount == "":
             iwidget.starButton.hide()
             iwidget.commentLabel.setTextInteractionFlags(Qt.TextSelectableByKeyboard)
+        if hideKillButton:
+            iwidget.killButton.setVisible(False)
         iwidget.setToolTip(slogan)
         iwidget.id = commnetId
         iwidget.commentLabel.setText(content)
@@ -484,9 +497,8 @@ class QtBookList(QListWidget, QtTaskBase):
         iwidget.titleLabel.setText(" " + title + " ")
         iwidget.url = url
         iwidget.path = path
-        if createdTime:
-            dayStr = ToolUtil.GetUpdateStr(createdTime)
-            iwidget.dateLabel.setText(dayStr)
+        dayStr = ToolUtil.GetUpdateStr(createdTime)
+        iwidget.dateLabel.setText(dayStr)
         iwidget.indexLabel.setText("{}楼".format(str(floor)))
 
         item = QListWidgetItem(self)
@@ -517,7 +529,8 @@ class QtBookList(QListWidget, QtTaskBase):
 
         index = self.count()
         iwidget = QtUserInfo(self)
-
+        iwidget.nameLabel.setCursor(Qt.PointingHandCursor)
+        iwidget.nameLabel.installEventFilter(iwidget)
         iwidget.setToolTip(info.get("slogan", ""))
         iwidget.id = commnetId
         iwidget.commentLabel.setText(content)

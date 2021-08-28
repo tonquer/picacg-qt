@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>299</width>
+    <width>326</width>
     <height>705</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">#ReadImg{background-color:white;}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
@@ -394,11 +394,24 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="label_5">
+         <property name="styleSheet">
+          <string notr="true">color: #ee2a24</string>
+         </property>
+         <property name="text">
+          <string>翻页模式</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QRadioButton" name="radioButton">
            <property name="text">
-            <string>左右翻页</string>
+            <string>左右</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -411,10 +424,34 @@
          <item>
           <widget class="QRadioButton" name="radioButton_2">
            <property name="text">
-            <string>上下翻页</string>
+            <string>左右双页</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QRadioButton" name="radioButton_3">
+           <property name="text">
+            <string>上下滚动</string>
            </property>
            <property name="checked">
             <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_4">
+           <property name="text">
+            <string>右左双页</string>
            </property>
            <attribute name="buttonGroup">
             <string notr="true">buttonGroup</string>
@@ -455,6 +492,13 @@
           </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="copyButton">
@@ -624,38 +668,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>radioButton</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>SwitchPicture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>113</x>
-     <y>427</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>181</x>
-     <y>309</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>SwitchPicture()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>265</x>
-     <y>427</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>181</x>
-     <y>325</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>copyButton</sender>
    <signal>clicked()</signal>
    <receiver>ReadImg</receiver>
@@ -742,8 +754,8 @@
    <slot>OpenWaifu()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>59</x>
-     <y>213</y>
+     <x>72</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>

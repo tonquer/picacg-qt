@@ -1,3 +1,5 @@
+from enum import Enum
+
 from PySide2 import QtWidgets, QtGui
 from PySide2.QtCore import Qt, QRectF, QPointF, QEvent, QSize
 from PySide2.QtGui import QPixmap, QMatrix, QImage
@@ -15,6 +17,16 @@ from src.server import req
 from src.util import ToolUtil, Log
 from src.util.status import Status
 from src.util.tool import time_me, CTime
+
+
+class ReadMode(Enum):
+    """ 阅读模式 """
+    LeftRight = 1           # 左右
+    LeftRightDouble = 2     # 左右双页
+    UpDown = 3              # 上下模式
+    RightLeftDouble = 4     # 右左双页
+    LeftRightScroll = 5     # 左右滚动
+    RightLeftScroll = 6     # 右左滚动
 
 
 class QtReadImg(QtWidgets.QWidget, QtTaskBase):
@@ -38,7 +50,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.setMinimumSize(300, 300)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.ShowAndCloseTool)
-        self.isStripModel = True
+        self.stripModel = ReadMode(ReadMode.UpDown)
         self.setWindowFlags(self.windowFlags() &~ Qt.WindowMaximizeButtonHint &~ Qt.WindowMinimizeButtonHint)
 
         self.category = []
@@ -72,7 +84,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.epsId = 0
         self.maxPic = 0
         self.curIndex = 0
-        if not self.isStripModel:
+        if self.stripModel != ReadMode.UpDown:
             self.qtTool.zoomSlider.setValue(100)
             self.frame.scaleCnt = 0
         else:
@@ -263,7 +275,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             # if index == self.curIndex:
             #     # self.ShowImg()
             #     pass
-            # elif self.isStripModel and self.curIndex < index <= self.curIndex + 2:
+            # elif self.stripModel and self.curIndex < index <= self.curIndex + 2:
             #     # self.ShowOtherPage()
             #     self.CheckLoadPicture()
             # else:
@@ -279,13 +291,19 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         p.cacheImage = data
         if index == self.curIndex:
             self.ShowImg()
-        elif self.isStripModel and self.curIndex < index <= self.curIndex + 2:
+        elif self.stripModel == ReadMode.UpDown and self.curIndex < index <= self.curIndex + 2:
+            self.ShowOtherPage()
+        elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble] and self.curIndex < index <= self.curIndex + 1:
             self.ShowOtherPage()
         return
 
     @time_me
     def ShowOtherPage(self, isShowWaifu=True):
-        for index in range(self.curIndex+1, self.curIndex+3):
+        if self.stripModel == ReadMode.UpDown:
+            size = 3
+        else:
+            size = 2
+        for index in range(self.curIndex+1, self.curIndex+size):
             p = self.pictureData.get(index)
             if not p or (not p.data) or (not p.cacheImage):
                 self.frame.SetPixIem(index-self.curIndex, QPixmap())
@@ -452,7 +470,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         if index == self.curIndex:
             self.qtTool.SetData(waifuState=p.waifuState)
             # self.ShowImg()
-        elif self.isStripModel and self.curIndex < index <= self.curIndex + 2:
+        elif self.stripModel == ReadMode.UpDown and self.curIndex < index <= self.curIndex + 2:
             # self.ShowOtherPage()
             self.CheckLoadPicture()
         else:
@@ -467,7 +485,9 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         p.cacheWaifu2xImage = data
         if index == self.curIndex:
             self.ShowImg()
-        elif self.isStripModel and self.curIndex < index <= self.curIndex + 2:
+        elif self.stripModel == ReadMode.UpDown and self.curIndex < index <= self.curIndex + 2:
+            self.ShowOtherPage()
+        elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble] and self.curIndex < index <= self.curIndex + 1:
             self.ShowOtherPage()
         return
 

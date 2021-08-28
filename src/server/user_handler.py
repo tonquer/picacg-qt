@@ -172,6 +172,18 @@ class DownloadBookHandler(object):
                     QtTask().downloadBack.emit(backData.bakParam, -1, b"")
 
 
+@handler(req.CheckUpdateDatabaseReq)
+@handler(req.DownloadDatabaseReq)
+class DownloadDatabaseReqHandler(object):
+    def __call__(self, backData):
+        if not backData.res.GetText() or backData.status == Status.NetError:
+            if backData.bakParam:
+                QtTask().taskBack.emit(backData.bakParam, "")
+            return
+        if backData.bakParam:
+            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+
+
 @handler(req.CheckUpdateReq)
 class CheckUpdateHandler(object):
     def __call__(self, backData):
@@ -258,8 +270,6 @@ class SpeedTestHandler(object):
 @handler(req.GetGameCommentsReq)
 @handler(req.SendGameCommentsReq)
 @handler(req.GameCommentsLikeReq)
-@handler(req.CheckUpdateDatabaseReq)
-@handler(req.DownloadDatabaseReq)
 class MsgHandler(object):
     def __call__(self, backData):
         if backData.bakParam:
