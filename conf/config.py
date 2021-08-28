@@ -35,7 +35,7 @@ UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/tonquer/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/tonquer/picacg-database/main/data/"
-UpdateVersion = "v1.2.3"
+UpdateVersion = "v1.2.4"
 
 # waifu2x
 CanWaifu2x = True
