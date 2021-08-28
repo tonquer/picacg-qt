@@ -363,7 +363,7 @@ class QtBookList(QListWidget, QtTaskBase):
             likesCount = str(v.get("totalLikes", ""))
 
         elif isinstance(v, DbBook):
-            title = v.title2
+            title = v.title
             url = v.fileServer
             path = v.path
             _id = v.id
