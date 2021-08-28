@@ -177,14 +177,14 @@ jobs:
         Remove-Item bika/resources/*.py -r -fo
         cp LICENSE bika\
         cp README.md bika\
-        mkdir ${{ env.PACKAGENAME }}
-        mv bika ${{ env.PACKAGENAME }}
+        # mkdir ${{ env.PACKAGENAME }}
+        # mv bika ${{ env.PACKAGENAME }}
         7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.PACKAGENAME }}
-        path: ${{ env.PACKAGENAME }}
+        path: bika
     - name: upload-macos
       uses: actions/upload-release-asset@v1
       env:
