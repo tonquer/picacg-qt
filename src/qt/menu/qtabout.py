@@ -4,6 +4,7 @@ from PySide2.QtGui import QDesktopServices
 
 from conf import config
 from ui.about import Ui_AboutForm
+from src.util import ToolUtil
 
 
 class QtAbout(QtWidgets.QWidget, Ui_AboutForm):
@@ -11,8 +12,13 @@ class QtAbout(QtWidgets.QWidget, Ui_AboutForm):
         super(self.__class__, self).__init__()
         Ui_AboutForm.__init__(self)
         self.setupUi(self)
-        self.setWindowTitle("关于")
-        self.label.setText("哔咔漫画{}".format(config.UpdateVersion))
+        ToolUtil.SetIcon(self)  # set window icon
+        if config.Language == 'English':
+            self.label.setText("picacg-windows {}".format(config.UpdateVersion))
+        # elif config.Language == 'Chinese':
+        else:
+            self.label.setText("哔咔漫画 {}".format(config.UpdateVersion))
+
         self.label_3.linkActivated.connect(self.OpenUrl)
         self.label_8.linkActivated.connect(self.OpenUrl2)
         self.label_10.linkActivated.connect(self.OpenUrl3)

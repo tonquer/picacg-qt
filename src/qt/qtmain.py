@@ -6,6 +6,8 @@ from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
 from PySide2.QtCore import QTimer, QUrl
 from PySide2.QtGui import QDesktopServices, Qt
 from PySide2.QtWidgets import QMessageBox, QDesktopWidget
+from PySide2.QtCore import QTranslator, QLocale
+from PySide2.QtCore import QSettings
 
 from conf import config
 from src.server import req, ToolUtil
@@ -36,10 +38,41 @@ class QtOwner(Singleton):
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, app):
+        self.language = QSettings('config.ini', QSettings.IniFormat).value('Language', 'Chinese')
+        config.Language = self.language
+        # self.language = 'English'
+        # self.language = config.Language
+
+        self.translator_setting = None
+        self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+        # self.translator_about = None
+
+        if self.language == 'Chinese':
+            pass
+        elif self.language == 'English':
+            self.loadTrans(app, 'about', 'en')
+            self.loadTrans(app, 'setting', 'en')
+            # self.loadTrans()
+
+            # self.translator_setting = QTranslator()
+            # self.translator_setting.load(QLocale(), "./translations/setting_en.qm")
+            # if not self.app.installTranslator(self.translator_setting):
+            #     Log.Warn('Setting translation load failed.')
+
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         QtOwner().SetOwner(self)
         self._app = weakref.ref(app)
+
         from src.qt.chat.qtchat import QtChat
         from src.qt.main.qt_fried import QtFried
         from src.qt.main.qtindex import QtIndex
@@ -162,9 +195,13 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     #     except Exception as es:
     #         Log.Error(es)
 
-
     # def OnTimeOut(self):
     #     self.task.run()
+
+    def loadTrans(self, app, ui, lang):
+        exec('self.translator_{0} = QTranslator()'.format(ui))
+        exec('self.translator_{0}.load(QLocale(), "./translations/{0}_{1}.qm")'.format(ui, lang))
+        exec('if not app.installTranslator(self.translator_{0}): Log.Warn("{0}_{1}.qm load failed")'.format(ui, lang))
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         super().closeEvent(a0)
@@ -207,14 +244,16 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             QtImgMgr().obj.SetStatus(False)
             config.IsOpenWaifu = 0
 
-        self.InitUpdate()
+        if config.IsUpdate:
+            self.InitUpdate()
+
         self.loginForm.Init()
         return
 
     def OpenSetting(self, action):
         if action.text() == "proxy":
             self.loginProxyForm.show()
-        else:
+        elif action.text() == 'setting':
             self.settingForm.show()
         pass
 

@@ -8,6 +8,9 @@ from src.qt.util.qttask import QtTaskBase
 from src.server import req, config, Server, Log
 from ui.login_proxy import Ui_LoginProxy
 
+# set window icon
+from src.util import ToolUtil
+
 
 class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
     def __init__(self):
@@ -15,6 +18,7 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         Ui_LoginProxy.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
+        ToolUtil.SetIcon(self)  # set window icon
         self.setWindowModality(Qt.ApplicationModal)
         self.speedTest = []
         self.speedIndex = 0
