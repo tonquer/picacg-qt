@@ -217,7 +217,7 @@ class Ui_LoginProxy(object):
     # setupUi
 
     def retranslateUi(self, LoginProxy):
-        LoginProxy.setWindowTitle(QCoreApplication.translate("LoginProxy", u"Form", None))
+        LoginProxy.setWindowTitle(QCoreApplication.translate("LoginProxy", u"\u4ee3\u7406\u8bbe\u7f6e", None))
         self.testSpeedButton.setText(QCoreApplication.translate("LoginProxy", u"\u6d4b\u901f", None))
         self.label_2.setText(QCoreApplication.translate("LoginProxy", u"\u76f4\u8fde", None))
         self.label_4.setText(QCoreApplication.translate("LoginProxy", u"\u4ee3\u7406", None))

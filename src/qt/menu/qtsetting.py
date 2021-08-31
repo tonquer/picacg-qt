@@ -9,7 +9,7 @@ from conf import config
 from qss.qss import QssDataMgr
 from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.qtmain import QtOwner
-from src.util import Log
+from src.util import Log, ToolUtil
 from ui.setting import Ui_Setting
 
 
@@ -26,6 +26,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.userId = ""
         self.passwd = ""
         self.gpuInfos = []
+        ToolUtil.SetIcon(self)  # set window icon
         # for text in QssDataMgr.files:
         #     self.themeBox.addItem(text)
 
@@ -35,6 +36,14 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         super(self.__class__, self).show()
 
     def LoadSetting(self):
+        config.IsUpdate = int(self.settings.value("IsUpdate") or config.IsUpdate)
+        self.checkBox_IsUpdate.setChecked(config.IsUpdate)
+
+        # language
+        config.Language = str(self.settings.value('Language'))
+        # self.langSelect.setCurrentIndex(config.DownloadThreadNum - 2)
+        self.langSelect.setCurrentText(config.Language)
+
         config.DownloadThreadNum = int(self.settings.value("DownloadThreadNum") or config.DownloadThreadNum)
         self.comboBox.setCurrentIndex(config.DownloadThreadNum-2)
 
@@ -169,6 +178,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
     def SaveSetting(self):
 
+        config.IsUpdate = 1 if self.checkBox_IsUpdate.isChecked() else 0
+        config.Language = self.langSelect.currentText()
         config.DownloadThreadNum = int(self.comboBox.currentText())
         config.HttpProxy = self.httpEdit.text()
         config.SavePath = self.saveEdit.text()
@@ -176,6 +187,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         config.IsHttpProxy = 1 if self.httpProxy.isChecked() else 0
         config.PreLoading = self.preDownNum.value()
 
+        self.settings.setValue("IsUpdate", config.IsUpdate)
+        self.settings.setValue('Language', config.Language)
         self.settings.setValue("DownloadThreadNum", config.DownloadThreadNum)
         self.settings.setValue("Proxy/Http", config.HttpProxy)
         self.settings.setValue("Proxy/IsHttp", config.IsHttpProxy)

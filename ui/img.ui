@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>387</width>
-    <height>546</height>
+    <height>556</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>图片查看</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -55,7 +55,7 @@
         <widget class="QCheckBox" name="ttaModel">
          <property name="maximumSize">
           <size>
-           <width>70</width>
+           <width>100</width>
            <height>16777215</height>
           </size>
          </property>
@@ -73,7 +73,7 @@
           <widget class="QRadioButton" name="scaleRadio">
            <property name="maximumSize">
             <size>
-             <width>80</width>
+             <width>100</width>
              <height>16777215</height>
             </size>
            </property>
@@ -112,7 +112,7 @@
           <widget class="QRadioButton" name="heighRadio">
            <property name="maximumSize">
             <size>
-             <width>80</width>
+             <width>100</width>
              <height>16777215</height>
             </size>
            </property>
@@ -149,7 +149,7 @@
             </size>
            </property>
            <property name="text">
-            <string>x</string>
+            <string>X</string>
            </property>
           </widget>
          </item>
@@ -188,6 +188,12 @@
          </item>
          <item>
           <widget class="QComboBox" name="noiseCombox">
+           <property name="minimumSize">
+            <size>
+             <width>160</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>160</width>
@@ -240,6 +246,12 @@
          </item>
          <item>
           <widget class="QComboBox" name="comboBox">
+           <property name="minimumSize">
+            <size>
+             <width>160</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>160</width>
@@ -268,7 +280,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_7"/>
        </item>
-       <item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="changeButton">
          <property name="maximumSize">
           <size>
@@ -323,7 +335,7 @@
             </size>
            </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>无信息</string>
            </property>
           </widget>
          </item>
@@ -353,7 +365,7 @@
             </size>
            </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>无信息</string>
            </property>
           </widget>
          </item>
@@ -389,7 +401,7 @@
          </item>
         </layout>
        </item>
-       <item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="oepnButton">
          <property name="maximumSize">
           <size>
@@ -405,7 +417,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2"/>
        </item>
-       <item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="pushButton_3">
          <property name="maximumSize">
           <size>
@@ -418,7 +430,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="pushButton">
          <property name="maximumSize">
           <size>
@@ -431,7 +443,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="saveButton">
          <property name="maximumSize">
           <size>
@@ -444,7 +456,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QPushButton" name="headButton">
          <property name="maximumSize">
           <size>
@@ -499,8 +511,8 @@
    <slot>SwithPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>291</x>
-     <y>38</y>
+     <x>242</x>
+     <y>45</y>
     </hint>
     <hint type="destinationlabel">
      <x>386</x>
@@ -515,8 +527,8 @@
    <slot>SavePicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>291</x>
-     <y>412</y>
+     <x>259</x>
+     <y>483</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -531,8 +543,8 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>374</x>
-     <y>115</y>
+     <x>372</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>386</x>
@@ -547,8 +559,8 @@
    <slot>ReduceScalePic()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>274</x>
-     <y>354</y>
+     <x>259</x>
+     <y>413</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -563,8 +575,8 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>263</x>
-     <y>113</y>
+     <x>240</x>
+     <y>133</y>
     </hint>
     <hint type="destinationlabel">
      <x>221</x>
@@ -579,8 +591,8 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>261</x>
-     <y>60</y>
+     <x>229</x>
+     <y>71</y>
     </hint>
     <hint type="destinationlabel">
      <x>386</x>
@@ -595,8 +607,8 @@
    <slot>OpenPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>291</x>
-     <y>317</y>
+     <x>259</x>
+     <y>369</y>
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
@@ -611,8 +623,8 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>115</y>
+     <x>298</x>
+     <y>136</y>
     </hint>
     <hint type="destinationlabel">
      <x>250</x>
@@ -627,8 +639,8 @@
    <slot>AddScalePic()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>291</x>
-     <y>383</y>
+     <x>259</x>
+     <y>448</y>
     </hint>
     <hint type="destinationlabel">
      <x>232</x>
@@ -643,8 +655,8 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>374</x>
-     <y>87</y>
+     <x>372</x>
+     <y>103</y>
     </hint>
     <hint type="destinationlabel">
      <x>386</x>
@@ -659,8 +671,8 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>263</x>
-     <y>85</y>
+     <x>240</x>
+     <y>100</y>
     </hint>
     <hint type="destinationlabel">
      <x>179</x>
@@ -675,8 +687,8 @@
    <slot>ChangeModel()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>374</x>
-     <y>171</y>
+     <x>372</x>
+     <y>196</y>
     </hint>
     <hint type="destinationlabel">
      <x>386</x>
@@ -691,8 +703,8 @@
    <slot>StartWaifu2x()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>291</x>
-     <y>209</y>
+     <x>252</x>
+     <y>241</y>
     </hint>
     <hint type="destinationlabel">
      <x>386</x>
@@ -707,11 +719,11 @@
    <slot>CheckScaleRadio()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>310</x>
-     <y>134</y>
+     <x>257</x>
+     <y>166</y>
     </hint>
     <hint type="destinationlabel">
-     <x>636</x>
+     <x>386</x>
      <y>173</y>
     </hint>
    </hints>
@@ -723,8 +735,8 @@
    <slot>SetHead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>246</x>
-     <y>431</y>
+     <x>259</x>
+     <y>518</y>
     </hint>
     <hint type="destinationlabel">
      <x>380</x>

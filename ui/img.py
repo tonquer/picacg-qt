@@ -17,7 +17,7 @@ class Ui_Img(object):
     def setupUi(self, Img):
         if not Img.objectName():
             Img.setObjectName(u"Img")
-        Img.resize(387, 546)
+        Img.resize(387, 556)
         self.gridLayout = QGridLayout(Img)
         self.gridLayout.setObjectName(u"gridLayout")
         self.graphicsView = QGraphicsView(Img)
@@ -52,7 +52,7 @@ class Ui_Img(object):
 
         self.ttaModel = QCheckBox(Img)
         self.ttaModel.setObjectName(u"ttaModel")
-        self.ttaModel.setMaximumSize(QSize(70, 16777215))
+        self.ttaModel.setMaximumSize(QSize(100, 16777215))
 
         self.verticalLayout_2.addWidget(self.ttaModel)
 
@@ -63,7 +63,7 @@ class Ui_Img(object):
         self.buttonGroup_2.setObjectName(u"buttonGroup_2")
         self.buttonGroup_2.addButton(self.scaleRadio)
         self.scaleRadio.setObjectName(u"scaleRadio")
-        self.scaleRadio.setMaximumSize(QSize(80, 16777215))
+        self.scaleRadio.setMaximumSize(QSize(100, 16777215))
         self.scaleRadio.setChecked(True)
 
         self.horizontalLayout_3.addWidget(self.scaleRadio)
@@ -83,7 +83,7 @@ class Ui_Img(object):
         self.heighRadio = QRadioButton(Img)
         self.buttonGroup_2.addButton(self.heighRadio)
         self.heighRadio.setObjectName(u"heighRadio")
-        self.heighRadio.setMaximumSize(QSize(80, 16777215))
+        self.heighRadio.setMaximumSize(QSize(100, 16777215))
 
         self.horizontalLayout_4.addWidget(self.heighRadio)
 
@@ -127,6 +127,7 @@ class Ui_Img(object):
         self.noiseCombox.addItem("")
         self.noiseCombox.addItem("")
         self.noiseCombox.setObjectName(u"noiseCombox")
+        self.noiseCombox.setMinimumSize(QSize(160, 0))
         self.noiseCombox.setMaximumSize(QSize(160, 16777215))
 
         self.horizontalLayout_5.addWidget(self.noiseCombox)
@@ -147,6 +148,7 @@ class Ui_Img(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.setObjectName(u"comboBox")
+        self.comboBox.setMinimumSize(QSize(160, 0))
         self.comboBox.setMaximumSize(QSize(160, 16777215))
 
         self.horizontalLayout_6.addWidget(self.comboBox)
@@ -163,7 +165,7 @@ class Ui_Img(object):
         self.changeButton.setObjectName(u"changeButton")
         self.changeButton.setMaximumSize(QSize(100, 16777215))
 
-        self.verticalLayout_2.addWidget(self.changeButton)
+        self.verticalLayout_2.addWidget(self.changeButton, 0, Qt.AlignHCenter)
 
 
         self.verticalLayout.addLayout(self.verticalLayout_2)
@@ -239,7 +241,7 @@ class Ui_Img(object):
         self.oepnButton.setObjectName(u"oepnButton")
         self.oepnButton.setMaximumSize(QSize(100, 16777215))
 
-        self.verticalLayout_3.addWidget(self.oepnButton)
+        self.verticalLayout_3.addWidget(self.oepnButton, 0, Qt.AlignHCenter)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
@@ -250,25 +252,25 @@ class Ui_Img(object):
         self.pushButton_3.setObjectName(u"pushButton_3")
         self.pushButton_3.setMaximumSize(QSize(100, 16777215))
 
-        self.verticalLayout_3.addWidget(self.pushButton_3)
+        self.verticalLayout_3.addWidget(self.pushButton_3, 0, Qt.AlignHCenter)
 
         self.pushButton = QPushButton(Img)
         self.pushButton.setObjectName(u"pushButton")
         self.pushButton.setMaximumSize(QSize(100, 16777215))
 
-        self.verticalLayout_3.addWidget(self.pushButton)
+        self.verticalLayout_3.addWidget(self.pushButton, 0, Qt.AlignHCenter)
 
         self.saveButton = QPushButton(Img)
         self.saveButton.setObjectName(u"saveButton")
         self.saveButton.setMaximumSize(QSize(100, 16777215))
 
-        self.verticalLayout_3.addWidget(self.saveButton)
+        self.verticalLayout_3.addWidget(self.saveButton, 0, Qt.AlignHCenter)
 
         self.headButton = QPushButton(Img)
         self.headButton.setObjectName(u"headButton")
         self.headButton.setMaximumSize(QSize(100, 16777215))
 
-        self.verticalLayout_3.addWidget(self.headButton)
+        self.verticalLayout_3.addWidget(self.headButton, 0, Qt.AlignHCenter)
 
 
         self.verticalLayout.addLayout(self.verticalLayout_3)
@@ -316,7 +318,7 @@ class Ui_Img(object):
     # setupUi
 
     def retranslateUi(self, Img):
-        Img.setWindowTitle(QCoreApplication.translate("Img", u"Form", None))
+        Img.setWindowTitle(QCoreApplication.translate("Img", u"\u56fe\u7247\u67e5\u770b", None))
         self.checkBox.setText(QCoreApplication.translate("Img", u"waifu2x", None))
 #if QT_CONFIG(tooltip)
         self.ttaModel.setToolTip(QCoreApplication.translate("Img", u"\u753b\u8d28\u63d0\u5347\uff0c\u8017\u65f6\u589e\u52a0", None))
@@ -325,7 +327,7 @@ class Ui_Img(object):
         self.scaleRadio.setText(QCoreApplication.translate("Img", u"\u500d\u6570\u653e\u5927", None))
         self.scaleEdit.setText(QCoreApplication.translate("Img", u"2", None))
         self.heighRadio.setText(QCoreApplication.translate("Img", u"\u56fa\u5b9a\u957f\u5bbd", None))
-        self.label_2.setText(QCoreApplication.translate("Img", u"x", None))
+        self.label_2.setText(QCoreApplication.translate("Img", u"X", None))
         self.label_4.setText(QCoreApplication.translate("Img", u"\u964d\u566a\uff1a", None))
         self.noiseCombox.setItemText(0, QCoreApplication.translate("Img", u"3", None))
         self.noiseCombox.setItemText(1, QCoreApplication.translate("Img", u"2", None))
@@ -340,9 +342,9 @@ class Ui_Img(object):
 
         self.changeButton.setText(QCoreApplication.translate("Img", u"\u8f6c\u6362", None))
         self.label_8.setText(QCoreApplication.translate("Img", u"\u5206\u8fa8\u7387\uff1a", None))
-        self.resolutionLabel.setText(QCoreApplication.translate("Img", u"TextLabel", None))
+        self.resolutionLabel.setText(QCoreApplication.translate("Img", u"\u65e0\u4fe1\u606f", None))
         self.label_10.setText(QCoreApplication.translate("Img", u"\u5927 \u5c0f\uff1a", None))
-        self.sizeLabel.setText(QCoreApplication.translate("Img", u"TextLabel", None))
+        self.sizeLabel.setText(QCoreApplication.translate("Img", u"\u65e0\u4fe1\u606f", None))
         self.label_6.setText(QCoreApplication.translate("Img", u"\u8017\u65f6\uff1a", None))
         self.tickLabel.setText("")
         self.oepnButton.setText(QCoreApplication.translate("Img", u"\u6253\u5f00\u56fe\u7247", None))

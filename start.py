@@ -45,7 +45,7 @@ if __name__ == "__main__":
         main = BikaQtMainWindow(app)
     except Exception as es:
         print(es)
-        sys.exit(-111)
+        sys.exit(-2)
     # main.setPalette(QPalette(QColor("#464646")))
     # main.setStyleSheet(QssDataMgr().GetData("darkblack"))
     main.show()  # 显示窗体

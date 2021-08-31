@@ -17,7 +17,7 @@ class Ui_Register(object):
     def setupUi(self, Register):
         if not Register.objectName():
             Register.setObjectName(u"Register")
-        Register.resize(388, 362)
+        Register.resize(388, 412)
         self.gridLayout_2 = QGridLayout(Register)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout = QGridLayout()
@@ -26,9 +26,9 @@ class Ui_Register(object):
         self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
         self.question1 = QLabel(Register)
         self.question1.setObjectName(u"question1")
-        self.question1.setMinimumSize(QSize(60, 0))
+        self.question1.setMinimumSize(QSize(80, 0))
         self.question1.setMaximumSize(QSize(60, 16777215))
-        self.question1.setAlignment(Qt.AlignCenter)
+        self.question1.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_17.addWidget(self.question1)
 
@@ -44,9 +44,9 @@ class Ui_Register(object):
         self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
         self.question3 = QLabel(Register)
         self.question3.setObjectName(u"question3")
-        self.question3.setMinimumSize(QSize(60, 0))
+        self.question3.setMinimumSize(QSize(80, 0))
         self.question3.setMaximumSize(QSize(60, 16777215))
-        self.question3.setAlignment(Qt.AlignCenter)
+        self.question3.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_12.addWidget(self.question3)
 
@@ -62,9 +62,9 @@ class Ui_Register(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.name = QLabel(Register)
         self.name.setObjectName(u"name")
-        self.name.setMinimumSize(QSize(60, 0))
+        self.name.setMinimumSize(QSize(80, 0))
         self.name.setMaximumSize(QSize(60, 16777215))
-        self.name.setAlignment(Qt.AlignCenter)
+        self.name.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout.addWidget(self.name)
 
@@ -80,9 +80,9 @@ class Ui_Register(object):
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
         self.answer3 = QLabel(Register)
         self.answer3.setObjectName(u"answer3")
-        self.answer3.setMinimumSize(QSize(60, 0))
+        self.answer3.setMinimumSize(QSize(80, 0))
         self.answer3.setMaximumSize(QSize(60, 16777215))
-        self.answer3.setAlignment(Qt.AlignCenter)
+        self.answer3.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_11.addWidget(self.answer3)
 
@@ -98,9 +98,10 @@ class Ui_Register(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.user = QLabel(Register)
         self.user.setObjectName(u"user")
-        self.user.setMinimumSize(QSize(60, 0))
+        self.user.setMinimumSize(QSize(80, 0))
         self.user.setMaximumSize(QSize(60, 16777215))
-        self.user.setAlignment(Qt.AlignCenter)
+        self.user.setLayoutDirection(Qt.LeftToRight)
+        self.user.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_3.addWidget(self.user)
 
@@ -152,9 +153,9 @@ class Ui_Register(object):
         self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
         self.answer1 = QLabel(Register)
         self.answer1.setObjectName(u"answer1")
-        self.answer1.setMinimumSize(QSize(60, 0))
+        self.answer1.setMinimumSize(QSize(80, 0))
         self.answer1.setMaximumSize(QSize(60, 16777215))
-        self.answer1.setAlignment(Qt.AlignCenter)
+        self.answer1.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_15.addWidget(self.answer1)
 
@@ -170,9 +171,9 @@ class Ui_Register(object):
         self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
         self.birthday = QLabel(Register)
         self.birthday.setObjectName(u"birthday")
-        self.birthday.setMinimumSize(QSize(60, 0))
+        self.birthday.setMinimumSize(QSize(80, 0))
         self.birthday.setMaximumSize(QSize(60, 16777215))
-        self.birthday.setAlignment(Qt.AlignCenter)
+        self.birthday.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_18.addWidget(self.birthday)
 
@@ -188,9 +189,9 @@ class Ui_Register(object):
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
         self.answer2 = QLabel(Register)
         self.answer2.setObjectName(u"answer2")
-        self.answer2.setMinimumSize(QSize(60, 0))
+        self.answer2.setMinimumSize(QSize(80, 0))
         self.answer2.setMaximumSize(QSize(60, 16777215))
-        self.answer2.setAlignment(Qt.AlignCenter)
+        self.answer2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_13.addWidget(self.answer2)
 
@@ -206,9 +207,9 @@ class Ui_Register(object):
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
         self.question2 = QLabel(Register)
         self.question2.setObjectName(u"question2")
-        self.question2.setMinimumSize(QSize(60, 0))
+        self.question2.setMinimumSize(QSize(80, 0))
         self.question2.setMaximumSize(QSize(60, 16777215))
-        self.question2.setAlignment(Qt.AlignCenter)
+        self.question2.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_14.addWidget(self.question2)
 
@@ -224,9 +225,9 @@ class Ui_Register(object):
         self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
         self.passwd = QLabel(Register)
         self.passwd.setObjectName(u"passwd")
-        self.passwd.setMinimumSize(QSize(60, 0))
+        self.passwd.setMinimumSize(QSize(80, 0))
         self.passwd.setMaximumSize(QSize(60, 16777215))
-        self.passwd.setAlignment(Qt.AlignCenter)
+        self.passwd.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_19.addWidget(self.passwd)
 
@@ -262,7 +263,7 @@ class Ui_Register(object):
     # setupUi
 
     def retranslateUi(self, Register):
-        Register.setWindowTitle(QCoreApplication.translate("Register", u"Form", None))
+        Register.setWindowTitle(QCoreApplication.translate("Register", u"\u65b0\u7528\u6237\u6ce8\u518c", None))
         self.question1.setText(QCoreApplication.translate("Register", u"\u95ee\u98981\uff1a", None))
         self.question3.setText(QCoreApplication.translate("Register", u"\u95ee\u98983\uff1a", None))
         self.name.setText(QCoreApplication.translate("Register", u"\u7528\u6237\u540d\uff1a", None))

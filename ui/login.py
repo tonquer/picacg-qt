@@ -52,7 +52,7 @@ class Ui_Login(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.label = QLabel(Login)
         self.label.setObjectName(u"label")
-        self.label.setMinimumSize(QSize(50, 30))
+        self.label.setMinimumSize(QSize(65, 30))
         self.label.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout.addWidget(self.label)
@@ -70,7 +70,7 @@ class Ui_Login(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.label_2 = QLabel(Login)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setMinimumSize(QSize(50, 30))
+        self.label_2.setMinimumSize(QSize(65, 30))
         self.label_2.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_2.addWidget(self.label_2)

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>哔咔漫画</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_4">
@@ -40,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>353</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menusetting">
@@ -63,12 +63,12 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionsetting">
    <property name="text">
-    <string>setting</string>
+    <string>设置</string>
    </property>
   </action>
   <action name="actionabout">
    <property name="text">
-    <string>about</string>
+    <string>关于</string>
    </property>
   </action>
   <action name="actionimg_convert">
@@ -78,7 +78,7 @@
   </action>
   <action name="actionproxy">
    <property name="text">
-    <string>proxy</string>
+    <string>代理</string>
    </property>
   </action>
  </widget>

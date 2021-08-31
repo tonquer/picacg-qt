@@ -8,23 +8,25 @@ Accept = "application/vnd.picacomic.com.v1+json"
 Agent = "okhttp/3.8.1"
 Platform = "android"
 
-ThreadNum = 10                                # 线程
-DownloadThreadNum = 5                        # 下载线程
-ImageQuality = "original"                    # 画质，original, low, medium, high
+IsUpdate = 0                   # 是否在启动时检查更新
+Language = 'Chinese'           # 选择的语言
+ThreadNum = 10                 # 线程
+DownloadThreadNum = 5          # 下载线程
+ImageQuality = "original"      # 画质，original, low, medium, high
 Uuid = "defaultUuid"
-IsHttpProxy = 0
-HttpProxy = ""                               # 代理
-ChatProxy = 1                             # 聊天室启用代理
+IsHttpProxy = 0                # 是否启用代理
+HttpProxy = ""                 # 代理
+ChatProxy = 1                  # 聊天室启用代理
 ChatSavePath = "chat"
 
 SavePath = ''
-SavePathDir = "commies"       # 下载目录
-ResetCnt = 5                  # 下载重试次数
+SavePathDir = "commies"        # 下载目录
+ResetCnt = 5                   # 下载重试次数
 
-IsUseCache = True             # 是否使用cache
-CachePathDir = "cache"        # cache目录
-# CacheExpired = 24 * 60 * 60    # cache过期时间24小时
-PreLoading = 10    # 预加载5页
+IsUseCache = True              # 是否使用cache
+CachePathDir = "cache"         # cache目录
+# CacheExpired = 24 * 60 * 60  # cache过期时间24小时
+PreLoading = 10                # 预加载5页
 
 IsLoadingPicture = True
 
@@ -49,7 +51,7 @@ IsOpenWaifu = 0
 
 ThemeText = ""  # 主题
 
-LogIndex = 0   # Warn Info Debug
+LogIndex = 0    # Warn Info Debug
 IsTips = 1
 
 ChatSendAction = 2

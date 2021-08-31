@@ -93,7 +93,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.user_name.installEventFilter(self)
         self.user_icon.installEventFilter(self)
 
-    def UpdateFavorityIcon(self):
+    def UpdateFavoriteIcon(self):
         p = QPixmap()
         if self.isFavorite:
             p.loadFromData(DataMgr.GetData("icon_like"))
@@ -179,7 +179,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.views.setText(str(info.totalViews))
             self.isFavorite = info.isFavourite
             self.isLike = info.isLiked
-            self.UpdateFavorityIcon()
+            self.UpdateFavoriteIcon()
             self.UpdateLikeIcon()
             self.picture.setText("图片加载中...")
             self.tabWidget.setTabText(1, "评论({})".format(str(info.commentsCount)))
@@ -287,10 +287,10 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.starButton.setText(str(int(self.starButton.text()) - 1))
         self.UpdateLikeIcon()
 
-    def AddFavority(self):
+    def AddFavorite(self):
         self.AddHttpTask(req.FavoritesAdd(self.bookId))
         self.isFavorite = not self.isFavorite
-        self.UpdateFavorityIcon()
+        self.UpdateFavoriteIcon()
         if self.isFavorite:
             QtBubbleLabel.ShowMsgEx(self, "添加收藏成功")
             QtOwner().owner.favoriteForm.AddFavorites(self.bookId)
