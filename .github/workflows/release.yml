@@ -66,7 +66,7 @@ jobs:
       run: |
         pyinstaller -F -w start.py --add-binary waifu2x.so:.
         mv dist bika
-        cp -r data models resources bika/
+        cp -r data models resources translations bika/
         rm bika/resources/*.py -rf
         tar -zcvf ${{ env.PACKAGENAME }}.tar.gz bika/
     - name: Upload
@@ -112,7 +112,7 @@ jobs:
         pyinstaller --clean --log-level TRACE --onedir --name PicACG \
             --add-binary waifu2x.so:. --hidden-import PySide2 --hidden-import requests \
             --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
-            --hidden-import conf --hidden-import resources --hidden-import src \
+            --hidden-import conf --hidden-import resources --hidden-import translations --hidden-import src \
             --hidden-import src.index --hidden-import src.qt --hidden-import src.qt.chat \
             --hidden-import src.qt.com --hidden-import src.qt.download \
             --hidden-import src.qt.main --hidden-import src.qt.menu \
@@ -124,7 +124,7 @@ jobs:
         rm -rf dist/PicACG
         cp Icon.icns dist/
         ln -s /Applications/   dist/Applications
-        cp -avf data models resources dist/PicACG.app/Contents/MacOS
+        cp -avf data models resources translations dist/PicACG.app/Contents/MacOS
         rm -rf dist/PicACG.app/Contents/MacOS/resources/*.py
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
             --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
@@ -174,6 +174,7 @@ jobs:
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path models -Destination bika/
         Copy-Item -Verbose -Recurse -Path resources -Destination bika/
+        Copy-Item -Verbose -Recurse -Path translations -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
         cp LICENSE bika\
         cp README.md bika\

@@ -34,7 +34,7 @@ jobs:
       run: |
         pyinstaller -F -w start.py --add-binary waifu2x.so:.
         mv dist bika
-        cp -r data models resources bika/
+        cp -r data models resources translations bika/
         rm bika/resources/*.py -rf
         tar -zcvf ${{ env.PACKAGENAME }}.tar.gz bika/
     - name: Upload

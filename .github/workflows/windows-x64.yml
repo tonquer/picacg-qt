@@ -39,6 +39,7 @@ jobs:
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path models -Destination bika/
         Copy-Item -Verbose -Recurse -Path resources -Destination bika/
+        Copy-Item -Verbose -Recurse -Path translations -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
         cp LICENSE bika\
         cp README.md bika\

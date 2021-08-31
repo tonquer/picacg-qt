@@ -111,7 +111,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
         self.userId = self.settings.value("UserId")
         self.passwd = self.settings.value("Passwd2")
-        self.passwd = base64.b64decode(self.passwd).decode("utf-8") if self.passwd else self.passwd
+        self.userId = self.userId if isinstance(self.userId, str) else ""
+        self.passwd = base64.b64decode(self.passwd).decode("utf-8") if self.passwd else ""
         themId = self.GetSettingV("ThemeId", 0)
         self.themeBox.setCurrentIndex(themId)
         self.SetTheme()
