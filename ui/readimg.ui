@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>326</width>
+    <width>299</width>
     <height>705</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">#ReadImg{background-color:white;}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <property name="leftMargin">
@@ -394,68 +394,58 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_5">
-         <property name="styleSheet">
-          <string notr="true">color: #ee2a24</string>
-         </property>
-         <property name="text">
-          <string>翻页模式</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
-          <widget class="QRadioButton" name="radioButton">
+          <widget class="QLabel" name="label_5">
+           <property name="maximumSize">
+            <size>
+             <width>90</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="text">
-            <string>左右</string>
+            <string>翻页模式：</string>
            </property>
-           <property name="checked">
-            <bool>false</bool>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
            </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="radioButton_2">
-           <property name="text">
-            <string>左右双页</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
-         <item>
-          <widget class="QRadioButton" name="radioButton_3">
-           <property name="text">
-            <string>上下滚动</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButton_4">
-           <property name="text">
-            <string>右左双页</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>上下滚动</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>左右</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>左右双页</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>右左双页</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>左右滚动</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>右左滚动</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
@@ -754,8 +744,8 @@
    <slot>OpenWaifu()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>72</x>
-     <y>209</y>
+     <x>85</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -806,7 +796,7 @@
      <y>201</y>
     </hint>
     <hint type="destinationlabel">
-     <x>409</x>
+     <x>298</x>
      <y>203</y>
     </hint>
    </hints>
@@ -822,8 +812,24 @@
      <y>445</y>
     </hint>
     <hint type="destinationlabel">
-     <x>494</x>
+     <x>298</x>
      <y>433</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>ReadImg</receiver>
+   <slot>ChangeReadMode()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>405</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>361</y>
     </hint>
    </hints>
   </connection>
@@ -845,6 +851,7 @@
   <slot>Waifu2xSave()</slot>
   <slot>Waifu2xCancle()</slot>
   <slot>ScalePicture()</slot>
+  <slot>ChangeReadMode()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>

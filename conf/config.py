@@ -8,7 +8,7 @@ Accept = "application/vnd.picacomic.com.v1+json"
 Agent = "okhttp/3.8.1"
 Platform = "android"
 
-IsUpdate = 0                   # 是否在启动时检查更新
+IsUpdate = 1                   # 是否在启动时检查更新
 Language = 'Chinese'           # 选择的语言
 ThreadNum = 10                 # 线程
 DownloadThreadNum = 5          # 下载线程
@@ -61,9 +61,14 @@ DownloadNoise = 3
 DownloadScale = 2.0
 DownloadAuto = 0
 
+# 看图模式
 LookModel = 0
 LookNoise = 3
 LookScale = 2.0
+
+LookReadMode = 0      # 看图模式
+# LookReadScale = 2     # 默认缩放
+LookReadFull = 0      # 是否全屏
 
 # 代理与分流相关
 ProxyUrl = "https://github.com/tonquer/picacg-windows/discussions/48"

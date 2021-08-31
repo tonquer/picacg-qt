@@ -19,7 +19,7 @@ class SmoothMode(Enum):
 class QtComGraphicsView(QGraphicsView):
     def __init__(self, parent):
         super(self.__class__, self).__init__(parent)
-        self.fps = 60
+        self.fps = 90
         self.duration = 400
         self.stepsTotal = 0
         self.stepRatio = 1.5
@@ -34,7 +34,7 @@ class QtComGraphicsView(QGraphicsView):
 
     def wheelEvent(self, e):
         from src.qt.read.qtreadimg import ReadMode
-        if self.parent().qtTool.stripModel not in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll]:
+        if self.parent().qtTool.stripModel not in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             if e.angleDelta().y() < 0:
                 self.parent().qtTool.NextPage()
             else:
@@ -83,7 +83,11 @@ class QtComGraphicsView(QGraphicsView):
                         Qt.NoModifier)
         # print(e)
         # 将构造出来的滚轮事件发送给app处理
-        QApplication.sendEvent(self.verticalScrollBar(), e)
+        from src.qt.read.qtreadimg import ReadMode
+        if self.parent().qtTool.stripModel in [ReadMode.UpDown]:
+            QApplication.sendEvent(self.verticalScrollBar(), e)
+        else:
+            QApplication.sendEvent(self.horizontalScrollBar(), e)
         # 如果队列已空，停止滚动
         if not self.stepsLeftQueue:
             self.smoothMoveTimer.stop()

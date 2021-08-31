@@ -116,6 +116,10 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         themId = self.GetSettingV("ThemeId", 0)
         self.themeBox.setCurrentIndex(themId)
         self.SetTheme()
+
+        config.LookReadMode = self.GetSettingV("Read/LookReadMode", config.LookReadMode)
+        # config.LookReadScale = self.GetSettingV("Read/LookReadScale", config.LookReadScale)
+        config.LookReadFull = self.GetSettingV("Read/LookReadFull", config.LookReadFull)
         return
 
     def GetSettingV(self, key, defV=None):
@@ -171,11 +175,13 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         QtOwner().owner.app.setPalette(QPalette(QColor(data[20:27])))
         QtOwner().owner.app.setStyleSheet(data)
         if text == "flatblack":
+            QtOwner().owner.qtReadImg.qtTool.setAttribute(Qt.WA_StyledBackground, True)
             QtOwner().owner.qtReadImg.qtTool.setAutoFillBackground(True)
-            QtOwner().owner.qtReadImg.qtTool.setStyleSheet("#ReadImg{background-color:white;}")
+            QtOwner().owner.qtReadImg.qtTool.setPalette(QPalette(QColor(data[20:27])))
         elif text == "flatwhite":
+            QtOwner().owner.qtReadImg.qtTool.setAttribute(Qt.WA_StyledBackground, True)
             QtOwner().owner.qtReadImg.qtTool.setAutoFillBackground(True)
-            QtOwner().owner.qtReadImg.qtTool.setStyleSheet("#ReadImg{background-color:black;}")
+            QtOwner().owner.qtReadImg.qtTool.setPalette(QPalette(QColor(data[20:27])))
 
     def SaveSetting(self):
 

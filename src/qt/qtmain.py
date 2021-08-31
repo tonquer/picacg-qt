@@ -151,9 +151,10 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.setCursor(QCursor(pix))
         ToolUtil.SetIcon(self)
 
-        self.qtReadImg = QtReadImg()
         self.settingForm = QtSetting(self)
+        self.qtReadImg = QtReadImg()
         self.settingForm.LoadSetting()
+        self.qtReadImg.LoadSetting()
 
         self.aboutForm = QtAbout()
 

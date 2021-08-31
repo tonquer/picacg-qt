@@ -96,24 +96,18 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.setAutoFillBackground(True)
         # self.setPalette(palette)
         # self.setAttribute(Qt.WA_TranslucentBackground, False)
-        self.radioButton.installEventFilter(self)
-        self.radioButton_2.installEventFilter(self)
         self.downloadMaxSize = 0
         self.downloadSize = 0
         self.slider = QtCustomSlider(self)
         self.horizontalLayout_7.addWidget(self.slider)
         self.SetWaifu2xCancle()
         self.scaleBox.installEventFilter(self)
-        self.radioButton.installEventFilter(self)
-        self.radioButton_2.installEventFilter(self)
-        self.radioButton_3.installEventFilter(self)
-        self.radioButton_4.installEventFilter(self)
         self.zoomSlider.setMaximum(500)
-        self.buttonGroup.buttonClicked.connect(self.SwitchPicture)
-        self.buttonGroup.setId(self.radioButton, 1)
-        self.buttonGroup.setId(self.radioButton_2, 2)
-        self.buttonGroup.setId(self.radioButton_3, 3)
-        self.buttonGroup.setId(self.radioButton_4, 4)
+        # self.buttonGroup.buttonClicked.connect(self.SwitchPicture)
+        # self.buttonGroup.setId(self.radioButton, 1)
+        # self.buttonGroup.setId(self.radioButton_2, 2)
+        # self.buttonGroup.setId(self.radioButton_3, 3)
+        # self.buttonGroup.setId(self.radioButton_4, 4)
         # self.buttonGroup.setId(self.radioButton_5, 5)
         # self.buttonGroup.setId(self.radioButton_6, 6)
 
@@ -232,31 +226,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.readImg.ShowImg()
         self.readImg.ShowOtherPage()
         return
-
-    def SwitchPicture(self):
-        from src.qt.read.qtreadimg import ReadMode
-        self.graphicsGroup.setPos(0, 0)
-
-        self.stripModel = ReadMode(self.buttonGroup.checkedId())
-        if self.stripModel == ReadMode.LeftRight:
-            self.imgFrame.SetPixIem(1, QPixmap())
-            self.imgFrame.SetPixIem(2, QPixmap())
-            self.zoomSlider.setValue(100)
-            self.scaleCnt = 0
-        elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
-            self.zoomSlider.setValue(100)
-            self.scaleCnt = 0
-            self.imgFrame.SetPixIem(0, QPixmap())
-            self.imgFrame.SetPixIem(1, QPixmap())
-            self.imgFrame.SetPixIem(2, QPixmap())
-            self.readImg.CheckLoadPicture()
-            self.readImg.ShowImg()
-            self.readImg.ShowOtherPage()
-        else:
-            self.zoomSlider.setValue(120)
-            self.scaleCnt = 2
-            self.readImg.ShowOtherPage()
-        self.imgFrame.ScalePicture()
 
     def ReturnPage(self):
         self.readImg.hide()
@@ -402,9 +371,12 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         if self.readImg.windowState() == Qt.WindowFullScreen:
             self.readImg.showNormal()
             self.fullButton.setText("全屏")
+            config.LookReadFull = 0
         else:
             self.readImg.showFullScreen()
             self.fullButton.setText("退出全屏")
+            config.LookReadFull = 1
+        QtOwner().SetV("Read/LookReadFull", config.LookReadFull)
 
     def Waifu2xSave(self):
         self.SetWaifu2xCancle(True)
@@ -454,6 +426,42 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         elif ev.type() == QEvent.KeyPress:
             return True
         return False
+
+    def ChangeReadMode(self, index):
+        from src.qt.read.qtreadimg import ReadMode
+        self.graphicsGroup.setPos(0, 0)
+        self.stripModel = ReadMode(index)
+        if self.stripModel == ReadMode.LeftRight:
+            self.imgFrame.SetPixIem(1, QPixmap())
+            self.imgFrame.SetPixIem(2, QPixmap())
+            self.zoomSlider.setValue(100)
+            self.scaleCnt = 0
+        elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+            self.zoomSlider.setValue(100)
+            self.scaleCnt = 0
+            self.imgFrame.SetPixIem(0, QPixmap())
+            self.imgFrame.SetPixIem(1, QPixmap())
+            self.imgFrame.SetPixIem(2, QPixmap())
+            self.readImg.CheckLoadPicture()
+            self.readImg.ShowImg()
+            self.readImg.ShowOtherPage()
+        elif self.stripModel in [ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
+            self.zoomSlider.setValue(100)
+            self.scaleCnt = 0
+            self.imgFrame.graphicsView.verticalScrollBar().blockSignals(True)
+            self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(False)
+            self.readImg.CheckLoadPicture()
+            self.readImg.ShowImg()
+            self.readImg.ShowOtherPage()
+        else:
+            self.zoomSlider.setValue(120)
+            self.scaleCnt = 2
+            self.imgFrame.graphicsView.verticalScrollBar().blockSignals(False)
+            self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(True)
+            self.readImg.ShowOtherPage()
+        self.imgFrame.ScalePicture()
+        config.LookReadMode = index
+        QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
 
 
 

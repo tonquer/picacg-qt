@@ -1,13 +1,11 @@
-# picacg-windows(哔咔漫画) | [ehentai-windows(E绅士)](https://github.com/tonquer/ehentai-windows)  
+(哔咔漫画) | [(E绅士)](https://github.com/tonquer/ehentai-windows)  
 
 [![GitHub](https://img.shields.io/github/license/tonquer/picacg-windows)](https://raw.githubusercontent.com/tonquer/picacg-windows/master/LICENSE.txt) 
-[![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/windows-x64?label=Windows)](https://github.com/tonquer/picacg-windows/actions)
-[![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/macos-x64?label=MacOS)](https://github.com/tonquer/picacg-windows/actions)
-[![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/linux-x64?label=Linux)](https://github.com/tonquer/picacg-windows/actions)  
+[![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/CI?label=CI)](https://github.com/tonquer/picacg-windows/actions)
 ![Relese](https://img.shields.io/badge/Python-3.7.9%2B-brightgreen)
 [![Relese](https://img.shields.io/github/v/release/tonquer/picacg-windows)](https://github.com/tonquer/picacg-windows/releases)
-[![Relese](https://img.shields.io/github/downloads/tonquer/picacg-windows/latest/total)](https://github.com/tonquer/picacg-windows/releases)
-[![Relese](https://img.shields.io/github/downloads/tonquer/picacg-windows/total)](https://github.com/tonquer/picacg-windows/releases)
+![Relese](https://img.shields.io/github/downloads/tonquer/picacg-windows/latest/total)
+![Relese](https://img.shields.io/github/downloads/tonquer/picacg-windows/total)
 
 - 哔咔漫画PC客户端（支持window、Linux和macOS），界面使用QT。
 - 该项目仅供技术研究使用，请勿用于其他用途。
@@ -86,6 +84,8 @@
   5. cd bika && chmod +x start
   6. ./start
   7. 要想使用waifu2x请确定你的设备支持vulkan，然后安装vulkan驱动包，sudo apt install mesa-vulkan-drivers
+  ### Beta版本
+  1. 请在此处下载 https://github.com/tonquer/picacg-windows/actions
 
 ## 如何编译
   ### 使用Git Action编译
