@@ -61,7 +61,7 @@
           <widget class="QLabel" name="label">
            <property name="minimumSize">
             <size>
-             <width>50</width>
+             <width>65</width>
              <height>30</height>
             </size>
            </property>
@@ -94,7 +94,7 @@
           <widget class="QLabel" name="label_2">
            <property name="minimumSize">
             <size>
-             <width>50</width>
+             <width>65</width>
              <height>30</height>
             </size>
            </property>
@@ -306,7 +306,4 @@
   <slot>SpeedTest()</slot>
   <slot>OpenProxy()</slot>
  </slots>
- <buttongroups>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>

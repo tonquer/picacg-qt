@@ -318,7 +318,7 @@ class Ui_Img(object):
     # setupUi
 
     def retranslateUi(self, Img):
-        Img.setWindowTitle(QCoreApplication.translate("Img", u"waifu2x", None))
+        Img.setWindowTitle(QCoreApplication.translate("Img", u"\u56fe\u7247\u67e5\u770b", None))
         self.checkBox.setText(QCoreApplication.translate("Img", u"waifu2x", None))
 #if QT_CONFIG(tooltip)
         self.ttaModel.setToolTip(QCoreApplication.translate("Img", u"\u753b\u8d28\u63d0\u5347\uff0c\u8017\u65f6\u589e\u52a0", None))

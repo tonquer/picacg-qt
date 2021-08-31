@@ -38,35 +38,76 @@ class QtOwner(Singleton):
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, app):
-        self.language = QSettings('config.ini', QSettings.IniFormat).value('Language', 'Chinese')
-        config.Language = self.language
+        config.Language = QSettings('config.ini', QSettings.IniFormat).value('Language', 'Chinese')
         # self.language = 'English'
         # self.language = config.Language
 
-        self.translator_setting = None
         self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
-        # self.translator_about = None
+        self.translator_bookinfo = None
+        self.translator_booksimple = None
+        self.translator_category = None
+        self.translator_chatroom = None
+        self.translator_chatroomsg = None
+        self.translator_comment = None
+        self.translator_download = None
+        self.translator_favorite = None
+        self.translator_fried = None
+        self.translator_fried_msg = None
+        self.translator_game = None
+        self.translator_gameinfo = None
+        self.translator_history = None
+        self.translator_img = None
+        self.translator_index = None
+        self.translator_leavemsg = None
+        self.translator_loading = None
+        self.translator_login = None
+        self.translator_login_proxy = None
+        self.translator_main = None
+        self.translator_qtespinfo = None
+        self.translator_rank = None
+        self.translator_readimg = None
+        self.translator_register = None
+        self.translator_search = None
+        self.translator_setting = None
+        self.translator_user = None
+        self.translator_user_info = None
 
-        if self.language == 'Chinese':
-            pass
-        elif self.language == 'English':
+        if config.Language == 'English':
             self.loadTrans(app, 'about', 'en')
+            self.loadTrans(app, 'bookinfo', 'en')
+            # self.loadTrans(app, 'booksimple', 'en')
+            # self.loadTrans(app, 'chatroom', 'en')
+            # self.loadTrans(app, 'chatroomsg', 'en')
+            # self.loadTrans(app, 'comment', 'en')
+            self.loadTrans(app, 'download', 'en')
+            # self.loadTrans(app, 'favorite', 'en')
+            # self.loadTrans(app, 'fried', 'en')
+            # self.loadTrans(app, 'fried_msg', 'en')
+            # self.loadTrans(app, 'game', 'en')
+            # self.loadTrans(app, 'gameinfo', 'en')
+            # self.loadTrans(app, 'history', 'en')
+            self.loadTrans(app, 'img', 'en')
+            self.loadTrans(app, 'index', 'en')
+            # self.loadTrans(app, 'leavemsg', 'en')
+            # self.loadTrans(app, 'loading', 'en')
+            self.loadTrans(app, 'login', 'en')
+            self.loadTrans(app, 'login_proxy', 'en')
+            self.loadTrans(app, 'main', 'en')
+            # self.loadTrans(app, 'qtespinfo', 'en')
+            self.loadTrans(app, 'rank', 'en')
+            # self.loadTrans(app, 'readimg', 'en')
+            self.loadTrans(app, 'register', 'en')
+            self.loadTrans(app, 'search', 'en')
             self.loadTrans(app, 'setting', 'en')
-            # self.loadTrans()
-
-            # self.translator_setting = QTranslator()
-            # self.translator_setting.load(QLocale(), "./translations/setting_en.qm")
-            # if not self.app.installTranslator(self.translator_setting):
-            #     Log.Warn('Setting translation load failed.')
+            self.loadTrans(app, 'user', 'en')
+            # self.loadTrans(app, 'user_info', 'en')
+        # elif config.Language == 'Chinese':
+        else:
+            pass
+        # self.translator_setting = QTranslator()
+        # self.translator_setting.load(QLocale(), "./translations/setting_en.qm")
+        # if not self.app.installTranslator(self.translator_setting):
+        #     Log.Warn('Setting translation load failed.')
 
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
@@ -101,7 +142,6 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.userInfo = None
         self.setupUi(self)
-        self.setWindowTitle("哔咔漫画")
         self.msgForm = QtBubbleLabel(self)
 
         self.qtTask = QtTask()
@@ -165,6 +205,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.loginForm.userIdEdit.setText(self.settingForm.userId)
         self.loginForm.passwdEdit.setText(self.settingForm.passwd)
 
+        # self.menusetting.
         self.menusetting.triggered.connect(self.OpenSetting)
         self.menuabout.triggered.connect(self.OpenAbout)
         # self.setStyleSheet("background-color:#242629;")
@@ -205,10 +246,24 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         super().closeEvent(a0)
-        userId = self.loginForm.userIdEdit.text()
-        passwd = self.loginForm.passwdEdit.text()
-        self.bookInfoForm.close()
-        self.settingForm.ExitSaveSetting(self.size(), self.bookInfoForm.size(), self.qtReadImg.size(), userId, passwd)
+        if config.Language == 'English':
+            exitWinTitle = 'Confirm'
+            exitWinInfo = 'Are you sure to quit?'
+        else:
+            exitWinTitle = '提示'
+            exitWinInfo = '确定要退出吗？'
+
+        # close confirm window
+        reply = QMessageBox.question(self, exitWinTitle, exitWinInfo,
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            a0.accept()
+            userId = self.loginForm.userIdEdit.text()
+            passwd = self.loginForm.passwdEdit.text()
+            self.bookInfoForm.close()
+            self.settingForm.ExitSaveSetting(self.size(), self.bookInfoForm.size(), self.qtReadImg.size(), userId, passwd)
+        else:
+            a0.ignore()
 
     def Init(self):
         IsCanUse = False
@@ -251,14 +306,14 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         return
 
     def OpenSetting(self, action):
-        if action.text() == "proxy":
-            self.loginProxyForm.show()
-        elif action.text() == 'setting':
+        if action.text() in ("设置", "Settings"):
             self.settingForm.show()
+        elif action.text() in ("代理", "Proxy"):
+            self.loginProxyForm.show()
         pass
 
     def OpenAbout(self, action):
-        if action.text() == "about":
+        if action.text() in ("关于", "About"):
             self.aboutForm.show()
         elif action.text() == "waifu2x":
             from src.qt.com.qtimg import QtImgMgr

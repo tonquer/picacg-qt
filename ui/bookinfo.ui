@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>709</width>
+    <width>844</width>
     <height>963</height>
    </rect>
   </property>
@@ -288,7 +288,7 @@ QListWidget::item {
                     <widget class="QLabel" name="label_7">
                      <property name="maximumSize">
                       <size>
-                       <width>40</width>
+                       <width>55</width>
                        <height>20</height>
                       </size>
                      </property>
@@ -579,7 +579,7 @@ QListWidget::item {
    <sender>favoriteButton</sender>
    <signal>clicked()</signal>
    <receiver>BookInfo</receiver>
-   <slot>AddFavority()</slot>
+   <slot>AddFavorite()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>392</x>
@@ -626,7 +626,7 @@ QListWidget::item {
  </connections>
  <slots>
   <slot>AddDownload()</slot>
-  <slot>AddFavority()</slot>
+  <slot>AddFavorite()</slot>
   <slot>StartRead()</slot>
   <slot>AddBookLike()</slot>
   <slot>ChangeTab()</slot>

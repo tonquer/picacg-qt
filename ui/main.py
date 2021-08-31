@@ -44,7 +44,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 353, 23))
+        self.menubar.setGeometry(QRect(0, 0, 353, 26))
         self.menusetting = QMenu(self.menubar)
         self.menusetting.setObjectName(u"menusetting")
         self.menuabout = QMenu(self.menubar)
@@ -70,11 +70,11 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.actionsetting.setText(QCoreApplication.translate("MainWindow", u"setting", None))
-        self.actionabout.setText(QCoreApplication.translate("MainWindow", u"about", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u54d4\u5494\u6f2b\u753b", None))
+        self.actionsetting.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
+        self.actionabout.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
         self.actionimg_convert.setText(QCoreApplication.translate("MainWindow", u"waifu2x", None))
-        self.actionproxy.setText(QCoreApplication.translate("MainWindow", u"proxy", None))
+        self.actionproxy.setText(QCoreApplication.translate("MainWindow", u"\u4ee3\u7406", None))
         self.menusetting.setTitle(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.menuabout.setTitle(QCoreApplication.translate("MainWindow", u"\u5de5\u5177", None))
     # retranslateUi

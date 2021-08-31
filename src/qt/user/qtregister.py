@@ -6,6 +6,7 @@ from src.qt.com.qtbubblelabel import QtBubbleLabel
 from src.qt.com.qtloading import QtLoading
 from src.server import req, QtTask
 from src.util.status import Status
+from src.util import ToolUtil
 from ui.register import Ui_Register
 
 
@@ -14,8 +15,8 @@ class QtRegister(QtWidgets.QWidget, Ui_Register):
         super(self.__class__, self).__init__()
         Ui_Register.__init__(self)
         self.setupUi(self)
+        ToolUtil.SetIcon(self)
         self.setWindowModality(Qt.ApplicationModal)
-        self.setWindowTitle("注册")
         self.loadingForm = QtLoading(self)
         reg = QRegExp("^[A-Z0-9a-z\\.\\_]{1,16}$")
         validator = QRegExpValidator(reg, self.userEdit)

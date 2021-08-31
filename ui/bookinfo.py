@@ -21,7 +21,7 @@ class Ui_BookInfo(object):
     def setupUi(self, BookInfo):
         if not BookInfo.objectName():
             BookInfo.setObjectName(u"BookInfo")
-        BookInfo.resize(709, 963)
+        BookInfo.resize(844, 963)
         self.gridLayout_2 = QGridLayout(BookInfo)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.stackedWidget = QStackedWidget(BookInfo)
@@ -202,7 +202,7 @@ class Ui_BookInfo(object):
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.label_7 = QLabel(self.page)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setMaximumSize(QSize(40, 20))
+        self.label_7.setMaximumSize(QSize(55, 20))
 
         self.horizontalLayout_9.addWidget(self.label_7)
 
@@ -347,7 +347,7 @@ class Ui_BookInfo(object):
         self.retranslateUi(BookInfo)
         self.startRead.clicked.connect(BookInfo.StartRead)
         self.starButton.clicked.connect(BookInfo.AddBookLike)
-        self.favoriteButton.clicked.connect(BookInfo.AddFavority)
+        self.favoriteButton.clicked.connect(BookInfo.AddFavorite)
         self.downloadButton.clicked.connect(BookInfo.AddDownload)
         self.tabWidget.currentChanged.connect(BookInfo.ChangeTab)
 

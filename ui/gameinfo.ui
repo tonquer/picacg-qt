@@ -372,7 +372,7 @@
  </connections>
  <slots>
   <slot>AddDownload()</slot>
-  <slot>AddFavority()</slot>
+  <slot>AddFavorite()</slot>
   <slot>StartRead()</slot>
   <slot>CopyIos()</slot>
   <slot>CopyAndroid()</slot>

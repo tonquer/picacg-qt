@@ -57,7 +57,6 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
         self.bookId = ""
         self.epsId = 0
         self.curIndex = 0
-        self.setWindowTitle("图片查看")
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.resize(800, 900)
         self.checkBox.setChecked(True)

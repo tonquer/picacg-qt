@@ -25,12 +25,33 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         self.convertList = []
         self.convertingList = []
 
+        if config.Language == "English":
+            openDirText = "Open Folder"
+            pauseText = "Pause"
+            removeText = "Delete History"
+            removeFileText = "Delete History and File"
+            selectEspText = "Select Download Chapters"
+            startText = "Start"
+            startConvertText = "Start Conversion"
+            pauseConvertText = "Pause Conversion"
+            HorizontalHeaderLabels = ["id", "Title", "Download Status", "Download Progress", "Download Chapters", "Download Speed", "Convert Progress", "Covert Chapters", "Covert Time", "Convert Status"]
+        else:
+            openDirText = "打开目录"
+            pauseText = "暂停"
+            removeText = "刪除记录"
+            removeFileText = "刪除记录和文件"
+            selectEspText = "选择下载章节"
+            startText = "开始"
+            startConvertText = "开始转换"
+            pauseConvertText = "暂停转换"
+            HorizontalHeaderLabels = ["id", "标题", "下载状态", "下载进度", "下载章节", "下载速度", "转换进度", "转换章节", "转换耗时", "转换状态"]
+
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.tableWidget.setColumnCount(10)
-        self.tableWidget.setHorizontalHeaderLabels(["id", "标题", "下载状态", "下载进度", "下载章节", "下载速度", "转换进度", "转换章节", "转换耗时", "转换状态"])
+        self.tableWidget.setHorizontalHeaderLabels(HorizontalHeaderLabels)
         self.timer = QTimer(self.tableWidget)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.UpdateTable)
@@ -41,31 +62,31 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
 
         self.tableWidget.customContextMenuRequested.connect(self.SelectMenu)
 
-        self.openDirAction = QAction("打开目录", self)
+        self.openDirAction = QAction(openDirText, self)
         self.openDirAction.triggered.connect(self.ClickOpenFilePath)
 
-        self.pauseAction = QAction("暂停", self)
+        self.pauseAction = QAction(pauseText, self)
         self.pauseAction.triggered.connect(self.ClickPause)
 
-        self.removeAction = QAction("刪除记录", self)
+        self.removeAction = QAction(removeText, self)
         self.removeAction.triggered.connect(self.DelRecording)
 
-        self.removeFileAction = QAction("刪除记录和文件", self)
+        self.removeFileAction = QAction(removeFileText, self)
         self.removeFileAction.triggered.connect(self.DelRecordingAndFile)
 
-        self.openDirAction = QAction("打开目录", self)
-        self.openDirAction.triggered.connect(self.ClickOpenFilePath)
+        # self.openDirAction = QAction("打开目录", self)
+        # self.openDirAction.triggered.connect(self.ClickOpenFilePath)
 
-        self.selectEpsAction = QAction("选择下载章节", self)
+        self.selectEpsAction = QAction(selectEspText, self)
         self.selectEpsAction.triggered.connect(self.ClickDownloadEps)
 
-        self.startAction = QAction("开始", self)
+        self.startAction = QAction(startText, self)
         self.startAction.triggered.connect(self.ClickStart)
 
-        self.startConvertAction = QAction("开始转换", self)
+        self.startConvertAction = QAction(startConvertText, self)
         self.startConvertAction.triggered.connect(self.ClickConvertStart)
 
-        self.pauseConvertAction = QAction("暂停转换", self)
+        self.pauseConvertAction = QAction(pauseConvertText, self)
         self.pauseConvertAction.triggered.connect(self.ClickConvertPause)
 
         self.tableWidget.doubleClicked.connect(self.OpenBookInfo)
