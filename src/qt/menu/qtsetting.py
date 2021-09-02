@@ -7,7 +7,7 @@ from PySide2.QtWidgets import QFileDialog
 
 from conf import config
 from qss.qss import QssDataMgr
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.qtmain import QtOwner
 from src.util import Log, ToolUtil
 from ui.setting import Ui_Setting
@@ -234,7 +234,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
         Log.UpdateLoggingLevel()
         # QtWidgets.QMessageBox.information(self, '保存成功', "成功", QtWidgets.QMessageBox.Yes)
-        QtBubbleLabel.ShowMsgEx(self, "保存成功")
+        QtMsgLabel.ShowMsgEx(self, "保存成功")
         self.LoadSetting()
 
     def SelectSavePath(self):

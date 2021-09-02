@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QDesktopWidget, QMessageBox, QMenu
 
 from conf import config
 from src.index.book import BookMgr
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtloading import QtLoading
 from src.qt.qtmain import QtOwner
 from src.qt.read.qtreadimg_frame import QtImgFrame
@@ -283,7 +283,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                 self.curIndex = self.maxPic - 1
             elif 0 < pageIndex < self.maxPic:
                 self.curIndex = pageIndex
-                QtBubbleLabel().ShowMsgEx(self, "继续阅读第{}页".format(pageIndex+1))
+                QtMsgLabel().ShowMsgEx(self, "继续阅读第{}页".format(pageIndex+1))
             self.qtTool.UpdateSlider()
             self.CheckLoadPicture()
             self.qtTool.InitSlider(self.maxPic)

@@ -8,7 +8,7 @@ from PySide2.QtGui import QColor, QPainter, QPixmap, QDoubleValidator, \
 from PySide2.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
 
 from conf import config
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.util import Singleton, ToolUtil, Log
@@ -211,7 +211,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
     def CopyPicture(self):
         clipboard = QApplication.clipboard()
         clipboard.setPixmap(self.pixMap)
-        QtBubbleLabel.ShowMsgEx(self, "复制成功")
+        QtMsgLabel.ShowMsgEx(self, "复制成功")
         return
 
     def ReduceScalePic(self):
@@ -378,5 +378,5 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
         if not data:
             return
         QtOwner().owner.userForm.UpdatePictureData(data)
-        QtBubbleLabel.ShowMsgEx(self, "头像上传中......")
+        QtMsgLabel.ShowMsgEx(self, "头像上传中......")
         return

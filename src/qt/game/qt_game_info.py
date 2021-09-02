@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, 
 from conf import config
 from qss.qss import QssDataMgr
 from resources.resources import DataMgr
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.com.qtloading import QtLoading
 from src.qt.util.qttask import QtTaskBase
@@ -35,7 +35,7 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.lastEpsId = -1
         self.pictureData = None
 
-        self.msgForm = QtBubbleLabel(self)
+        self.msgForm = QtMsgLabel(self)
         self.picture.installEventFilter(self)
         self.title.setWordWrap(True)
         self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)

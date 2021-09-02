@@ -45,7 +45,7 @@ class QtMsgLabel(QWidget):
         self.close()
 
     def show(self):
-        super(QtBubbleLabel, self).show()
+        super(QtMsgLabel, self).show()
         x = self.parent().geometry().x()
         y = self.parent().geometry().y()
         x2 = self.parent().size().width()
@@ -79,7 +79,7 @@ class QtMsgLabel(QWidget):
         self.moveAnimation = moveAnimation
 
     def paintEvent(self, event):
-        super(QtBubbleLabel, self).paintEvent(event)
+        super(QtMsgLabel, self).paintEvent(event)
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)  # 抗锯齿
 
@@ -97,10 +97,10 @@ class QtMsgLabel(QWidget):
         painter.drawPath(rectPath)
 
     def windowOpacity(self):
-        return super(QtBubbleLabel, self).windowOpacity()
+        return super(QtMsgLabel, self).windowOpacity()
 
     def setWindowOpacity(self, opacity):
-        super(QtBubbleLabel, self).setWindowOpacity(opacity)
+        super(QtMsgLabel, self).setWindowOpacity(opacity)
 
     opacity = Property(float, windowOpacity, setWindowOpacity)
 
@@ -112,15 +112,15 @@ class QtMsgLabel(QWidget):
 
     @staticmethod
     def ShowMsgEx(owner, text):
-        msgTick = QtBubbleLabel.ShowMsgTick.get(owner.__class__.__name__, 0)
+        msgTick = QtMsgLabel.ShowMsgTick.get(owner.__class__.__name__, 0)
         CurTick = int(time.time())
         if msgTick >= CurTick:
             return
-        data = QtBubbleLabel(owner)
+        data = QtMsgLabel(owner)
         data.setText(text)
         data.setStyleSheet("color:black")
         data.show()
-        QtBubbleLabel.ShowMsgTick[owner.__class__.__name__] = CurTick
+        QtMsgLabel.ShowMsgTick[owner.__class__.__name__] = CurTick
 
     def ShowError(self, text):
         self.stop()
@@ -130,15 +130,15 @@ class QtMsgLabel(QWidget):
 
     @staticmethod
     def ShowErrorEx(owner, text):
-        msgTick = QtBubbleLabel.ShowMsgTick.get(owner.__class__.__name__, 0)
+        msgTick = QtMsgLabel.ShowMsgTick.get(owner.__class__.__name__, 0)
         CurTick = int(time.time())
         if msgTick >= CurTick:
             return
-        data = QtBubbleLabel(owner)
+        data = QtMsgLabel(owner)
         data.setText(text)
         data.setStyleSheet("color:red")
         data.show()
-        QtBubbleLabel.ShowMsgTick[owner.__class__.__name__] = CurTick
+        QtMsgLabel.ShowMsgTick[owner.__class__.__name__] = CurTick
 
     @staticmethod
     def OpenPicture(self, path="."):

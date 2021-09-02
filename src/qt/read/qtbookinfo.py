@@ -10,7 +10,7 @@ from conf import config
 from qss.qss import QssDataMgr
 from resources.resources import DataMgr
 from src.index.book import BookMgr
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.com.qtloading import QtLoading
 from src.qt.qtmain import QtOwner
@@ -41,7 +41,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.isLike = False
         self.tabWidget.setCurrentIndex(0)
 
-        self.msgForm = QtBubbleLabel(self)
+        self.msgForm = QtMsgLabel(self)
         self.picture.installEventFilter(self)
         self.title.setWordWrap(True)
         self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
@@ -273,9 +273,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def AddDownload(self):
         QtOwner().owner.epsInfoForm.OpenEpsInfo(self.bookId)
         # if self.owner().downloadForm.AddDownload(self.bookId):
-        #     QtBubbleLabel.ShowMsgEx(self, "添加下载成功")
+        #     QtMsgLabel.ShowMsgEx(self, "添加下载成功")
         # else:
-        #     QtBubbleLabel.ShowMsgEx(self, "已在下载列表")
+        #     QtMsgLabel.ShowMsgEx(self, "已在下载列表")
         # self.download.setEnabled(False)
 
     def AddBookLike(self):
@@ -292,7 +292,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.isFavorite = not self.isFavorite
         self.UpdateFavoriteIcon()
         if self.isFavorite:
-            QtBubbleLabel.ShowMsgEx(self, "添加收藏成功")
+            QtMsgLabel.ShowMsgEx(self, "添加收藏成功")
             QtOwner().owner.favoriteForm.AddFavorites(self.bookId)
         else:
             QtOwner().owner.favoriteForm.DelAndFavoritesBack("", self.bookId)

@@ -5,7 +5,7 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import QEvent
 from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
 
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtloading import QtLoading
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, Log
@@ -26,6 +26,7 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
         self.loadingForm2 = QtLoading(self)
         self.bookId = ""
         self.listWidget.InitUser(self.LoadNextPage, self.OpenCommentInfo, self.AddLike, self.KillComment)
+        self.commentButton.clicked.connect(self.SendComment)
 
         self.childrenListWidget = QtBookList(None)
         self.childrenListWidget.InitUser(self.LoadChildrenNextPage, likeBack=self.AddLike, killBack=self.KillComment)
@@ -86,7 +87,7 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
                 self.AddHttpTask(req.GetCommentsChildrenReq(widget.id), self.LoadCommentInfoBack, backParam=index)
             else:
                 self.loadingForm2.close()
-                QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
+                QtMsgLabel.ShowErrorEx(self, data.get("message", "错误"))
             self.commentLine2.setText("")
         except Exception as es:
             self.loadingForm2.close()
@@ -223,7 +224,7 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
             data = json.loads(data)
             if data.get("code") != 200:
                 return
-            QtBubbleLabel().ShowMsgEx(self.parent(), data.get('data').get("message"))
+            QtMsgLabel().ShowMsgEx(self.parent(), data.get('data').get("message"))
         except Exception as es:
             Log.Error(es)
 
@@ -361,7 +362,7 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
                 self.AddHttpTask(self.reqGetComment(self.bookId), self.GetCommnetBack)
             else:
                 self.loadingForm2.close()
-                QtBubbleLabel.ShowErrorEx(self, data.get("message", "错误"))
+                QtMsgLabel.ShowErrorEx(self, data.get("message", "错误"))
             self.commentLine.setText("")
         except Exception as es:
             self.loadingForm2.close()

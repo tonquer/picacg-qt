@@ -11,7 +11,7 @@ from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
 from src.qt.com.qt_git_label import QtGifLabel
 from src.qt.com.qt_scroll import QtComGraphicsView
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.read.qtreadimg_tool import QtImgTool
 from src.util.tool import time_me
 
@@ -82,6 +82,7 @@ class QtImgFrame(QFrame):
         self.downloadSize = 1
         self.downloadMaxSize = 1
         self.oldValue = -1
+        self.baseValue = 0
         # QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
         self.graphicsView.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
         self.graphicsView.horizontalScrollBar().actionTriggered.connect(self.OnActionTriggered)
@@ -400,7 +401,7 @@ class QtImgFrame(QFrame):
 
         if self.qtTool.stripModel in [ReadMode.UpDown, ReadMode.LeftRightScroll]:
             if value >= 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
-                QtBubbleLabel().ShowMsgEx(self.readImg, "已经到最后一页")
+                QtMsgLabel().ShowMsgEx(self.readImg, "已经到最后一页")
                 return
 
             ## 切换上一图片
@@ -415,7 +416,7 @@ class QtImgFrame(QFrame):
                     height = self.graphicsItem1.pixmap().size().height()
                 else:
                     height = self.graphicsItem1.pixmap().size().width()
-                subValue += height
+                # subValue += height
                 scroll.setValue(subValue)
                 pass
 
@@ -435,7 +436,7 @@ class QtImgFrame(QFrame):
                 scroll.setValue(subValue)
         else:
             if value <= 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
-                QtBubbleLabel().ShowMsgEx(self.readImg, "已经到最后一页")
+                QtMsgLabel().ShowMsgEx(self.readImg, "已经到最后一页")
                 return
 
             ## 切换上一图片

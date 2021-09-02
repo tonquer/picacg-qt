@@ -119,7 +119,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         from src.qt.main.qtindex import QtIndex
         from src.qt.menu.qtabout import QtAbout
         from src.qt.read.qtbookinfo import QtBookInfo
-        from src.qt.com.qtbubblelabel import QtBubbleLabel
+        from src.qt.com.qtmsg import QtMsgLabel
         from src.qt.main.qtcategory import QtCategory
         from src.qt.download.qtdownload import QtDownload
         from src.qt.read.qtepsinfo import QtEpsInfo
@@ -142,7 +142,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.userInfo = None
         self.setupUi(self)
-        self.msgForm = QtBubbleLabel(self)
+        self.msgForm = QtMsgLabel(self)
 
         self.qtTask = QtTask()
         # pix = QPixmap()

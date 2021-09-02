@@ -9,7 +9,7 @@ from PySide2.QtWidgets import QLabel
 
 from conf import config
 from src.index.book import BookMgr
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.qtmain import QtOwner
 from src.qt.struct.qt_define import QtFileData
@@ -172,10 +172,10 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         if self.curIndex >= self.maxPic -1:
             if epsId + 1 < len(bookInfo.eps):
-                QtBubbleLabel.ShowMsgEx(self.readImg, "自动跳转到下一章")
+                QtMsgLabel.ShowMsgEx(self.readImg, "自动跳转到下一章")
                 self.OpenNextEps()
                 return
-            QtBubbleLabel.ShowMsgEx(self.readImg, "已经最后一页")
+            QtMsgLabel.ShowMsgEx(self.readImg, "已经最后一页")
             return
         t = CTime()
 
@@ -208,10 +208,10 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         if self.curIndex <= 0:
             if epsId - 1 >= 0:
-                QtBubbleLabel.ShowMsgEx(self.readImg, "自动跳转到上一章")
+                QtMsgLabel.ShowMsgEx(self.readImg, "自动跳转到上一章")
                 self.OpenLastEps()
                 return
-            QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一页")
+            QtMsgLabel.ShowMsgEx(self.readImg, "已经是第一页")
             return
 
         from src.qt.read.qtreadimg import ReadMode
@@ -275,7 +275,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         owner = self.readImg
         p = owner.pictureData.get(owner.curIndex)
         if not p or not p.data:
-            QtBubbleLabel.ShowErrorEx(owner, "下载未完成")
+            QtMsgLabel.ShowErrorEx(owner, "下载未完成")
             return
         QtImgMgr().ShowImg(p.data)
         return
@@ -314,7 +314,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         epsId -= 1
         if epsId < 0:
-            QtBubbleLabel.ShowMsgEx(self.readImg, "已经是第一章")
+            QtMsgLabel.ShowMsgEx(self.readImg, "已经是第一章")
             return
 
         if epsId >= len(bookInfo.eps):
@@ -333,7 +333,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         epsId += 1
         if epsId >= len(bookInfo.eps):
-            QtBubbleLabel.ShowMsgEx(self.readImg, "已经是最后一章")
+            QtMsgLabel.ShowMsgEx(self.readImg, "已经是最后一章")
             return
 
         if epsId >= len(bookInfo.eps):

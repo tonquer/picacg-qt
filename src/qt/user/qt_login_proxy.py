@@ -2,7 +2,7 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices, Qt
 
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, config, Server, Log
@@ -182,7 +182,7 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         QtOwner().owner.settingForm.SetSettingV("Proxy/IsHttp", config.IsHttpProxy)
         QtOwner().owner.settingForm.SetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
         self.UpdateServer()
-        QtBubbleLabel().ShowMsgEx(self, "保存成功")
+        QtMsgLabel().ShowMsgEx(self, "保存成功")
         self.close()
         return
 

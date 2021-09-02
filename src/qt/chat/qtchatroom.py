@@ -12,7 +12,7 @@ from PySide2.QtWidgets import QListWidgetItem, QMenu, QAction
 from conf import config
 from src.qt.chat.chat_ws import ChatWebSocket
 from src.qt.chat.qtchatroommsg import QtChatRoomMsg
-from src.qt.com.qtbubblelabel import QtBubbleLabel
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qticon import IconList
 from src.qt.com.qtloading import QtLoading
 from src.qt.util.qttask import QtTaskBase
@@ -316,7 +316,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom, QtTaskBase):
             self.JoinRoom()
         elif taskType == self.ErrorMsg:
             self.loadingForm.close()
-            QtBubbleLabel().ShowErrorEx(self, "出错了,"+data)
+            QtMsgLabel().ShowErrorEx(self, "出错了,"+data)
             pass
         elif taskType == self.SendImg:
             self.picButton.setEnabled(True)
@@ -368,7 +368,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom, QtTaskBase):
 
     def OpenPicture(self):
         try:
-            data, name, picFormat = QtBubbleLabel.OpenPicture(self, self.cachePath)
+            data, name, picFormat = QtMsgLabel.OpenPicture(self, self.cachePath)
             if data:
                 self.cachePath = os.path.dirname(name)
                 imgData = base64.b64encode(data).decode("utf-8")
