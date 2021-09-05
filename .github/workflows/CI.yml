@@ -36,6 +36,7 @@ jobs:
         mv dist bika
         cp -r data models resources translations bika/
         rm bika/resources/*.py -rf
+        rm bika/translations/*.ts -rf
         tar -zcvf ${{ env.PACKAGENAME }}.tar.gz bika/
     - name: Upload
       uses: actions/upload-artifact@v2
@@ -84,6 +85,7 @@ jobs:
         ln -s /Applications/   dist/Applications
         cp -avf data models resources translations dist/PicACG.app/Contents/MacOS
         rm -rf dist/PicACG.app/Contents/MacOS/resources/*.py
+        rm -rf dist/PicACG.app/Contents/MacOS/translations/*.ts
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
             --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
         zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
@@ -125,6 +127,7 @@ jobs:
         Copy-Item -Verbose -Recurse -Path resources -Destination bika/
         Copy-Item -Verbose -Recurse -Path translations -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
+        Remove-Item bika/translations/*.ts -r -fo
         cp LICENSE bika\
         cp README.md bika\
         mkdir ${{ env.PACKAGENAME }}
