@@ -9,7 +9,7 @@ Agent = "okhttp/3.8.1"
 Platform = "android"
 
 IsUpdate = 1                   # 是否在启动时检查更新
-Language = 'Chinese'           # 选择的语言
+Language = 'Chinese-Simplified'           # 选择的语言
 ThreadNum = 10                 # 线程
 DownloadThreadNum = 5          # 下载线程
 ImageQuality = "original"      # 画质，original, low, medium, high
@@ -37,7 +37,7 @@ UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/tonquer/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/tonquer/picacg-database/main/data/"
-UpdateVersion = "v1.2.4"
+UpdateVersion = "v1.2.5"
 
 # waifu2x
 CanWaifu2x = True
@@ -66,7 +66,7 @@ LookModel = 0
 LookNoise = 3
 LookScale = 2.0
 
-LookReadMode = 0      # 看图模式
+LookReadMode = 1      # 看图模式
 # LookReadScale = 2     # 默认缩放
 LookReadFull = 0      # 是否全屏
 

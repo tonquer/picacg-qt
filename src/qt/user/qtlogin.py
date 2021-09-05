@@ -17,7 +17,6 @@ class QtLogin(QtWidgets.QWidget, Ui_Login, QtTaskBase):
         Ui_Login.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.setWindowTitle("登陆")
         # self.buttonGroup = QtWidgets.QButtonGroup(self)
         # self.buttonGroup.addButton(self.selectIp1)
         # self.selectIp1.setChecked(True)
@@ -46,7 +45,7 @@ class QtLogin(QtWidgets.QWidget, Ui_Login, QtTaskBase):
             QtOwner().owner.favoriteForm.InitFavorite()
         else:
             # QtWidgets.QMessageBox.information(self, '登陆失败', msg, QtWidgets.QMessageBox.Yes)
-            QtOwner().owner.msgForm.ShowError("登陆失败, " + msg)
+            QtOwner().owner.msgForm.ShowError(self.tr("登陆失败, ") + QtOwner().owner.GetStatusStr(msg))
 
     def InitUser(self):
         self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)

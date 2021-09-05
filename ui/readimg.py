@@ -241,12 +241,19 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.line_2)
 
+        self.label_6 = QLabel(ReadImg)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setStyleSheet(u"color: #ee2a24")
+        self.label_6.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_6)
+
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
         self.label_5 = QLabel(ReadImg)
         self.label_5.setObjectName(u"label_5")
         self.label_5.setMaximumSize(QSize(90, 16777215))
-        self.label_5.setStyleSheet(u"color: #ee2a24")
+        self.label_5.setStyleSheet(u"")
         self.label_5.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.horizontalLayout_11.addWidget(self.label_5)
@@ -264,6 +271,45 @@ class Ui_ReadImg(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_11)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.label_7 = QLabel(ReadImg)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_4.addWidget(self.label_7)
+
+        self.scrollSize = QSpinBox(ReadImg)
+        self.scrollSize.setObjectName(u"scrollSize")
+        self.scrollSize.setMinimum(1)
+        self.scrollSize.setMaximum(100000)
+        self.scrollSize.setValue(500)
+
+        self.horizontalLayout_4.addWidget(self.scrollSize)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout_12 = QHBoxLayout()
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.label_10 = QLabel(ReadImg)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_12.addWidget(self.label_10)
+
+        self.scrollTime = QSpinBox(ReadImg)
+        self.scrollTime.setObjectName(u"scrollTime")
+        self.scrollTime.setMinimum(100)
+        self.scrollTime.setMaximum(600000)
+        self.scrollTime.setSingleStep(100)
+        self.scrollTime.setValue(500)
+
+        self.horizontalLayout_12.addWidget(self.scrollTime)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_12)
 
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
@@ -397,6 +443,8 @@ class Ui_ReadImg(object):
         self.waifu2xCancle.clicked.connect(ReadImg.Waifu2xCancle)
         self.zoomSlider.valueChanged.connect(ReadImg.ScalePicture)
         self.comboBox.currentIndexChanged.connect(ReadImg.ChangeReadMode)
+        self.scrollSize.editingFinished.connect(ReadImg.ResetScroll)
+        self.scrollTime.editingFinished.connect(ReadImg.ResetScroll)
 
         QMetaObject.connectSlotsByName(ReadImg)
     # setupUi
@@ -439,14 +487,17 @@ class Ui_ReadImg(object):
         self.waifu2xStatus.setText("")
         self.waifu2xSave.setText(QCoreApplication.translate("ReadImg", u"\u4fee\u6539", None))
         self.waifu2xCancle.setText(QCoreApplication.translate("ReadImg", u"\u4fdd\u5b58", None))
+        self.label_6.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u8bbe\u7f6e", None))
         self.label_5.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u6a21\u5f0f\uff1a", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("ReadImg", u"\u4e0a\u4e0b\u6eda\u52a8", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("ReadImg", u"\u5de6\u53f3", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("ReadImg", u"\u9ed8\u8ba4", None))
         self.comboBox.setItemText(2, QCoreApplication.translate("ReadImg", u"\u5de6\u53f3\u53cc\u9875", None))
         self.comboBox.setItemText(3, QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u53cc\u9875", None))
         self.comboBox.setItemText(4, QCoreApplication.translate("ReadImg", u"\u5de6\u53f3\u6eda\u52a8", None))
         self.comboBox.setItemText(5, QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u6eda\u52a8", None))
 
+        self.label_7.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u8ddd\u79bb\uff08\u50cf\u7d20\uff09\uff1a", None))
+        self.label_10.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u65f6\u957f\uff08\u6beb\u79d2\uff09", None))
         self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08120%\uff09", None))
         self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00\u56fe\u7247\u5de5\u5177", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))

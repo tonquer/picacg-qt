@@ -232,13 +232,15 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
         self.SetSettingV("ThemeId", self.themeBox.currentIndex())
 
+        QtOwner().owner.LoadTranslate()
+        QtOwner().owner.RetranslateUi()
         Log.UpdateLoggingLevel()
         # QtWidgets.QMessageBox.information(self, '保存成功', "成功", QtWidgets.QMessageBox.Yes)
-        QtMsgLabel.ShowMsgEx(self, "保存成功")
+        QtMsgLabel.ShowMsgEx(self, self.tr("保存成功"))
         self.LoadSetting()
 
     def SelectSavePath(self):
-        url = QFileDialog.getExistingDirectory(self, "选择文件夹")
+        url = QFileDialog.getExistingDirectory(self, self.tr("选择文件夹"))
         if url:
             self.saveEdit.setText(url)
 

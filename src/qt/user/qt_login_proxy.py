@@ -83,7 +83,7 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         httpProxy = self.httpLine.text()
         if isHttpProxy and not httpProxy:
             label = getattr(self, "label"+str(i))
-            label.setText("无代理")
+            label.setText(self.tr("无代理"))
             self.speedPingNum += 1
 
         request = req.SpeedTestPingReq()
@@ -115,7 +115,7 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         httpProxy = self.httpLine.text()
         if isHttpProxy and not httpProxy:
             label = getattr(self, "label" + str(i))
-            label.setText("无代理")
+            label.setText(self.tr("无代理"))
             self.speedIndex += 1
             self.StartSpeedTest()
             return
@@ -182,7 +182,7 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
         QtOwner().owner.settingForm.SetSettingV("Proxy/IsHttp", config.IsHttpProxy)
         QtOwner().owner.settingForm.SetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
         self.UpdateServer()
-        QtMsgLabel().ShowMsgEx(self, "保存成功")
+        QtMsgLabel().ShowMsgEx(self, self.tr("保存成功"))
         self.close()
         return
 

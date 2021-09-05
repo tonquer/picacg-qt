@@ -60,7 +60,7 @@ class QtFriedMsg(QtWidgets.QWidget, Ui_FriedMsg, QtTaskBase):
         # self.name.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.popMenu = QMenu(self)
 
-        action = self.popMenu.addAction("复制")
+        action = self.popMenu.addAction(self.tr("复制"))
         action.triggered.connect(self.CopyHandler)
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -163,7 +163,7 @@ class QtFriedMsg(QtWidgets.QWidget, Ui_FriedMsg, QtTaskBase):
         except Exception as es:
             self.page = self.listWidget.page
             Log.Error(es)
-            QtOwner().owner.msgForm.ShowMsg(Status.UnKnowError + errMsg)
+            QtOwner().owner.msgForm.ShowMsg(QtOwner().owner.GetStatusStr(Status.UnKnowError) + errMsg)
         return
 
     def LoadNextPage(self):

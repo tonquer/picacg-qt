@@ -298,7 +298,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
                 self.CheckCategoryShowItem()
             else:
                 # QtWidgets.QMessageBox.information(self, '未搜索到结果', "未搜索到结果", QtWidgets.QMessageBox.Yes)
-                QtOwner().owner.msgForm.ShowError("未搜索到结果")
+                QtOwner().owner.msgForm.ShowError(self.tr("未搜索到结果"))
         except Exception as es:
             Log.Error(es)
         pass
@@ -361,9 +361,9 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         isClick = self.categoryList.ClickItem(item)
         data = item.text()
         if isClick:
-            QtOwner().owner.msgForm.ShowMsg("屏蔽" + data)
+            QtOwner().owner.msgForm.ShowMsg(self.tr("屏蔽") + data)
         else:
-            QtOwner().owner.msgForm.ShowMsg("取消屏蔽" + data)
+            QtOwner().owner.msgForm.ShowMsg(self.tr("取消屏蔽") + data)
         self.CheckCategoryShowItem()
 
     def CheckCategoryShowItem(self):

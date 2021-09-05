@@ -145,7 +145,7 @@ class Ui_ChatRoom(object):
     # setupUi
 
     def retranslateUi(self, ChatRoom):
-        ChatRoom.setWindowTitle(QCoreApplication.translate("ChatRoom", u"Form", None))
+        ChatRoom.setWindowTitle(QCoreApplication.translate("ChatRoom", u"\u804a\u5929\u5ba4", None))
         self.atLabel.setText(QCoreApplication.translate("ChatRoom", u"PushButton", None))
         self.nameLabel.setText(QCoreApplication.translate("ChatRoom", u"TextLabel", None))
         self.numLabel.setText(QCoreApplication.translate("ChatRoom", u"TextLabel", None))

@@ -152,7 +152,7 @@ class Ui_AboutForm(object):
         self.label_10.setText(QCoreApplication.translate("AboutForm", u"<a href=\"https://github.com/tonquer/ehentai-read\"> https://github.com/tonquer/ehentai-read</a>", None))
         self.label_5.setText(QCoreApplication.translate("AboutForm", u"waifu2x\u7248\u672c\uff1a", None))
         self.label_7.setText(QCoreApplication.translate("AboutForm", u"waifu2x\u5730\u5740", None))
-        self.label.setText(QCoreApplication.translate("AboutForm", u"\u54d4\u5494\u6f2b\u753bv1.0.5", None))
+        self.label.setText("")
         self.label_4.setText(QCoreApplication.translate("AboutForm", u"\u9879\u76ee\u5f00\u6e90\u5730\u5740\uff1a", None))
         self.label_9.setText(QCoreApplication.translate("AboutForm", u"E-hentai", None))
         self.label_3.setText(QCoreApplication.translate("AboutForm", u"<a href=\"https://github.com/tonquer/picacg-windows\"> https://github.com/tonquer/picacg-windows</a>", None))

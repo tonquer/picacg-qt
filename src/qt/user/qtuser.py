@@ -18,7 +18,6 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         super(self.__class__, self).__init__()
         Ui_User.__init__(self)
         self.setupUi(self)
-        self.setWindowTitle("哔咔漫画")
 
         q = QPixmap()
         q.loadFromData(DataMgr.GetData("icon_bookmark_on"))
@@ -85,7 +84,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         QtOwner().owner.loadingForm.close()
         if msg == Status.Ok:
             self.signButton.setEnabled(False)
-            self.signButton.setText("已打卡")
+            self.signButton.setText(self.tr("已打卡"))
             # self.signButton.setHidden(True)
             QtTask().AddHttpTask(req.GetUserInfo(), QtOwner().owner.loginForm.UpdateUserBack)
             self.update()
@@ -98,7 +97,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.level.setText("LV"+str(level))
         self.exp.setText("exp: " + str(exp))
         if sign:
-            self.signButton.setText("已打卡")
+            self.signButton.setText(self.tr("已打卡"))
             self.signButton.setEnabled(False)
         self.update()
 
@@ -106,7 +105,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         if not data:
             return
         self.icon.setPixmap(None)
-        self.icon.setText("头像上传中......")
+        self.icon.setText(self.tr("头像上传中......"))
         self.isHeadUp = True
         QtImgMgr().SetHeadStatus(not self.isHeadUp)
         QtTask().AddHttpTask(req.SetAvatarInfoReq(data), self.UpdatePictureDataBack)
@@ -118,7 +117,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         if msg == Status.Ok:
             QtOwner().owner.loginForm.InitUser()
         else:
-            QtOwner().owner.msgForm.ShowError(msg)
+            QtOwner().owner.msgForm.ShowError(QtOwner().owner.GetStatusStr(msg))
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:

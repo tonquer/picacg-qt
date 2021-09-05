@@ -7,6 +7,7 @@ from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPush
 
 from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtloading import QtLoading
+from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, Log
 from ui.leavemsg import Ui_LeaveMsg
@@ -195,10 +196,10 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
                 continue
             if widget.id != cfgId:
                 continue
-            r = QMessageBox.information(self, "举报", "是否举报{} ,\n评论：\n{}\n".format(widget.nameLabel.text(),
-                                                                                        widget.commentLabel.text()),
-                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-            if r == QMessageBox.Yes:
+            r = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('举报'),
+                                     self.tr('是否举报') + widget.nameLabel.text() + ",\n" + self.tr(
+                                         "评论：") +"\n"+ widget.commentLabel.text() + "\n")
+            if r == 0:
                 self.loadingForm2.show()
                 self.AddHttpTask(self.reqKillComment(widget.id), self.KillCommentBack, backParam=cfgId)
 
@@ -211,10 +212,8 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
                 continue
             if widget.id != cfgId:
                 continue
-            r = QMessageBox.information(self, "举报", "是否举报{} ,\n评论：\n{}\n".format(widget.nameLabel.text(),
-                                                                                        widget.commentLabel.text()),
-                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-            if r == QMessageBox.Yes:
+            r = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('举报'), self.tr('是否举报') +widget.nameLabel.text() + ",\n"  +self.tr("评论：\n")+widget.commentLabel.text()+"\n")
+            if r == 0:
                 self.loadingForm2.show()
                 self.AddHttpTask(self.reqKillComment(widget.id), self.KillCommentBack, backParam=cfgId)
 

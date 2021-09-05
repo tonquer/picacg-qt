@@ -752,7 +752,12 @@
       <widget class="QComboBox" name="langSelect">
        <item>
         <property name="text">
-         <string>Chinese</string>
+         <string>Chinese-Simplified</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Chinese-Traditional</string>
         </property>
        </item>
        <item>

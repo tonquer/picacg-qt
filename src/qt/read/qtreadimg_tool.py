@@ -172,10 +172,10 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         if self.curIndex >= self.maxPic -1:
             if epsId + 1 < len(bookInfo.eps):
-                QtMsgLabel.ShowMsgEx(self.readImg, "自动跳转到下一章")
+                QtMsgLabel.ShowMsgEx(self.readImg, self.tr("自动跳转到下一章"))
                 self.OpenNextEps()
                 return
-            QtMsgLabel.ShowMsgEx(self.readImg, "已经最后一页")
+            QtMsgLabel.ShowMsgEx(self.readImg, self.tr("已经最后一页"))
             return
         t = CTime()
 
@@ -186,6 +186,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         else:
             self.curIndex += 1
 
+        self.imgFrame.oldValue = 0
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
@@ -208,10 +209,10 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         if self.curIndex <= 0:
             if epsId - 1 >= 0:
-                QtMsgLabel.ShowMsgEx(self.readImg, "自动跳转到上一章")
+                QtMsgLabel.ShowMsgEx(self.readImg, self.tr("自动跳转到上一章"))
                 self.OpenLastEps()
                 return
-            QtMsgLabel.ShowMsgEx(self.readImg, "已经是第一页")
+            QtMsgLabel.ShowMsgEx(self.readImg, self.tr("已经是第一页"))
             return
 
         from src.qt.read.qtreadimg import ReadMode
@@ -221,6 +222,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         else:
             self.curIndex -= 1
 
+        self.imgFrame.oldValue = 0
         self.SetData(isInit=True)
         self.readImg.CheckLoadPicture()
         self.readImg.ShowImg()
@@ -238,14 +240,14 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def SetData(self, pSize=None, dataLen=0, state="", waifuSize=None, waifuDataLen=0, waifuState="", waifuTick=0, isInit=False):
         self.UpdateSlider()
-        self.epsLabel.setText("位置：{}/{}".format(self.readImg.curIndex + 1, self.readImg.maxPic))
+        self.epsLabel.setText(self.tr("位置")+"：{}/{}".format(self.readImg.curIndex + 1, self.readImg.maxPic))
         if pSize or isInit:
             if not pSize:
                 pSize = QSize(0, 0)
-            self.resolutionLabel.setText("分辨率：{}x{}".format(str(pSize.width()), str(pSize.height())))
+            self.resolutionLabel.setText(self.tr("分辨率")+"：{}x{}".format(str(pSize.width()), str(pSize.height())))
 
         if dataLen or isInit:
-            self.sizeLabel.setText("大小: " + ToolUtil.GetDownloadSize(dataLen))
+            self.sizeLabel.setText(self.tr("大小")+": " + ToolUtil.GetDownloadSize(dataLen))
 
         if waifuSize or isInit:
             if not waifuSize:
@@ -255,7 +257,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             self.waifu2xSize.setText("" + ToolUtil.GetDownloadSize(waifuDataLen))
 
         if state or isInit:
-            self.stateLable.setText("状态：" + state)
+            self.stateLable.setText(self.tr("状态：") + self.GetStatus(state))
 
         if waifuState or isInit:
             if waifuState == QtFileData.WaifuStateStart:
@@ -267,15 +269,38 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             else:
                 self.waifu2xStatus.setStyleSheet("color:dark;")
             if config.CanWaifu2x:
-                self.waifu2xStatus.setText(waifuState)
+                self.waifu2xStatus.setText(self.GetStatus(waifuState))
         if waifuTick or isInit:
             self.waifu2xTick.setText(str(waifuTick) + "s")
+
+    def GetStatus(self, data):
+        if data == QtFileData.Downloading:
+            return self.tr("开始下载")
+        elif data == QtFileData.Downloading:
+            return self.tr("转换中")
+        elif data == QtFileData.DownloadSuc:
+            return self.tr("下载完成")
+        elif data == QtFileData.DownloadError:
+            return self.tr("下载错误")
+        elif data == QtFileData.DownloadReset:
+            return self.tr("重新下载")
+        elif data == QtFileData.WaifuWait:
+            return self.tr("等待中")
+        elif data == QtFileData.WaifuStateStart:
+            return self.tr("转换开始")
+        elif data == QtFileData.WaifuStateCancle:
+            return self.tr("不转换")
+        elif data == QtFileData.WaifuStateEnd:
+            return self.tr("转换完成")
+        elif data == QtFileData.WaifuStateEnd:
+            return self.tr("转换失败")
+        return data
 
     def CopyPicture(self):
         owner = self.readImg
         p = owner.pictureData.get(owner.curIndex)
         if not p or not p.data:
-            QtMsgLabel.ShowErrorEx(owner, "下载未完成")
+            QtMsgLabel.ShowErrorEx(owner, self.tr("下载未完成"))
             return
         QtImgMgr().ShowImg(p.data)
         return
@@ -314,7 +339,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         epsId -= 1
         if epsId < 0:
-            QtMsgLabel.ShowMsgEx(self.readImg, "已经是第一章")
+            QtMsgLabel.ShowMsgEx(self.readImg, self.tr("已经是第一章"))
             return
 
         if epsId >= len(bookInfo.eps):
@@ -333,7 +358,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         epsId += 1
         if epsId >= len(bookInfo.eps):
-            QtMsgLabel.ShowMsgEx(self.readImg, "已经是最后一章")
+            QtMsgLabel.ShowMsgEx(self.readImg, self.tr("已经是最后一章"))
             return
 
         if epsId >= len(bookInfo.eps):
@@ -370,11 +395,11 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
     def FullScreen(self):
         if self.readImg.windowState() == Qt.WindowFullScreen:
             self.readImg.showNormal()
-            self.fullButton.setText("全屏")
+            self.fullButton.setText(self.tr("全屏"))
             config.LookReadFull = 0
         else:
             self.readImg.showFullScreen()
-            self.fullButton.setText("退出全屏")
+            self.fullButton.setText(self.tr("退出全屏"))
             config.LookReadFull = 1
         QtOwner().SetV("Read/LookReadFull", config.LookReadFull)
 
@@ -417,7 +442,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.modelBox.setVisible(isVisibel)
 
     def ScalePicture(self, value):
-        self.zoomLabel.setText("缩放（{}%）".format(str(value)))
+        self.zoomLabel.setText(self.tr("缩放")+"（{}%）".format(str(value)))
         self.readImg.zoom(value//10-10)
 
     def eventFilter(self, obj, ev):
@@ -463,6 +488,8 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         config.LookReadMode = index
         QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
 
+    def ResetScroll(self):
+        self.imgFrame.graphicsView.SetScrollValue(int(self.scrollSize.value()), int(self.scrollTime.value()))
 
 
 

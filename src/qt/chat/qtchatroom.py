@@ -39,7 +39,6 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom, QtTaskBase):
         self.setupUi(self)
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setWindowTitle("聊天室")
         self.url = ""
         self.socket = ChatWebSocket(self)
         self.websocket.connect(self.HandlerInfo)

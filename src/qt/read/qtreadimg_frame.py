@@ -81,7 +81,7 @@ class QtImgFrame(QFrame):
         self.waifu2xProcess.Init(DataMgr.GetData("loading_gif"))
         self.downloadSize = 1
         self.downloadMaxSize = 1
-        self.oldValue = -1
+        self.oldValue = 0
         self.baseValue = 0
         # QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
         self.graphicsView.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
@@ -89,14 +89,15 @@ class QtImgFrame(QFrame):
         # self.graphicsView.verticalScrollBar().setSingleStep(100)
         # self.graphicsView.verticalScrollBar().setPageStep(100)
         self.graphicsView.setSceneRect(0, 0, self.width(), self.height())
-        # self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
+        self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
+        self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
 
     @property
     def readImg(self):
         return self._readImg()
 
     def OnValueChange(self, value):
-        # print(value)
+        self.UpdateScrollBar(value)
         return
 
     def eventFilter(self, obj, ev):
@@ -112,21 +113,19 @@ class QtImgFrame(QFrame):
                     # if point.y() > 0:
                     #     return True
                     # self.UpdatePos(point, -200)
-                    self.graphicsView.verticalScrollBar().setValue(self.graphicsView.verticalScrollBar().value()+100)
-                    self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value())
+                    self.graphicsView.Scroll(-self.graphicsView.scrollSize)
                 elif ev.key() == Qt.Key_Up:
                     point = self.graphicsGroup.pos()
                     # if point.y() < 0:
                     #     return True
                     # self.UpdatePos(point, 200)
-                    self.graphicsView.verticalScrollBar().setValue(self.graphicsView.verticalScrollBar().value()-100)
-                    self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value())
+                    self.graphicsView.Scroll(self.graphicsView.scrollSize)
                 return True
             elif ev.type() == QEvent.GraphicsSceneMouseRelease:
                 # print(ev, self.width(), self.height(), self.readImg.pos())
                 self.endPos = ev.screenPos()
                 subPos = (self.endPos - self.startPos)
-
+                self.graphicsView.StopScroll()
                 if ev.button() == Qt.MouseButton.LeftButton:
                     if abs(subPos.x()) >= 50:
                         if subPos.x() < 0:
@@ -175,7 +174,7 @@ class QtImgFrame(QFrame):
         h = size.height()
         self.graphicsView.setGeometry(0, 0, w, h)
 
-        h2 = min(700, h)
+        h2 = min(800, h)
         self.qtTool.setGeometry(w - 220, 0, 220, h2)
 
         # w = max((w - 150)//2, 0)
@@ -189,8 +188,6 @@ class QtImgFrame(QFrame):
         if not self.pixMapList:
             return
         self.ScaleGraphicsItem()
-
-        self.ResetScrollBar()
 
     def ResetScrollBar(self):
         width1 = self.graphicsItem1.pixmap().size().width()
@@ -253,11 +250,15 @@ class QtImgFrame(QFrame):
                     self.pixMapList[index] = data
 
         elif self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
-            if not data and self.readImg.curIndex+index < self.readImg.maxPic:
-                data = self.MakePixItem(self.readImg.curIndex+index)
-                self.pixMapList[index] = data
+            if index > 1:
+                self.pixMapList[index] = QPixmap()
+                self.graphicsItemList[index].setPixmap(None)
             else:
-                self.pixMapList[index] = data
+                if not data and self.readImg.curIndex+index < self.readImg.maxPic:
+                    data = self.MakePixItem(self.readImg.curIndex+index)
+                    self.pixMapList[index] = data
+                else:
+                    self.pixMapList[index] = data
         else:
             if not data and self.readImg.curIndex+index < self.readImg.maxPic:
                 data = self.MakePixItem(self.readImg.curIndex+index)
@@ -357,6 +358,7 @@ class QtImgFrame(QFrame):
             self.graphicsItem1.setPos((self.width()-width1)/2, 0)
             self.graphicsItem2.setPos((self.width()-width2)/2, 0+height1)
             self.graphicsItem3.setPos((self.width()-width3)/2, 0+height1 + height2)
+        self.ResetScrollBar()
 
     def UpdateProcessBar(self, info):
         if info:
@@ -400,8 +402,8 @@ class QtImgFrame(QFrame):
             return
 
         if self.qtTool.stripModel in [ReadMode.UpDown, ReadMode.LeftRightScroll]:
-            if value >= 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
-                QtMsgLabel().ShowMsgEx(self.readImg, "已经到最后一页")
+            if value > 0 and self.oldValue != 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
+                QtMsgLabel().ShowMsgEx(self.readImg, self.tr("已经到最后一页"))
                 return
 
             ## 切换上一图片
@@ -410,18 +412,25 @@ class QtImgFrame(QFrame):
                     return
                 self.readImg.curIndex -= 1
                 subValue = scroll.value()
+                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
                 self.readImg.ShowImg()
                 self.readImg.ShowOtherPage()
                 if self.qtTool.stripModel == ReadMode.UpDown:
                     height = self.graphicsItem1.pixmap().size().height()
                 else:
                     height = self.graphicsItem1.pixmap().size().width()
-                # subValue += height
+                subValue += height
+                scroll.ResetScroll()
                 scroll.setValue(subValue)
+                scroll.RestartScroll()
+
+                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
                 pass
 
             ## 切换下一图片
-            elif value > 0 and self.graphicsItem1.pixmap().size().height() > 0 and scroll.value() > height:
+            elif value > 0 and scroll.value() > height:
                 if self.readImg.curIndex >= self.readImg.maxPic - 1:
                     return
                 if self.qtTool.stripModel == ReadMode.RightLeftDouble:
@@ -430,13 +439,20 @@ class QtImgFrame(QFrame):
                 else:
                     self.readImg.curIndex += 1
                 subValue = scroll.value() - height
+                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
                 self.readImg.ShowImg()
                 self.readImg.ShowOtherPage()
                 # print(subValue)
+                scroll.ResetScroll()
                 scroll.setValue(subValue)
+                scroll.RestartScroll()
+
+                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
         else:
             if value <= 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
-                QtMsgLabel().ShowMsgEx(self.readImg, "已经到最后一页")
+                QtMsgLabel().ShowMsgEx(self.readImg, self.tr("已经到最后一页"))
                 return
 
             ## 切换上一图片
@@ -444,25 +460,34 @@ class QtImgFrame(QFrame):
                 if self.readImg.curIndex <= 0:
                     return
                 self.readImg.curIndex -= 1
+                subValue = scroll.value() - height
+                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
+                self.readImg.ShowImg()
+                self.readImg.ShowOtherPage()
+                # print(subValue)
+                scroll.ResetScroll()
+                scroll.setValue(subValue)
+                scroll.RestartScroll()
+
+                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
+                pass
+
+            ## 切换下一图片
+            elif value < 0 and scroll.value() < -height:
+                if self.readImg.curIndex >= self.readImg.maxPic - 1:
+                    return
+                self.readImg.curIndex += 1
                 subValue = scroll.value()
+                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
                 self.readImg.ShowImg()
                 self.readImg.ShowOtherPage()
                 height = self.graphicsItem1.pixmap().size().width()
                 subValue += height
+                scroll.ResetScroll()
                 scroll.setValue(subValue)
-                pass
-
-            ## 切换下一图片
-            elif value < 0 and height > 0 and scroll.value() < height:
-                if self.readImg.curIndex >= self.readImg.maxPic - 1:
-                    return
-                if self.qtTool.stripModel == ReadMode.RightLeftDouble:
-                    self.readImg.curIndex += 2
-                    self.readImg.curIndex = min(self.readImg.curIndex, self.readImg.maxPic)
-                else:
-                    self.readImg.curIndex += 1
-                subValue = scroll.value() - height
-                self.readImg.ShowImg()
-                self.readImg.ShowOtherPage()
-                # print(subValue)
-                scroll.setValue(subValue)
+                scroll.RestartScroll()
+                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
+                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)

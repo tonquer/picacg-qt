@@ -470,6 +470,7 @@ class Ui_Setting(object):
         self.langSelect = QComboBox(Setting)
         self.langSelect.addItem("")
         self.langSelect.addItem("")
+        self.langSelect.addItem("")
         self.langSelect.setObjectName(u"langSelect")
 
         self.gridLayout_5.addWidget(self.langSelect, 3, 2, 1, 1)
@@ -581,8 +582,9 @@ class Ui_Setting(object):
         self.label_15.setText(QCoreApplication.translate("Setting", u"\u653e\u5927\u500d\u6570", None))
         self.label_14.setText(QCoreApplication.translate("Setting", u"\u6a21\u578b", None))
         self.label_6.setText(QCoreApplication.translate("Setting", u"waifu2x\u8bbe\u7f6e", None))
-        self.langSelect.setItemText(0, QCoreApplication.translate("Setting", u"Chinese", None))
-        self.langSelect.setItemText(1, QCoreApplication.translate("Setting", u"English", None))
+        self.langSelect.setItemText(0, QCoreApplication.translate("Setting", u"Chinese-Simplified", None))
+        self.langSelect.setItemText(1, QCoreApplication.translate("Setting", u"Chinese-Traditional", None))
+        self.langSelect.setItemText(2, QCoreApplication.translate("Setting", u"English", None))
 
         self.label_lang.setText(QCoreApplication.translate("Setting", u"\u8bed\u8a00\uff08\u9700\u91cd\u542f\uff09", None))
     # retranslateUi

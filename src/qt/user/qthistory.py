@@ -143,7 +143,7 @@ class QtHistory(QtWidgets.QWidget, Ui_History):
             self.bookList.AddBookItem(info)
 
     def UpdatePageLabel(self):
-        self.pages.setText("页：{}/{}".format(str(self.bookList.page), str(self.bookList.pages)))
+        self.pages.setText(self.tr("页")+"：{}/{}".format(str(self.bookList.page), str(self.bookList.pages)))
 
     def DelCallBack(self, bookIds):
         for bookId in bookIds:

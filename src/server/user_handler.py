@@ -60,7 +60,7 @@ class SetAvatarInfoHandler(object):
     def __call__(self, backData):
         st = Status.Ok
         if backData.res.code != 200:
-            st = Status.SetHeadError + backData.res.message + backData.res.error
+            st = Status.SetHeadError
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, st)
 
@@ -70,7 +70,7 @@ class SetTitleHandler(object):
     def __call__(self, backData):
         st = Status.Ok
         if backData.res.code != 200:
-            st = Status.SetHeadError + backData.res.message
+            st = Status.SetHeadError
         if backData.bakParam:
             QtTask().taskBack.emit(backData.bakParam, st)
 

@@ -75,7 +75,58 @@
       </layout>
      </item>
      <item row="5" column="0">
-      <widget class="QTableWidget" name="tableWidget"/>
+      <widget class="QTableWidget" name="tableWidget">
+       <column>
+        <property name="text">
+         <string>id</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>标题</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载状态</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载进度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载章节</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载速度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换进度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换章节</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换耗时</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换状态</string>
+        </property>
+       </column>
+      </widget>
      </item>
     </layout>
    </item>

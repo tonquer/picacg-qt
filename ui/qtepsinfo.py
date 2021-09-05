@@ -64,7 +64,7 @@ class Ui_EpsInfo(object):
     # setupUi
 
     def retranslateUi(self, EpsInfo):
-        EpsInfo.setWindowTitle(QCoreApplication.translate("EpsInfo", u"Form", None))
+        EpsInfo.setWindowTitle(QCoreApplication.translate("EpsInfo", u"\u7ae0\u8282\u5217\u8868", None))
         self.label.setText(QCoreApplication.translate("EpsInfo", u"\u7ae0\u8282", None))
         self.pushButton.setText(QCoreApplication.translate("EpsInfo", u"\u5168\u9009", None))
         self.pushButton_2.setText(QCoreApplication.translate("EpsInfo", u"\u53cd\u9009", None))

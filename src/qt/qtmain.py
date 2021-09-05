@@ -3,14 +3,14 @@ import pickle
 import weakref
 
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
-from PySide2.QtCore import QTimer, QUrl
+from PySide2.QtCore import QTimer, QUrl, QObject, QCoreApplication
 from PySide2.QtGui import QDesktopServices, Qt
 from PySide2.QtWidgets import QMessageBox, QDesktopWidget
 from PySide2.QtCore import QTranslator, QLocale
 from PySide2.QtCore import QSettings
 
 from conf import config
-from src.server import req, ToolUtil
+from src.server import req, ToolUtil, Status
 from src.server.sql_server import SqlServer
 from src.util import Log, Singleton
 from ui.main import Ui_MainWindow
@@ -35,10 +35,19 @@ class QtOwner(Singleton):
     def SetV(self, k, v):
         return self.owner.settingForm.SetSettingV(k, v)
 
+    def ShowMsgBox(self, type, title, msg):
+        msg = QMessageBox(type, title, msg)
+        msg.addButton("Yes", QMessageBox.AcceptRole)
+        if type == QMessageBox.Question:
+            msg.addButton("No", QMessageBox.RejectRole)
+        if config.ThemeText == "flatblack":
+            msg.setStyleSheet("QWidget{background-color:#2E2F30}")
+        return msg.exec_()
+
 
 class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, app):
-        config.Language = QSettings('config.ini', QSettings.IniFormat).value('Language', 'Chinese')
+        config.Language = QSettings('config.ini', QSettings.IniFormat).value('Language', '')
         # self.language = 'English'
         # self.language = config.Language
 
@@ -71,39 +80,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.translator_setting = None
         self.translator_user = None
         self.translator_user_info = None
+        self.translator_common = None
 
-        if config.Language == 'English':
-            self.loadTrans(app, 'about', 'en')
-            self.loadTrans(app, 'bookinfo', 'en')
-            # self.loadTrans(app, 'booksimple', 'en')
-            # self.loadTrans(app, 'chatroom', 'en')
-            # self.loadTrans(app, 'chatroomsg', 'en')
-            # self.loadTrans(app, 'comment', 'en')
-            self.loadTrans(app, 'download', 'en')
-            # self.loadTrans(app, 'favorite', 'en')
-            # self.loadTrans(app, 'fried', 'en')
-            # self.loadTrans(app, 'fried_msg', 'en')
-            # self.loadTrans(app, 'game', 'en')
-            # self.loadTrans(app, 'gameinfo', 'en')
-            # self.loadTrans(app, 'history', 'en')
-            self.loadTrans(app, 'img', 'en')
-            self.loadTrans(app, 'index', 'en')
-            # self.loadTrans(app, 'leavemsg', 'en')
-            # self.loadTrans(app, 'loading', 'en')
-            self.loadTrans(app, 'login', 'en')
-            self.loadTrans(app, 'login_proxy', 'en')
-            self.loadTrans(app, 'main', 'en')
-            # self.loadTrans(app, 'qtespinfo', 'en')
-            self.loadTrans(app, 'rank', 'en')
-            # self.loadTrans(app, 'readimg', 'en')
-            self.loadTrans(app, 'register', 'en')
-            self.loadTrans(app, 'search', 'en')
-            self.loadTrans(app, 'setting', 'en')
-            self.loadTrans(app, 'user', 'en')
-            # self.loadTrans(app, 'user_info', 'en')
-        # elif config.Language == 'Chinese':
-        else:
-            pass
         # self.translator_setting = QTranslator()
         # self.translator_setting.load(QLocale(), "./translations/setting_en.qm")
         # if not self.app.installTranslator(self.translator_setting):
@@ -113,6 +91,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Ui_MainWindow.__init__(self)
         QtOwner().SetOwner(self)
         self._app = weakref.ref(app)
+
+        self.LoadTranslate()
 
         from src.qt.chat.qtchat import QtChat
         from src.qt.main.qt_fried import QtFried
@@ -217,47 +197,91 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def app(self):
         return self._app()
 
-        # QtImgMgr().SetOwner(self)
-    # def ClearExpiredCache(self):
-    #     try:
-    #         toPath = os.path.join(config.SavePath, config.CachePathDir)
-    #         for root, dirs, names in os.walk(toPath):
-    #             for name in names:
-    #                 isDel = False
-    #                 filename = os.path.join(root, name)
-    #                 with open(filename, "rb") as f:
-    #                     nameSize = int().from_bytes(f.read(2), byteorder='little')
-    #                     timeTick = int().from_bytes(f.read(4), byteorder='little')
-    #                     # if int(time.time()) - timeTick >= config.CacheExpired:
-    #                     #     isDel = True
-    #
-    #                 if isDel:
-    #                     os.remove(filename)
-    #
-    #     except Exception as es:
-    #         Log.Error(es)
+    def LoadTranslate(self):
+        installTag = ""
+        if config.Language == "":
+            locale = QLocale.system().name()
+            Log.Info("Init translate {}".format(locale))
+            if locale[:3].lower() == "zh_":
+                if locale.lower() != "zh_cn":
+                    config.Language = "Chinese-Traditional"
+                    installTag = "tc"
+                else:
+                    config.Language = "Chinese-Simplified"
 
-    # def OnTimeOut(self):
-    #     self.task.run()
+            else:
+                config.Language = "English"
 
-    def loadTrans(self, app, ui, lang):
-        exec('self.translator_{0} = QTranslator()'.format(ui))
-        exec('self.translator_{0}.load(QLocale(), "./translations/{0}_{1}.qm")'.format(ui, lang))
-        exec('if not app.installTranslator(self.translator_{0}): Log.Warn("{0}_{1}.qm load failed")'.format(ui, lang))
+        if config.Language == "Chinese-Traditional":
+            install = True
+            installTag = "tc"
+        elif config.Language == "English":
+            install = True
+            installTag = "en"
+        else:
+            install = False
+
+        self.loadTrans(self.app, 'about', installTag, install)
+        self.loadTrans(self.app, 'bookinfo', installTag, install)
+        self.loadTrans(self.app, 'common', installTag, install)
+        # self.loadTrans(app, 'booksimple', 'en')
+        # self.loadTrans(app, 'chatroom', 'en')
+        # self.loadTrans(app, 'chatroomsg', 'en')
+        self.loadTrans(self.app, 'comment', installTag, install)
+        self.loadTrans(self.app, 'download', installTag, install)
+        # self.loadTrans(app, 'favorite', 'en')
+        # self.loadTrans(app, 'fried', 'en')
+        # self.loadTrans(app, 'fried_msg', 'en')
+        # self.loadTrans(app, 'game', 'en')
+        # self.loadTrans(app, 'gameinfo', 'en')
+        # self.loadTrans(app, 'history', 'en')
+        self.loadTrans(self.app, 'img', installTag, install)
+        self.loadTrans(self.app, 'index', installTag, install)
+
+        # self.loadTrans(app, 'leavemsg', 'en')
+        # self.loadTrans(app, 'loading', 'en')
+        self.loadTrans(self.app, 'login', installTag, install)
+        self.loadTrans(self.app, 'login_proxy', installTag, install)
+
+        self.loadTrans(self.app, 'main', installTag, install)
+        # self.loadTrans(app, 'qtespinfo', 'en')
+        self.loadTrans(self.app, 'rank', installTag, install)
+        self.loadTrans(self.app, 'readimg', installTag, install)
+        self.loadTrans(self.app, 'register', installTag, install)
+        self.loadTrans(self.app, 'search', installTag, install)
+        self.loadTrans(self.app, 'setting', installTag, install)
+        self.loadTrans(self.app, 'user', installTag, install)
+
+    def RetranslateUi(self):
+        self.retranslateUi(self)
+        self.aboutForm.retranslateUi(self.aboutForm)
+        self.bookInfoForm.retranslateUi(self.bookInfoForm)
+        self.downloadForm.retranslateUi(self.downloadForm)
+        self.qtReadImg.qtTool.retranslateUi(self.qtReadImg.qtTool)
+        self.indexForm.retranslateUi(self.indexForm)
+        self.loginForm.retranslateUi(self.loginForm)
+        self.loginProxyForm.retranslateUi(self.loginProxyForm)
+        self.rankForm.retranslateUi(self.rankForm)
+        self.searchForm.retranslateUi(self.searchForm)
+        self.registerForm.retranslateUi(self.registerForm)
+        self.settingForm.retranslateUi(self.settingForm)
+        self.userForm.retranslateUi(self.userForm)
+        self.aboutForm.retranslateUi(self.aboutForm)
+
+    def loadTrans(self, app, ui, lang, isInstall):
+        setattr(self, "translator_{0}".format(ui), QTranslator())
+        translator = getattr(self, "translator_{0}".format(ui))
+        translator.load(QLocale(), "./translations/{0}_{1}.qm".format(ui, lang))
+        if isInstall:
+            if not app.installTranslator(translator):
+                Log.Warn("{0}_{1}.qm load failed".format(ui, lang))
+        else:
+            app.removeTranslator(translator)
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         super().closeEvent(a0)
-        if config.Language == 'English':
-            exitWinTitle = 'Confirm'
-            exitWinInfo = 'Are you sure to quit?'
-        else:
-            exitWinTitle = '提示'
-            exitWinInfo = '确定要退出吗？'
-
-        # close confirm window
-        reply = QMessageBox.question(self, exitWinTitle, exitWinInfo,
-                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if reply == QMessageBox.Yes:
+        reply = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('提示'), self.tr('确定要退出吗？'))
+        if reply == 0:
             a0.accept()
             userId = self.loginForm.userIdEdit.text()
             passwd = self.loginForm.passwdEdit.text()
@@ -272,7 +296,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             import waifu2x
             stat = waifu2x.init()
             if stat < 0:
-                self.msgForm.ShowError("waifu2x初始化错误")
+                self.msgForm.ShowError(self.tr("waifu2x初始化错误"))
             else:
                 IsCanUse = True
                 gpuInfo = waifu2x.getGpuInfo()
@@ -283,9 +307,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 waifu2x.initSet(config.Encode, config.Waifu2xThread)
                 Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode) + " version:" + waifu2x.getVersion())
-                # self.msgForm.ShowMsg("waifu2x初始化成功\n" + waifu2x.getVersion())
         else:
-            self.msgForm.ShowError("waifu2x无法启用, "+config.ErrorMsg)
+            self.msgForm.ShowError(self.tr("waifu2x无法启用, ")+config.ErrorMsg)
 
         if not IsCanUse:
             self.settingForm.checkBox.setEnabled(False)
@@ -307,14 +330,14 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         return
 
     def OpenSetting(self, action):
-        if action.text() in ("设置", "Settings"):
+        if action.text() in ("设置", "設置", "Settings"):
             self.settingForm.show()
         elif action.text() in ("代理", "Proxy"):
             self.loginProxyForm.show()
         pass
 
     def OpenAbout(self, action):
-        if action.text() in ("关于", "About"):
+        if action.text() in ("关于", "關於", "About"):
             self.aboutForm.show()
         elif action.text() == "waifu2x":
             from src.qt.com.qtimg import QtImgMgr
@@ -345,8 +368,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if not data:
                 self.qtTask.AddHttpTask(req.CheckUpdateReq(config.UpdateUrlBack), self.InitUpdateBack2)
                 return
-            r = QMessageBox.information(self, "更新", "当前版本{} ,检查到更新，是否前往更新\n{}".format(config.UpdateVersion,
-                                                                                        data),
+            r = QMessageBox.information(self, self.tr("更新"), self.tr("当前版本") + config.UpdateVersion + ", "+ self.tr("检查到更新，是否前往更新\n") + data,
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if r == QMessageBox.Yes:
                 QDesktopServices.openUrl(QUrl(config.UpdateUrl2))
@@ -357,8 +379,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             if not data:
                 return
-            r = QMessageBox.information(self, "更新", "当前版本{} ,检查到更新，是否前往更新\n{}".format(config.UpdateVersion,
-                                                                                        data),
+            r = QMessageBox.information(self, self.tr("更新"), self.tr("当前版本") + config.UpdateVersion + ", "+ self.tr("检查到更新，是否前往更新\n") + data,
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if r == QMessageBox.Yes:
                 QDesktopServices.openUrl(QUrl(config.UpdateUrl2Back))
@@ -366,7 +387,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             Log.Error(es)
 
     def InitUpdateDatabase(self):
-        self.searchForm.SetUpdateText("正在更新", "#7fb80e", False)
+        self.searchForm.SetUpdateText(self.tr("正在更新"), "#7fb80e", False)
         self.qtTask.AddHttpTask(req.CheckUpdateDatabaseReq(), self.InitUpdateDatabaseBack)
 
     def InitUpdateDatabaseBack(self, data):
@@ -376,12 +397,15 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         except Exception as es:
             Log.Error(es)
-            self.searchForm.SetUpdateText("无法连接 raw.githubusercontent.com", "#d71345", True)
+            self.searchForm.SetUpdateText(self.tr("无法连接 raw.githubusercontent.com"), "#d71345", True)
 
     def CheckLoadNextDayData(self, newTick):
         if newTick <= self.curUpdateTick:
             self.searchForm.UpdateDbInfo()
-            self.searchForm.SetUpdateText("已更新", "#7fb80e", True)
+            if self.curSubVersion > 0:
+                self.searchForm.SetUpdateText(self.tr("已更新") + str(self.curSubVersion), "#7fb80e", True)
+            else:
+                self.searchForm.SetUpdateText(self.tr("已更新"), "#7fb80e", True)
             return
         day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
         if day <= 0:
@@ -395,7 +419,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         updateTick, newTick = v
         try:
             if not data:
-                self.searchForm.SetUpdateText("无法连接 raw.githubusercontent.com", "#d71345", True)
+                self.searchForm.SetUpdateText(self.tr("无法连接 raw.githubusercontent.com"), "#d71345", True)
                 return
             Log.Info("db: check update, {}->{}->{}".format(self.curUpdateTick, updateTick, newTick))
             if len(data) <= 20:
@@ -438,3 +462,20 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             Log.Error(es)
         finally:
             return infos
+
+    def GetStatusStr(self, data):
+        if data == Status.NetError:
+            return self.tr("网络错误，请检查代理设置")
+        elif data == Status.UserError:
+            return self.tr("用户名密码错误")
+        elif data == Status.RegisterError:
+            return self.tr("注册失败")
+        elif data == Status.NotFoundBook:
+            return self.tr("未找到书籍")
+        elif data == Status.UnderReviewBook:
+            return self.tr("本子审核中")
+        elif data == Status.UnderReviewBook:
+            return self.tr("头像设置出错了, 请尽量选择500kb以下的图片，")
+        elif data == Status.UnKnowError:
+            return self.tr("未知错误, ")
+        return data

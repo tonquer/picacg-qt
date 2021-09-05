@@ -11,32 +11,18 @@ from src.util.status import Status
 
 
 class DownloadInfo(QtTaskBase):
-    if config.Language == "English":
-        Success = "Download Complete"
-        Reading = "Get Info"
-        ReadingEps = "Get Chapter"
-        ReadingPicture = "Get Download URL"
-        Downloading = "Downloading"
-        Waiting = "Waiting"
-        Pause = "Paused"
-        Error = "Error"
-        NotFound = "Original File Not Found"
+    Success = "下载完成"
+    Reading = "获取信息"
+    ReadingEps = "获取章节"
+    ReadingPicture = "获取下载地址"
+    Downloading = "正在下载"
+    Waiting = "等待中"
+    Pause = "暂停"
+    Error = "出错了"
+    NotFound = "原始文件不存在"
 
-        Converting = "Converting"
-        ConvertSuccess = "Convert Success"
-    else:
-        Success = "下载完成"
-        Reading = "获取信息"
-        ReadingEps = "获取章节"
-        ReadingPicture = "获取下载地址"
-        Downloading = "正在下载"
-        Waiting = "等待中"
-        Pause = "暂停"
-        Error = "出错了"
-        NotFound = "原始文件不存在"
-
-        Converting = "转换中"
-        ConvertSuccess = "转换成功"
+    Converting = "转换中"
+    ConvertSuccess = "转换成功"
 
     def __init__(self, parent):
         QtTaskBase.__init__(self)

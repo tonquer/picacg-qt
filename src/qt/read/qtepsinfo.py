@@ -29,7 +29,6 @@ class QtEpsInfo(QtWidgets.QWidget, Ui_EpsInfo, QtTaskBase):
         self.closeFlag = self.__class__.__name__
         self.bookId = ""
         self.loadingForm = QtLoading(self)
-        self.setWindowTitle("章节列表")
 
         self.greed = QColor(18, 161, 130)
         self.blue = QColor(97, 154, 195)

@@ -23,7 +23,7 @@ from src.util.tool import time_me, CTime
 class ReadMode(Enum):
     """ 阅读模式 """
     UpDown = 0              # 上下模式
-    LeftRight = 1           # 左右
+    LeftRight = 1           # 默认
     LeftRightDouble = 2     # 左右双页
     RightLeftDouble = 3     # 右左双页
     LeftRightScroll = 4     # 左右滚动
@@ -57,46 +57,45 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
 
         ToolUtil.SetIcon(self)
 
-        self.popMenu = QMenu(self)
-        action = self.popMenu.addAction("菜单")
-        action.triggered.connect(self.ShowAndCloseTool)
-
-        action = self.popMenu.addAction("全屏切换")
-        action.triggered.connect(self.qtTool.FullScreen)
-
-        menu2 = self.popMenu.addMenu("阅读模式")
-        action = menu2.addAction("上下滚动")
-        action.triggered.connect(partial(self.ChangeReadMode, 0))
-        action = menu2.addAction("左右")
-        action.triggered.connect(partial(self.ChangeReadMode, 1))
-        action = menu2.addAction("左右双页")
-        action.triggered.connect(partial(self.ChangeReadMode, 2))
-        action = menu2.addAction("右左双页")
-        action.triggered.connect(partial(self.ChangeReadMode, 3))
-        action = menu2.addAction("左右滚动")
-        action.triggered.connect(partial(self.ChangeReadMode, 4))
-        action = menu2.addAction("右左滚动")
-        action.triggered.connect(partial(self.ChangeReadMode, 5))
-
-        menu3 = self.popMenu.addMenu("切页")
-        action = menu3.addAction("上一章")
-        action.triggered.connect(self.qtTool.OpenLastEps)
-        action = menu3.addAction("下一章")
-        action.triggered.connect(self.qtTool.OpenNextEps)
-
-        action = self.popMenu.addAction("退出")
-        action.triggered.connect(self.close)
-
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenu)
 
     def LoadSetting(self):
         self.stripModel = ReadMode(config.LookReadMode)
-        self.qtTool.ChangeReadMode(config.LookReadMode)
+        self.ChangeReadMode(config.LookReadMode)
         return
 
     def SelectMenu(self):
-        self.popMenu.exec_(QCursor.pos())
+        popMenu = QMenu(self)
+        action = popMenu.addAction(self.tr("菜单"))
+        action.triggered.connect(self.ShowAndCloseTool)
+
+        action = popMenu.addAction(self.tr("全屏切换"))
+        action.triggered.connect(self.qtTool.FullScreen)
+
+        menu2 = popMenu.addMenu(self.tr("阅读模式"))
+        action = menu2.addAction(self.tr("上下滚动"))
+        action.triggered.connect(partial(self.ChangeReadMode, 0))
+        action = menu2.addAction(self.tr("默认"))
+        action.triggered.connect(partial(self.ChangeReadMode, 1))
+        action = menu2.addAction(self.tr("左右双页"))
+        action.triggered.connect(partial(self.ChangeReadMode, 2))
+        action = menu2.addAction(self.tr("右左双页"))
+        action.triggered.connect(partial(self.ChangeReadMode, 3))
+        action = menu2.addAction(self.tr("左右滚动"))
+        action.triggered.connect(partial(self.ChangeReadMode, 4))
+        action = menu2.addAction(self.tr("右左滚动"))
+        action.triggered.connect(partial(self.ChangeReadMode, 5))
+
+        menu3 = popMenu.addMenu(self.tr("切页"))
+        action = menu3.addAction(self.tr("上一章"))
+        action.triggered.connect(self.qtTool.OpenLastEps)
+        action = menu3.addAction(self.tr("下一章"))
+        action.triggered.connect(self.qtTool.OpenNextEps)
+
+        action = popMenu.addAction(self.tr("退出"))
+        action.triggered.connect(self.close)
+        popMenu.exec_(QCursor.pos())
 
     @property
     def graphicsView(self):
@@ -129,6 +128,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         # else:
         #     self.qtTool.zoomSlider.setValue(120)
         #     self.frame.scaleCnt = 2
+        self.frame.oldValue = 0
         self.pictureData.clear()
         self.ClearTask()
         self.ClearConvert()
@@ -172,20 +172,20 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
 
         if config.LookReadFull:
             self.showFullScreen()
-            self.qtTool.fullButton.setText("退出全屏")
+            self.qtTool.fullButton.setText(self.tr("退出全屏"))
         else:
             self.showNormal()
-            self.qtTool.fullButton.setText("全屏")
+            self.qtTool.fullButton.setText(self.tr("全屏"))
 
         if config.IsTips:
             config.IsTips = 0
             msg = QMessageBox()
-            msg.setStyleSheet("QLabel{"
-                                 "min-width: 300px;"
-                                 "min-height: 300px; "
-                                 "}")
-            msg.setWindowTitle("操作提示")
-            msg.setText("""
+            if config.ThemeText == "flatblack":
+                msg.setStyleSheet("QWidget{background-color:#2E2F30};QLabel{min-width: 300px;min-height: 300px;};")
+            else:
+                msg.setStyleSheet("QLabel{min-width: 300px;min-height: 300px;};")
+            msg.setWindowTitle(self.tr("操作提示"))
+            msg.setText(self.tr("""
             操作提示：             
                 下一页：
                     点击右下角区域
@@ -202,7 +202,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                     按+,-
                 退出：
                     使用键盘ESC
-            """)
+            """))
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec()
 
@@ -283,7 +283,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
                 self.curIndex = self.maxPic - 1
             elif 0 < pageIndex < self.maxPic:
                 self.curIndex = pageIndex
-                QtMsgLabel().ShowMsgEx(self, "继续阅读第{}页".format(pageIndex+1))
+                QtMsgLabel().ShowMsgEx(self, self.tr("继续阅读第")+str(pageIndex+1)+self.tr("页"))
             self.qtTool.UpdateSlider()
             self.CheckLoadPicture()
             self.qtTool.InitSlider(self.maxPic)

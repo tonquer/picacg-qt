@@ -71,7 +71,7 @@ class QtIndex(QtWidgets.QWidget, Ui_Index, QtTaskBase):
                 url = v.get("thumb", {}).get("fileServer")
                 path = v.get("thumb", {}).get("path")
                 originalName = v.get("thumb", {}).get("originalName")
-                info = "完本," if v.get("finished") else ""
+                info = self.tr("完本,") if v.get("finished") else ""
                 info += "{}E/{}P".format(str(v.get("epsCount")), str(v.get("pagesCount")))
                 bookList.AddBookItem(v)
         except Exception as es:

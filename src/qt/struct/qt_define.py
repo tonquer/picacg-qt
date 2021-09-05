@@ -13,10 +13,10 @@ class QtFileData(object):
     DownloadReset = "重新下载"
 
     WaifuWait =  "等待中"
-    WaifuStateStart = "解码开始"
-    WaifuStateCancle = "不解码"
-    WaifuStateEnd = "解码完成"
-    WaifuStateFail = "解码失败"
+    WaifuStateStart = "转换开始"
+    WaifuStateCancle = "不转换"
+    WaifuStateEnd = "转换完成"
+    WaifuStateFail = "转换失败"
 
     def __init__(self):
         self.size = 0

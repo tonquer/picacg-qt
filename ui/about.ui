@@ -117,7 +117,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>哔咔漫画v1.0.5</string>
+        <string/>
        </property>
       </widget>
      </item>

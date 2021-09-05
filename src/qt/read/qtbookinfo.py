@@ -118,12 +118,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         else:
             a0.accept()
 
-    def CopyTitle(self):
-        clipboard = QApplication.clipboard()
-        clipboard.setText(self.title.text())
-        self.msgForm.ShowMsg("复制标题")
-        return
-
     def Clear(self):
         self.stackedWidget.setCurrentIndex(0)
         self.ClearTask()
@@ -181,15 +175,15 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.isLike = info.isLiked
             self.UpdateFavoriteIcon()
             self.UpdateLikeIcon()
-            self.picture.setText("图片加载中...")
-            self.tabWidget.setTabText(1, "评论({})".format(str(info.commentsCount)))
+            self.picture.setText(self.tr("图片加载中..."))
+            self.tabWidget.setTabText(1, self.tr("评论") + "({})".format(str(info.commentsCount)))
             fileServer = info.thumb.get("fileServer")
             path = info.thumb.get("path")
             name = info.thumb.get("originalName")
             self.url = fileServer
             self.path = path
             dayStr = ToolUtil.GetUpdateStr(info.updated_at)
-            self.updateTick.setText(str(dayStr) + "更新")
+            self.updateTick.setText(str(dayStr) + self.tr("更新"))
             if config.IsLoadingPicture:
                 self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
             self.commentWidget.bookId = self.bookId
@@ -205,12 +199,12 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                     self.AddDownloadTask(url2, path2, None, self.LoadingPictureComplete)
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
-            self.msgForm.ShowError(msg)
+            self.msgForm.ShowError(QtOwner().owner.GetStatusStr(msg))
 
             self.hide()
 
         if msg == Status.UnderReviewBook:
-            self.msgForm.ShowError(msg)
+            self.msgForm.ShowError(QtOwner().owner.GetStatusStr(msg))
 
         return
 
@@ -229,7 +223,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             # self.picture.setScaledContents(True)
             self.update()
         else:
-            self.picture.setText("图片加载失败")
+            self.picture.setText(self.tr("图片加载失败"))
         return
 
     def GetEpsBack(self, st):
@@ -239,7 +233,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.LoadHistory()
             return
         else:
-            self.msgForm.ShowError("章节加载失败, {}".format(st))
+            self.msgForm.ShowError(self.tr("章节加载失败,") + "{}".format(QtOwner().owner.GetStatusStr(st)))
         return
 
     def UpdateEpsData(self):
@@ -267,7 +261,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             item.setSizeHint(label.sizeHint() + QSize(20, 20))
             item.setToolTip(epsInfo.title)
             self.epsListWidget.setItemWidget(item, label)
-        self.tabWidget.setTabText(0, "章节({})".format(str(len(info.eps))))
+        self.tabWidget.setTabText(0, self.tr("章节") + "({})".format(str(len(info.eps))))
         return
 
     def AddDownload(self):
@@ -292,7 +286,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.isFavorite = not self.isFavorite
         self.UpdateFavoriteIcon()
         if self.isFavorite:
-            QtMsgLabel.ShowMsgEx(self, "添加收藏成功")
+            QtMsgLabel.ShowMsgEx(self, self.tr("添加收藏成功"))
             QtOwner().owner.favoriteForm.AddFavorites(self.bookId)
         else:
             QtOwner().owner.favoriteForm.DelAndFavoritesBack("", self.bookId)
@@ -323,11 +317,11 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def LoadHistory(self):
         info = QtOwner().owner.historyForm.GetHistory(self.bookId)
         if not info:
-            self.startRead.setText("观看第{}章".format(str(1)))
+            self.startRead.setText(self.tr("观看第1章"))
             return
         if self.lastEpsId == info.epsId:
             self.lastIndex = info.picIndex
-            self.startRead.setText("上次看到第{}章{}页".format(str(self.lastEpsId + 1), str(info.picIndex+1)))
+            self.startRead.setText(self.tr("上次看到第") + str(self.lastEpsId + 1) + self.tr("章") + str(info.picIndex+1) + self.tr("页"))
             return
 
         if self.lastEpsId >= 0:
@@ -346,7 +340,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.epsListWidget.update()
         self.lastEpsId = info.epsId
         self.lastIndex = info.picIndex
-        self.startRead.setText("上次看到第{}章{}页".format(str(self.lastEpsId+1), str(info.picIndex+1)))
+        self.startRead.setText(self.tr("上次看到第") + str(self.lastEpsId + 1) + self.tr("章") + str(info.picIndex+1) + self.tr("页"))
 
     def ClickCategoriesItem(self, item):
         text = item.text()

@@ -108,10 +108,10 @@ class User(Singleton):
                 return Status.Ok
             elif backData.res.code == 400:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
-                return Status.UserError + backData.res.message
+                return Status.UserError
             else:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
-                return Status.UnKnowError + "code:{}, ".format(backData.res.code) + backData.res.GetText()
+                return Status.UnKnowError
         except Exception as es:
             Log.Error(es)
             return Status.NetError
@@ -155,7 +155,7 @@ class User(Singleton):
                 return Status.Ok
             else:
                 Log.Info("注册失败！！！, userId:{}, msg:{}".format(self.userId, backData.res.message))
-                return Status.RegisterError + backData.res.message
+                return Status.RegisterError
         except Exception as es:
             Log.Error(es)
             return Status.NetError

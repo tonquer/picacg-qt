@@ -67,7 +67,7 @@ class QtFried(QtWidgets.QWidget, Ui_Ui_Fried, QtTaskBase):
                 pass
         except Exception as es:
             Log.Error(es)
-            QtOwner().owner.msgForm.ShowMsg(Status.UnKnowError + errMsg)
+            QtOwner().owner.msgForm.ShowMsg(QtOwner().owner.GetStatusStr(Status.UnKnowError) + errMsg)
         return
 
     def JumpPage(self):

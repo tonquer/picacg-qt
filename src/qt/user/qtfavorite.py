@@ -45,8 +45,8 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
     def UpdatePageNum(self):
         maxFovorite = len(self.allFavoriteIds)
         self.bookList.pages = max(0, (maxFovorite-1)) // 20 + 1
-        self.pages.setText("{}/{}页".format(self.bookList.page, self.bookList.pages))
-        self.nums.setText("收藏数：{}".format(maxFovorite))
+        self.pages.setText("{}/{}".format(self.bookList.page, self.bookList.pages) + self.tr("页"))
+        self.nums.setText(self.tr("收藏数：") + "{}".format(maxFovorite))
         self.spinBox.setValue(self.bookList.page)
         self.spinBox.setMaximum(self.bookList.pages)
         self.bookList.UpdateState()
@@ -151,7 +151,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
             self.AddSqlTask("book", bookIds, SqlServer.TaskTypeUpdateFavorite)
             if pages > page:
                 loadPage = page + 1
-            self.msgLabel.setText("正在加载收藏分页{}/{}".format(page, pages))
+            self.msgLabel.setText(self.tr("正在加载收藏分页") + "{}/{}".format(page, pages))
         except Exception as es:
             Log.Error(es)
             loadPage = page
@@ -164,7 +164,7 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
     ## 完成所有的收藏加载
     @time_me
     def LoadPageComplete(self):
-        self.msgLabel.setText("更新完毕")
+        self.msgLabel.setText(self.tr("更新完毕"))
         delBookIds = set(self.allFavoriteIds.keys()) - self.reupdateBookIds
         for bookId in delBookIds:
             self.allFavoriteIds.pop(bookId)

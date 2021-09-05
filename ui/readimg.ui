@@ -394,6 +394,19 @@
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="label_6">
+         <property name="styleSheet">
+          <string notr="true">color: #ee2a24</string>
+         </property>
+         <property name="text">
+          <string>翻页设置</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
           <widget class="QLabel" name="label_5">
@@ -423,7 +436,7 @@
            </item>
            <item>
             <property name="text">
-             <string>左右</string>
+             <string>默认</string>
             </property>
            </item>
            <item>
@@ -446,6 +459,69 @@
              <string>右左滚动</string>
             </property>
            </item>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="maximumSize">
+            <size>
+             <width>90</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>滚动距离（像素）：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="scrollSize">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>100000</number>
+           </property>
+           <property name="value">
+            <number>500</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="maximumSize">
+            <size>
+             <width>90</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>滚动时长（毫秒）</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="scrollTime">
+           <property name="minimum">
+            <number>100</number>
+           </property>
+           <property name="maximum">
+            <number>600000</number>
+           </property>
+           <property name="singleStep">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>500</number>
+           </property>
           </widget>
          </item>
         </layout>
@@ -664,8 +740,8 @@
    <slot>CopyPicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>181</x>
-     <y>483</y>
+     <x>193</x>
+     <y>508</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -712,8 +788,8 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>153</x>
-     <y>512</y>
+     <x>165</x>
+     <y>537</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
@@ -728,8 +804,8 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>570</y>
+     <x>202</x>
+     <y>595</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -744,8 +820,8 @@
    <slot>OpenWaifu()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>85</x>
-     <y>199</y>
+     <x>98</x>
+     <y>162</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -760,8 +836,8 @@
    <slot>FullScreen()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>541</y>
+     <x>113</x>
+     <y>566</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -776,8 +852,8 @@
    <slot>Waifu2xSave()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>156</x>
-     <y>201</y>
+     <x>193</x>
+     <y>162</y>
     </hint>
     <hint type="destinationlabel">
      <x>296</x>
@@ -792,8 +868,8 @@
    <slot>Waifu2xCancle()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>221</x>
-     <y>201</y>
+     <x>284</x>
+     <y>162</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -808,8 +884,8 @@
    <slot>ScalePicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>117</x>
-     <y>445</y>
+     <x>208</x>
+     <y>469</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -824,12 +900,44 @@
    <slot>ChangeReadMode()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
-     <y>405</y>
+     <x>285</x>
+     <y>383</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
      <y>361</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scrollSize</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>ResetScroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>403</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>616</x>
+     <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scrollTime</sender>
+   <signal>editingFinished()</signal>
+   <receiver>ReadImg</receiver>
+   <slot>ResetScroll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>188</x>
+     <y>432</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>514</x>
+     <y>409</y>
     </hint>
    </hints>
   </connection>
@@ -852,8 +960,6 @@
   <slot>Waifu2xCancle()</slot>
   <slot>ScalePicture()</slot>
   <slot>ChangeReadMode()</slot>
+  <slot>ResetScroll()</slot>
  </slots>
- <buttongroups>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>
