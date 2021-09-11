@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>299</width>
-    <height>705</height>
+    <height>730</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -464,69 +464,6 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="label_7">
-           <property name="maximumSize">
-            <size>
-             <width>90</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>滚动距离（像素）：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="scrollSize">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>100000</number>
-           </property>
-           <property name="value">
-            <number>500</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
-         <item>
-          <widget class="QLabel" name="label_10">
-           <property name="maximumSize">
-            <size>
-             <width>90</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>滚动时长（毫秒）</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="scrollTime">
-           <property name="minimum">
-            <number>100</number>
-           </property>
-           <property name="maximum">
-            <number>600000</number>
-           </property>
-           <property name="singleStep">
-            <number>100</number>
-           </property>
-           <property name="value">
-            <number>500</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_10">
          <item>
           <widget class="QLabel" name="zoomLabel">
@@ -708,8 +645,8 @@
    <slot>OpenNextEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>265</x>
-     <y>641</y>
+     <x>285</x>
+     <y>667</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -724,8 +661,8 @@
    <slot>LastPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>100</x>
-     <y>681</y>
+     <x>113</x>
+     <y>707</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -756,8 +693,8 @@
    <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>265</x>
-     <y>681</y>
+     <x>285</x>
+     <y>707</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -772,8 +709,8 @@
    <slot>OpenLastEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>70</x>
-     <y>641</y>
+     <x>83</x>
+     <y>667</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -820,8 +757,8 @@
    <slot>OpenWaifu()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>162</y>
+     <x>101</x>
+     <y>182</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -853,7 +790,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>193</x>
-     <y>162</y>
+     <y>186</y>
     </hint>
     <hint type="destinationlabel">
      <x>296</x>
@@ -869,7 +806,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>284</x>
-     <y>162</y>
+     <y>186</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -901,43 +838,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>285</x>
-     <y>383</y>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>
      <y>361</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scrollSize</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>ResetScroll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>122</x>
-     <y>403</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>616</x>
-     <y>370</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scrollTime</sender>
-   <signal>editingFinished()</signal>
-   <receiver>ReadImg</receiver>
-   <slot>ResetScroll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>188</x>
-     <y>432</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>514</x>
-     <y>409</y>
     </hint>
    </hints>
   </connection>
@@ -960,6 +865,6 @@
   <slot>Waifu2xCancle()</slot>
   <slot>ScalePicture()</slot>
   <slot>ChangeReadMode()</slot>
-  <slot>ResetScroll()</slot>
+  <slot>ResetScale()</slot>
  </slots>
 </ui>

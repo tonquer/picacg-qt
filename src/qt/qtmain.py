@@ -26,6 +26,13 @@ class QtOwner(Singleton):
         assert isinstance(self._owner(), BikaQtMainWindow)
         return self._owner()
 
+    @property
+    def readForm(self):
+        form = self._owner().qtReadImg
+        from src.qt.read.qtreadimg import QtReadImg
+        assert isinstance(form, QtReadImg)
+        return form
+
     def SetOwner(self, owner):
         self._owner = weakref.ref(owner)
 
@@ -280,7 +287,8 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         super().closeEvent(a0)
-        reply = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('提示'), self.tr('确定要退出吗？'))
+        # reply = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('提示'), self.tr('确定要退出吗？'))
+        reply = 0
         if reply == 0:
             a0.accept()
             userId = self.loginForm.userIdEdit.text()

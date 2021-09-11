@@ -161,12 +161,14 @@ class DownloadInfo(QtTaskBase):
         else:
             book = BookMgr().books.get(self.bookId)
             self.title = book.title
-            self.savePath = os.path.join(os.path.join(config.SavePath, config.SavePathDir),
+            if not self.savePath:
+                self.savePath = os.path.join(os.path.join(config.SavePath, config.SavePathDir),
+                                            ToolUtil.GetCanSaveName(self.title))
+                self.savePath = os.path.join(self.savePath, "original")
+            elif not self.convertPath:
+                self.convertPath = os.path.join(os.path.join(config.SavePath, config.SavePathDir),
                                          ToolUtil.GetCanSaveName(self.title))
-            self.savePath = os.path.join(self.savePath, "原图")
-            self.convertPath = os.path.join(os.path.join(config.SavePath, config.SavePathDir),
-                                         ToolUtil.GetCanSaveName(self.title))
-            self.convertPath = os.path.join(self.convertPath, "waifu2x")
+                self.convertPath = os.path.join(self.convertPath, "waifu2x")
             self.AddBookEpsInfos()
         return
 

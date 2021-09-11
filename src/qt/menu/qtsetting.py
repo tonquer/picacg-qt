@@ -104,7 +104,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.logBox.setCurrentIndex(config.LogIndex)
         Log.UpdateLoggingLevel()
 
-        config.IsTips = self.GetSettingV("Waifu2x/IsTips", config.IsTips)
+        # config.IsTips = self.GetSettingV("Waifu2x/IsTips", config.IsTips)
         config.ChatSendAction = self.GetSettingV("Waifu2x/ChatSendAction", config.ChatSendAction)
         config.IsOpenWaifu = self.GetSettingV("Waifu2x/IsOpen2", config.IsOpenWaifu)
         self.checkBox.setChecked(config.IsOpenWaifu)
@@ -156,7 +156,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("Passwd", base64.b64encode(passwd.encode("utf-8")))
         self.settings.setValue("Passwd2", base64.b64encode(passwd.encode("utf-8")))
         self.settings.setValue("Waifu2x/IsOpen2", int(config.IsOpenWaifu))
-        self.settings.setValue("Waifu2x/IsTips", int(config.IsTips))
+        # self.settings.setValue("Waifu2x/IsTips", int(config.IsTips))
         self.settings.setValue("Waifu2x/ChatSendAction", config.ChatSendAction)
 
     def SetTheme(self):

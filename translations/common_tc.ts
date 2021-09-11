@@ -455,6 +455,31 @@
 <context>
     <name>QtImgFrame</name>
     <message>
+        <location filename="../src/qt/read/qtreadimg_frame.py" line="124"/>
+        <source>上一页</source>
+        <translation>上一頁</translation>
+    </message>
+    <message>
+        <location filename="../src/qt/read/qtreadimg_frame.py" line="439"/>
+        <source>下一页</source>
+        <translation>下一頁</translation>
+    </message>
+    <message>
+        <location filename="../src/qt/read/qtreadimg_frame.py" line="124"/>
+        <source>上滑</source>
+        <translation>上滑</translation>
+    </message>
+    <message>
+        <location filename="../src/qt/read/qtreadimg_frame.py" line="439"/>
+        <source>下滑</source>
+        <translation>下滑</translation>
+    </message>
+    <message>
+        <location filename="../src/qt/read/qtreadimg_frame.py" line="439"/>
+        <source>菜单</source>
+        <translation>菜單</translation>
+    </message>
+    <message>
         <location filename="../src/qt/read/qtreadimg_frame.py" line="439"/>
         <source>已经到最后一页</source>
         <translation>已經到最後一頁</translation>
@@ -665,6 +690,11 @@
         <location filename="../src/qt/read/qtreadimg.py" line="93"/>
         <source>下一章</source>
         <translation>下一章</translation>
+    </message>
+    <message>
+        <location filename="../src/qt/read/qtreadimg.py" line="96"/>
+        <source>缩放</source>
+        <translation>縮放</translation>
     </message>
     <message>
         <location filename="../src/qt/read/qtreadimg.py" line="96"/>

@@ -2,9 +2,9 @@ import weakref
 
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint, QSize, QRect
-from PySide2.QtGui import QPainter, QColor, QPixmap, QFont, QFontMetrics
+from PySide2.QtGui import QPainter, QColor, QPixmap, QFont, QFontMetrics, QPen, QBrush
 from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame, QGraphicsItemGroup, QGraphicsItem, \
-    QAbstractSlider, QAbstractItemView, QScroller
+    QAbstractSlider, QAbstractItemView, QScroller, QLabel
 
 from conf import config
 from resources.resources import DataMgr
@@ -27,6 +27,8 @@ class QtImgFrame(QFrame):
         self.graphicsView.setObjectName("graphicsView")
         self.qtTool = QtImgTool(self)
         self.qtTool.hide()
+        self.helpLabel = QLabel(self)
+        self.helpPixMap = QPixmap()
         # self.graphicsView.setBackgroundBrush(QColor(Qt.white))
         # self.graphicsView.setCursor(Qt.OpenHandCursor)
         self.graphicsView.setResizeAnchor(self.graphicsView.AnchorViewCenter)
@@ -62,16 +64,17 @@ class QtImgFrame(QFrame):
 
         self.graphicsView.update()
         self.graphicsScene.update()
-
+        self.helpLabel.installEventFilter(self)
         self.graphicsScene.installEventFilter(self)
         # self.graphicsView.installEventFilter(self)
         # self.graphicsItem.installSceneEventFilter(self.graphicsItem)
+
 
         self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
         self.pixMapList = [QPixmap(), QPixmap(), QPixmap()]
         self.graphicsItemList = [self.graphicsItem1, self.graphicsItem2, self.graphicsItem3]
 
-        self.scaleCnt = 2
+        self.scaleCnt = 0
         self.startPos = QPoint()
         self.endPos = QPoint()
         self.process = DWaterProgress(self)
@@ -89,43 +92,99 @@ class QtImgFrame(QFrame):
         # self.graphicsView.verticalScrollBar().setSingleStep(100)
         # self.graphicsView.verticalScrollBar().setPageStep(100)
         self.graphicsView.setSceneRect(0, 0, self.width(), self.height())
-        self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
-        self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
 
     @property
     def readImg(self):
         return self._readImg()
 
-    def OnValueChange(self, value):
-        self.UpdateScrollBar(value)
+    # def OnValueChange(self, value):
+    #     self.UpdateScrollBar(value)
+    #     return
+
+    def InitHelp(self):
+        label = self.helpLabel
+        font = QFont()
+        font.setPointSize(64)
+        fm = QFontMetrics(font)
+        label.resize(self.width(), self.height())
+        p = QPixmap(self.width(), self.height())
+        p.fill(Qt.transparent)
+        painter = QPainter(p)
+        # painter.setFont(font)
+        # painter.drawText(rect, text)
+        painter.setPen(QPen(QColor(255, 255, 255), 2))
+        painter.setBrush(QBrush(QColor(218, 84, 124, 100)))
+        painter.drawRect(QRect(0, self.height() // 2, self.width() // 3, self.height() // 2))
+        painter.drawRect(QRect(self.width() // 3 * 2, self.height() // 2, self.width() // 3, self.height() // 2))
+
+        painter.drawRect(QRect(self.width() // 3 * 1, 0, self.width() // 3, self.height() // 2))
+        painter.drawRect(QRect(self.width() // 3 * 1, self.height() // 2, self.width() // 3, self.height() // 2))
+
+        painter.setBrush(QBrush(QColor(51, 200, 255, 100)))
+        painter.drawRect(QRect(0, 0, self.width()//4, self.height() // 2))
+        painter.drawRect(QRect(0, 0, self.width()//3*4, self.height() // 2))
+
+        painter.setFont(font)
+        from src.qt.read.qtreadimg import ReadMode
+        if self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]:
+            nextPage = self.tr("上一页")
+            lastPage = self.tr("下一页")
+        else:
+            lastPage = self.tr("上一页")
+            nextPage = self.tr("下一页")
+        painter.drawText(QRect(0, self.height() // 4 * 3, self.width() // 3, self.height() // 2), lastPage)
+        painter.drawText(QRect(self.width() // 3 * 2, self.height() // 4 * 3, self.width() // 3, self.height() // 2),
+                         nextPage)
+        painter.drawText(QRect(0, self.height() // 4 * 1, self.width(), self.height()), self.tr("菜单"))
+        painter.drawText(QRect(self.width()*2 // 3, self.height() // 4 * 1, self.width(), self.height()), self.tr("菜单"))
+
+        if self.qtTool.stripModel in [ReadMode.UpDown, ReadMode.LeftRight]:
+            painter.drawText(QRect(self.width() // 3, self.height() // 4 * 1, self.width(), self.height()), self.tr("上滑"))
+            painter.drawText(QRect(self.width() // 3, self.height() // 4 * 3, self.width(), self.height()), self.tr("下滑"))
+        self.helpPixMap = p
+        label.setPixmap(p)
+        label.setVisible(True)
+        # p = QPixmap()
+        # p.loadFromData(DataMgr().GetData("icon_picacg"))
+        # label.setPixmap(p)
         return
 
     def eventFilter(self, obj, ev):
         # print(obj, ev)
-        if obj == self.graphicsScene:
-            if ev.type() == QEvent.GraphicsSceneMousePress:
+        if obj == self.graphicsScene or obj == self.helpLabel:
+            if ev.type() == QEvent.MouseButtonPress:
+                if not self.helpLabel.isHidden():
+                    self.helpLabel.hide()
+                    return True
+            elif ev.type() == QEvent.GraphicsSceneMousePress:
+                if not self.helpLabel.isHidden():
+                    self.helpLabel.hide()
+                    return True
                 # print(ev, ev.button())
                 self.startPos = ev.screenPos()
                 return False
             elif ev.type() == QEvent.KeyPress:
+                if not self.helpLabel.isHidden():
+                    self.helpLabel.hide()
+                    return True
                 if ev.key() == Qt.Key_Down:
-                    point = self.graphicsGroup.pos()
-                    # if point.y() > 0:
-                    #     return True
-                    # self.UpdatePos(point, -200)
-                    self.graphicsView.Scroll(-self.graphicsView.scrollSize)
+                    from src.qt.read.qtreadimg import ReadMode
+                    value = self.graphicsView.verticalScrollBar().value()
+                    self.graphicsView.verticalScrollBar().setValue(value + 200)
+                    self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value(), -1)
                 elif ev.key() == Qt.Key_Up:
-                    point = self.graphicsGroup.pos()
-                    # if point.y() < 0:
-                    #     return True
-                    # self.UpdatePos(point, 200)
-                    self.graphicsView.Scroll(self.graphicsView.scrollSize)
+                    value = self.graphicsView.verticalScrollBar().value()
+                    self.graphicsView.verticalScrollBar().setValue(value - 200)
+                    self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value(), 1)
+                elif ev.key() == Qt.Key_Left:
+                    self.qtTool.LastPage()
+                elif ev.key() == Qt.Key_Right:
+                    self.qtTool.NextPage()
                 return True
             elif ev.type() == QEvent.GraphicsSceneMouseRelease:
                 # print(ev, self.width(), self.height(), self.readImg.pos())
                 self.endPos = ev.screenPos()
                 subPos = (self.endPos - self.startPos)
-                self.graphicsView.StopScroll()
                 if ev.button() == Qt.MouseButton.LeftButton:
                     if abs(subPos.x()) >= 50:
                         if subPos.x() < 0:
@@ -134,15 +193,28 @@ class QtImgFrame(QFrame):
                             self.qtTool.LastPage()
                     elif abs(subPos.x()) <= 20:
                         curPos = self.endPos - self.readImg.pos()
-                        if curPos.y() <= self.height() / 2:
-                            self.readImg.ShowAndCloseTool()
-                        else:
-                            if curPos.x() >= self.width()/3*2:
-                                self.qtTool.NextPage()
-                            elif curPos.x() <= self.width()/3:
+                        if curPos.x() <= self.width() // 3:
+                            if curPos.y() <= self.height() // 2:
+                                self.readImg.ShowAndCloseTool()
+                            else:
                                 self.qtTool.LastPage()
+                        elif curPos.x() <= self.width() // 3 * 2:
+                            if curPos.y() <= self.height() // 2:
+                                value = self.graphicsView.verticalScrollBar().value()
 
-                return False
+                                self.graphicsView.verticalScrollBar().setValue(value - self.height())
+                                self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value(), -1)
+                            else:
+                                value = self.graphicsView.verticalScrollBar().value()
+
+                                self.graphicsView.verticalScrollBar().setValue(value + self.height())
+                                self.UpdateScrollBar(self.graphicsView.verticalScrollBar().value(), 1)
+                        else:
+                            if curPos.y() <= self.height() //2:
+                                self.readImg.ShowAndCloseTool()
+                            else:
+                                self.qtTool.NextPage()
+
         return super(self.__class__, self).eventFilter(obj, ev)
 
     def resizeEvent(self, event) -> None:
@@ -161,12 +233,17 @@ class QtImgFrame(QFrame):
             value = self.graphicsView.horizontalScrollBar().value()
         # print(value)
 
-        self.UpdateScrollBar(value)
+        self.UpdateScrollBar(value, value-self.oldValue)
 
-    def UpdateScrollBar(self, value):
-        self.UpdatePos(value-self.oldValue)
+    def UpdateScrollBar(self, value, add):
+        self.UpdatePos(add)
         self.ResetScrollBar()
-        self.oldValue = value
+        from src.qt.read.qtreadimg import ReadMode
+        if self.qtTool.stripModel == ReadMode.UpDown:
+            self.oldValue = self.graphicsView.verticalScrollBar().value()
+        else:
+            self.oldValue = self.graphicsView.horizontalScrollBar().value()
+        return True
 
     def ScaleFrame(self):
         size = self.size()
@@ -197,25 +274,27 @@ class QtImgFrame(QFrame):
         from src.qt.read.qtreadimg import ReadMode
         if self.qtTool.stripModel == ReadMode.UpDown:
             self.graphicsView.verticalScrollBar().setMinimum(-100)
-            self.graphicsView.verticalScrollBar().setMaximum(width1 + width2 + 100)
+            self.graphicsView.verticalScrollBar().setMaximum(height1 + height2 + 100)
             self.graphicsView.verticalScrollBar().setSingleStep(60)
             self.graphicsView.verticalScrollBar().setPageStep(60)
             self.graphicsView.horizontalScrollBar().setMinimum(0)
             self.graphicsView.horizontalScrollBar().setMaximum(0)
         elif self.qtTool.stripModel == ReadMode.LeftRightScroll:
             self.graphicsView.horizontalScrollBar().setMinimum(-100)
-            self.graphicsView.horizontalScrollBar().setMaximum(height1 + height2 + 100)
+            self.graphicsView.horizontalScrollBar().setMaximum(width1 + width2 + 100)
             self.graphicsView.horizontalScrollBar().setSingleStep(60)
             self.graphicsView.horizontalScrollBar().setPageStep(60)
             self.graphicsView.verticalScrollBar().setMinimum(0)
             self.graphicsView.verticalScrollBar().setMaximum(0)
         elif self.qtTool.stripModel == ReadMode.RightLeftScroll:
-            self.graphicsView.horizontalScrollBar().setMinimum(-(height1 + height2 + 100))
+            self.graphicsView.horizontalScrollBar().setMinimum(-(width1 + width2 + 100))
             self.graphicsView.horizontalScrollBar().setMaximum(100)
             self.graphicsView.horizontalScrollBar().setSingleStep(60)
             self.graphicsView.horizontalScrollBar().setPageStep(60)
             self.graphicsView.verticalScrollBar().setMinimum(0)
             self.graphicsView.verticalScrollBar().setMaximum(0)
+        else:
+            self.graphicsView.verticalScrollBar().setMaximum(max(0, height1-self.height()))
 
     def MakePixItem(self, index):
         text = str(index+1)
@@ -223,8 +302,8 @@ class QtImgFrame(QFrame):
         font.setPointSize(64)
         fm = QFontMetrics(font)
 
-        p = QPixmap(self.width()//2, self.height()//2)
-        rect = QRect(self.width()//4-fm.width(text)//2, self.height()//4 - fm.height()//2, self.width()//2+fm.width(text)//2, self.height()//4+fm.height()//2)
+        p = QPixmap(self.width(), self.height())
+        rect = QRect(self.width()//2-fm.width(text)//2, self.height()//2 - fm.height()//2, self.width()//2+fm.width(text)//2, self.height()//2+fm.height()//2)
         p.fill(Qt.transparent)
         painter = QPainter(p)
         painter.setFont(font)
@@ -271,9 +350,9 @@ class QtImgFrame(QFrame):
         from src.qt.read.qtreadimg import ReadMode
         if self.qtTool.stripModel == ReadMode.LeftRight:
             scale = (1 + self.scaleCnt * 0.1)
-            self.graphicsItem1.setPixmap(
-                self.pixMapList[0].scaled(min(self.width(), self.width() * scale), self.height() * scale,
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            wight = min(self.width(), self.width() * scale)
+            height = self.height() * scale
+            self.graphicsItem1.setPixmap(self.pixMapList[0].scaled(wight, height, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             height1 = self.graphicsItem1.pixmap().size().height()
             width1 = self.graphicsItem1.pixmap().size().width()
             width2 = self.graphicsItem2.pixmap().size().width()
@@ -302,13 +381,13 @@ class QtImgFrame(QFrame):
         elif self.qtTool.stripModel in [ReadMode.LeftRightScroll]:
             scale = (1 + self.scaleCnt * 0.1)
             self.graphicsItem1.setPixmap(
-                self.pixMapList[0].scaled(self.width() * scale, min(self.height(), self.height() * scale),
+                self.pixMapList[0].scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
                                           Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.graphicsItem2.setPixmap(
-                self.pixMapList[1].scaled(self.width() * scale, min(self.height(), self.height() * scale),
+                self.pixMapList[1].scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
                                           Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.graphicsItem3.setPixmap(
-                self.pixMapList[2].scaled(self.width() * scale, min(self.height(), self.height() * scale),
+                self.pixMapList[2].scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
                                           Qt.KeepAspectRatio, Qt.SmoothTransformation))
             height1 = self.graphicsItem1.pixmap().size().height()
             width1 = self.graphicsItem1.pixmap().size().width()
@@ -322,13 +401,13 @@ class QtImgFrame(QFrame):
         elif self.qtTool.stripModel in [ReadMode.RightLeftScroll]:
             scale = (1 + self.scaleCnt * 0.1)
             self.graphicsItem1.setPixmap(
-                self.pixMapList[0].scaled(self.width() * scale, min(self.height(), self.height() * scale),
+                self.pixMapList[0].scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
                                           Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.graphicsItem2.setPixmap(
-                self.pixMapList[1].scaled(self.width() * scale, min(self.height(), self.height() * scale),
+                self.pixMapList[1].scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
                                           Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.graphicsItem3.setPixmap(
-                self.pixMapList[2].scaled(self.width() * scale, min(self.height(), self.height() * scale),
+                self.pixMapList[2].scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
                                           Qt.KeepAspectRatio, Qt.SmoothTransformation))
             height1 = self.graphicsItem1.pixmap().size().height()
             width1 = self.graphicsItem1.pixmap().size().width()
@@ -339,17 +418,17 @@ class QtImgFrame(QFrame):
             self.graphicsItem1.setPos(self.width()-width1, (self.height()-height1)/2)
             self.graphicsItem2.setPos(self.width()-width1-width1, (self.height()-height2)/2)
             self.graphicsItem3.setPos(self.width()-width1-width1-width2, (self.height()-height3)/2)
-        else:
-            scale = (1 + self.scaleCnt * 0.1)
+        elif self.qtTool.stripModel in [ReadMode.UpDown]:
+            scale = (0.5 + self.scaleCnt * 0.1)
+            minWidth = min(self.width(), self.width() * scale)
+            minHeight = self.height() * scale * 10
+
             self.graphicsItem1.setPixmap(
-                self.pixMapList[0].scaled(min(self.width(), self.width() * scale), self.height() * scale,
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                self.pixMapList[0].scaled(minWidth, minHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.graphicsItem2.setPixmap(
-                self.pixMapList[1].scaled(min(self.width(), self.width() * scale), self.height() * scale,
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                self.pixMapList[1].scaled(minWidth, minHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             self.graphicsItem3.setPixmap(
-                self.pixMapList[2].scaled(min(self.width(), self.width() * scale), self.height() * scale,
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                self.pixMapList[2].scaled(minWidth, minHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation))
             height1 = self.graphicsItem1.pixmap().size().height()
             width1 = self.graphicsItem1.pixmap().size().width()
             width2 = self.graphicsItem2.pixmap().size().width()
@@ -412,8 +491,6 @@ class QtImgFrame(QFrame):
                     return
                 self.readImg.curIndex -= 1
                 subValue = scroll.value()
-                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
                 self.readImg.ShowImg()
                 self.readImg.ShowOtherPage()
                 if self.qtTool.stripModel == ReadMode.UpDown:
@@ -421,16 +498,12 @@ class QtImgFrame(QFrame):
                 else:
                     height = self.graphicsItem1.pixmap().size().width()
                 subValue += height
-                scroll.ResetScroll()
                 scroll.setValue(subValue)
-                scroll.RestartScroll()
 
-                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
                 pass
 
             ## 切换下一图片
-            elif value > 0 and scroll.value() > height:
+            elif value > 0 and scroll.value() >= height:
                 if self.readImg.curIndex >= self.readImg.maxPic - 1:
                     return
                 if self.qtTool.stripModel == ReadMode.RightLeftDouble:
@@ -439,17 +512,11 @@ class QtImgFrame(QFrame):
                 else:
                     self.readImg.curIndex += 1
                 subValue = scroll.value() - height
-                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
                 self.readImg.ShowImg()
                 self.readImg.ShowOtherPage()
                 # print(subValue)
-                scroll.ResetScroll()
                 scroll.setValue(subValue)
-                scroll.RestartScroll()
 
-                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
         else:
             if value <= 0 and self.readImg.curIndex >= self.readImg.maxPic - 1:
                 QtMsgLabel().ShowMsgEx(self.readImg, self.tr("已经到最后一页"))
@@ -461,17 +528,11 @@ class QtImgFrame(QFrame):
                     return
                 self.readImg.curIndex -= 1
                 subValue = scroll.value() - height
-                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
                 self.readImg.ShowImg()
                 self.readImg.ShowOtherPage()
                 # print(subValue)
-                scroll.ResetScroll()
                 scroll.setValue(subValue)
-                scroll.RestartScroll()
 
-                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
                 pass
 
             ## 切换下一图片
@@ -480,14 +541,41 @@ class QtImgFrame(QFrame):
                     return
                 self.readImg.curIndex += 1
                 subValue = scroll.value()
-                self.graphicsView.verticalScrollBar().valueChanged.disconnect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.disconnect(self.OnValueChange)
                 self.readImg.ShowImg()
                 self.readImg.ShowOtherPage()
                 height = self.graphicsItem1.pixmap().size().width()
                 subValue += height
-                scroll.ResetScroll()
                 scroll.setValue(subValue)
-                scroll.RestartScroll()
-                self.graphicsView.verticalScrollBar().valueChanged.connect(self.OnValueChange)
-                self.graphicsView.horizontalScrollBar().valueChanged.connect(self.OnValueChange)
+
+    def HandlerKey(self, key):
+        from src.qt.read.qtreadimg import ReadMode
+        model = self.qtTool.stripModel
+        if key == Qt.Key_Left:
+            if model in [ReadMode.UpDown, ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
+                self.qtTool.LastPage()
+            elif model in [ReadMode.UpDown]:
+                self.graphicsView.Scroll(-self.height())
+            elif model in [ReadMode.LeftRightScroll, ReadMode.LeftRightDouble]:
+                self.graphicsView.Scroll(-self.width()//2)
+        elif key == Qt.Key_Right:
+            if model in [ReadMode.UpDown, ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
+                self.qtTool.NextPage()
+            elif model in [ReadMode.UpDown]:
+                self.graphicsView.Scroll(self.height())
+            elif model in [ReadMode.LeftRightScroll, ReadMode.LeftRightDouble]:
+                self.graphicsView.Scroll(self.width()//2)
+        elif key == Qt.Key_Down:
+            if model in [ReadMode.UpDown, ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
+                self.graphicsView.Scroll(self.height()//2)
+            elif model in [ReadMode.UpDown]:
+                self.graphicsView.Scroll(self.height()//2)
+            elif model in [ReadMode.LeftRightScroll, ReadMode.LeftRightDouble]:
+                self.graphicsView.Scroll(self.width())
+        elif key == Qt.Key_Up:
+            if model in [ReadMode.UpDown, ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
+                self.graphicsView.Scroll(-self.height()//2)
+            elif model in [ReadMode.UpDown]:
+                self.graphicsView.Scroll(-self.height()//2)
+            elif model in [ReadMode.LeftRightScroll, ReadMode.LeftRightDouble]:
+                self.graphicsView.Scroll(-self.width())
+        return True

@@ -59,6 +59,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenu)
+        self.isShowMenu = False
 
     def LoadSetting(self):
         self.stripModel = ReadMode(config.LookReadMode)
@@ -74,18 +75,39 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         action.triggered.connect(self.qtTool.FullScreen)
 
         menu2 = popMenu.addMenu(self.tr("阅读模式"))
-        action = menu2.addAction(self.tr("上下滚动"))
-        action.triggered.connect(partial(self.ChangeReadMode, 0))
-        action = menu2.addAction(self.tr("默认"))
-        action.triggered.connect(partial(self.ChangeReadMode, 1))
-        action = menu2.addAction(self.tr("左右双页"))
-        action.triggered.connect(partial(self.ChangeReadMode, 2))
-        action = menu2.addAction(self.tr("右左双页"))
-        action.triggered.connect(partial(self.ChangeReadMode, 3))
-        action = menu2.addAction(self.tr("左右滚动"))
-        action.triggered.connect(partial(self.ChangeReadMode, 4))
-        action = menu2.addAction(self.tr("右左滚动"))
-        action.triggered.connect(partial(self.ChangeReadMode, 5))
+
+        def AddReadMode(name, value):
+            action = menu2.addAction(name)
+            action.triggered.connect(partial(self.ChangeReadMode, value))
+            if self.stripModel.value == value:
+                action.setCheckable(True)
+                action.setChecked(True)
+        AddReadMode(self.tr("上下滚动"), 0)
+        AddReadMode(self.tr("默认"), 1)
+        AddReadMode(self.tr("左右双页"), 2)
+        AddReadMode(self.tr("右左双页"), 3)
+        AddReadMode(self.tr("左右滚动"), 4)
+        AddReadMode(self.tr("右左滚动"), 5)
+
+        menu3 = popMenu.addMenu(self.tr("缩放"))
+
+        def AddScaleMode(name, value):
+            action = menu3.addAction(name)
+            action.triggered.connect(partial(self.qtTool.ScalePicture, value))
+            if (self.frame.scaleCnt+10) * 10 == value:
+                action.setCheckable(True)
+                action.setChecked(True)
+        AddScaleMode("50%", 50)
+        AddScaleMode("60%", 60)
+        AddScaleMode("70%", 70)
+        AddScaleMode("80%", 80)
+        AddScaleMode("90%", 90)
+        AddScaleMode("100%", 100)
+        AddScaleMode("120%", 120)
+        AddScaleMode("140%", 140)
+        AddScaleMode("160%", 160)
+        AddScaleMode("180%", 180)
+        AddScaleMode("200%", 200)
 
         menu3 = popMenu.addMenu(self.tr("切页"))
         action = menu3.addAction(self.tr("上一章"))
@@ -95,6 +117,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
 
         action = popMenu.addAction(self.tr("退出"))
         action.triggered.connect(self.close)
+        self.isShowMenu = True
         popMenu.exec_(QCursor.pos())
 
     @property
@@ -142,6 +165,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         if info:
             self.category = info.tags[:]
             self.category.extend(info.categories)
+
         self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
         self.qtTool.SetData(isInit=True)
         # self.graphicsGroup.setPixmap(QPixmap())
@@ -179,32 +203,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
 
         if config.IsTips:
             config.IsTips = 0
-            msg = QMessageBox()
-            if config.ThemeText == "flatblack":
-                msg.setStyleSheet("QWidget{background-color:#2E2F30};QLabel{min-width: 300px;min-height: 300px;};")
-            else:
-                msg.setStyleSheet("QLabel{min-width: 300px;min-height: 300px;};")
-            msg.setWindowTitle(self.tr("操作提示"))
-            msg.setText(self.tr("""
-            操作提示：             
-                下一页：
-                    点击右下角区域
-                    左滑图片
-                    使用键盘→
-                上一页：
-                    点击左下角区域
-                    右滑图片
-                    使用键盘←
-                打开菜单：
-                    点击上方区域
-                    点击右键
-                缩放：
-                    按+,-
-                退出：
-                    使用键盘ESC
-            """))
-            msg.setStandardButtons(QMessageBox.Ok)
-            msg.exec()
+            self.frame.InitHelp()
 
     def ReturnPage(self):
         self.AddHistory()
@@ -460,30 +459,24 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
     def keyReleaseEvent(self, ev):
         if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Left:
             self.qtTool.OpenLastEps()
-            return
+            return True
         if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Right:
             self.qtTool.OpenNextEps()
-            return
+            return True
         # print(ev.modifiers, ev.key())
         if ev.key() == Qt.Key_Plus or ev.key() == Qt.Key_Equal:
             self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value()+10)
-            return
+            return True
         if ev.key() == Qt.Key_Minus:
             self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value()-10)
-            return
-        if ev.key() == Qt.Key_Left:
-            self.qtTool.LastPage()
-            return
-        elif ev.key() == Qt.Key_Right:
-            self.qtTool.NextPage()
-            return
-        elif ev.key() == Qt.Key_Escape:
+            return True
+        if ev.key() == Qt.Key_Escape:
             # if self.windowState() == Qt.WindowFullScreen:
             #     self.showNormal()
             #     self.frame.qtTool.fullButton.setText("全屏")
             #     return
             self.qtTool.ReturnPage()
-            return
+            return True
         # elif ev.key() == Qt.Key_Up:
         #     point = self.graphicsItem.pos()
         #     self.graphicsItem.setPos(point.x(), point.y()+50)
@@ -492,7 +485,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         #     point = self.graphicsItem.pos()
         #     self.graphicsItem.setPos(point.x(), point.y()-50)
         #     return
-        super(self.__class__, self).keyReleaseEvent(ev)
+        return super(self.__class__, self).keyReleaseEvent(ev)
 
     def AddHistory(self):
         bookName = QtOwner().owner.bookInfoForm.bookName

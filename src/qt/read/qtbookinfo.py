@@ -382,6 +382,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
     def ChangeTab(self, index):
         if index == 1:
-            self.commentWidget.loadingForm2.show()
-            self.commentWidget.LoadComment()
+            if not self.commentWidget.listWidget.count():
+                self.commentWidget.loadingForm2.show()
+                self.commentWidget.LoadComment()
         return

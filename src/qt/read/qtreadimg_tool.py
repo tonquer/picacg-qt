@@ -324,14 +324,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         self.scaleLabel.setText(str(scale))
         self.gpuLabel.setText(QtOwner().owner.settingForm.GetGpuName())
 
-    def ReduceScalePic(self):
-        self.readImg.zoom(1/1.1)
-        return
-
-    def AddScalePic(self):
-        self.readImg.zoom(1.1)
-        return
-
     def OpenLastEps(self):
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
@@ -479,17 +471,15 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             self.readImg.ShowImg()
             self.readImg.ShowOtherPage()
         else:
-            self.zoomSlider.setValue(120)
-            self.scaleCnt = 2
+            self.zoomSlider.setValue(100)
+            self.scaleCnt = 0
             self.imgFrame.graphicsView.verticalScrollBar().blockSignals(False)
             self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(True)
             self.readImg.ShowOtherPage()
         self.imgFrame.ScalePicture()
         config.LookReadMode = index
         QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
-
-    def ResetScroll(self):
-        self.imgFrame.graphicsView.SetScrollValue(int(self.scrollSize.value()), int(self.scrollTime.value()))
+        self.imgFrame.InitHelp()
 
 
 

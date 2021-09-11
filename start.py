@@ -6,7 +6,7 @@ import os
 # macOS 修复
 import time
 
-from PySide2.QtGui import QPalette, QColor
+from PySide2.QtGui import QPalette, QColor, Qt
 
 from qss.qss import QssDataMgr
 
@@ -38,14 +38,15 @@ DbBook()
 
 
 if __name__ == "__main__":
+    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     Log.Init()
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
     # app.addLibraryPath("./resources")
     try:
         main = BikaQtMainWindow(app)
     except Exception as es:
-        print(es)
-        sys.exit(-2)
+        Log.Error(es)
+        sys.exit(-111)
     # main.setPalette(QPalette(QColor("#464646")))
     # main.setStyleSheet(QssDataMgr().GetData("darkblack"))
     main.show()  # 显示窗体
