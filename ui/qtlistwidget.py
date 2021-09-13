@@ -279,6 +279,7 @@ class QtBookList(QListWidget, QtTaskBase):
         return
 
     def InstallDel(self):
+        self.customContextMenuRequested.disconnect(self.SelectMenuBook)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenuDel)
 
@@ -579,7 +580,16 @@ class QtBookList(QListWidget, QtTaskBase):
         index = self.indexAt(pos)
         if index.isValid():
             popMenu = QMenu(self)
-
+            action = popMenu.addAction(self.tr("打开"))
+            action.triggered.connect(self.OpenBookInfoHandler)
+            action = popMenu.addAction(self.tr("查看封面"))
+            action.triggered.connect(self.OpenPicture)
+            action = popMenu.addAction(self.tr("重下封面"))
+            action.triggered.connect(self.ReDownloadPicture)
+            action = popMenu.addAction(self.tr("复制标题"))
+            action.triggered.connect(self.CopyHandler)
+            action = popMenu.addAction(self.tr("下载"))
+            action.triggered.connect(self.DownloadHandler)
             action = popMenu.addAction(self.tr("刪除"))
             action.triggered.connect(self.DelHandler)
             popMenu.exec_(QCursor.pos())
