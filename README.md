@@ -1,6 +1,6 @@
 # 哔咔漫画
 
-## 简体中文 | [EngLish](README-en.md)
+## 简体中文 | [English](README_EN.md)
 
 [![GitHub](https://img.shields.io/github/license/tonquer/picacg-windows)](https://raw.githubusercontent.com/tonquer/picacg-windows/master/LICENSE.txt) 
 [![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/CI?label=CI)](https://github.com/tonquer/picacg-windows/actions)
