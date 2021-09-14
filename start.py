@@ -38,7 +38,7 @@ DbBook()
 
 
 if __name__ == "__main__":
-    QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    # QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     Log.Init()
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
     # app.addLibraryPath("./resources")
