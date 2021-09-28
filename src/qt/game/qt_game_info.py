@@ -3,7 +3,7 @@ import json
 
 from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import Qt, QSize, QEvent
-from PySide2.QtGui import QFont, QPixmap
+from PySide2.QtGui import QFont, QPixmap, QGuiApplication
 from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QAbstractItemView
 
 from conf import config
@@ -27,7 +27,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.setupUi(self)
         self.loadingForm = QtLoading(self)
         self.commentWidget.InitReq(req.GetGameCommentsReq, req.SendGameCommentsReq, req.GameCommentsLikeReq, req.CommentsReportReq)
-        self.tabWidget.setCurrentIndex(0)
         self.gameId = ""
         self.url = ""
         self.path = ""
@@ -40,8 +39,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.title.setWordWrap(True)
         self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.description.setWordWrap(True)
-        self.description.setAlignment(Qt.AlignTop)
 
         self.description.adjustSize()
         self.title.adjustSize()
@@ -56,7 +53,7 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.epsListWidget.verticalScrollBar().setSingleStep(30)
         self.androidLink = ""
         self.iosLink = ""
-
+        self.description.adjustSize()
         self.listPictureInfo = {}
 
         # self.epsListWidget.clicked.connect(self.OpenReadImg)
@@ -79,6 +76,10 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.icon_2.setScaledContents(True)
         self.icon_3.setScaledContents(True)
         self.icon_4.setScaledContents(True)
+
+        desktop = QGuiApplication.primaryScreen().geometry()
+        self.resize(desktop.width()//4*3, desktop.height()//4*3)
+        self.move(desktop.width()//8*1, desktop.height()//8*1)
         ToolUtil.SetIcon(self)
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
@@ -124,12 +125,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.icon_3.setVisible(False)
         self.icon_4.setVisible(False)
 
-    def CopyDescription(self):
-        clipboard = QApplication.clipboard()
-        clipboard.setText(self.description.text())
-        self.msgForm.ShowMsg(self.tr("复制描述"))
-        return
-
     def OpenBook(self, gameId):
         self.gameId = gameId
         self.setWindowTitle(self.gameId)
@@ -164,7 +159,7 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
                 self.icon_3.setVisible(True)
             if data.get("data").get("game").get("ios"):
                 self.icon_4.setVisible(True)
-            self.description.setText(description)
+            self.description.setPlainText(description)
             self.picture.setText(self.tr("图片加载中..."))
             fileServer = data.get("data").get("game").get("icon").get("fileServer")
             path = data.get("data").get("game").get("icon").get("path")

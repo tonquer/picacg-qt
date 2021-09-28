@@ -177,7 +177,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
             self.sortKey.setEnabled(True)
             self.sortId.setEnabled(True)
             self.comboBox.setEnabled(False)
-            self.creatorBox.setEnabled(False)
+            self.creatorBox.setEnabled(True)
         else:
             self.authorBox.setEnabled(False)
             self.desBox.setEnabled(False)
@@ -187,7 +187,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
             self.sortKey.setEnabled(False)
             self.sortId.setEnabled(False)
             self.comboBox.setEnabled(True)
-            self.creatorBox.setEnabled(True)
+            self.creatorBox.setEnabled(False)
 
     def SendSearch(self, data, page):
         self.index = 1

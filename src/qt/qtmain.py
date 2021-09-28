@@ -3,9 +3,9 @@ import pickle
 import weakref
 
 from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
-from PySide2.QtCore import QTimer, QUrl, QObject, QCoreApplication
-from PySide2.QtGui import QDesktopServices, Qt
-from PySide2.QtWidgets import QMessageBox, QDesktopWidget
+from PySide2.QtCore import QTimer, QUrl, QObject, QCoreApplication, QSize
+from PySide2.QtGui import QDesktopServices, Qt, QGuiApplication
+from PySide2.QtWidgets import QMessageBox
 from PySide2.QtCore import QTranslator, QLocale
 from PySide2.QtCore import QSettings
 
@@ -179,16 +179,34 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.stackedWidget.addWidget(self.loginForm)
         self.stackedWidget.addWidget(self.userForm)
-
+        desktop = QGuiApplication.primaryScreen().geometry()
+        self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+        self.move(desktop.width() // 8, desktop.height() // 8)
 
         if self.settingForm.mainSize:
-            self.resize(self.settingForm.mainSize)
-        else:
-            desktop = QDesktopWidget()
-            self.resize(desktop.width() // 4 * 2, desktop.height() // 4 * 2)
-            self.move(desktop.width() // 4, desktop.height() // 4)
-        self.bookInfoForm.resize(self.settingForm.bookSize)
-        self.qtReadImg.resize(self.settingForm.readSize)
+            assert isinstance(self.settingForm.mainSize, QSize)
+            desktop = QGuiApplication.primaryScreen().geometry()
+            if self.settingForm.mainSize.width() == desktop.width():
+                self.setMinimumSize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+                self.setWindowState(Qt.WindowMaximized)
+            else:
+                self.resize(self.settingForm.mainSize)
+                x = (desktop.width() - self.settingForm.mainSize.width()) // 2
+                y = (desktop.height() - self.settingForm.mainSize.height()) // 2
+                self.move(x, max(0, y))
+
+        if self.settingForm.bookSize:
+            desktop = QGuiApplication.primaryScreen().geometry()
+            if self.settingForm.bookSize.width() == desktop.width():
+                self.bookInfoForm.setMinimumSize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+                self.bookInfoForm.setWindowState(Qt.WindowMaximized)
+            else:
+                self.bookInfoForm.resize(self.settingForm.bookSize)
+                x = (desktop.width() - self.settingForm.bookSize.width()) // 2
+                y = (desktop.height() - self.settingForm.bookSize.height()) // 2
+                self.bookInfoForm.move(x, max(0, y))
+
+        # self.qtReadImg.resize(self.settingForm.readSize)
 
         self.loginForm.userIdEdit.setText(self.settingForm.userId)
         self.loginForm.passwdEdit.setText(self.settingForm.passwd)
@@ -411,7 +429,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if newTick <= self.curUpdateTick:
             self.searchForm.UpdateDbInfo()
             if self.curSubVersion > 0:
-                self.searchForm.SetUpdateText(self.tr("已更新") + str(self.curSubVersion), "#7fb80e", True)
+                self.searchForm.SetUpdateText(self.tr("今日已更新") + str(self.curSubVersion), "#7fb80e", True)
             else:
                 self.searchForm.SetUpdateText(self.tr("已更新"), "#7fb80e", True)
             return

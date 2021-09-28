@@ -117,7 +117,6 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom, QtTaskBase):
 
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key_Return:
-            print(event.modifiers() == Qt.ControlModifier)
             if (config.ChatSendAction == 2 and event.modifiers() != Qt.ControlModifier) or (
                     config.ChatSendAction == 1 and (event.modifiers() == Qt.ControlModifier)):
                 return

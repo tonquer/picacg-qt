@@ -2,9 +2,9 @@ import json
 
 from PySide2 import QtWidgets, QtCore, QtGui
 from PySide2.QtCore import Qt, QSize, QEvent
-from PySide2.QtGui import QColor, QFont, QPixmap, QIcon
+from PySide2.QtGui import QColor, QFont, QPixmap, QIcon, QGuiApplication
 from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
-    QVBoxLayout, QDesktopWidget, QScroller, QAbstractItemView
+    QVBoxLayout, QScroller, QAbstractItemView
 
 from conf import config
 from qss.qss import QssDataMgr
@@ -39,7 +39,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.pictureData = None
         self.isFavorite = False
         self.isLike = False
-        self.tabWidget.setCurrentIndex(0)
 
         self.msgForm = QtMsgLabel(self)
         self.picture.installEventFilter(self)
@@ -77,9 +76,9 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.epsListWidget.clicked.connect(self.OpenReadImg)
 
         ToolUtil.SetIcon(self)
-        desktop = QDesktopWidget()
-        self.resize(desktop.width()//4*1, desktop.height()//4*3)
-        self.move(desktop.width()//8*3, desktop.height()//8*1)
+        desktop = QGuiApplication.primaryScreen().geometry()
+        self.resize(desktop.width()//4*3, desktop.height()//4*3)
+        self.move(desktop.width()//8*1, desktop.height()//8*1)
 
         QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
         self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
@@ -92,7 +91,7 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.userIconData = None
         self.user_name.installEventFilter(self)
         self.user_icon.installEventFilter(self)
-
+    
     def UpdateFavoriteIcon(self):
         p = QPixmap()
         if self.isFavorite:
@@ -131,7 +130,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.Clear()
         self.show()
         self.loadingForm.show()
-        self.tabWidget.setCurrentIndex(0)
         self.OpenLocalBack()
 
     def OpenLocalBack(self):
@@ -176,7 +174,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.UpdateFavoriteIcon()
             self.UpdateLikeIcon()
             self.picture.setText(self.tr("图片加载中..."))
-            self.tabWidget.setTabText(1, self.tr("评论") + "({})".format(str(info.commentsCount)))
             fileServer = info.thumb.get("fileServer")
             path = info.thumb.get("path")
             name = info.thumb.get("originalName")
@@ -193,10 +190,11 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             if hasattr(info, "_creator"):
                 creator = info._creator
                 self.user_name.setText(creator.get("name"))
-                url2 = creator.get("avatar").get("fileServer")
-                path2 = creator.get("avatar").get("path")
+                url2 = creator.get("avatar", {}).get("fileServer")
+                path2 = creator.get("avatar", {}).get("path")
                 if url2:
                     self.AddDownloadTask(url2, path2, None, self.LoadingPictureComplete)
+            self.commentWidget.LoadComment()
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             self.msgForm.ShowError(QtOwner().owner.GetStatusStr(msg))
@@ -261,7 +259,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             item.setSizeHint(label.sizeHint() + QSize(20, 20))
             item.setToolTip(epsInfo.title)
             self.epsListWidget.setItemWidget(item, label)
-        self.tabWidget.setTabText(0, self.tr("章节") + "({})".format(str(len(info.eps))))
         return
 
     def AddDownload(self):
@@ -379,10 +376,3 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         if Qt.Key_Escape == key:
             self.close()
         return super(self.__class__, self).keyPressEvent(ev)
-
-    def ChangeTab(self, index):
-        if index == 1:
-            if not self.commentWidget.listWidget.count():
-                self.commentWidget.loadingForm2.show()
-                self.commentWidget.LoadComment()
-        return

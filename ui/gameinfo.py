@@ -22,6 +22,15 @@ class Ui_GameInfo(object):
         GameInfo.resize(900, 963)
         self.gridLayout_2 = QGridLayout(GameInfo)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.line = QFrame(GameInfo)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.VLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.gridLayout_2.addWidget(self.line, 0, 1, 1, 1)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.stackedWidget = QStackedWidget(GameInfo)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.page = QWidget()
@@ -108,9 +117,9 @@ class Ui_GameInfo(object):
 
         self.horizontalLayout_5.addWidget(self.label_3)
 
-        self.description = QLabel(self.page)
+        self.description = QPlainTextEdit(self.page)
         self.description.setObjectName(u"description")
-        self.description.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.description.setStyleSheet(u"QPlainTextEdit {background-color:transparent;}")
 
         self.horizontalLayout_5.addWidget(self.description)
 
@@ -157,14 +166,7 @@ class Ui_GameInfo(object):
 
         self.verticalLayout.addLayout(self.gridLayout_3)
 
-        self.tabWidget = QTabWidget(self.page)
-        self.tabWidget.setObjectName(u"tabWidget")
-        self.tabWidget.setStyleSheet(u"QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }")
-        self.epsWidget = QWidget()
-        self.epsWidget.setObjectName(u"epsWidget")
-        self.epsLayout = QGridLayout(self.epsWidget)
-        self.epsLayout.setObjectName(u"epsLayout")
-        self.epsListWidget = QListWidget(self.epsWidget)
+        self.epsListWidget = QListWidget(self.page)
         self.epsListWidget.setObjectName(u"epsListWidget")
         self.epsListWidget.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
 "")
@@ -173,16 +175,7 @@ class Ui_GameInfo(object):
         self.epsListWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.epsListWidget.setSpacing(6)
 
-        self.epsLayout.addWidget(self.epsListWidget, 0, 0, 1, 1)
-
-        self.tabWidget.addTab(self.epsWidget, "")
-        self.commentWidget = QtCommentList()
-        self.commentWidget.setObjectName(u"commentWidget")
-        self.commentLayout = QGridLayout(self.commentWidget)
-        self.commentLayout.setObjectName(u"commentLayout")
-        self.tabWidget.addTab(self.commentWidget, "")
-
-        self.verticalLayout.addWidget(self.tabWidget)
+        self.verticalLayout.addWidget(self.epsListWidget)
 
 
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
@@ -192,15 +185,20 @@ class Ui_GameInfo(object):
 
         self.stackedWidget.addWidget(self.page)
 
-        self.gridLayout_2.addWidget(self.stackedWidget, 0, 0, 1, 1)
+        self.horizontalLayout_7.addWidget(self.stackedWidget)
+
+
+        self.gridLayout_2.addLayout(self.horizontalLayout_7, 0, 0, 1, 1)
+
+        self.commentWidget = QtCommentList(GameInfo)
+        self.commentWidget.setObjectName(u"commentWidget")
+
+        self.gridLayout_2.addWidget(self.commentWidget, 0, 2, 1, 1)
 
 
         self.retranslateUi(GameInfo)
         self.iosButton.clicked.connect(GameInfo.CopyIos)
         self.androidButton.clicked.connect(GameInfo.CopyAndroid)
-
-        self.tabWidget.setCurrentIndex(1)
-
 
         QMetaObject.connectSlotsByName(GameInfo)
     # setupUi
@@ -215,11 +213,8 @@ class Ui_GameInfo(object):
         self.icon_3.setText(QCoreApplication.translate("GameInfo", u"TextLabel", None))
         self.icon_4.setText(QCoreApplication.translate("GameInfo", u"TextLabel", None))
         self.label_3.setText(QCoreApplication.translate("GameInfo", u"\u63cf\u8ff0\uff1a", None))
-        self.description.setText(QCoreApplication.translate("GameInfo", u"\u63cf\u8ff0", None))
         self.updateTick.setText(QCoreApplication.translate("GameInfo", u"TextLabel", None))
         self.androidButton.setText(QCoreApplication.translate("GameInfo", u"\u590d\u5236\u5b89\u5353\u4e0b\u8f7d\u5730\u5740", None))
         self.iosButton.setText(QCoreApplication.translate("GameInfo", u"\u590d\u5236IOS\u4e0b\u8f7d\u5730\u5740", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.epsWidget), QCoreApplication.translate("GameInfo", u"\u7ae0\u8282", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.commentWidget), QCoreApplication.translate("GameInfo", u"\u8bc4\u8bba", None))
     # retranslateUi
 

@@ -30,13 +30,13 @@ PreLoading = 10                # 预加载5页
 
 IsLoadingPicture = True
 
-UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
-UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-windows/releases/latest"
-UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
-UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
+UpdateUrl = "https://github.com/tonquer/picacg-pyqt/releases/latest"
+UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-pyqt/releases/latest"
+UpdateUrl2 = "https://github.com/tonquer/picacg-pyqt/releases"
+UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-pyqt/releases"
 
-DatabaseUpdate = "https://raw.githubusercontent.com/tonquer/picacg-database/main/version.txt"
-DatabaseDownload = "https://raw.githubusercontent.com/tonquer/picacg-database/main/data/"
+DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version.txt"
+DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data/"
 UpdateVersion = "v1.2.5"
 
 # waifu2x

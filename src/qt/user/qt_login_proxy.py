@@ -85,6 +85,8 @@ class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):
             label = getattr(self, "label"+str(i))
             label.setText(self.tr("无代理"))
             self.speedPingNum += 1
+            self.StartSpeedPing()
+            return
 
         request = req.SpeedTestPingReq()
         if isHttpProxy:

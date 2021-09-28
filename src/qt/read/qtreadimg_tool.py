@@ -5,7 +5,7 @@ from PySide2.QtCore import QEvent, Qt
 from PySide2.QtCore import QSize
 from PySide2.QtGui import QPalette, QPixmap
 from PySide2.QtGui import Qt
-from PySide2.QtWidgets import QLabel
+from PySide2.QtWidgets import QLabel, QScroller, QScrollerProperties
 
 from conf import config
 from src.index.book import BookMgr
@@ -116,12 +116,12 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         return self._imgFrame()
 
     @property
-    def readImg(self):
-        return self.imgFrame.readImg
+    def scrollArea(self):
+        return self.readImg.scrollArea
 
     @property
-    def graphicsGroup(self):
-        return self.imgFrame.graphicsGroup
+    def readImg(self):
+        return self.imgFrame.readImg
 
     @property
     def curIndex(self):
@@ -165,7 +165,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             self._NextPage()
 
     def _NextPage(self):
-        self.graphicsGroup.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().books.get(bookId)
@@ -188,9 +187,11 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         self.imgFrame.oldValue = 0
         self.SetData(isInit=True)
-        self.readImg.CheckLoadPicture()
-        self.readImg.ShowImg()
-        self.readImg.ShowOtherPage()
+        # self.readImg.CheckLoadPicture()
+        # self.readImg.ShowImg()
+        # self.readImg.ShowOtherPage()
+        self.scrollArea.ResetScrollValue(self.curIndex)
+        self.scrollArea.changeNextPage.emit(self.curIndex)
         t.Refresh(self.__class__.__name__)
         return
 
@@ -202,7 +203,6 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             self._LastPage()
 
     def _LastPage(self):
-        self.graphicsGroup.setPos(0, 0)
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().books.get(bookId)
@@ -224,9 +224,11 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
         self.imgFrame.oldValue = 0
         self.SetData(isInit=True)
-        self.readImg.CheckLoadPicture()
-        self.readImg.ShowImg()
-        self.readImg.ShowOtherPage()
+        # self.readImg.CheckLoadPicture()
+        # self.readImg.ShowImg()
+        # self.readImg.ShowOtherPage()
+        self.scrollArea.ResetScrollValue(self.curIndex)
+        self.scrollArea.changeLastPage.emit(self.curIndex)
         return
 
     def ReturnPage(self):
@@ -308,13 +310,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
     def OpenWaifu(self):
         if self.checkBox.isChecked():
             config.IsOpenWaifu = 1
-            self.readImg.ShowImg(True)
-            self.readImg.ShowOtherPage(True)
         else:
             config.IsOpenWaifu = 0
-            self.readImg.ShowImg(False)
-            self.readImg.ShowOtherPage(False)
-
+        self.scrollArea.changeScale.emit(self.scaleCnt)
         return
 
     def UpdateText(self, model):
@@ -366,15 +364,17 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         value = self.slider.value()
         if value <= 0:
             return
+        oldValue = self.curIndex
         if self.curIndex == value-1:
             return
         if value-1 > self.maxPic -1:
             return
         self.curIndex = value - 1
         self.SetData(isInit=True)
-        self.readImg.CheckLoadPicture()
-        self.readImg.ShowImg()
-        self.readImg.ShowOtherPage()
+        # self.readImg.CheckLoadPicture()
+        # self.readImg.ShowImg()
+        # self.readImg.ShowOtherPage()
+        self.scrollArea.changePage.emit(oldValue, self.curIndex)
 
     def InitSlider(self, maxIndex):
         self.slider.setMinimum(1)
@@ -393,6 +393,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             self.readImg.showFullScreen()
             self.fullButton.setText(self.tr("退出全屏"))
             config.LookReadFull = 1
+        self.scrollArea.changeScale.emit(self.scaleCnt)
         QtOwner().SetV("Read/LookReadFull", config.LookReadFull)
 
     def Waifu2xSave(self):
@@ -435,7 +436,11 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def ScalePicture(self, value):
         self.zoomLabel.setText(self.tr("缩放")+"（{}%）".format(str(value)))
-        self.readImg.zoom(value//10-10)
+        scaleV = value//10-10
+        if self.imgFrame.scaleCnt == scaleV:
+            return
+        self.imgFrame.scaleCnt = scaleV
+        self.readImg.scrollArea.changeScale.emit(scaleV)
 
     def eventFilter(self, obj, ev):
         if ev.type() == QEvent.KeyRelease:
@@ -446,37 +451,46 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def ChangeReadMode(self, index):
         from src.qt.read.qtreadimg import ReadMode
-        self.graphicsGroup.setPos(0, 0)
         self.stripModel = ReadMode(index)
         if self.stripModel == ReadMode.LeftRight:
-            self.imgFrame.SetPixIem(1, QPixmap())
-            self.imgFrame.SetPixIem(2, QPixmap())
             self.zoomSlider.setValue(100)
             self.scaleCnt = 0
+            properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
+            properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 2)
+            properties.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, 2)
+            QScroller.scroller(self.readImg.scrollArea).setScrollerProperties(properties)
         elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
             self.zoomSlider.setValue(100)
             self.scaleCnt = 0
-            self.imgFrame.SetPixIem(0, QPixmap())
-            self.imgFrame.SetPixIem(1, QPixmap())
-            self.imgFrame.SetPixIem(2, QPixmap())
-            self.readImg.CheckLoadPicture()
-            self.readImg.ShowImg()
-            self.readImg.ShowOtherPage()
+            properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
+            properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 2)
+            properties.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, 2)
+            QScroller.scroller(self.readImg.scrollArea).setScrollerProperties(properties)
         elif self.stripModel in [ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             self.zoomSlider.setValue(100)
             self.scaleCnt = 0
-            self.imgFrame.graphicsView.verticalScrollBar().blockSignals(True)
-            self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(False)
-            self.readImg.CheckLoadPicture()
-            self.readImg.ShowImg()
-            self.readImg.ShowOtherPage()
+            properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
+            properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 2)
+            properties.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, 1)
+            QScroller.scroller(self.readImg.scrollArea).setScrollerProperties(properties)
+            # self.imgFrame.graphicsView.verticalScrollBar().blockSignals(True)
+            # self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(False)
+
         else:
             self.zoomSlider.setValue(100)
             self.scaleCnt = 0
-            self.imgFrame.graphicsView.verticalScrollBar().blockSignals(False)
-            self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(True)
-            self.readImg.ShowOtherPage()
-        self.imgFrame.ScalePicture()
+            properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
+            properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 1)
+            properties.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, 2)
+            QScroller.scroller(self.readImg.scrollArea).setScrollerProperties(properties)
+            # self.imgFrame.graphicsView.verticalScrollBar().blockSignals(False)
+            # self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(True)
+
+        self.readImg.scrollArea.InitAllQLabel(self.readImg.maxPic, self.readImg.curIndex)
+        self.readImg.CheckLoadPicture()
+        self.readImg.ShowImg()
+        self.readImg.ShowOtherPage()
+
         config.LookReadMode = index
         QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
         self.imgFrame.InitHelp()

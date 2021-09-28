@@ -2,9 +2,9 @@ from enum import Enum
 from functools import partial
 
 from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import Qt, QRectF, QPointF, QEvent, QSize
-from PySide2.QtGui import QPixmap, QMatrix, QImage, QCursor
-from PySide2.QtWidgets import QDesktopWidget, QMessageBox, QMenu
+from PySide2.QtCore import Qt, QRectF, QPointF, QEvent, QSize, Signal
+from PySide2.QtGui import QPixmap, QMatrix, QImage, QCursor, QGuiApplication
+from PySide2.QtWidgets import QMessageBox, QMenu
 
 from conf import config
 from src.index.book import BookMgr
@@ -12,6 +12,7 @@ from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtloading import QtLoading
 from src.qt.qtmain import QtOwner
 from src.qt.read.qtreadimg_frame import QtImgFrame
+from src.qt.read.qtreadimg_scroll import ReadScrollArea
 from src.qt.struct.qt_define import QtFileData
 from src.qt.util.qttask import QtTaskBase
 from src.server import req
@@ -31,6 +32,7 @@ class ReadMode(Enum):
 
 
 class QtReadImg(QtWidgets.QWidget, QtTaskBase):
+
     def __init__(self):
         super(self.__class__, self).__init__()
         self.loadingForm = QtLoading(self)
@@ -42,11 +44,15 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
 
         self.pictureData = {}
         self.maxPic = 0
+        desktop = QGuiApplication.primaryScreen().geometry()
+        self.resize(desktop.width() // 4 * 3, desktop.height() - 100)
+        self.move(desktop.width() // 8, 0)
 
         self.gridLayout = QtWidgets.QGridLayout(self)
+        self.gridLayout.setSpacing(0)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.frame = QtImgFrame(self)
-
+        # self.gridLayout.addWidget(self.scrollArea)
         self.gridLayout.addWidget(self.frame)
         self.setMinimumSize(300, 300)
         self.stripModel = ReadMode(config.LookReadMode)
@@ -60,6 +66,10 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenu)
         self.isShowMenu = False
+
+    @property
+    def scrollArea(self):
+        return self.frame.scrollArea
 
     def LoadSetting(self):
         self.stripModel = ReadMode(config.LookReadMode)
@@ -169,8 +179,6 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
         self.qtTool.SetData(isInit=True)
         # self.graphicsGroup.setPixmap(QPixmap())
-        self.frame.InitPixMap()
-        self.frame.UpdatePixMap()
         self.qtTool.SetData()
         # self.qtTool.show()
         self.bookId = bookId
@@ -178,7 +186,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.AddHistory()
 
         if not self.isInit:
-            desktop = QDesktopWidget()
+            desktop = QGuiApplication.primaryScreen().geometry()
             self.resize(desktop.width()//4*3, desktop.height()-100)
             self.move(desktop.width()//8, 0)
             self.isInit = True
@@ -238,6 +246,9 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             self.pictureData = newDict
             self.ClearWaitConvertIds(removeTaskIds)
 
+        if not self.bookId:
+            return
+
         for i in preLoadList:
             if i >= self.maxPic or i < 0:
                 continue
@@ -278,11 +289,14 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             bookInfo = BookMgr().books.get(self.bookId)
             epsInfo = bookInfo.eps[self.epsId]
             self.maxPic = len(epsInfo.pics)
+
             if isLastEps:
                 self.curIndex = self.maxPic - 1
             elif 0 < pageIndex < self.maxPic:
                 self.curIndex = pageIndex
                 QtMsgLabel().ShowMsgEx(self, self.tr("继续阅读第")+str(pageIndex+1)+self.tr("页"))
+
+            self.scrollArea.InitAllQLabel(self.maxPic, self.curIndex)
             self.qtTool.UpdateSlider()
             self.CheckLoadPicture()
             self.qtTool.InitSlider(self.maxPic)
@@ -343,34 +357,45 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             self.ShowOtherPage()
         return
 
+    def ShowPage(self, index):
+        if index >= self.maxPic:
+            return
+
+        p = self.pictureData.get(index)
+        if not p or (not p.data) or (not p.cacheImage):
+            self.scrollArea.SetPixIem(index, None)
+            return
+
+        waifu2x = False
+        assert isinstance(p, QtFileData)
+        if not config.IsOpenWaifu:
+            p2 = p.cacheImage
+
+        elif p.cacheWaifu2xImage:
+            waifu2x = True
+            p2 = p.cacheWaifu2xImage
+        else:
+            p2 = p.cacheImage
+
+        pixMap = QPixmap(p2)
+        self.scrollArea.SetPixIem(index, pixMap, waifu2x)
+
     @time_me
-    def ShowOtherPage(self, isShowWaifu=True):
+    def ShowOtherPage(self):
         if self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             size = 3
-        else:
+        elif self.stripModel in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
             size = 2
+        else:
+            size = 0
+
         for index in range(self.curIndex+1, self.curIndex+size):
-            p = self.pictureData.get(index)
-            if not p or (not p.data) or (not p.cacheImage):
-                self.frame.SetPixIem(index-self.curIndex, QPixmap())
-                continue
-
-            assert isinstance(p, QtFileData)
-            if not isShowWaifu:
-                p2 = p.cacheImage
-
-            elif p.cacheWaifu2xImage:
-                p2 = p.cacheWaifu2xImage
-            else:
-                p2 = p.cacheImage
-
-            pixMap = QPixmap(p2)
-            self.frame.SetPixIem(index-self.curIndex, pixMap)
+            self.ShowPage(index)
         # self.frame.ScalePicture()
         return True
 
     @time_me
-    def ShowImg(self, isShowWaifu=True):
+    def ShowImg(self):
         p = self.pictureData.get(self.curIndex)
 
         if not p or (not p.data) or (not p.cacheImage):
@@ -379,7 +404,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
             else:
                 self.qtTool.SetData(state=QtFileData.Converting)
 
-            self.frame.SetPixIem(0, QPixmap())
+            self.scrollArea.SetPixIem(self.curIndex, None)
 
             self.qtTool.modelBox.setEnabled(False)
             self.frame.UpdateProcessBar(None)
@@ -390,13 +415,15 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         if config.CanWaifu2x:
             self.qtTool.modelBox.setEnabled(True)
         assert isinstance(p, QtFileData)
-        if not isShowWaifu:
+        waifu2x = False
+        if not config.IsOpenWaifu:
             self.frame.waifu2xProcess.hide()
             self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
             p2 = p.cacheImage
 
         elif p.cacheWaifu2xImage:
             p2 = p.cacheWaifu2xImage
+            waifu2x = True
             self.frame.waifu2xProcess.hide()
             self.qtTool.SetData(waifuSize=p.waifuQSize, waifuDataLen=p.waifuDataSize,
                                 waifuTick=p.waifuTick)
@@ -412,80 +439,11 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.UpdateText(p.model)
         
         pixMap = QPixmap(p2)
-        self.frame.SetPixIem(0, pixMap)
+        self.scrollArea.SetPixIem(self.curIndex, pixMap, waifu2x)
         # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
         # self.frame.ScalePicture()
         self.CheckLoadPicture()
         return True
-
-    def eventFilter(self, obj, ev):
-        if ev.type() == QEvent.KeyPress:
-            return True
-        else:
-            return super(self.__class__, self).eventFilter(obj, ev)
-
-    def zoomIn(self):
-        """放大"""
-        self.zoom(1.1)
-
-    def zoomOut(self):
-        """缩小"""
-        self.zoom(1/1.1)
-
-    def zoom(self, scaleV):
-        """缩放
-        :param factor: 缩放的比例因子
-        """
-        # q = QMatrix()
-        # q.setMatrix(1, self.graphicsView.matrix().m12(), self.graphicsView.matrix().m21(), 1, self.graphicsView.matrix().dx(), self.graphicsView.matrix().dy())
-        # self.graphicsView.setMatrix(q, False)
-
-        # _factor = self.graphicsView.transform().scale(
-        #     factor, factor).mapRect(QRectF(0, 0, 1, 1)).width()
-        # print(_factor)
-        # if _factor < 0.07 or _factor > 100:
-        #     # 防止过大过小
-        #     return
-        if self.frame.scaleCnt == scaleV:
-            return
-        # for _ in range(abs(scaleV - self.frame.scaleCnt)):
-        #     if scaleV - self.frame.scaleCnt > 0:
-        #         self.graphicsView.scale(1.1, 1.1)
-        #     else:
-        #         self.graphicsView.scale(1/1.1, 1/1.1)
-        self.frame.scaleCnt = scaleV
-        self.frame.ScalePicture()
-
-    def keyReleaseEvent(self, ev):
-        if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Left:
-            self.qtTool.OpenLastEps()
-            return True
-        if ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Right:
-            self.qtTool.OpenNextEps()
-            return True
-        # print(ev.modifiers, ev.key())
-        if ev.key() == Qt.Key_Plus or ev.key() == Qt.Key_Equal:
-            self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value()+10)
-            return True
-        if ev.key() == Qt.Key_Minus:
-            self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value()-10)
-            return True
-        if ev.key() == Qt.Key_Escape:
-            # if self.windowState() == Qt.WindowFullScreen:
-            #     self.showNormal()
-            #     self.frame.qtTool.fullButton.setText("全屏")
-            #     return
-            self.qtTool.ReturnPage()
-            return True
-        # elif ev.key() == Qt.Key_Up:
-        #     point = self.graphicsItem.pos()
-        #     self.graphicsItem.setPos(point.x(), point.y()+50)
-        #     return
-        # elif ev.key() == Qt.Key_Down:
-        #     point = self.graphicsItem.pos()
-        #     self.graphicsItem.setPos(point.x(), point.y()-50)
-        #     return
-        return super(self.__class__, self).keyReleaseEvent(ev)
 
     def AddHistory(self):
         bookName = QtOwner().owner.bookInfoForm.bookName

@@ -21,8 +21,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings = QSettings('config.ini', QSettings.IniFormat)
         self.setWindowModality(Qt.ApplicationModal)
         self.mainSize = None
-        self.bookSize = QSize(900, 1020)
-        self.readSize = QSize(1120, 1020)
+        self.bookSize = None
+        self.readSize = None
         self.userId = ""
         self.passwd = ""
         self.gpuInfos = []

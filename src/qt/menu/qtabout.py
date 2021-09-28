@@ -3,7 +3,7 @@ from PySide2.QtCore import QUrl
 from PySide2.QtGui import QDesktopServices
 
 from conf import config
-from ui.about import Ui_AboutForm
+from ui.about import Ui_AboutForm, Qt
 from src.util import ToolUtil
 
 
@@ -12,6 +12,7 @@ class QtAbout(QtWidgets.QWidget, Ui_AboutForm):
         super(self.__class__, self).__init__()
         Ui_AboutForm.__init__(self)
         self.setupUi(self)
+        self.setWindowModality(Qt.ApplicationModal)
         ToolUtil.SetIcon(self)  # set window icon
         if config.Language == 'English':
             self.label.setText("picacg-windows {}".format(config.UpdateVersion))

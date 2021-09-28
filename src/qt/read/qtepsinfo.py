@@ -1,12 +1,12 @@
 from PySide2 import QtWidgets
-from PySide2.QtGui import QColor
+from PySide2.QtGui import QColor, Qt
 from PySide2.QtWidgets import QListWidget, QLabel, QListWidgetItem
 
 from src.index.book import BookMgr
 from src.qt.com.qtloading import QtLoading
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
-from src.server import req
+from src.server import req, ToolUtil
 from src.server.sql_server import SqlServer
 from src.util.status import Status
 from ui.qtepsinfo import Ui_EpsInfo
@@ -18,7 +18,7 @@ class QtEpsInfo(QtWidgets.QWidget, Ui_EpsInfo, QtTaskBase):
         Ui_EpsInfo.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-
+        self.setWindowModality(Qt.ApplicationModal)
         self.epsListWidget = QListWidget()
         self.epsListWidget.setFlow(self.epsListWidget.LeftToRight)
         self.epsListWidget.setWrapping(True)
@@ -29,7 +29,7 @@ class QtEpsInfo(QtWidgets.QWidget, Ui_EpsInfo, QtTaskBase):
         self.closeFlag = self.__class__.__name__
         self.bookId = ""
         self.loadingForm = QtLoading(self)
-
+        ToolUtil.SetIcon(self)
         self.greed = QColor(18, 161, 130)
         self.blue = QColor(97, 154, 195)
         self.white = QColor(0, 0, 0, 0)

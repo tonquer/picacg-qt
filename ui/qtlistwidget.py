@@ -174,7 +174,7 @@ class QtBookList(QListWidget, QtTaskBase):
         self.scrollStamps = deque()
         self.stepsLeftQueue = deque()
         self.smoothMoveTimer = QTimer(self)
-        self.smoothMode = SmoothMode(SmoothMode.LINEAR)
+        self.smoothMode = SmoothMode(SmoothMode.COSINE)
         self.smoothMoveTimer.timeout.connect(self.__smoothMove)
         self.qEventParam = []
         self.wheelStatus = True
@@ -427,10 +427,8 @@ class QtBookList(QListWidget, QtTaskBase):
             title = ""
             character = ""
         else:
-            user = info.get("_user")
-            if not user:
-                user = User().userInfo
-            name = user.get("name")
+            user = info.get("_user", {})
+            name = user.get("name", "")
             avatar = user.get("avatar", {})
             title = user.get("title", "")
             level = user.get("level", 1)

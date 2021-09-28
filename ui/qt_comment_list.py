@@ -15,8 +15,8 @@ from ui.qtlistwidget import QtBookList
 
 
 class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
-    def __init__(self):
-        QtWidgets.QWidget.__init__(self)
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent)
         Ui_LeaveMsg.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
@@ -339,10 +339,14 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
                         self.listWidget.AddUserItem(info, floor)
 
                 for index, info in enumerate(comments.get("docs")):
+                    if self.reqGetComment == req.GetUserCommentReq:
+                        from src.user.user import User
+                        info["_user"] = User().userInfo
                     floor = total - ((page - 1) * limit + index)
                     self.listWidget.AddUserItem(info, floor)
             return
         except Exception as es:
+            QtMsgLabel.ShowErrorEx(self, self.tr("评论加载失败"))
             Log.Error(es)
 
     def SendComment(self):

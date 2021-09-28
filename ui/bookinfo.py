@@ -24,6 +24,8 @@ class Ui_BookInfo(object):
         BookInfo.resize(844, 963)
         self.gridLayout_2 = QGridLayout(BookInfo)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
         self.stackedWidget = QStackedWidget(BookInfo)
         self.stackedWidget.setObjectName(u"stackedWidget")
         self.page = QWidget()
@@ -292,14 +294,13 @@ class Ui_BookInfo(object):
 
         self.verticalLayout.addLayout(self.gridLayout_3)
 
-        self.tabWidget = QTabWidget(self.page)
-        self.tabWidget.setObjectName(u"tabWidget")
-        self.tabWidget.setStyleSheet(u"QTabWidget:pane {border-top:0px solid #e8f3f9;background:  transparent; }")
-        self.epsWidget = QWidget()
-        self.epsWidget.setObjectName(u"epsWidget")
-        self.epsLayout = QGridLayout(self.epsWidget)
-        self.epsLayout.setObjectName(u"epsLayout")
-        self.epsListWidget = QListWidget(self.epsWidget)
+
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
+
+
+        self.gridLayout_4.addLayout(self.gridLayout, 0, 0, 1, 1)
+
+        self.epsListWidget = QListWidget(self.page)
         self.epsListWidget.setObjectName(u"epsListWidget")
         self.epsListWidget.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
 "QListWidget::item {\n"
@@ -322,26 +323,26 @@ class Ui_BookInfo(object):
         self.epsListWidget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.epsListWidget.setSpacing(6)
 
-        self.epsLayout.addWidget(self.epsListWidget, 0, 0, 1, 1)
-
-        self.tabWidget.addTab(self.epsWidget, "")
-        self.commentWidget = QtCommentList()
-        self.commentWidget.setObjectName(u"commentWidget")
-        self.commentLayout = QGridLayout(self.commentWidget)
-        self.commentLayout.setObjectName(u"commentLayout")
-        self.tabWidget.addTab(self.commentWidget, "")
-
-        self.verticalLayout.addWidget(self.tabWidget)
-
-
-        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
-
-
-        self.gridLayout_4.addLayout(self.gridLayout, 0, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.epsListWidget, 1, 0, 1, 1)
 
         self.stackedWidget.addWidget(self.page)
 
-        self.gridLayout_2.addWidget(self.stackedWidget, 0, 0, 1, 1)
+        self.horizontalLayout_13.addWidget(self.stackedWidget)
+
+        self.line = QFrame(BookInfo)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.VLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.horizontalLayout_13.addWidget(self.line)
+
+        self.commentWidget = QtCommentList(BookInfo)
+        self.commentWidget.setObjectName(u"commentWidget")
+
+        self.horizontalLayout_13.addWidget(self.commentWidget)
+
+
+        self.gridLayout_2.addLayout(self.horizontalLayout_13, 0, 0, 1, 1)
 
 
         self.retranslateUi(BookInfo)
@@ -349,10 +350,6 @@ class Ui_BookInfo(object):
         self.starButton.clicked.connect(BookInfo.AddBookLike)
         self.favoriteButton.clicked.connect(BookInfo.AddFavorite)
         self.downloadButton.clicked.connect(BookInfo.AddDownload)
-        self.tabWidget.currentChanged.connect(BookInfo.ChangeTab)
-
-        self.tabWidget.setCurrentIndex(0)
-
 
         QMetaObject.connectSlotsByName(BookInfo)
     # setupUi
@@ -377,7 +374,5 @@ class Ui_BookInfo(object):
         self.favoriteButton.setText("")
         self.downloadButton.setText("")
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.epsWidget), QCoreApplication.translate("BookInfo", u"\u7ae0\u8282", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.commentWidget), QCoreApplication.translate("BookInfo", u"\u8bc4\u8bba", None))
     # retranslateUi
 
