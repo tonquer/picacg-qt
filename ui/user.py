@@ -19,7 +19,7 @@ class Ui_User(object):
     def setupUi(self, User):
         if not User.objectName():
             User.setObjectName(u"User")
-        User.resize(1059, 712)
+        User.resize(1053, 792)
         User.setMinimumSize(QSize(0, 0))
         self.gridLayout_2 = QGridLayout(User)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
@@ -81,7 +81,7 @@ class Ui_User(object):
 
         self.signButton = QToolButton(User)
         self.signButton.setObjectName(u"signButton")
-        self.signButton.setMinimumSize(QSize(100, 30))
+        self.signButton.setMinimumSize(QSize(120, 30))
         self.signButton.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
 "    background:transparent;\n"
@@ -113,7 +113,7 @@ class Ui_User(object):
         self.buttonGroup.setObjectName(u"buttonGroup")
         self.buttonGroup.addButton(self.toolButton11)
         self.toolButton11.setObjectName(u"toolButton11")
-        self.toolButton11.setMinimumSize(QSize(100, 30))
+        self.toolButton11.setMinimumSize(QSize(120, 30))
         self.toolButton11.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
 "    background:transparent;\n"
@@ -144,7 +144,7 @@ class Ui_User(object):
         self.toolButton4 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton4)
         self.toolButton4.setObjectName(u"toolButton4")
-        self.toolButton4.setMinimumSize(QSize(100, 30))
+        self.toolButton4.setMinimumSize(QSize(120, 30))
         self.toolButton4.setMaximumSize(QSize(100, 16777215))
         self.toolButton4.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -176,7 +176,7 @@ class Ui_User(object):
         self.toolButton5 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton5)
         self.toolButton5.setObjectName(u"toolButton5")
-        self.toolButton5.setMinimumSize(QSize(100, 30))
+        self.toolButton5.setMinimumSize(QSize(120, 30))
         self.toolButton5.setMaximumSize(QSize(100, 16777215))
         self.toolButton5.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -215,7 +215,7 @@ class Ui_User(object):
         self.toolButton0 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton0)
         self.toolButton0.setObjectName(u"toolButton0")
-        self.toolButton0.setMinimumSize(QSize(100, 40))
+        self.toolButton0.setMinimumSize(QSize(120, 40))
         self.toolButton0.setMaximumSize(QSize(100, 16777215))
         self.toolButton0.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -248,7 +248,7 @@ class Ui_User(object):
         self.toolButton1 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton1)
         self.toolButton1.setObjectName(u"toolButton1")
-        self.toolButton1.setMinimumSize(QSize(100, 40))
+        self.toolButton1.setMinimumSize(QSize(120, 40))
         self.toolButton1.setMaximumSize(QSize(100, 16777215))
         self.toolButton1.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -280,7 +280,7 @@ class Ui_User(object):
         self.toolButton2 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton2)
         self.toolButton2.setObjectName(u"toolButton2")
-        self.toolButton2.setMinimumSize(QSize(100, 40))
+        self.toolButton2.setMinimumSize(QSize(120, 40))
         self.toolButton2.setMaximumSize(QSize(100, 16777215))
         self.toolButton2.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -312,7 +312,7 @@ class Ui_User(object):
         self.toolButton3 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton3)
         self.toolButton3.setObjectName(u"toolButton3")
-        self.toolButton3.setMinimumSize(QSize(100, 40))
+        self.toolButton3.setMinimumSize(QSize(120, 40))
         self.toolButton3.setMaximumSize(QSize(100, 16777215))
         self.toolButton3.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -344,7 +344,7 @@ class Ui_User(object):
         self.toolButton6 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton6)
         self.toolButton6.setObjectName(u"toolButton6")
-        self.toolButton6.setMinimumSize(QSize(100, 40))
+        self.toolButton6.setMinimumSize(QSize(120, 40))
         self.toolButton6.setMaximumSize(QSize(100, 16777215))
         self.toolButton6.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -376,7 +376,7 @@ class Ui_User(object):
         self.toolButton7 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton7)
         self.toolButton7.setObjectName(u"toolButton7")
-        self.toolButton7.setMinimumSize(QSize(100, 40))
+        self.toolButton7.setMinimumSize(QSize(120, 40))
         self.toolButton7.setMaximumSize(QSize(100, 16777215))
         self.toolButton7.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -408,7 +408,7 @@ class Ui_User(object):
         self.toolButton8 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton8)
         self.toolButton8.setObjectName(u"toolButton8")
-        self.toolButton8.setMinimumSize(QSize(100, 40))
+        self.toolButton8.setMinimumSize(QSize(120, 40))
         self.toolButton8.setMaximumSize(QSize(100, 16777215))
         self.toolButton8.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -440,7 +440,7 @@ class Ui_User(object):
         self.toolButton9 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton9)
         self.toolButton9.setObjectName(u"toolButton9")
-        self.toolButton9.setMinimumSize(QSize(100, 40))
+        self.toolButton9.setMinimumSize(QSize(120, 40))
         self.toolButton9.setMaximumSize(QSize(100, 16777215))
         self.toolButton9.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"
@@ -472,7 +472,7 @@ class Ui_User(object):
         self.toolButton10 = QToolButton(User)
         self.buttonGroup.addButton(self.toolButton10)
         self.toolButton10.setObjectName(u"toolButton10")
-        self.toolButton10.setMinimumSize(QSize(100, 40))
+        self.toolButton10.setMinimumSize(QSize(120, 40))
         self.toolButton10.setMaximumSize(QSize(100, 16777215))
         self.toolButton10.setStyleSheet(u"/* \u6b63\u5e38\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
 "QToolButton{\n"

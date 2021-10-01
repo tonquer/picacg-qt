@@ -199,6 +199,7 @@ class QtBookList(QListWidget, QtTaskBase):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def Test(self, item: QListWidgetItem):
+        # TODO qt6设置grabGesture后，双击事件不生效，临时处理
         import time
         if not self.doubleClickType:
             return

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1059</width>
-    <height>712</height>
+    <width>1053</width>
+    <height>792</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -167,7 +167,7 @@
         <widget class="QToolButton" name="signButton">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>30</height>
           </size>
          </property>
@@ -205,7 +205,7 @@ QToolButton:checked {
         <widget class="QToolButton" name="toolButton11">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>30</height>
           </size>
          </property>
@@ -249,7 +249,7 @@ QToolButton:checked {
         <widget class="QToolButton" name="toolButton4">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>30</height>
           </size>
          </property>
@@ -299,7 +299,7 @@ QToolButton:checked {
         <widget class="QToolButton" name="toolButton5">
          <property name="minimumSize">
           <size>
-           <width>100</width>
+           <width>120</width>
            <height>30</height>
           </size>
          </property>
@@ -367,7 +367,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton0">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -420,7 +420,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton1">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -470,7 +470,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton2">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -520,7 +520,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton3">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -570,7 +570,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton6">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -620,7 +620,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton7">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -670,7 +670,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton8">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -720,7 +720,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton9">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
@@ -770,7 +770,7 @@ QToolButton:checked {
           <widget class="QToolButton" name="toolButton10">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>120</width>
              <height>40</height>
             </size>
            </property>
