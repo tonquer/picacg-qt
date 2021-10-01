@@ -6,8 +6,6 @@
 [![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/CI?label=CI)](https://github.com/tonquer/picacg-windows/actions)
 ![Relese](https://img.shields.io/badge/Python-3.7.9%2B-brightgreen)
 [![Relese](https://img.shields.io/github/v/release/tonquer/picacg-windows)](https://github.com/tonquer/picacg-windows/releases)
-![Relese](https://img.shields.io/github/downloads/tonquer/picacg-windows/latest/total)
-![Relese](https://img.shields.io/github/downloads/tonquer/picacg-windows/total)
 
 - 哔咔漫画PC客户端（支持window、Linux和macOS），界面使用QT。
 - 该项目仅供技术研究使用，请勿用于其他用途。
