@@ -1,6 +1,6 @@
 import json
 
-from PySide2 import QtWidgets
+from PySide6 import QtWidgets
 
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
@@ -16,22 +16,7 @@ class QtGame(QtWidgets.QWidget, Ui_Game, QtTaskBase):
         QtTaskBase.__init__(self)
         self.setupUi(self)
         self.bookList.InitBook(self.LoadNextPage)
-        self.bookList.doubleClicked.connect(self.OpenGameInfo)
-        self.bookList.InstallCategory()
-
-
-    def OpenGameInfo(self, modelIndex):
-        index = modelIndex.row()
-        item = self.bookList.item(index)
-        if not item:
-            return
-        widget = self.bookList.itemWidget(item)
-        if not widget:
-            return
-        bookId = widget.id
-        if not bookId:
-            return
-        QtOwner().owner.gameInfoForm.OpenBook(bookId)
+        self.bookList.InstallGame()
 
     def SwitchCurrent(self):
         self.bookList.clear()

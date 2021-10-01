@@ -1,4 +1,3 @@
-import src.server.req as req
 from src.server.server import Server
 from src.util import ToolUtil, Log, Singleton
 from src.util.status import Status

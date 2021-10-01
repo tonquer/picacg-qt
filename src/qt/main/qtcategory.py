@@ -1,4 +1,4 @@
-from PySide2 import QtWidgets
+from PySide6 import QtWidgets
 
 from src.index.category import CateGoryMgr
 from src.qt.qtmain import QtOwner
@@ -15,7 +15,6 @@ class QtCategory(QtWidgets.QWidget, Ui_category, QtTaskBase):
         QtTaskBase.__init__(self)
         self.setupUi(self)
         self.bookList.InitBook()
-        self.bookList.doubleClicked.connect(self.OpenSearch)
         self.bookList.InstallCategory()
 
     def SwitchCurrent(self):
@@ -31,13 +30,3 @@ class QtCategory(QtWidgets.QWidget, Ui_category, QtTaskBase):
                 self.bookList.AddBookItem(info)
             QtOwner().owner.searchForm.InitCheckBox()
         return
-
-    def OpenSearch(self, modelIndex):
-        index = modelIndex.row()
-        item = self.bookList.item(index)
-        widget = self.bookList.itemWidget(item)
-        text = widget.label.text()
-        QtOwner().owner.userForm.toolButton1.click()
-        QtOwner().owner.searchForm.searchEdit.setText("")
-        QtOwner().owner.searchForm.OpenSearchCategories(text)
-        pass

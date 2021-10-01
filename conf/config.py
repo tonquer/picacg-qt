@@ -27,17 +27,18 @@ IsUseCache = True              # 是否使用cache
 CachePathDir = "cache"         # cache目录
 # CacheExpired = 24 * 60 * 60  # cache过期时间24小时
 PreLoading = 10                # 预加载5页
+PreLook = 4                    # 预显示
 
 IsLoadingPicture = True
 
-UpdateUrl = "https://github.com/tonquer/picacg-pyqt/releases/latest"
-UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-pyqt/releases/latest"
-UpdateUrl2 = "https://github.com/tonquer/picacg-pyqt/releases"
-UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-pyqt/releases"
+UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
+UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-windows/releases/latest"
+UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
+UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data/"
-UpdateVersion = "v1.2.5"
+UpdateVersion = "v1.2.6"
 
 # waifu2x
 CanWaifu2x = True

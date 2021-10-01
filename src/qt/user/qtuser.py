@@ -1,8 +1,8 @@
 import re
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import Qt, QEvent
-from PySide2.QtGui import QPixmap, QIcon
+from PySide6 import QtWidgets
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QPixmap, QIcon
 
 from resources import resources
 from resources.resources import DataMgr

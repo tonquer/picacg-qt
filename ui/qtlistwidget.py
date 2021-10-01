@@ -2,10 +2,10 @@ import weakref
 from collections import deque
 from math import cos, pi
 
-from PySide2.QtCore import Qt, QSize, QTimer, QDateTime
-from PySide2.QtGui import QPixmap, QColor, QIntValidator, QFont, QCursor, QPainter, QLinearGradient, QGradient, QBrush, \
+from PySide6.QtCore import Qt, QSize, QTimer, QDateTime, QPoint
+from PySide6.QtGui import QPixmap, QColor, QIntValidator, QFont, QCursor, QPainter, QLinearGradient, QGradient, QBrush, \
     QWheelEvent
-from PySide2.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
+from PySide6.QtWidgets import QListWidget, QLabel, QWidget, QVBoxLayout, QHBoxLayout, QListWidgetItem, QAbstractSlider, \
     QScroller, QMenu, QApplication, QAbstractItemView
 
 from conf import config
@@ -157,7 +157,7 @@ class QtBookList(QListWidget, QtTaskBase):
         self.LikeBack = None
         self.KillBack = None
         self.parentId = -1
-        QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
+        QScroller.grabGesture(self.viewport(), QScroller.LeftMouseButtonGesture)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
         self.verticalScrollBar().setSingleStep(30)
@@ -178,6 +178,9 @@ class QtBookList(QListWidget, QtTaskBase):
         self.smoothMoveTimer.timeout.connect(self.__smoothMove)
         self.qEventParam = []
         self.wheelStatus = True
+        self.lastClick = 0
+        self.lastIndex = -1
+        self.doubleClickType = 0
 
     def InitBook(self, callBack=None):
         self.resize(800, 600)
@@ -189,9 +192,31 @@ class QtBookList(QListWidget, QtTaskBase):
         self.LoadCallBack = callBack
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.doubleClicked.connect(self.OpenBookInfo)
+        # self.doubleClicked.connect(self.OpenBookInfo)
+        self.doubleClickType = 1
         self.customContextMenuRequested.connect(self.SelectMenuBook)
+        self.itemPressed.connect(self.Test)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    def Test(self, item: QListWidgetItem):
+        import time
+        if not self.doubleClickType:
+            return
+        if QtOwner().owner.app.mouseButtons() == Qt.RightButton:
+            return
+        now = int(time.time())
+        if now - self.lastClick <= 1 and self.lastIndex == self.row(item):
+            if self.doubleClickType == 1:
+                self.OpenBookInfo(item)
+            elif self.doubleClickType == 2:
+                self.OpenGameInfo(item)
+            elif self.doubleClickType == 3:
+                self.OpenSearch(item)
+            self.lastIndex = -1
+            self.lastClick = 0
+        else:
+            self.lastClick = now
+            self.lastIndex = self.row(item)
 
     def ClearWheelEvent(self):
         self.scrollStamps.clear()
@@ -215,7 +240,7 @@ class QtBookList(QListWidget, QtTaskBase):
             self.scrollStamps.popleft()
         # 根据未处理完的事件调整移动速率增益
         accerationRatio = min(len(self.scrollStamps) / 15, 1)
-        self.qEventParam = (e.pos(), e.globalPos(), e.buttons())
+        self.qEventParam = (e.position(), e.globalPosition(), e.buttons())
         # 计算步数
         self.stepsTotal = self.fps * self.duration / 1000
         # 计算每一个事件对应的移动距离
@@ -242,9 +267,14 @@ class QtBookList(QListWidget, QtTaskBase):
         # 构造滚轮事件
         e = QWheelEvent(self.qEventParam[0],
                         self.qEventParam[1],
-                        round(totalDelta),
-                        self.qEventParam[2],
-                        Qt.NoModifier)
+                        QPoint(0, round(totalDelta)),
+                        QPoint(0, totalDelta),
+                        # self.qEventParam[2],
+                        Qt.LeftButton,
+                        Qt.NoModifier,
+                        Qt.ScrollBegin,
+                        False
+                        )
         # print(e)
         # 将构造出来的滚轮事件发送给app处理
         QApplication.sendEvent(self.verticalScrollBar(), e)
@@ -271,8 +301,16 @@ class QtBookList(QListWidget, QtTaskBase):
         return res
 
     def InstallCategory(self):
-        self.doubleClicked.disconnect(self.OpenBookInfo)
+        # self.doubleClicked.disconnect(self.OpenBookInfo)
+        self.doubleClickType = 3
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.SelectMenuCategory)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        return
 
+    def InstallGame(self):
+        # self.doubleClicked.disconnect(self.OpenBookInfo)
+        self.doubleClickType = 2
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenuCategory)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -463,6 +501,14 @@ class QtBookList(QListWidget, QtTaskBase):
             iwidget.linkLabel.setVisible(True)
             iwidget.killButton.setVisible(False)
 
+        if isinstance(info.get("_game"), dict):
+            iwidget.linkId = info.get("_game").get("_id")
+            linkData = info.get("_game").get("title", "")
+            iwidget.isGame = True
+            iwidget.linkLabel.setText("GAME: <u><font color=#d5577c>{}</font></u>".format(linkData))
+            iwidget.linkLabel.setVisible(True)
+            iwidget.killButton.setVisible(False)
+
         if info.get("isLiked"):
             iwidget.SetLike()
 
@@ -648,9 +694,26 @@ class QtBookList(QListWidget, QtTaskBase):
             return
         self.parent().DelCallBack(bookIds)
 
-    def OpenBookInfo(self, modelIndex):
-        index = modelIndex.row()
-        item = self.item(index)
+    def OpenSearch(self, item):
+        widget = self.itemWidget(item)
+        text = widget.label.text()
+        QtOwner().owner.userForm.toolButton1.click()
+        QtOwner().owner.searchForm.searchEdit.setText("")
+        QtOwner().owner.searchForm.OpenSearchCategories(text)
+        pass
+
+    def OpenGameInfo(self, item):
+        if not item:
+            return
+        widget = self.itemWidget(item)
+        if not widget:
+            return
+        bookId = widget.id
+        if not bookId:
+            return
+        QtOwner().owner.gameInfoForm.OpenBook(bookId)
+
+    def OpenBookInfo(self, item):
         if not item:
             return
         widget = self.itemWidget(item)

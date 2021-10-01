@@ -1,6 +1,6 @@
-from PySide2 import QtWidgets
-from PySide2.QtGui import QColor, Qt
-from PySide2.QtWidgets import QListWidget, QLabel, QListWidgetItem
+from PySide6 import QtWidgets
+from PySide6.QtGui import QColor, Qt
+from PySide6.QtWidgets import QListWidget, QLabel, QListWidgetItem
 
 from src.index.book import BookMgr
 from src.qt.com.qtloading import QtLoading

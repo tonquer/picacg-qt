@@ -1,6 +1,6 @@
 import json
 
-from PySide2 import QtWidgets
+from PySide6 import QtWidgets
 
 from src.qt.qtmain import QtOwner
 from src.server import req, Log, QtTask

@@ -1,4 +1,3 @@
-import json
 import pickle
 import sqlite3
 import threading
@@ -296,6 +295,8 @@ class SqlServer(Singleton):
             data2 = ""
             for word in words.split("&"):
                 data3 = ""
+                if not word:
+                    continue
                 if isTitle:
                     data3 += " title2 like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
                 if isAutor:

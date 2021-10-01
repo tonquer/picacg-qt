@@ -1,13 +1,14 @@
 import hashlib
+import json
 import os
 import pickle
 import threading
 import time
 from queue import Queue
 from types import FunctionType
-import json
-from PySide2.QtCore import Signal, QObject, QThread
-from PySide2.QtGui import QImage
+
+from PySide6.QtCore import Signal, QObject
+from PySide6.QtGui import QImage
 
 from conf import config
 from src.util import Singleton, Log

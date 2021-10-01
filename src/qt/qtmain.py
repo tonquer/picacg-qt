@@ -2,12 +2,12 @@ import base64
 import pickle
 import weakref
 
-from PySide2 import QtWidgets, QtGui  # 导入PySide2部件
-from PySide2.QtCore import QTimer, QUrl, QObject, QCoreApplication, QSize
-from PySide2.QtGui import QDesktopServices, Qt, QGuiApplication
-from PySide2.QtWidgets import QMessageBox
-from PySide2.QtCore import QTranslator, QLocale
-from PySide2.QtCore import QSettings
+from PySide6 import QtWidgets, QtGui  # 导入PySide6部件
+from PySide6.QtCore import QSettings
+from PySide6.QtCore import QTimer, QUrl, QSize
+from PySide6.QtCore import QTranslator, QLocale
+from PySide6.QtGui import QDesktopServices, Qt, QGuiApplication
+from PySide6.QtWidgets import QMessageBox
 
 from conf import config
 from src.server import req, ToolUtil, Status

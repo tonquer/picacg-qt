@@ -1,11 +1,9 @@
-from PySide2 import QtWidgets
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QLabel
+from PySide6 import QtWidgets
 
 from conf import config
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
-from src.server import Server, req
+from src.server import req
 from src.user.user import User
 from src.util.status import Status
 from ui.login import Ui_Login

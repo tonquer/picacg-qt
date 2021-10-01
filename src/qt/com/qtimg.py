@@ -1,11 +1,11 @@
 import os
 import time
 
-from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
-from PySide2.QtGui import QColor, QPainter, QPixmap, QDoubleValidator, \
-    QIntValidator
-from PySide2.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
+from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
+from PySide6.QtGui import QPainter, QPixmap, QDoubleValidator, \
+    QIntValidator, QGuiApplication
+from PySide6.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
 
 from conf import config
 from src.qt.com.qtmsg import QtMsgLabel
@@ -77,7 +77,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
         self.graphicsView.setCursor(Qt.OpenHandCursor)
         self.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.graphicsView.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing |
+        self.graphicsView.setRenderHints(QPainter.Antialiasing |
                                          QPainter.SmoothPixmapTransform)
         self.graphicsView.setCacheMode(self.graphicsView.CacheBackground)
         self.graphicsView.setViewportUpdateMode(self.graphicsView.SmartViewportUpdate)
@@ -111,6 +111,9 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
         self.backStatus = ""
 
         ToolUtil.SetIcon(self)
+        desktop = QGuiApplication.primaryScreen().geometry()
+        self.resize(desktop.width()//4*3, desktop.height()//4*3)
+        self.move(desktop.width()//8*1, desktop.height()//8*1)
 
     def ShowImg(self, data):
         self.scaleCnt = 0

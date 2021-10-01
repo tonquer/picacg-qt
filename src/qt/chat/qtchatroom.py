@@ -4,17 +4,17 @@ import os
 import random
 import time
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import Signal, QTimer, QSize, Qt, QEvent
-from PySide2.QtGui import QFont, QTextCursor
-from PySide2.QtWidgets import QListWidgetItem, QMenu, QAction
+from PySide6 import QtWidgets
+from PySide6.QtCore import Signal, QTimer, QSize, Qt, QEvent
+from PySide6.QtGui import QFont, QTextCursor, QAction
+from PySide6.QtWidgets import QListWidgetItem, QMenu
 
 from conf import config
 from src.qt.chat.chat_ws import ChatWebSocket
 from src.qt.chat.qtchatroommsg import QtChatRoomMsg
-from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qticon import IconList
 from src.qt.com.qtloading import QtLoading
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.util.qttask import QtTaskBase
 from src.user.user import User
 from src.util import Log, ToolUtil

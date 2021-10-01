@@ -1,25 +1,21 @@
-import json
-
-from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtCore import Qt, QSize, QEvent
-from PySide2.QtGui import QColor, QFont, QPixmap, QIcon, QGuiApplication
-from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QHBoxLayout, QLineEdit, QPushButton, \
-    QVBoxLayout, QScroller, QAbstractItemView
+from PySide6 import QtWidgets, QtCore, QtGui
+from PySide6.QtCore import Qt, QSize, QEvent
+from PySide6.QtGui import QColor, QFont, QPixmap, QIcon, QGuiApplication
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QScroller, QAbstractItemView
 
 from conf import config
 from qss.qss import QssDataMgr
 from resources.resources import DataMgr
 from src.index.book import BookMgr
-from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.com.qtloading import QtLoading
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
-from src.server import req, Log, ToolUtil
+from src.server import req, ToolUtil
 from src.server.sql_server import SqlServer
 from src.util.status import Status
 from ui.bookinfo import Ui_BookInfo
-from ui.qtlistwidget import QtBookList
 
 
 class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):

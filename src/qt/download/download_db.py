@@ -1,6 +1,6 @@
 import json
 
-from PySide2.QtSql import QSqlDatabase, QSqlQuery
+from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from src.qt.download.download_info import DownloadInfo, DownloadEpsInfo
 from src.util.log import Log

@@ -1,5 +1,5 @@
 
-from PySide2.QtCore import QSize
+from PySide6.QtCore import QSize
 
 from conf import config
 from src.util import ToolUtil

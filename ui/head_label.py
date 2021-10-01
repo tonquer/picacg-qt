@@ -1,5 +1,5 @@
-from PySide2.QtGui import QPainterPath, QPixmap, Qt, QPainter
-from PySide2.QtWidgets import QLabel
+from PySide6.QtGui import QPainterPath, QPixmap, Qt, QPainter
+from PySide6.QtWidgets import QLabel
 
 
 class HeadLabel(QLabel):
@@ -24,7 +24,7 @@ class HeadLabel(QLabel):
         painter = QPainter(self.target)
         if self.antialiasing:
             painter.setRenderHint(QPainter.Antialiasing, True)
-            painter.setRenderHint(QPainter.HighQualityAntialiasing, True)
+            # painter.setRenderHint(QPainter.HighQualityAntialiasing, True)
             painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
 
         path = QPainterPath()

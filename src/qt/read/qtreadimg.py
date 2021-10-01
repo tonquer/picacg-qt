@@ -1,24 +1,23 @@
 from enum import Enum
 from functools import partial
 
-from PySide2 import QtWidgets, QtGui
-from PySide2.QtCore import Qt, QRectF, QPointF, QEvent, QSize, Signal
-from PySide2.QtGui import QPixmap, QMatrix, QImage, QCursor, QGuiApplication
-from PySide2.QtWidgets import QMessageBox, QMenu
+from PySide6 import QtWidgets
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QPixmap, QImage, QCursor, QGuiApplication
+from PySide6.QtWidgets import QMenu
 
 from conf import config
 from src.index.book import BookMgr
-from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtloading import QtLoading
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.qtmain import QtOwner
 from src.qt.read.qtreadimg_frame import QtImgFrame
-from src.qt.read.qtreadimg_scroll import ReadScrollArea
 from src.qt.struct.qt_define import QtFileData
 from src.qt.util.qttask import QtTaskBase
 from src.server import req
 from src.util import ToolUtil, Log
 from src.util.status import Status
-from src.util.tool import time_me, CTime
+from src.util.tool import time_me
 
 
 class ReadMode(Enum):
@@ -351,7 +350,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         p.cacheImage = data
         if index == self.curIndex:
             self.ShowImg()
-        elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + 2:
+        elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading-1:
             self.ShowOtherPage()
         elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble] and self.curIndex < index <= self.curIndex + 1:
             self.ShowOtherPage()
@@ -383,7 +382,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
     @time_me
     def ShowOtherPage(self):
         if self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
-            size = 3
+            size = config.PreLook
         elif self.stripModel in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
             size = 2
         else:
@@ -468,7 +467,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         if index == self.curIndex:
             self.qtTool.SetData(waifuState=p.waifuState)
             # self.ShowImg()
-        elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + 2:
+        elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading-1:
             # self.ShowOtherPage()
             self.CheckLoadPicture()
         else:
@@ -483,7 +482,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         p.cacheWaifu2xImage = data
         if index == self.curIndex:
             self.ShowImg()
-        elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + 2:
+        elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading-1:
             self.ShowOtherPage()
         elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble] and self.curIndex < index <= self.curIndex + 1:
             self.ShowOtherPage()

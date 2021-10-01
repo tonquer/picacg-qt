@@ -1,10 +1,7 @@
 import json
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QPixmap, QIcon
+from PySide6 import QtWidgets
 
-from resources.resources import DataMgr
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, Log

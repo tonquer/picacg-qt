@@ -1,6 +1,6 @@
-from PySide2 import QtWidgets
-from PySide2.QtGui import Qt
-from PySide2.QtWidgets import QCheckBox
+from PySide6 import QtWidgets
+from PySide6.QtGui import Qt
+from PySide6.QtWidgets import QCheckBox
 
 from src.index.category import CateGoryMgr
 from src.qt.com.langconv import Converter
@@ -264,6 +264,7 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         self.categoryBox.setChecked(True)
         self.creatorBox.setChecked(False)
         self.searchEdit.setText("")
+        QtOwner().owner.userForm.toolButton1.click()
         self.OpenSearchCategories(text)
 
     def SearchCreator(self, creator):

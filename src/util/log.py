@@ -1,7 +1,6 @@
 import logging
 import os
 import time
-import traceback
 
 from conf import config
 

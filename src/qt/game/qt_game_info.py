@@ -1,17 +1,18 @@
 
 import json
 
-from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtCore import Qt, QSize, QEvent
-from PySide2.QtGui import QFont, QPixmap, QGuiApplication
-from PySide2.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QAbstractItemView
+from PySide6 import QtWidgets, QtCore, QtGui
+from PySide6.QtCore import Qt, QSize, QEvent
+from PySide6.QtGui import QFont, QPixmap, QGuiApplication
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QAbstractItemView
 
 from conf import config
 from qss.qss import QssDataMgr
 from resources.resources import DataMgr
-from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtimg import QtImgMgr
 from src.qt.com.qtloading import QtLoading
+from src.qt.com.qtmsg import QtMsgLabel
+from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, Log, ToolUtil
 from src.util.status import Status
@@ -46,7 +47,7 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.epsListWidget.setFlow(self.epsListWidget.TopToBottom)
         self.epsListWidget.setFrameShape(self.epsListWidget.NoFrame)
         self.epsListWidget.setResizeMode(self.epsListWidget.Adjust)
-        self.epsListWidget.doubleClicked.connect(self.OpenListPicture)
+        # self.epsListWidget.doubleClicked.connect(self.OpenListPicture)
         QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
         self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.epsListWidget.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
@@ -81,6 +82,22 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.resize(desktop.width()//4*3, desktop.height()//4*3)
         self.move(desktop.width()//8*1, desktop.height()//8*1)
         ToolUtil.SetIcon(self)
+        self.lastClick = 0
+        self.lastIndex = -1
+        self.epsListWidget.itemPressed.connect(self.Test)
+
+    def Test(self, item):
+        import time
+        now = int(time.time())
+        if QtOwner().owner.app.mouseButtons() == Qt.RightButton:
+            return
+        if now - self.lastClick <= 1 and self.lastIndex == self.epsListWidget.row(item):
+            self.OpenListPicture(item)
+            self.lastIndex = -1
+            self.lastClick = 0
+        else:
+            self.lastClick = now
+            self.lastIndex = self.epsListWidget.row(item)
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         if self.stackedWidget.currentIndex() == 1:
@@ -230,9 +247,8 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
             widget.setText(self.tr("图片加载失败"))
         return
 
-    def OpenListPicture(self, modelIndex):
-        index = modelIndex.row()
-        item = self.epsListWidget.item(index)
+    def OpenListPicture(self, item):
+        index = self.epsListWidget.row(item)
         if not item:
             return
         data = self.listPictureInfo.get(index)

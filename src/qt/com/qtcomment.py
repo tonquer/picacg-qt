@@ -1,8 +1,8 @@
 import re
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import QEvent, Qt
-from PySide2.QtGui import QPixmap, QIcon
+from PySide6 import QtWidgets
+from PySide6.QtCore import QEvent, Qt
+from PySide6.QtGui import QPixmap, QIcon
 
 from resources.resources import DataMgr
 from src.qt.com.qtimg import QtImgMgr
@@ -20,6 +20,7 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
         self.id = ""
         self.url = ""
         self.path = ""
+        self.isGame = False
         self.picIcon.SetPicture(DataMgr.GetData("placeholder_avatar"))
         # p = QPixmap()
         # p.loadFromData(DataMgr.GetData("placeholder_avatar"))
@@ -83,7 +84,10 @@ class QtComment(QtWidgets.QWidget, Ui_Comment):
                     if self.pictureData:
                         QtImgMgr().ShowImg(self.pictureData)
                 elif obj == self.linkLabel and self.linkId:
-                    QtOwner().owner.bookInfoForm.OpenBook(self.linkId)
+                    if self.isGame:
+                        QtOwner().owner.gameInfoForm.OpenBook(self.linkId)
+                    else:
+                        QtOwner().owner.bookInfoForm.OpenBook(self.linkId)
                 return True
             else:
                 return False

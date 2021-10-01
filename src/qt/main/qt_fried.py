@@ -1,8 +1,8 @@
 import json
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import QPoint
-from PySide2.QtGui import Qt
+from PySide6 import QtWidgets
+from PySide6.QtCore import QPoint
+from PySide6.QtGui import Qt
 
 from qss.qss import QssDataMgr
 from src.qt.com.qt_fried_msg import QtFriedMsg

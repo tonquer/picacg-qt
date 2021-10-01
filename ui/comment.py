@@ -3,14 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'comment.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.1.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide6.QtCore import *  # type: ignore
+from PySide6.QtGui import *  # type: ignore
+from PySide6.QtWidgets import *  # type: ignore
 
 from .head_label import HeadLabel
 
@@ -33,7 +33,7 @@ class Ui_Comment(object):
         self.indexLabel.setMinimumSize(QSize(100, 0))
         self.indexLabel.setMaximumSize(QSize(100, 30))
         font = QFont()
-        font.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font.setFamilies([u"\u5fae\u8f6f\u96c5\u9ed1"])
         font.setPointSize(10)
         self.indexLabel.setFont(font)
         self.indexLabel.setLayoutDirection(Qt.RightToLeft)
@@ -114,7 +114,7 @@ class Ui_Comment(object):
         self.commentLabel = QLabel(Comment)
         self.commentLabel.setObjectName(u"commentLabel")
         font1 = QFont()
-        font1.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font1.setFamilies([u"\u5fae\u8f6f\u96c5\u9ed1"])
         font1.setPointSize(12)
         self.commentLabel.setFont(font1)
 

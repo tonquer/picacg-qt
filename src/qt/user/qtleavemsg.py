@@ -1,8 +1,5 @@
-from PySide2 import QtWidgets
-
-from ui.qt_comment_list import QtCommentList
-from src.qt.qtmain import QtOwner
 from src.server import req
+from ui.qt_comment_list import QtCommentList
 
 
 class QtLeaveMsg(QtCommentList):

@@ -1,15 +1,14 @@
-from PySide2 import QtWidgets
-from PySide2.QtCore import QUrl
-from PySide2.QtGui import QDesktopServices, Qt
+from PySide6 import QtWidgets
+from PySide6.QtCore import QUrl
+from PySide6.QtGui import QDesktopServices, Qt
 
 from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.qtmain import QtOwner
 from src.qt.util.qttask import QtTaskBase
 from src.server import req, config, Server, Log
-from ui.login_proxy import Ui_LoginProxy
-
 # set window icon
 from src.util import ToolUtil
+from ui.login_proxy import Ui_LoginProxy
 
 
 class QtLoginProxy(QtWidgets.QWidget, Ui_LoginProxy, QtTaskBase):

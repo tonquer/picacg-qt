@@ -3,14 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'fried_msg.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.1.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide6.QtCore import *  # type: ignore
+from PySide6.QtGui import *  # type: ignore
+from PySide6.QtWidgets import *  # type: ignore
 
 from .qtlistwidget import QtBookList
 from .head_label import HeadLabel
@@ -49,7 +49,7 @@ class Ui_FriedMsg(object):
         self.nameLabel.setMinimumSize(QSize(0, 20))
         self.nameLabel.setMaximumSize(QSize(16777215, 30))
         font = QFont()
-        font.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font.setFamilies([u"\u5fae\u8f6f\u96c5\u9ed1"])
         font.setPointSize(12)
         self.nameLabel.setFont(font)
 
@@ -106,12 +106,11 @@ class Ui_FriedMsg(object):
         self.infoLabel = QLabel(self.widget)
         self.infoLabel.setObjectName(u"infoLabel")
         font1 = QFont()
-        font1.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font1.setFamilies([u"\u5fae\u8f6f\u96c5\u9ed1"])
         font1.setPointSize(12)
         font1.setBold(False)
         font1.setItalic(False)
         font1.setUnderline(False)
-        font1.setWeight(50)
         self.infoLabel.setFont(font1)
         self.infoLabel.setStyleSheet(u"color: #999999;")
         self.infoLabel.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)

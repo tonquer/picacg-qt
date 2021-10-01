@@ -191,6 +191,11 @@ class CheckUpdateHandler(object):
             if backData.bakParam:
                 QtTask().taskBack.emit(backData.bakParam, "")
             return
+        if backData.res.raw.status_code != 200:
+            if backData.bakParam:
+                QtTask().taskBack.emit(backData.bakParam, "")
+            return
+
         updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", backData.res.raw.text)
         if updateInfo:
             data = updateInfo[0]

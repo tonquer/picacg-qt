@@ -1,13 +1,13 @@
-from PySide2 import QtWidgets
-from PySide2.QtCore import QRegExp, Qt
-from PySide2.QtGui import QRegExpValidator
+from PySide6 import QtWidgets
+from PySide6.QtCore import Qt, QRegularExpression
+from PySide6.QtGui import QRegularExpressionValidator
 
-from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtloading import QtLoading
+from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.qtmain import QtOwner
 from src.server import req, QtTask
-from src.util.status import Status
 from src.util import ToolUtil
+from src.util.status import Status
 from ui.register import Ui_Register
 
 
@@ -19,8 +19,8 @@ class QtRegister(QtWidgets.QWidget, Ui_Register):
         ToolUtil.SetIcon(self)
         self.setWindowModality(Qt.ApplicationModal)
         self.loadingForm = QtLoading(self)
-        reg = QRegExp("^[A-Z0-9a-z\\.\\_]{1,16}$")
-        validator = QRegExpValidator(reg, self.userEdit)
+        reg = QRegularExpression("^[A-Z0-9a-z\\.\\_]{1,16}$")
+        validator = QRegularExpressionValidator(reg, self.userEdit)
         self.userEdit.setValidator(validator)
 
     def Register(self):

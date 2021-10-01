@@ -1,21 +1,14 @@
 import weakref
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import Qt, QSizeF, QRectF, QEvent, QPoint, QSize, QRect, QAbstractAnimation, QEasingCurve, \
-    QPropertyAnimation
-from PySide2.QtGui import QPainter, QColor, QPixmap, QFont, QFontMetrics, QPen, QBrush
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsPixmapItem, QFrame, QGraphicsItemGroup, QGraphicsItem, \
-    QAbstractSlider, QAbstractItemView, QScroller, QLabel, QScrollArea, QScrollBar, QWidget, QVBoxLayout, \
-    QScrollerProperties, QHBoxLayout, QGridLayout
+from PySide6.QtCore import Qt, QEvent, QPoint, QRect
+from PySide6.QtGui import QPainter, QColor, QPixmap, QFont, QFontMetrics, QPen, QBrush
+from PySide6.QtWidgets import QFrame, QLabel
 
-from conf import config
 from resources.resources import DataMgr
 from src.qt.com.DWaterProgress import DWaterProgress
 from src.qt.com.qt_git_label import QtGifLabel
-from src.qt.com.qtmsg import QtMsgLabel
-from src.qt.read.qtreadimg_scroll import ReadScrollArea
 from src.qt.read.qtreadimg_tool import QtImgTool
-from src.util.tool import time_me
+from src.qt.read.qtreadimg_view import QtReadImgView
 
 
 class QtImgFrame(QFrame):
@@ -23,7 +16,8 @@ class QtImgFrame(QFrame):
         QFrame.__init__(self, readImg)
         self._readImg = weakref.ref(readImg)
         self.resize(readImg.width(), readImg.height())
-        self.scrollArea = ReadScrollArea(self)
+        # self.scrollArea = ReadScrollArea(self)
+        self.scrollArea = QtReadImgView(self)
         self.qtTool = QtImgTool(self)
         self.qtTool.hide()
         self.helpLabel = QLabel(self)

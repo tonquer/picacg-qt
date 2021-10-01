@@ -3,14 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'chatroom.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 6.1.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide6.QtCore import *  # type: ignore
+from PySide6.QtGui import *  # type: ignore
+from PySide6.QtWidgets import *  # type: ignore
 
 
 class Ui_ChatRoom(object):
@@ -81,7 +81,7 @@ class Ui_ChatRoom(object):
         self.textEdit.setObjectName(u"textEdit")
         self.textEdit.setMaximumSize(QSize(16777215, 100))
         font = QFont()
-        font.setFamily(u"\u5fae\u8f6f\u96c5\u9ed1")
+        font.setFamilies([u"\u5fae\u8f6f\u96c5\u9ed1"])
         font.setPointSize(12)
         self.textEdit.setFont(font)
         self.textEdit.setStyleSheet(u"background-color:transparent;")

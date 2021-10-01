@@ -1,6 +1,6 @@
-from PySide2.QtCore import QByteArray, QBuffer, QRect
-from PySide2.QtGui import QMovie, Qt, QPainter
-from PySide2.QtWidgets import QLabel
+from PySide6.QtCore import QByteArray, QBuffer
+from PySide6.QtGui import QMovie, Qt
+from PySide6.QtWidgets import QLabel
 
 
 class QtGifLabel(QLabel):
@@ -23,4 +23,4 @@ class QtGifLabel(QLabel):
         self.setMovie(self.movie)
         self.movie.start()
         self.setScaledContents(True)
-        self.resize(100, 100)
+        self.resize(500, 500)

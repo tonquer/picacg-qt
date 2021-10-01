@@ -6,7 +6,7 @@ import os
 # macOS 修复
 import time
 
-from PySide2.QtGui import QPalette, QColor, Qt
+from PySide6.QtGui import QPalette, QColor, Qt
 
 from qss.qss import QssDataMgr
 
@@ -28,7 +28,7 @@ except Exception as es:
     if hasattr(es, "msg"):
         config.ErrorMsg = es.msg
 
-from PySide2 import QtWidgets  # 导入PySide2部件
+from PySide6 import QtWidgets  # 导入PySide6部件
 from src.qt.qtmain import BikaQtMainWindow
 from src.util import Log
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # main.setStyleSheet(QssDataMgr().GetData("darkblack"))
     main.show()  # 显示窗体
     main.Init()
-    sts = app.exec_()
+    sts = app.exec()
     main.Close()
     if config.CanWaifu2x:
         waifu2x.stop()

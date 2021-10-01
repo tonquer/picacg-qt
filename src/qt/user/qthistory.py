@@ -1,7 +1,7 @@
 import time
 
-from PySide2 import QtWidgets
-from PySide2.QtSql import QSqlDatabase, QSqlQuery
+from PySide6 import QtWidgets
+from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from src.util import Log
 from ui.history import Ui_History

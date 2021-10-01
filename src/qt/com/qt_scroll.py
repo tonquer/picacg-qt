@@ -2,9 +2,9 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PySide2.QtCore import QTimer, QDateTime, Qt, QPoint
-from PySide2.QtGui import QWheelEvent
-from PySide2.QtWidgets import QApplication
+from PySide6.QtCore import QTimer, QDateTime, Qt, QPoint
+from PySide6.QtGui import QWheelEvent
+from PySide6.QtWidgets import QApplication
 
 
 class SmoothMode(Enum):
@@ -51,7 +51,7 @@ class QtScroll:
             self.scrollStamps.popleft()
         # 根据未处理完的事件调整移动速率增益
         accerationRatio = min(len(self.scrollStamps) / 15, 1)
-        self.qEventParam = (e.pos(), e.globalPos(), e.buttons())
+        self.qEventParam = (e.position(), e.globalPosition(), e.buttons())
         # 计算步数
         self.stepsTotal = self.fps * self.duration / 1000
         # 计算每一个事件对应的移动距离
@@ -81,23 +81,27 @@ class QtScroll:
             # 构造滚轮事件
             e = QWheelEvent(self.qEventParam[0],
                             self.qEventParam[1],
-                            QPoint(),
+                            QPoint(0, round(totalDelta)),
                             QPoint(0, totalDelta),
-                            round(totalDelta),
-                            Qt.Vertical,
-                            self.qEventParam[2],
-                            Qt.NoModifier)
+                            # self.qEventParam[2],
+                            Qt.LeftButton,
+                            Qt.NoModifier,
+                            Qt.ScrollBegin,
+                            False
+                            )
             QApplication.sendEvent(self.verticalScrollBar(), e)
         else:
             # 构造滚轮事件
             e = QWheelEvent(self.qEventParam[0],
                             self.qEventParam[1],
-                            QPoint(),
+                            QPoint(round(totalDelta), 0),
                             QPoint(0, totalDelta),
-                            round(totalDelta),
-                            Qt.Horizontal,
-                            self.qEventParam[2],
-                            Qt.NoModifier)
+                            # self.qEventParam[2],
+                            Qt.LeftButton,
+                            Qt.NoModifier,
+                            Qt.ScrollBegin,
+                            False
+                            )
             QApplication.sendEvent(self.horizontalScrollBar(), e)
         # 如果队列已空，停止滚动
         if not self.stepsLeftQueue:

@@ -240,7 +240,6 @@ class ToolUtil(object):
         # 条漫不放大
         if not config.CanWaifu2x:
             return {}
-        import waifu2x
         return ToolUtil.GetModelByIndex(config.DownloadNoise, config.DownloadScale, config.DownloadModel)
 
     @staticmethod
@@ -378,7 +377,7 @@ class ToolUtil(object):
 
     @staticmethod
     def SetIcon(self):
-        from PySide2.QtGui import QIcon, QPixmap
+        from PySide6.QtGui import QIcon, QPixmap
         icon = QIcon()
         pic = QPixmap()
         from resources import resources

@@ -1,8 +1,6 @@
 import json
-import time
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import QTimer
+from PySide6 import QtWidgets
 
 from src.index.book import BookMgr
 from src.qt.qtmain import QtOwner

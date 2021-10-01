@@ -1,11 +1,9 @@
-from PySide2 import QtWidgets, QtCore
-from PySide2.QtCore import QTimer
-from PySide2.QtGui import QPixmap, QImage
+from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import QTimer
 
-from resources import resources
 from resources.resources import DataMgr
 from src.qt.com.qt_git_label import QtGifLabel
-from ui.loading import Ui_Loading, QGridLayout
+from ui.loading import QGridLayout
 
 
 class QtLoading(QtWidgets.QDialog):
@@ -32,7 +30,7 @@ class QtLoading(QtWidgets.QDialog):
         # self.label.setScaledContents(True)
         self.timer = QTimer(self.label)
         self.timer.setInterval(100)
-        self.label.Init(DataMgr().GetData("loading"))
+        self.label.Init(DataMgr().GetData("loading2"))
         self.label.resize(200, 200)
         self.cnt = 0
         self.closeCnt = 50

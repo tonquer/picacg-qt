@@ -1,9 +1,9 @@
 import json
 import weakref
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import QEvent
-from PySide2.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
+from PySide6 import QtWidgets
+from PySide6.QtCore import QEvent
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QPushButton, QMessageBox
 
 from src.qt.com.qtmsg import QtMsgLabel
 from src.qt.com.qtloading import QtLoading

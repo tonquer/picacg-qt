@@ -1,10 +1,10 @@
 import os
 import shutil
 
-from PySide2 import QtWidgets
-from PySide2.QtCore import Qt, QTimer, QUrl
-from PySide2.QtGui import QCursor, QDesktopServices
-from PySide2.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem, QAction
+from PySide6 import QtWidgets
+from PySide6.QtCore import Qt, QTimer, QUrl
+from PySide6.QtGui import QCursor, QDesktopServices, QAction
+from PySide6.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem
 
 from conf import config
 from src.qt.download.download_db import DownloadDb

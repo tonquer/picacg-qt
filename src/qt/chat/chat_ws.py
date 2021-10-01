@@ -68,11 +68,11 @@ class ChatWebSocket(threading.Thread):
 
     def on_error(self, ws, error):
         self.parent.websocket.emit(self.parent.ErrorMsg, str(error))
-        print(error)
+        Log.Warn(error)
 
-    def on_close(self, ws, code, msg):
+    def on_close(self, ws):
         self.parent.websocket.emit(self.parent.Leave, "")
-        print("### closed ###, code:{}, msg:{}".format(code, msg))
+        Log.Warn("close ws:{}".format(ws.url))
 
     def on_open(self, ws):
         self.parent.websocket.emit(self.parent.Enter, "")

@@ -1,9 +1,9 @@
 import os
 import time
 
-from PySide2.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QRectF, Property
-from PySide2.QtGui import QPen, QPainterPath, QPainter, QColor
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication, QFileDialog
+from PySide6.QtCore import Qt, QPoint, QPropertyAnimation, QEasingCurve, QParallelAnimationGroup, QRectF, Property
+from PySide6.QtGui import QPen, QPainterPath, QPainter, QColor
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QApplication, QFileDialog
 
 from src.util import Log
 
@@ -25,7 +25,6 @@ class QtMsgLabel(QWidget):
         layout.setContentsMargins(8, 8, 8, 16)
         self.label = QLabel(self)
         layout.addWidget(self.label)
-        self._desktop = QApplication.instance().desktop()
         self.animationGroup = QParallelAnimationGroup(self)
         self.opacityAnimation = None
         self.moveAnimation = None
