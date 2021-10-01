@@ -392,6 +392,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
             self.readImg.showFullScreen()
             self.fullButton.setText(self.tr("退出全屏"))
             config.LookReadFull = 1
+        self.readImg.raise_()
         self.scrollArea.changeScale.emit(self.scaleCnt)
         QtOwner().SetV("Read/LookReadFull", config.LookReadFull)
 

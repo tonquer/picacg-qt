@@ -3,12 +3,12 @@
 import sys
 import os
 
+from conf import config
+
 # macOS 修复
 import time
 
-from PySide6.QtGui import QPalette, QColor, Qt
-
-from qss.qss import QssDataMgr
+from PySide6.QtGui import Qt, QGuiApplication
 
 if sys.platform == 'darwin':
     # 确保工作区为当前可执行文件所在目录
@@ -17,8 +17,6 @@ if sys.platform == 'darwin':
     os.chdir(current_dir)
 else:
     sys.path.insert(0, "lib")
-
-from conf import config
 
 try:
     import waifu2x
@@ -38,17 +36,16 @@ DbBook()
 
 
 if __name__ == "__main__":
+    # TODO 调缩放后 错位，临时处理
+    QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
     # QtWidgets.QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     Log.Init()
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
-    # app.addLibraryPath("./resources")
     try:
         main = BikaQtMainWindow(app)
     except Exception as es:
         Log.Error(es)
         sys.exit(-111)
-    # main.setPalette(QPalette(QColor("#464646")))
-    # main.setStyleSheet(QssDataMgr().GetData("darkblack"))
     main.show()  # 显示窗体
     main.Init()
     sts = app.exec()
