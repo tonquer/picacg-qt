@@ -330,7 +330,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         if not item:
             return
         item.setBackground(QColor(238, 162, 164))
-        self.epsListWidget.update()
         self.lastEpsId = info.epsId
         self.lastIndex = info.picIndex
         self.startRead.setText(self.tr("上次看到第") + str(self.lastEpsId + 1) + self.tr("章") + str(info.picIndex+1) + self.tr("页"))

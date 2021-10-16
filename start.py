@@ -15,11 +15,11 @@ if sys.platform == 'darwin':
     current_path = os.path.abspath(__file__)
     current_dir = os.path.abspath(os.path.dirname(current_path) + os.path.sep + '.')
     os.chdir(current_dir)
-else:
-    sys.path.insert(0, "lib")
+# else:
+#     sys.path.insert(0, "lib")
 
 try:
-    import waifu2x
+    import waifu2x_vulkan
     config.CanWaifu2x = True
 except Exception as es:
     config.CanWaifu2x = False
