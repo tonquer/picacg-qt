@@ -66,7 +66,7 @@ jobs:
       run: |
         pyinstaller -F -w start.py --add-binary waifu2x.so:.
         mv dist bika
-        cp -r data models resources translations bika/
+        cp -r data resources translations bika/
         rm bika/resources/*.py -rf
         rm bika/translations/*.ts -rf
         tar -zcvf ${{ env.PACKAGENAME }}.tar.gz bika/
@@ -120,7 +120,7 @@ jobs:
         rm -rf dist/PicACG
         cp Icon.icns dist/
         ln -s /Applications/   dist/Applications
-        cp -avf data models resources translations dist/PicACG.app/Contents/MacOS
+        cp -avf data resources translations dist/PicACG.app/Contents/MacOS
         rm -rf dist/PicACG.app/Contents/MacOS/resources/*.py
         rm -rf dist/PicACG.app/Contents/MacOS/translations/*.ts
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
@@ -164,7 +164,6 @@ jobs:
         pyinstaller -F -w -i resources\icon.ico start.py" 
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
-        Copy-Item -Verbose -Recurse -Path models -Destination bika/
         Copy-Item -Verbose -Recurse -Path resources -Destination bika/
         Copy-Item -Verbose -Recurse -Path translations -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
