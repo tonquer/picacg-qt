@@ -25,14 +25,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Waifu2x
-      run: |
-        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64.zip'
-        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64.zip -d waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64
-        cp waifu2x-ncnn-vulkan-python-v1.0.2-py37-ubuntu-x86_64/waifu2x.so ./
     - name: Build
       run: |
-        pyinstaller -F -w start.py --add-binary waifu2x.so:.
+        pyinstaller -F -w start.py
         mv dist bika
         cp -r data models resources translations bika/
         rm bika/resources/*.py -rf
@@ -61,15 +56,10 @@ jobs:
         pip install pyinstaller
         pip install -r requirements.txt
         brew install create-dmg
-    - name: Waifu2x
-      run: |
-        wget 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64.zip'
-        unzip waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64.zip -d waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64
-        cp waifu2x-ncnn-vulkan-python-v1.0.2-py37-macos-x86_64/waifu2x.so ./
     - name: Build
       run: |
         pyinstaller --clean --log-level TRACE --onedir --name PicACG \
-            --add-binary waifu2x.so:. --hidden-import PySide2 --hidden-import requests \
+            --hidden-import waifu2x_vulkan --hidden-import PySide6 --hidden-import requests \
             --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
             --hidden-import conf --hidden-import resources --hidden-import translations --hidden-import src \
             --hidden-import src.index --hidden-import src.qt --hidden-import src.qt.chat \
@@ -111,16 +101,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r requirements.txt
-    - name: Waifu2x
-      run: |
-        Invoke-WebRequest -Uri 'https://github.com/tonquer/waifu2x-ncnn-vulkan-python/releases/download/v1.0.2/waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64.zip ' -OutFile 'waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64.zip'
-        7z x .\waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64.zip "-owaifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64"
-        cp waifu2x-ncnn-vulkan-python-v1.0.2-py37-windows-x64/waifu2x.pyd .\
     - name: Build
       run: |
-        pyinstaller -F -i resources\icon.ico start.py --add-binary "waifu2x.pyd;."
+        pyinstaller -F -i resources\icon.ico start.py"
         mv dist/start.exe "dist/start(debug).exe"
-        pyinstaller -F -w -i resources\icon.ico start.py --add-binary "waifu2x.pyd;." 
+        pyinstaller -F -w -i resources\icon.ico start.py" 
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path models -Destination bika/
