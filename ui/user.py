@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'user.ui'
+## Form generated from reading UI file 'userfreHSU.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.1.3
 ##
@@ -526,10 +526,10 @@ class Ui_User(object):
     def retranslateUi(self, User):
         User.setWindowTitle(QCoreApplication.translate("User", u"Form", None))
         self.icon.setText("")
-        self.name.setText(QCoreApplication.translate("User", u"name", None))
-        self.level.setText(QCoreApplication.translate("User", u"level:", None))
-        self.title.setText(QCoreApplication.translate("User", u"title", None))
-        self.exp.setText(QCoreApplication.translate("User", u"exp", None))
+        self.name.setText(QCoreApplication.translate("User", u"Name", None))
+        self.level.setText(QCoreApplication.translate("User", u"LV ", None))
+        self.title.setText(QCoreApplication.translate("User", u"Title", None))
+        self.exp.setText(QCoreApplication.translate("User", u"EXP", None))
         self.signButton.setText(QCoreApplication.translate("User", u"\u6253\u54d4\u5361", None))
         self.toolButton11.setText(QCoreApplication.translate("User", u"\u6211\u7684\u8bc4\u8bba", None))
         self.toolButton4.setText(QCoreApplication.translate("User", u"\u6211\u7684\u6536\u85cf", None))

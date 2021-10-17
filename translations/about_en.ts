@@ -15,7 +15,7 @@
     </message>
     <message>
         <location filename="../ui/about.ui" line="57"/>
-        <source>&lt;a href=&quot;https://github.com/tonquer/waifu2x-ncnn-vulkan-python&quot;&gt; waifu2x-ncnn-vulkan-python&lt;/a&gt;</source>
+        <source>&lt;a href=&quot;https://github.com/tonquer/waifu2x-vulkan&quot;&gt; waifu2x-vulkan&lt;/a&gt;</source>
         <translation></translation>
     </message>
     <message>

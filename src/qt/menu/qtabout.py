@@ -28,7 +28,7 @@ class QtAbout(QtWidgets.QWidget, Ui_AboutForm):
         QDesktopServices.openUrl(QUrl(config.UpdateUrl))
 
     def OpenUrl2(self):
-        QDesktopServices.openUrl(QUrl("https://github.com/tonquer/waifu2x-ncnn-vulkan-python"))
+        QDesktopServices.openUrl(QUrl("https://github.com/tonquer/waifu2x-vulkan"))
 
     def OpenUrl3(self):
         QDesktopServices.openUrl(QUrl("https://github.com/tonquer/ehentai-windows"))

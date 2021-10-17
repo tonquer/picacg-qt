@@ -30,8 +30,8 @@
     </message>
     <message>
         <location filename="setting.ui" line="97"/>
-        <source>默认（需重启）</source>
-        <translation>默認（需重啟）</translation>
+        <source>默认</source>
+        <translation>默認</translation>
     </message>
     <message>
         <location filename="setting.ui" line="102"/>
@@ -220,8 +220,8 @@
     </message>
     <message>
         <location filename="setting.ui" line="768"/>
-        <source>语言（需重启）</source>
-        <translation>語言（需重啟）</translation>
+        <source>语言</source>
+        <translation>語言</translation>
     </message>
 </context>
 </TS>

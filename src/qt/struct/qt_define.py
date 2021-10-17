@@ -68,5 +68,3 @@ class QtFileData(object):
         self.scaleW, self.scaleH = ToolUtil.GetPictureSize(data)
         self.waifuTick = tick
         return
-
-

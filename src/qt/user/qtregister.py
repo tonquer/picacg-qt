@@ -65,4 +65,3 @@ class QtRegister(QtWidgets.QWidget, Ui_Register):
         else:
             # QtWidgets.QMessageBox.information(self, '注册失败', msg, QtWidgets.QMessageBox.Yes)
             QtMsgLabel.ShowErrorEx(self, QtOwner().owner.GetStatusStr(msg))
-

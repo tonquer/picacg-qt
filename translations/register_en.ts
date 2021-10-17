@@ -21,7 +21,7 @@
     <message>
         <location filename="../ui/register.ui" line="94"/>
         <source>用户名：</source>
-        <translation>User Name: </translation>
+        <translation>User name: </translation>
     </message>
     <message>
         <location filename="../ui/register.ui" line="123"/>

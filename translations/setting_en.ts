@@ -87,12 +87,8 @@
     </message>
     <message>
         <location filename="../ui/setting.ui" line="768"/>
-        <source>语言（需重启）</source>
-        <translation>Language (Restart)</translation>
-    </message>
-    <message>
         <source>语言</source>
-        <translation type="vanished">Language</translation>
+        <translation>Language</translation>
     </message>
     <message>
         <location filename="../ui/setting.ui" line="245"/>
@@ -142,8 +138,8 @@
     </message>
     <message>
         <location filename="../ui/setting.ui" line="97"/>
-        <source>默认（需重启）</source>
-        <translation>Default (Restart Needed)</translation>
+        <source>默认</source>
+        <translation>Default</translation>
     </message>
     <message>
         <location filename="../ui/setting.ui" line="102"/>

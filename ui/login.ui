@@ -65,6 +65,12 @@
              <height>30</height>
             </size>
            </property>
+           <property name="maximumSize">
+            <size>
+             <width>65</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="text">
             <string>帐号</string>
            </property>
@@ -96,6 +102,12 @@
             <size>
              <width>65</width>
              <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>65</width>
+             <height>16777215</height>
             </size>
            </property>
            <property name="text">

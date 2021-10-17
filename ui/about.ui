@@ -54,7 +54,7 @@
      <item row="4" column="4">
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>&lt;a href=&quot;https://github.com/tonquer/waifu2x-ncnn-vulkan-python&quot;&gt; waifu2x-ncnn-vulkan-python&lt;/a&gt;</string>
+        <string>&lt;a href=&quot;https://github.com/tonquer/waifu2x-vulkan&quot;&gt; waifu2x-vulkan&lt;/a&gt;</string>
        </property>
       </widget>
      </item>

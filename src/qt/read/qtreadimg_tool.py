@@ -494,23 +494,3 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         config.LookReadMode = index
         QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
         self.imgFrame.InitHelp()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

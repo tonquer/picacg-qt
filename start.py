@@ -51,6 +51,6 @@ if __name__ == "__main__":
     sts = app.exec()
     main.Close()
     if config.CanWaifu2x:
-        waifu2x.stop()
+        waifu2x_vulkan.stop()
     time.sleep(1)
     sys.exit(sts)  # 运行程序

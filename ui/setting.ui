@@ -92,9 +92,15 @@
      </item>
      <item row="0" column="2">
       <widget class="QComboBox" name="themeBox">
+       <property name="editable">
+        <bool>false</bool>
+       </property>
+       <property name="currentText">
+        <string>默认</string>
+       </property>
        <item>
         <property name="text">
-         <string>默认（需重启）</string>
+         <string>默认</string>
         </property>
        </item>
        <item>
@@ -770,7 +776,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="label_lang">
        <property name="text">
-        <string>语言（需重启）</string>
+        <string>语言</string>
        </property>
       </widget>
      </item>
