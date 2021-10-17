@@ -244,7 +244,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
             return
         if not config.CanWaifu2x:
             return
-        import waifu2x
+        import waifu2x_vulkan
         self.comboBox.setEnabled(False)
         self.changeButton.setEnabled(False)
         self.SetStatus(False)
@@ -271,7 +271,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
             modelInsence += "_TTA"
 
         model = {
-            "model":  getattr(waifu2x, modelInsence),
+            "model":  getattr(waifu2x_vulkan, modelInsence),
         }
         if self.scaleRadio.isChecked():
             model['scale'] = round(float(self.scaleEdit.text()), 1)

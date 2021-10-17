@@ -227,7 +227,6 @@ class QtDownload(QtWidgets.QWidget, Ui_download):
         self.tableWidget.setItem(info.tableRow, 7, QTableWidgetItem("{}/{}".format(str(info.curConvertEps), str(info.convertEpsCnt))))
         self.tableWidget.setItem(info.tableRow, 8, QTableWidgetItem("{}".format(str(info.convertTick))))
         self.tableWidget.setItem(info.tableRow, 9, QTableWidgetItem(self.GetStatusText(info.convertStatus)))
-        self.tableWidget.update()
         return
 
     def RemoveRecord(self, bookId):

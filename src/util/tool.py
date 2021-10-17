@@ -344,16 +344,16 @@ class ToolUtil(object):
             return {}
         if noise < 0:
             noise = 3
-        import waifu2x
+        import waifu2x_vulkan
         if index == 0:
-            return {"model": getattr(waifu2x, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            return {"model": getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
         elif index == 1:
-            return {"model": getattr(waifu2x, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            return {"model": getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
         elif index == 2:
-            return {"model": getattr(waifu2x, "MODEL_PHOTO_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            return {"model": getattr(waifu2x_vulkan, "MODEL_PHOTO_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
         elif index == 3:
-            return {"model": getattr(waifu2x, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
-        return {"model": getattr(waifu2x, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            return {"model": getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+        return {"model": getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
 
     @staticmethod
     def GetCanSaveName(name):
