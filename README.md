@@ -18,6 +18,7 @@
 ## 我的其他项目
  [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=tonquer&repo=ehentai-windows)](https://github.com/tonquer/ehentai-windows)  
  [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=tonquer&repo=waifu2x-vulkan)](https://github.com/tonquer/waifu2x-vulkan)
+ 
 ## 如何使用
   ### Windows (测试使用win10)
   1. 下载最新的版本 https://github.com/tonquer/picacg-windows/releases
@@ -41,15 +42,16 @@
   5. cd bika && chmod +x start
   6. ./start
   7. 要想使用waifu2x请确定你的设备支持vulkan，然后安装vulkan驱动包，sudo apt install mesa-vulkan-drivers
-  ### Beta版本
-  1. 请在此处下载 https://github.com/tonquer/picacg-windows/actions
+
+## 关于Waifu2x设置
+  请看说明 https://github.com/tonquer/picacg-windows/discussions/76
+
+## 关于代理问题
+  请看说明 https://github.com/tonquer/picacg-windows/discussions/48
 
 ## 如何编译
   ### 使用Git Action编译
   1. 查看编译结果[Git Action编译](https://github.com/tonquer/picacg-windows/actions)
-
-## 关于代理问题
-  请看说明 https://github.com/tonquer/picacg-windows/discussions/48
 
 ## 界面
 
