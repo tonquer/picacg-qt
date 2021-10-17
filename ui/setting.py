@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'setting.ui'
+## Form generated from reading UI file 'settingBPyEHC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.1.3
 ##
@@ -79,6 +79,7 @@ class Ui_Setting(object):
         self.themeBox.addItem("")
         self.themeBox.addItem("")
         self.themeBox.setObjectName(u"themeBox")
+        self.themeBox.setEditable(False)
 
         self.gridLayout_5.addWidget(self.themeBox, 0, 2, 1, 1)
 
@@ -511,10 +512,11 @@ class Ui_Setting(object):
         self.label.setText(QCoreApplication.translate("Setting", u"\u4e0b\u8f7d\u7ebf\u7a0b\u6570", None))
         self.label_5.setText(QCoreApplication.translate("Setting", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84", None))
         self.checkBox.setText(QCoreApplication.translate("Setting", u"\u662f\u5426\u542f\u7528", None))
-        self.themeBox.setItemText(0, QCoreApplication.translate("Setting", u"\u9ed8\u8ba4\uff08\u9700\u91cd\u542f\uff09", None))
+        self.themeBox.setItemText(0, QCoreApplication.translate("Setting", u"\u9ed8\u8ba4", None))
         self.themeBox.setItemText(1, QCoreApplication.translate("Setting", u"\u9ed1", None))
         self.themeBox.setItemText(2, QCoreApplication.translate("Setting", u"\u767d", None))
 
+        self.themeBox.setCurrentText(QCoreApplication.translate("Setting", u"\u9ed8\u8ba4", None))
         self.label_7.setText(QCoreApplication.translate("Setting", u"\u770b\u56fe\u9884\u52a0\u8f7d\u6570", None))
 #if QT_CONFIG(tooltip)
         self.httpProxy.setToolTip(QCoreApplication.translate("Setting", u"<html><head/><body><p>\u8bf7\u586b\u5199\u4f60\u7684\u4ee3\u7406\u8f6f\u4ef6\u63d0\u4f9b\u7684\u4ee3\u7406\u5730\u5740</p><p>\u5982:</p><p>v2ray\u53ef\u80fd\u662f http://127.0.0.1:10809</p><p>shadowsocks\u53ef\u80fd\u662f http://127.0.0.1:1080</p></body></html>", None))
@@ -586,6 +588,6 @@ class Ui_Setting(object):
         self.langSelect.setItemText(1, QCoreApplication.translate("Setting", u"Chinese-Traditional", None))
         self.langSelect.setItemText(2, QCoreApplication.translate("Setting", u"English", None))
 
-        self.label_lang.setText(QCoreApplication.translate("Setting", u"\u8bed\u8a00\uff08\u9700\u91cd\u542f\uff09", None))
+        self.label_lang.setText(QCoreApplication.translate("Setting", u"\u8bed\u8a00", None))
     # retranslateUi
 

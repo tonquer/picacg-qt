@@ -31,7 +31,7 @@
     <message>
         <location filename="../ui/user.ui" line="200"/>
         <source>打哔卡</source>
-        <translation>Check In</translation>
+        <translation>Sign In</translation>
     </message>
     <message>
         <location filename="../ui/user.ui" line="238"/>

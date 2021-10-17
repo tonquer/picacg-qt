@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'login.ui'
+## Form generated from reading UI file 'loginnQDHwI.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.1.3
 ##
@@ -53,6 +53,7 @@ class Ui_Login(object):
         self.label = QLabel(Login)
         self.label.setObjectName(u"label")
         self.label.setMinimumSize(QSize(65, 30))
+        self.label.setMaximumSize(QSize(65, 16777215))
         self.label.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout.addWidget(self.label)
@@ -71,6 +72,7 @@ class Ui_Login(object):
         self.label_2 = QLabel(Login)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setMinimumSize(QSize(65, 30))
+        self.label_2.setMaximumSize(QSize(65, 16777215))
         self.label_2.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_2.addWidget(self.label_2)

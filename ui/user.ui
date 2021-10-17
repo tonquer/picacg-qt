@@ -75,7 +75,7 @@
           </font>
          </property>
          <property name="text">
-          <string>name</string>
+          <string>Name</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -102,7 +102,7 @@
           <string notr="true">color: rgb(196, 95, 125);</string>
          </property>
          <property name="text">
-          <string>level:</string>
+          <string>LV </string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -129,7 +129,7 @@
           <string notr="true">color: rgb(196, 95, 125);</string>
          </property>
          <property name="text">
-          <string>title</string>
+          <string>Title</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -153,7 +153,7 @@
           </font>
          </property>
          <property name="text">
-          <string>exp</string>
+          <string>EXP</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

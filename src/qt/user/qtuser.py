@@ -95,7 +95,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.level.setText("level: "+str(level))
         self.title.setText(title)
         self.level.setText("LV"+str(level))
-        self.exp.setText("exp: " + str(exp))
+        self.exp.setText("EXP: " + str(exp))
         if sign:
             self.signButton.setText(self.tr("已打卡"))
             self.signButton.setEnabled(False)
