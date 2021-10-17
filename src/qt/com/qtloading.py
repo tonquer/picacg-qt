@@ -56,4 +56,3 @@ class QtLoading(QtWidgets.QDialog):
         if self.cnt >= self.closeCnt:
             self.close()
         pass
-

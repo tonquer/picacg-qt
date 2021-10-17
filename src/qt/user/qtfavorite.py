@@ -168,19 +168,3 @@ class QtFavorite(QtWidgets.QWidget, Ui_favorite, QtTaskBase):
             self.allFavoriteIds.pop(bookId)
             sql = "delete from favorite where id='{}' and user='{}';".format(bookId, User().userId)
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

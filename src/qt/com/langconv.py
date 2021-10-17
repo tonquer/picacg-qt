@@ -266,4 +266,3 @@ def run():
         # print >> file_out, c.convert(line.rstrip('\n').decode(
         file_out.write(c.convert(line.rstrip('\n').decode(
             'utf8')).encode('utf8'))
-
