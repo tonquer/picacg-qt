@@ -52,6 +52,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -97,6 +105,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ~/Library/Caches/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -152,6 +168,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        path: ~\AppData\Local\pip\Cache
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip

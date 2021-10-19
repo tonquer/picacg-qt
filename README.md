@@ -2,17 +2,18 @@
 
 ## 简体中文 | [English](README_EN.md)
 
-[![GitHub](https://img.shields.io/github/license/tonquer/picacg-windows)](https://raw.githubusercontent.com/tonquer/picacg-windows/master/LICENSE.txt) 
+[![GitHub](https://img.shields.io/github/license/tonquer/picacg-windows)](https://raw.githubusercontent.com/tonquer/picacg-windows/master/LICENSE.txt)
 [![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/CI?label=CI)](https://github.com/tonquer/picacg-windows/actions)
 ![Relese](https://img.shields.io/badge/Python-3.7.9%2B-brightgreen)
 [![Relese](https://img.shields.io/github/v/release/tonquer/picacg-windows)](https://github.com/tonquer/picacg-windows/releases)
 
-- 哔咔漫画PC客户端（支持window、Linux和macOS），界面使用QT。
-- 该项目仅供技术研究使用，请勿用于其他用途。
+- 哔咔漫画PC客户端（支持window、Linux和macOS），界面使用QT
+- 该项目仅供技术研究使用，请勿用于其他用途
 - 如果觉得本项目对你有所帮助，请点个star关注，感谢支持
 - 如有使用中遇到问题，欢迎提ISSUE
+
 ## 功能
-- 已实现哔咔漫画大部分功能。
+- 已实现哔咔漫画大部分功能
 - 支持看图和下载
 
 ## 我的其他项目
@@ -25,7 +26,8 @@
   2. 解压zip
   3. 打开start.exe
   4. 后续有更新，只需要下载最新版本覆盖原目录即可
-  5. 如果无法初始化waifu2x，请更新显卡驱动，安装 [Vs运行库](https://download.visualstudio.microsoft.com/download/pr/366c0fb9-fe05-4b58-949a-5bc36e50e370/015EDD4E5D36E053B23A01ADB77A2B12444D3FB6ECCEFE23E3A8CD6388616A16/VC_redist.x64.exe)，如果还是无法启用，说明你的电脑不支持vulkan。
+  5. 如果无法初始化waifu2x，请更新显卡驱动，安装 [Vs运行库](https://download.visualstudio.microsoft.com/download/pr/366c0fb9-fe05-4b58-949a-5bc36e50e370/015EDD4E5D36E053B23A01ADB77A2B12444D3FB6ECCEFE23E3A8CD6388616A16/VC_redist.x64.exe)，如果还是无法启用，说明你的电脑不支持vulkan
+
   ### macOS (测试使用 macOS 10.15.7)
   1. 下载最新的版本 https://github.com/tonquer/picacg-windows/releases
   2. 解压 7z
@@ -34,6 +36,7 @@
   #### 对于 M1 Mac 用户
   * 作者没有 Arm Mac, 所以没有办法提供已经打包好的应用程序
   * 如果您拥有 M1 Mac, 可以尝试参考下面的过程手动运行或者进行打包
+
   ### Linux (测试使用deepin 20.2)
   1. 下载qt依赖， http://ftp.br.debian.org/debian/pool/main/x/xcb-util/libxcb-util1_0.4.0-1+b1_amd64.deb
   2. 安装依赖，sudo dpkg -i ./libxcb-util1_0.4.0-1+b1_amd64.deb
@@ -50,8 +53,8 @@
   请看说明 https://github.com/tonquer/picacg-windows/discussions/48
 
 ## 如何编译
-  ### 使用Git Action编译
-  1. 查看编译结果[Git Action编译](https://github.com/tonquer/picacg-windows/actions)
+  ### 使用Git Actions编译
+  1. 查看编译结果[Git Actions编译](https://github.com/tonquer/picacg-windows/actions)
 
 ## 界面
 
