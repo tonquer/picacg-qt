@@ -250,6 +250,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
             config.Encode = 0
 
         if not self.gpuInfos:
+            self.encodeSelect.addItem("CPU")
+            self.encodeSelect.setCurrentIndex(0)
             return
         for info in self.gpuInfos:
             self.encodeSelect.addItem(info)

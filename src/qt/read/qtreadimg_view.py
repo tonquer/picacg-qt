@@ -507,7 +507,7 @@ class QtReadImgView(QGraphicsView, QtScroll):
             wight = min(self.width(), int(self.width() * scale))
             height = self.height() * scale
             newData = data.scaled(wight, height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            label.setPos(self.width()//2 - newData.width()//2, oldPos.y())
+            label.setPos(self.width()//2 - newData.width()//2, max(0, self.height()//2-newData.height()//2))
         elif self.qtTool.stripModel in [ReadMode.RightLeftDouble]:
             scale = (1 + self.scaleCnt * 0.1)
             newData = data.scaled(min(self.width()//2, int(self.width()//2*scale)), self.height()*scale,

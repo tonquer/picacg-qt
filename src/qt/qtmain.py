@@ -323,17 +323,20 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             stat = waifu2x_vulkan.init()
             waifu2x_vulkan.setDebug(True)
             if stat < 0:
-                self.msgForm.ShowError(self.tr("waifu2x初始化错误"))
-            else:
-                IsCanUse = True
-                gpuInfo = waifu2x_vulkan.getGpuInfo()
-                if gpuInfo:
-                    self.settingForm.SetGpuInfos(gpuInfo)
-                if gpuInfo and config.Encode < 0:
-                    config.Encode = 0
+                self.msgForm.ShowMsg(self.tr("未发现支持VULKAN的GPU, Waiuf2x当前为CPU模式, " + ", code:{}".format(str(stat))))
+                # CPU 模式，暂时不开放看图下的转换
+                config.IsOpenWaifu = 0
+                self.settingForm.checkBox.setEnabled(False)
+                self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
 
-                waifu2x_vulkan.initSet(config.Encode, config.Waifu2xThread)
-                Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode) + " version:" + waifu2x_vulkan.getVersion())
+            IsCanUse = True
+            gpuInfo = waifu2x_vulkan.getGpuInfo()
+            self.settingForm.SetGpuInfos(gpuInfo)
+            if (gpuInfo and config.Encode < 0) or config.Encode >= len(gpuInfo):
+                config.Encode = 0
+
+            sts = waifu2x_vulkan.initSet(config.Encode, config.Waifu2xThread)
+            Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(config.Encode) + " version:" + waifu2x_vulkan.getVersion() + "code:" + str(sts))
         else:
             self.msgForm.ShowError(self.tr("waifu2x无法启用, ")+config.ErrorMsg)
 
