@@ -404,7 +404,7 @@ class QtTask(Singleton, threading.Thread):
         if not config.CanWaifu2x:
             time.sleep(100)
             return None
-        import waifu2x_vulkan
+        from waifu2x_vulkan import waifu2x_vulkan
         return waifu2x_vulkan.load(0)
 
     def RunLoad(self):
@@ -428,7 +428,7 @@ class QtTask(Singleton, threading.Thread):
                 if isFind:
                     continue
                 if config.CanWaifu2x:
-                    import waifu2x_vulkan
+                    from waifu2x_vulkan import waifu2x_vulkan
                     sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.downloadId, format="jpg", width=task.model.get("width", 0),
                                            high=task.model.get("high", 0), scale=task.model.get("scale", 0))
 
@@ -486,7 +486,7 @@ class QtTask(Singleton, threading.Thread):
         Log.Info("cancel convert taskId, {}".format(removeIds))
         self.convertFlag.pop(cleanFlag)
         if config.CanWaifu2x:
-            import waifu2x_vulkan
+            from waifu2x_vulkan import waifu2x_vulkan
             waifu2x_vulkan.remove(removeIds)
 
     def ClearWaitConvertIds(self, taskIds):
@@ -497,7 +497,7 @@ class QtTask(Singleton, threading.Thread):
                 del self.convertLoad[taskId]
         Log.Info("cancel wait convert taskId, {}".format(taskIds))
         if config.CanWaifu2x:
-            import waifu2x_vulkan
+            from waifu2x_vulkan import waifu2x_vulkan
             waifu2x_vulkan.removeWaitProc(list(taskIds))
 
     def _RunConvertQImg(self):

@@ -19,7 +19,7 @@ if sys.platform == 'darwin':
 #     sys.path.insert(0, "lib")
 
 try:
-    import waifu2x_vulkan
+    from waifu2x_vulkan import waifu2x_vulkan
     config.CanWaifu2x = True
 except Exception as es:
     config.CanWaifu2x = False

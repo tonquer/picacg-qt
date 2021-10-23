@@ -319,7 +319,7 @@ class BikaQtMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def Init(self):
         IsCanUse = False
         if config.CanWaifu2x:
-            import waifu2x_vulkan
+            from waifu2x_vulkan import waifu2x_vulkan
             stat = waifu2x_vulkan.init()
             waifu2x_vulkan.setDebug(True)
             if stat < 0:

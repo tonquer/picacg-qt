@@ -244,7 +244,7 @@ class QtImg(QtWidgets.QWidget, Ui_Img, QtTaskBase):
             return
         if not config.CanWaifu2x:
             return
-        import waifu2x_vulkan
+        from waifu2x_vulkan import waifu2x_vulkan
         self.comboBox.setEnabled(False)
         self.changeButton.setEnabled(False)
         self.SetStatus(False)
