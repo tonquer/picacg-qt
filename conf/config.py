@@ -38,7 +38,7 @@ UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data/"
-UpdateVersion = "v1.2.6"
+UpdateVersion = "v1.2.7"
 
 # waifu2x
 CanWaifu2x = True
@@ -74,8 +74,14 @@ LookReadMode = 1      # 看图模式
 # LookReadScale = 2     # 默认缩放
 LookReadFull = 0      # 是否全屏
 
+TurnSpeed = 5000   # 翻页速度
+ScrollSpeed = 400  # 滚动速度
+
 # 代理与分流相关
 ProxyUrl = "https://github.com/tonquer/picacg-windows/discussions/48"
+
+# Waifu2x相关
+Waifu2xUrl = "https://github.com/tonquer/picacg-windows/discussions/76"
 
 ProxySelectIndex = 1
 IsUseHttps = 1   # 使用Https

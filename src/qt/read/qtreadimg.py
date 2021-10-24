@@ -73,6 +73,8 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
     def LoadSetting(self):
         self.stripModel = ReadMode(config.LookReadMode)
         self.ChangeReadMode(config.LookReadMode)
+        self.qtTool.turnSpeed.setValue(config.TurnSpeed/1000)
+        self.qtTool.scrollSpeed.setValue(config.ScrollSpeed)
         return
 
     def SelectMenu(self):
@@ -147,6 +149,10 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         a0.accept()
 
     def Clear(self):
+        config.TurnSpeed = int(self.qtTool.turnSpeed.value()*1000)
+        config.ScrollSpeed = int(self.qtTool.scrollSpeed.value())
+        QtOwner().SetV("Read/TurnSpeed", config.TurnSpeed)
+        QtOwner().SetV("Read/ScrollSpeed", config.ScrollSpeed)
         self.qtTool.UpdateText("")
         self.frame.UpdateProcessBar(None)
         self.qtTool.CloseScrollAndTurn()
@@ -179,6 +185,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.SetData(isInit=True)
         # self.graphicsGroup.setPixmap(QPixmap())
         self.qtTool.SetData()
+
         # self.qtTool.show()
         self.bookId = bookId
         self.epsId = epsId

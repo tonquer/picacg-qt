@@ -1,8 +1,8 @@
 import base64
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QSettings, Qt, QSize
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtCore import QSettings, Qt, QSize, QUrl
+from PySide6.QtGui import QPalette, QColor, QDesktopServices
 from PySide6.QtWidgets import QFileDialog
 
 from conf import config
@@ -123,6 +123,8 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         config.LookReadMode = self.GetSettingV("Read/LookReadMode", config.LookReadMode)
         # config.LookReadScale = self.GetSettingV("Read/LookReadScale", config.LookReadScale)
         config.LookReadFull = self.GetSettingV("Read/LookReadFull", config.LookReadFull)
+        config.TurnSpeed = self.GetSettingV("Read/TurnSpeed", config.TurnSpeed)
+        config.ScrollSpeed = self.GetSettingV("Read/ScrollSpeed", config.ScrollSpeed)
         return
 
     def GetSettingV(self, key, defV=None):
@@ -284,3 +286,6 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         # if index >= len(self.gpuInfos) or index < 0:
         #     return "GPU"
         # return self.gpuInfos[index]
+
+    def OpenWaifu2xHelp(self):
+        QDesktopServices.openUrl(QUrl(config.Waifu2xUrl))

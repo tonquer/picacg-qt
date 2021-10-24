@@ -313,6 +313,8 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
     def OpenWaifu(self):
         if self.checkBox.isChecked():
             config.IsOpenWaifu = 1
+            if config.EncodeGpu == "CPU":
+                QtMsgLabel.ShowMsgEx(self.readImg, self.tr("Waifu2x当前为CPU模式，看图模式下不推荐开启"))
         else:
             config.IsOpenWaifu = 0
         self.scrollArea.changeScale.emit(self.scaleCnt)
