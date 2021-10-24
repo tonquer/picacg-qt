@@ -2,9 +2,11 @@ from collections import deque
 from enum import Enum
 from math import cos, pi
 
-from PySide6.QtCore import QTimer, QDateTime, Qt, QPoint
+from PySide6.QtCore import QTimer, QDateTime, Qt, QPoint, QPropertyAnimation, QEasingCurve, QAbstractAnimation
 from PySide6.QtGui import QWheelEvent
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QScrollBar
+
+from src.qt.qtmain import QtOwner
 
 
 class SmoothMode(Enum):
@@ -14,6 +16,38 @@ class SmoothMode(Enum):
     LINEAR = 2
     QUADRATI = 3
     COSINE = 4
+
+
+class SmoothScroll(QScrollBar):
+    def __init__(self):
+        QScrollBar.__init__(self)
+        self.animation = QPropertyAnimation()
+        self.animation.setTargetObject(self)
+        self.animation.setPropertyName(b"value")
+        self.scrollTime = 1000
+        self.animation.setDuration(self.scrollTime)
+        self.animation.setEasingCurve(QEasingCurve.Linear)
+        self.animationValue = self.value()
+        self.backTick = 0
+        self.laveValue = 0
+        self.lastV = 0
+        self.animation.finished.connect(self.Finished)
+
+    def Finished(self):
+        QtOwner().readForm.frame.scrollArea.OnValueChange(self.value())
+
+    def StopScroll(self):
+        self.backTick = 0
+        self.animation.stop()
+
+    def Scroll(self, value):
+        if self.animation.state() == QAbstractAnimation.State.Running:
+            self.animation.stop()
+        oldValue = self.value()
+        self.animation.setStartValue(oldValue)
+        self.animation.setDuration(self.scrollTime)
+        self.animation.setEndValue(oldValue + value)
+        self.animation.start()
 
 
 class QtScroll:
@@ -30,6 +64,14 @@ class QtScroll:
         self.smoothMode = SmoothMode(SmoothMode.COSINE)
         self.smoothMoveTimer.timeout.connect(self.__smoothMove)
         self.qEventParam = []
+
+        self.vScrollBar = SmoothScroll()
+        self.vScrollBar.setOrientation(Qt.Orientation.Vertical)
+        self.setVerticalScrollBar(self.vScrollBar)
+
+        self.hScrollBar = SmoothScroll()
+        self.hScrollBar.setOrientation(Qt.Orientation.Horizontal)
+        self.setHorizontalScrollBar(self.hScrollBar)
 
     def wheelEvent(self, e):
         from src.qt.read.qtreadimg import ReadMode

@@ -220,7 +220,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
             newPic = pic.scaled(self.picture.size(), QtCore.Qt.KeepAspectRatio,  Qt.SmoothTransformation)
             self.picture.setPixmap(newPic)
             # self.picture.setScaledContents(True)
-            self.update()
         else:
             self.picture.setText(self.tr("图片加载失败"))
         return
@@ -242,7 +241,6 @@ class QtGameInfo(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
             widget.setPixmap(newPic)
 
             item.setSizeHint(widget.sizeHint())
-            self.epsListWidget.update()
         else:
             widget.setText(self.tr("图片加载失败"))
         return

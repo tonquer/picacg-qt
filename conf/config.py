@@ -45,6 +45,9 @@ CanWaifu2x = True
 ErrorMsg = ""
 
 Encode = 0
+EncodeGpu = ""
+SelectEncodeGpu = ""
+
 Waifu2xThread = 2
 Format = "jpg"
 Waifu2xPath = "waifu2x"

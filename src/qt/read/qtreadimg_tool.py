@@ -1,7 +1,7 @@
 import weakref
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QEvent, Qt
+from PySide6.QtCore import QEvent, Qt, QTimer
 from PySide6.QtCore import QSize
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QLabel, QScroller, QScrollerProperties
@@ -109,6 +109,9 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         # self.buttonGroup.setId(self.radioButton_4, 4)
         # self.buttonGroup.setId(self.radioButton_5, 5)
         # self.buttonGroup.setId(self.radioButton_6, 6)
+        self.timerOut = QTimer()
+        self.timerOut.setInterval(1000)
+        self.timerOut.timeout.connect(self.TimeOut)
 
     @property
     def imgFrame(self):
@@ -173,6 +176,7 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
                 QtMsgLabel.ShowMsgEx(self.readImg, self.tr("自动跳转到下一章"))
                 self.OpenNextEps()
                 return
+            self.CloseScrollAndTurn()
             QtMsgLabel.ShowMsgEx(self.readImg, self.tr("已经最后一页"))
             return
         t = CTime()
@@ -494,3 +498,62 @@ class QtImgTool(QtWidgets.QWidget, Ui_ReadImg):
         config.LookReadMode = index
         QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
         self.imgFrame.InitHelp()
+
+    def SwitchScrollAndTurn(self):
+        if self.IsStartScrollAndTurn():
+            self.CloseScrollAndTurn()
+        else:
+            self.StartScrollAndTurn()
+        return
+
+    def IsStartScrollAndTurn(self):
+        if self.timerOut.isActive():
+            return True
+        return False
+
+    def StartScrollAndTurn(self):
+        self.CloseScrollAndTurn()
+        from src.qt.read.qtreadimg import ReadMode
+        if self.stripModel in [ReadMode.LeftRightScroll, ReadMode.RightLeftScroll, ReadMode.UpDown]:
+            self.AutoScroll()
+        else:
+            self.AutoTurn()
+
+    def CloseScrollAndTurn(self):
+        if self.timerOut.isActive():
+            QtMsgLabel.ShowMsgEx(self.readImg, self.tr("自动滚动/翻页已停止"))
+            self.timerOut.stop()
+        self.imgFrame.scrollArea.vScrollBar.StopScroll()
+        self.imgFrame.scrollArea.hScrollBar.StopScroll()
+        pass
+
+    def AutoScroll(self):
+        self.timerOut.setInterval(1000)
+        self.timerOut.start()
+        pass
+
+    def AutoTurn(self):
+        tick = int(self.turnSpeed.value()*1000)
+        self.timerOut.setInterval(tick)
+        self.timerOut.start()
+        pass
+
+    def TimeOut(self):
+        from src.qt.read.qtreadimg import ReadMode
+        if self.stripModel in [ReadMode.LeftRightScroll, ReadMode.RightLeftScroll, ReadMode.UpDown]:
+            value = int(self.scrollSpeed.value())
+            if self.stripModel == ReadMode.UpDown:
+                if self.imgFrame.scrollArea.vScrollBar.value() >= self.imgFrame.scrollArea.vScrollBar.maximum():
+                    self.CloseScrollAndTurn()
+                self.imgFrame.scrollArea.vScrollBar.Scroll(value)
+            elif self.stripModel == ReadMode.LeftRightScroll:
+                if self.imgFrame.scrollArea.hScrollBar.value() >= self.imgFrame.scrollArea.hScrollBar.maximum():
+                    self.CloseScrollAndTurn()
+                self.imgFrame.scrollArea.hScrollBar.Scroll(value)
+            elif self.stripModel == ReadMode.RightLeftScroll:
+                if self.imgFrame.scrollArea.hScrollBar.value() <= self.imgFrame.scrollArea.hScrollBar.minimum():
+                    self.CloseScrollAndTurn()
+                self.imgFrame.scrollArea.hScrollBar.Scroll(-value)
+        else:
+            self._NextPage()
+        pass

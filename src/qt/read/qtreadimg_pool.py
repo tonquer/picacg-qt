@@ -1,3 +1,4 @@
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QGraphicsProxyWidget, QGraphicsPixmapItem, QLabel
 
 from src.util import Singleton
@@ -33,6 +34,8 @@ class QtReadImgPoolManager(Singleton):
 
     def AddPixMapItem(self, item):
         assert isinstance(item, QGraphicsPixmapItem)
-        item.setPixmap(None)
+        item.setPixmap(QPixmap())
+
+        # item.widget().clear()
         item.setPos(0, 0)
         self.pixMapItem.append(item)

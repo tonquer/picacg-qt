@@ -738,7 +738,7 @@ class QtBookList(QListWidget, QtTaskBase):
             widget = self.itemWidget(item)
             index = self.row(item)
             if widget.url and config.IsLoadingPicture:
-                widget.picIcon.setPixmap(None)
+                widget.picIcon.setPixmap(QPixmap())
                 widget.picIcon.setText(self.tr("图片加载中"))
                 self.AddDownloadTask(widget.url, widget.path, None, self.LoadingPictureComplete, True, index, False)
                 pass

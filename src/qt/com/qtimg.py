@@ -22,6 +22,7 @@ class QtImgMgr(Singleton):
         self.waifu2xData = None
 
     def ShowImg(self, data):
+        self.obj.gpuLabel.setText(config.EncodeGpu)
         if data:
             self.data = data
             self.waifu2xData = None

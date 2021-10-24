@@ -158,7 +158,6 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
             pass
         self.categories = ""
         self.bookList.clear()
-        self.bookList.update()
         self.bookList.UpdatePage(1, 1)
         self.bookList.UpdateState()
         self.searchEdit.setPlaceholderText("")
@@ -215,7 +214,6 @@ class QtSearch(QtWidgets.QWidget, Ui_search, QtTaskBase):
         for v in books:
             self.bookList.AddBookItem(v)
         self.CheckCategoryShowItem()
-        self.bookList.update()
 
     def OpenSearchCategories(self, categories):
         self.setFocus()

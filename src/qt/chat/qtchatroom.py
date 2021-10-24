@@ -212,10 +212,10 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom, QtTaskBase):
         at = data.get('at')
         if at:
             msg = "<font color=#1661ab>{}</font>".format(at.replace("嗶咔_", "@")) + "\n" + msg
-        info.commentLabel.setText(msg)
+        info.commentLabel.setText("<font color=#130c0e>{}</font>".format(msg))
         info.nameLabel.setText(name)
-        info.levelLabel.setText(" LV"+str(level)+" ")
-        info.titleLabel.setText(" " + title + " ")
+        info.levelLabel.setText("<font color=#130c0e>{}</font>".format(" LV"+str(level))+" ")
+        info.titleLabel.setText("<font color=#130c0e>{}</font>".format(" " + title + " "))
         info.indexLabel.setText("{}楼".format(str(self.indexMsgId + 1)))
         # info.numLabel.setText("{}楼".format(str(self.indexMsgId+1)))
         info.infoLabel.setText(data.get("platform", "")+" ")
@@ -224,7 +224,7 @@ class QtChatRoom(QtWidgets.QWidget, Ui_ChatRoom, QtTaskBase):
             replay = data.get("reply", "")
             replayName = data.get("reply_name", "")
             if replay and replayName:
-                info.replayLabel.setText(replayName + "\n" + replay)
+                info.replayLabel.setText("<font color=#130c0e>就要科普</font>".format(replayName + "\n" + replay))
                 info.replayLabel.setVisible(True)
             else:
                 info.replayLabel.setVisible(False)

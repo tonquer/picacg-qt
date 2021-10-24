@@ -81,8 +81,11 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         if x and y:
             self.readSize = QSize(int(x), int(y))
 
-        config.Encode = self.GetSettingV("Waifu2x/Encode", 0)
-        self.encodeSelect.setCurrentIndex(config.Encode)
+        config.SelectEncodeGpu = self.GetSettingV("Waifu2x/SelectEncodeGpu", "")
+        self.encodeSelect.setCurrentIndex(0)
+        for index in range(self.encodeSelect.count()):
+            if config.SelectEncodeGpu == self.encodeSelect.itemText(index):
+                self.encodeSelect.setCurrentIndex(index)
 
         config.LookModel = self.GetSettingV("Waifu2x/LookModel", config.LookModel)
         config.LookNoise = self.GetSettingV("Waifu2x/LookNoise", config.LookNoise)
@@ -203,7 +206,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
         self.settings.setValue("ChatProxy", config.ChatProxy)
         self.settings.setValue("PreLoading", config.PreLoading)
 
-        config.Encode = self.encodeSelect.currentIndex()
+        config.SelectEncodeGpu = self.encodeSelect.currentText()
         config.Waifu2xThread = int(self.threadSelect.currentIndex()) + 1
         config.IsOpenWaifu = int(self.checkBox.isChecked())
         config.DownloadModel = int(self.downModel.currentIndex())
@@ -211,7 +214,7 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
         self.settings.setValue("Waifu2x/DownloadModel", config.DownloadModel)
         self.settings.setValue("Waifu2x/LogIndex", config.LogIndex)
-        self.settings.setValue("Waifu2x/Encode", config.Encode)
+        self.settings.setValue("Waifu2x/SelectEncodeGpu", config.SelectEncodeGpu)
         self.settings.setValue("Waifu2x/IsOpen2", config.IsOpenWaifu)
 
         config.LookModel = self.readModel.currentIndex()
@@ -246,21 +249,38 @@ class QtSetting(QtWidgets.QWidget, Ui_Setting):
 
     def SetGpuInfos(self, gpuInfo):
         self.gpuInfos = gpuInfo
-        if config.Encode >= len(self.gpuInfos):
-            config.Encode = 0
+        config.EncodeGpu = config.SelectEncodeGpu
 
         if not self.gpuInfos:
-            self.encodeSelect.addItem("CPU")
+            config.EncodeGpu = "CPU"
+            config.Encode = -1
+            self.encodeSelect.addItem(config.EncodeGpu)
             self.encodeSelect.setCurrentIndex(0)
             return
+
+        if not config.EncodeGpu or (config.EncodeGpu != "CPU" and config.EncodeGpu not in self.gpuInfos):
+            config.EncodeGpu = self.gpuInfos[0]
+            config.Encode = 0
+
+        index = 0
         for info in self.gpuInfos:
             self.encodeSelect.addItem(info)
-        self.encodeSelect.setCurrentIndex(config.Encode)
-        Log.Info("waifu2x GPU: " + str(self.gpuInfos))
+            if info == config.EncodeGpu:
+                self.encodeSelect.setCurrentIndex(index)
+                config.Encode = index
+            index += 1
+
+        self.encodeSelect.addItem("CPU")
+        if config.EncodeGpu == "CPU":
+            config.Encode = -1
+            self.encodeSelect.setCurrentIndex(index)
+
+        Log.Info("waifu2x GPU: " + str(self.gpuInfos) + ",select: " + config.EncodeGpu)
         return
 
     def GetGpuName(self):
-        index = config.Encode
-        if index >= len(self.gpuInfos) or index < 0:
-            return "GPU"
-        return self.gpuInfos[index]
+        return config.EncodeGpu
+        # index = config.Encode
+        # if index >= len(self.gpuInfos) or index < 0:
+        #     return "GPU"
+        # return self.gpuInfos[index]

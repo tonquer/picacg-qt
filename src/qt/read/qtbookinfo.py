@@ -215,7 +215,6 @@ class QtBookInfo(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             newPic = pic.scaled(self.picture.size(), QtCore.Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.picture.setPixmap(newPic)
             # self.picture.setScaledContents(True)
-            self.update()
         else:
             self.picture.setText(self.tr("图片加载失败"))
         return

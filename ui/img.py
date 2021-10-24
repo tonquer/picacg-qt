@@ -3,21 +3,28 @@
 ################################################################################
 ## Form generated from reading UI file 'img.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.1.3
+## Created by: Qt User Interface Compiler version 6.2.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import *  # type: ignore
-from PySide6.QtGui import *  # type: ignore
-from PySide6.QtWidgets import *  # type: ignore
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
+    QFrame, QGraphicsView, QGridLayout, QHBoxLayout,
+    QLabel, QLineEdit, QPushButton, QRadioButton,
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 class Ui_Img(object):
     def setupUi(self, Img):
         if not Img.objectName():
             Img.setObjectName(u"Img")
-        Img.resize(387, 556)
+        Img.resize(501, 556)
         self.gridLayout = QGridLayout(Img)
         self.gridLayout.setObjectName(u"gridLayout")
         self.graphicsView = QGraphicsView(Img)
@@ -220,6 +227,22 @@ class Ui_Img(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_9)
 
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.label_9 = QLabel(Img)
+        self.label_9.setObjectName(u"label_9")
+        self.label_9.setMaximumSize(QSize(60, 16777215))
+
+        self.horizontalLayout_11.addWidget(self.label_9)
+
+        self.gpuLabel = QLabel(Img)
+        self.gpuLabel.setObjectName(u"gpuLabel")
+
+        self.horizontalLayout_11.addWidget(self.gpuLabel)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_11)
+
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.label_6 = QLabel(Img)
@@ -345,6 +368,8 @@ class Ui_Img(object):
         self.resolutionLabel.setText(QCoreApplication.translate("Img", u"\u65e0\u4fe1\u606f", None))
         self.label_10.setText(QCoreApplication.translate("Img", u"\u5927 \u5c0f\uff1a", None))
         self.sizeLabel.setText(QCoreApplication.translate("Img", u"\u65e0\u4fe1\u606f", None))
+        self.label_9.setText(QCoreApplication.translate("Img", u"\u8f6c\u6362\u6a21\u5f0f\uff1a", None))
+        self.gpuLabel.setText(QCoreApplication.translate("Img", u"GPU", None))
         self.label_6.setText(QCoreApplication.translate("Img", u"\u8017\u65f6\uff1a", None))
         self.tickLabel.setText("")
         self.oepnButton.setText(QCoreApplication.translate("Img", u"\u6253\u5f00\u56fe\u7247", None))

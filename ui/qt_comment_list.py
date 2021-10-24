@@ -183,8 +183,6 @@ class QtCommentList(QtWidgets.QWidget, Ui_LeaveMsg, QtTaskBase):
             if widget.id != cfgId:
                 continue
             widget.SetLike(isLike)
-            widget.update()
-        self.update()
 
     def KillComment(self, cfgId):
         for index in range(self.listWidget.count()):

@@ -56,6 +56,7 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         self.stackedWidget.addWidget(QtOwner().owner.myCommentForm)
         self.buttonGroup.buttonClicked.connect(self.Switch)
         self.isHeadUp = False
+        self.toolButton9.setVisible(False)
 
     def SetPicture(self, data):
         self.pictureData = data
@@ -87,7 +88,6 @@ class QtUser(QtWidgets.QWidget, Ui_User):
             self.signButton.setText(self.tr("已打卡"))
             # self.signButton.setHidden(True)
             QtTask().AddHttpTask(req.GetUserInfo(), QtOwner().owner.loginForm.UpdateUserBack)
-            self.update()
         return
 
     def UpdateLabel(self, name, level, exp, title, sign):
@@ -99,12 +99,11 @@ class QtUser(QtWidgets.QWidget, Ui_User):
         if sign:
             self.signButton.setText(self.tr("已打卡"))
             self.signButton.setEnabled(False)
-        self.update()
 
     def UpdatePictureData(self, data):
         if not data:
             return
-        self.icon.setPixmap(None)
+        self.icon.setPixmap(QPixmap())
         self.icon.setText(self.tr("头像上传中......"))
         self.isHeadUp = True
         QtImgMgr().SetHeadStatus(not self.isHeadUp)

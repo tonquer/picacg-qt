@@ -166,6 +166,7 @@ class QtReadImgView(QGraphicsView, QtScroll):
                 if not self.frame.helpLabel.isHidden():
                     self.frame.helpLabel.hide()
                     return True
+                self.qtTool.CloseScrollAndTurn()
                 if ev.button() == Qt.MouseButton.LeftButton:
                     if not self.frame.helpLabel.isHidden():
                         self.frame.helpLabel.hide()
@@ -283,6 +284,7 @@ class QtReadImgView(QGraphicsView, QtScroll):
         self.verticalScrollBar().setValue(0)
         self.horizontalScrollBar().setValue(0)
         self.oldValue = 0
+        self.qtTool.CloseScrollAndTurn()
         # if self.initReadMode and self.readImg.stripModel != self.initReadMode:
         if self.initReadMode:
             for proxy in self.allItems:
@@ -441,7 +443,7 @@ class QtReadImgView(QGraphicsView, QtScroll):
                 if not isinstance(newProxy, QGraphicsProxyWidget):
                     raise
                 label = newProxy.widget()
-                label.setPixmap(None)
+                # label.setPixmap(QPixmap())
                 text = str(index+1)
                 font = QFont()
                 font.setPointSize(64)
@@ -455,6 +457,8 @@ class QtReadImgView(QGraphicsView, QtScroll):
                 # print(index, newProxy.widget().width(), newProxy.widget().height())
                 self.graphicsScene.addItem(newProxy)
                 self.allItems[index] = newProxy
+                # if proxy:
+                #     del proxy
                 QtReadImgPoolManager().AddPixMapItem(proxy)
 
     def LabelToPixmap(self, index):

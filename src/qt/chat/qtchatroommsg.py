@@ -1,6 +1,6 @@
 from PySide6 import QtWidgets
 from PySide6.QtCore import QEvent, QProcess
-from PySide6.QtGui import QPixmap, Qt, QIcon, QCursor
+from PySide6.QtGui import QPixmap, Qt, QIcon, QCursor, QPalette
 from PySide6.QtWidgets import QMenu, QApplication
 
 from resources.resources import DataMgr

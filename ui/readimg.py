@@ -3,21 +3,28 @@
 ################################################################################
 ## Form generated from reading UI file 'readimg.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.1.3
+## Created by: Qt User Interface Compiler version 6.2.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import *  # type: ignore
-from PySide6.QtGui import *  # type: ignore
-from PySide6.QtWidgets import *  # type: ignore
-
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDoubleSpinBox,
+    QFrame, QGridLayout, QHBoxLayout, QLabel,
+    QLayout, QPushButton, QSizePolicy, QSlider,
+    QSpinBox, QVBoxLayout, QWidget)
 
 class Ui_ReadImg(object):
     def setupUi(self, ReadImg):
         if not ReadImg.objectName():
             ReadImg.setObjectName(u"ReadImg")
-        ReadImg.resize(299, 730)
+        ReadImg.resize(313, 825)
         ReadImg.setAutoFillBackground(False)
         ReadImg.setStyleSheet(u"")
         self.gridLayout_2 = QGridLayout(ReadImg)
@@ -300,6 +307,58 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.line_3)
 
+        self.label_7 = QLabel(ReadImg)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setStyleSheet(u"color: #ee2a24")
+        self.label_7.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_7)
+
+        self.horizontalLayout_12 = QHBoxLayout()
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.label_10 = QLabel(ReadImg)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_12.addWidget(self.label_10)
+
+        self.scrollSpeed = QSpinBox(ReadImg)
+        self.scrollSpeed.setObjectName(u"scrollSpeed")
+        self.scrollSpeed.setMinimum(1)
+        self.scrollSpeed.setMaximum(4000)
+        self.scrollSpeed.setValue(200)
+
+        self.horizontalLayout_12.addWidget(self.scrollSpeed)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_12)
+
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.label_11 = QLabel(ReadImg)
+        self.label_11.setObjectName(u"label_11")
+        self.label_11.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_13.addWidget(self.label_11)
+
+        self.turnSpeed = QDoubleSpinBox(ReadImg)
+        self.turnSpeed.setObjectName(u"turnSpeed")
+        self.turnSpeed.setMinimum(0.100000000000000)
+        self.turnSpeed.setSingleStep(0.100000000000000)
+        self.turnSpeed.setValue(5.000000000000000)
+
+        self.horizontalLayout_13.addWidget(self.turnSpeed)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_13)
+
+        self.line_8 = QFrame(ReadImg)
+        self.line_8.setObjectName(u"line_8")
+        self.line_8.setFrameShape(QFrame.HLine)
+        self.line_8.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_8)
+
         self.copyButton = QPushButton(ReadImg)
         self.copyButton.setObjectName(u"copyButton")
         self.copyButton.setStyleSheet(u"")
@@ -456,6 +515,9 @@ class Ui_ReadImg(object):
         self.comboBox.setItemText(5, QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u6eda\u52a8", None))
 
         self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08120%\uff09", None))
+        self.label_7.setText(QCoreApplication.translate("ReadImg", u"\u81ea\u52a8\u6eda\u52a8/\u7ffb\u9875", None))
+        self.label_10.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u901f\u5ea6\uff08\u50cf\u7d20\uff09\uff1a", None))
+        self.label_11.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u901f\u5ea6\uff08\u79d2\uff09\uff1a", None))
         self.copyButton.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00\u56fe\u7247\u5de5\u5177", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
         self.fullButton.setText(QCoreApplication.translate("ReadImg", u"\u5168\u5c4f", None))

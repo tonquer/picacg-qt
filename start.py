@@ -9,6 +9,7 @@ from conf import config
 import time
 
 from PySide6.QtGui import Qt, QGuiApplication
+from qt_material import resources
 
 if sys.platform == 'darwin':
     # 确保工作区为当前可执行文件所在目录

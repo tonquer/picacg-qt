@@ -126,16 +126,15 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
 
         action = popMenu.addAction(self.tr("退出"))
         action.triggered.connect(self.close)
+
+        action = popMenu.addAction(self.tr("自动滚动/翻页"))
+        action.triggered.connect(self.qtTool.SwitchScrollAndTurn)
+        if self.qtTool.IsStartScrollAndTurn():
+            action.setCheckable(True)
+            action.setChecked(True)
+
         self.isShowMenu = True
         popMenu.exec_(QCursor.pos())
-
-    @property
-    def graphicsView(self):
-        return self.frame.graphicsView
-
-    @property
-    def graphicsGroup(self):
-        return self.frame.graphicsGroup
 
     @property
     def qtTool(self):
@@ -150,6 +149,7 @@ class QtReadImg(QtWidgets.QWidget, QtTaskBase):
     def Clear(self):
         self.qtTool.UpdateText("")
         self.frame.UpdateProcessBar(None)
+        self.qtTool.CloseScrollAndTurn()
         self.bookId = ""
         self.epsId = 0
         self.maxPic = 0
