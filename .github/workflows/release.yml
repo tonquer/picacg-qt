@@ -65,14 +65,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Waifu2x
-      run: |
-        wget 'https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.0.2/waifu2x-vulkan-v1.0.2-py37-ubuntu-x86_64.zip'
-        unzip waifu2x-vulkan-v1.0.2-py37-ubuntu-x86_64.zip -d waifu2x-vulkan-v1.0.2-py37-ubuntu-x86_64
-        cp waifu2x-vulkan-v1.0.2-py37-ubuntu-x86_64/waifu2x.so ./
     - name: Build
       run: |
-        pyinstaller -F -w start.py --add-binary waifu2x.so:.
+        pyinstaller -F -w start.py
         mv dist bika
         cp -r data resources translations bika/
         rm bika/resources/*.py -rf
