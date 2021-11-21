@@ -62,7 +62,7 @@ jobs:
     - name: Build
       run: |
         cd src
-        cp ../res/Icon.icns ./
+        cp ../res/icon/Icon.icns ./
         pyinstaller --clean --log-level TRACE --onedir --name PicACG \
             --hidden-import waifu2x_vulkan --hidden-import PySide6 --strip --windowed -i Icon.icns \
             start.py
@@ -107,8 +107,6 @@ jobs:
         pyinstaller -F -w -i resources\icon.ico start.py
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
-        Remove-Item bika/resources/*.py -r -fo
-        Remove-Item bika/translations/*.ts -r -fo
         cp LICENSE bika\
         cp README.md bika\
         cd ..
