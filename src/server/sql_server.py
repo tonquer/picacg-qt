@@ -4,12 +4,16 @@ import threading
 import time
 from queue import Queue
 
-from conf import config
-from src.qt.com.langconv import Converter
-from src.util import Singleton, Log
-
-
 # 一本书
+from config import config
+from task.task_sql import TaskSql
+from tools.book import BookMgr
+from tools.langconv import Converter
+from tools.log import Log
+from tools.singleton import Singleton
+from tools.user import User
+
+
 class DbBook(object):
     def __init__(self):
         self.id = ""             # 唯一标识
@@ -82,8 +86,7 @@ class SqlServer(Singleton):
                     cur.execute("COMMIT")
                     if backId:
                         data2 = pickle.dumps("")
-                        from src.qt.util.qttask import QtTask
-                        QtTask().sqlBack.emit(backId, data2)
+                        TaskSql().taskObj.sqlBack.emit(backId, data2)
                 elif taskType == self.TaskTypeSelectBook:
                     self._SelectBook(conn, data, backId)
                 elif taskType == self.TaskTypeSelectWord:
@@ -134,8 +137,7 @@ class SqlServer(Singleton):
             books.append(info)
         data = pickle.dumps(books)
         if backId:
-            from src.qt.util.qttask import QtTask
-            QtTask().sqlBack.emit(backId, data)
+            TaskSql().taskObj.sqlBack.emit(backId, data)
 
     def _SelectWord(self, conn, sql, backId):
         cur = conn.cursor()
@@ -145,8 +147,7 @@ class SqlServer(Singleton):
             words.append(data[1])
         data = pickle.dumps(words)
         if backId:
-            from src.qt.util.qttask import QtTask
-            QtTask().sqlBack.emit(backId, data)
+            TaskSql().taskObj.sqlBack.emit(backId, data)
 
     def _SelectUpdateInfo(self, conn, sql, backId):
         cur = conn.cursor()
@@ -166,20 +167,17 @@ class SqlServer(Singleton):
 
         data = pickle.dumps((nums, time, version))
         if backId:
-            from src.qt.util.qttask import QtTask
-            QtTask().sqlBack.emit(backId, data)
+            TaskSql().taskObj.sqlBack.emit(backId, data)
 
     def _SelectFavoriteIds(self, conn, sql, backId):
         cur = conn.cursor()
-        from src.user.user import User
         cur.execute("select * from favorite where user ='{}'".format(User().userId))
         allFavoriteIds = []
         for data in cur.fetchall():
             allFavoriteIds.append(data[0])
         data = pickle.dumps(allFavoriteIds)
         if backId:
-            from src.qt.util.qttask import QtTask
-            QtTask().sqlBack.emit(backId, data)
+            TaskSql().taskObj.sqlBack.emit(backId, data)
 
     def _SelectCacheBook(self, conn, bookId, backId):
         cur = conn.cursor()
@@ -207,13 +205,11 @@ class SqlServer(Singleton):
             info.creator = data[16]
             info.totalLikes = data[17]
             info.totalViews = data[18]
-            from src.index.book import BookMgr
             BookMgr().AddBookByDb(info)
             allFavoriteIds.append(info)
         data = pickle.dumps(allFavoriteIds)
         if backId:
-            from src.qt.util.qttask import QtTask
-            QtTask().sqlBack.emit(backId, data)
+            TaskSql().taskObj.sqlBack.emit(backId, data)
 
     def _UpdateBookInfo(self, conn, data, backId):
         cur = conn.cursor()
@@ -245,7 +241,6 @@ class SqlServer(Singleton):
 
     def _UpdateFavorite(self, conn, addData, backId):
         cur = conn.cursor()
-        from src.user.user import User
         for bookId, sortId in addData:
             try:
                 if not bookId:
@@ -260,7 +255,6 @@ class SqlServer(Singleton):
 
     @staticmethod
     def SearchFavorite(page, sortKey=0, sortId=0):
-        from src.user.user import User
         sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
             User().userId)

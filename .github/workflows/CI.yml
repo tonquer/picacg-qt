@@ -28,12 +28,13 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Build
       run: |
+        cd src
         pyinstaller -F -w start.py
         mv dist bika
-        cp -r data resources translations bika/
-        rm bika/resources/*.py -rf
-        rm bika/translations/*.ts -rf
+        cp -r data bika/
         tar -zcvf ${{ env.PACKAGENAME }}.tar.gz bika/
+        mv ${{ env.PACKAGENAME }}.tar.gz ..
+        cd ..
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
@@ -60,27 +61,20 @@ jobs:
         brew install create-dmg
     - name: Build
       run: |
+        cd src
+        cp ../res/Icon.icns ./
         pyinstaller --clean --log-level TRACE --onedir --name PicACG \
-            --hidden-import waifu2x_vulkan --hidden-import PySide6 --hidden-import requests \
-            --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
-            --hidden-import conf --hidden-import resources --hidden-import translations --hidden-import src \
-            --hidden-import src.index --hidden-import src.qt --hidden-import src.qt.chat \
-            --hidden-import src.qt.com --hidden-import src.qt.download \
-            --hidden-import src.qt.main --hidden-import src.qt.menu \
-            --hidden-import src.qt.read --hidden-import src.qt.struct --hidden-import src.qt.game\
-            --hidden-import src.qt.user --hidden-import src.qt.util --hidden-import src.server \
-            --hidden-import src.user --hidden-import src.util --hidden-import ui \
-            --hidden-import qss --strip --windowed -i Icon.icns \
+            --hidden-import waifu2x_vulkan --hidden-import PySide6 --strip --windowed -i Icon.icns \
             start.py
         rm -rf dist/PicACG
         cp Icon.icns dist/
         ln -s /Applications/   dist/Applications
-        cp -avf data resources translations dist/PicACG.app/Contents/MacOS
-        rm -rf dist/PicACG.app/Contents/MacOS/resources/*.py
-        rm -rf dist/PicACG.app/Contents/MacOS/translations/*.ts
+        cp -avf data dist/PicACG.app/Contents/MacOS
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
             --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
         zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
+        mv bika.zip ..
+        cd ..
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
@@ -106,19 +100,20 @@ jobs:
         pip install -r requirements.txt
     - name: Build
       run: |
+        cd src
+        cp ..\res\icon\icon.ico .\
         pyinstaller -F -i resources\icon.ico start.py
         mv dist/start.exe "dist/start(debug).exe"
         pyinstaller -F -w -i resources\icon.ico start.py
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
-        Copy-Item -Verbose -Recurse -Path resources -Destination bika/
-        Copy-Item -Verbose -Recurse -Path translations -Destination bika/
         Remove-Item bika/resources/*.py -r -fo
         Remove-Item bika/translations/*.ts -r -fo
         cp LICENSE bika\
         cp README.md bika\
+        cd ..
         mkdir ${{ env.PACKAGENAME }}
-        mv bika ${{ env.PACKAGENAME }}
+        mv src\bika ${{ env.PACKAGENAME }}
         7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
     - name: Upload
       uses: actions/upload-artifact@v2

@@ -1,8 +1,8 @@
 import base64
 from urllib.parse import quote
 
-from conf import config
-from src.util import ToolUtil
+from config import config
+from tools.tool import ToolUtil
 
 
 class ServerReq(object):
@@ -20,7 +20,7 @@ class ServerReq(object):
 
     def __str__(self):
         if config.LogIndex == 0:
-            return ""
+            return self.__class__.__name__
         headers = dict()
         headers.update(self.headers)
         if config.LogIndex == 1 and "authorization" in headers:
@@ -254,7 +254,7 @@ class DownloadBookReq(ServerReq):
 
 
 # 获得评论
-class GetComments(ServerReq):
+class GetCommentsReq(ServerReq):
     def __init__(self, bookId="", page=1):
         url = config.Url + "comics/{}/comments?page={}".format(bookId, page)
         method = "GET"
@@ -291,8 +291,7 @@ class CheckUpdateReq(ServerReq):
 
 # 检查更新
 class CheckUpdateDatabaseReq(ServerReq):
-    def __init__(self):
-        url = config.DatabaseUpdate
+    def __init__(self, url):
         method = "GET"
         header = {
             "Pragma": "No-cache",
@@ -306,10 +305,10 @@ class CheckUpdateDatabaseReq(ServerReq):
 
 # 下载
 class DownloadDatabaseReq(ServerReq):
-    def __init__(self, tick):
+    def __init__(self, url, tick):
         import time
         day = time.strftime('%Y-%m-%d', time.localtime(tick))
-        url = config.DatabaseDownload + day + ".data"
+        url = url + day + ".data"
         method = "GET"
         header = {
             "Pragma": "No-cache",
@@ -331,7 +330,7 @@ class GetKeywords(ServerReq):
 
 
 # 发送评论
-class SendComment(ServerReq):
+class SendCommentReq(ServerReq):
     def __init__(self, bookId="", content=""):
         url = config.Url + "comics/{}/comments".format(bookId)
         method = "POST"

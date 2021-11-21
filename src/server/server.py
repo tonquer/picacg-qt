@@ -6,11 +6,14 @@ import requests
 import urllib3
 from urllib3.util.ssl_ import is_ipaddress
 
-import src.server.req as req
-import src.server.res as res
-from conf import config
-from src.util import ToolUtil, Singleton, Log
-from src.util.status import Status
+import server.req as req
+import server.res as res
+from config import config
+from task.qt_task import TaskBase
+from tools.log import Log
+from tools.singleton import Singleton
+from tools.status import Status
+from tools.tool import ToolUtil
 
 urllib3.disable_warnings()
 
@@ -41,7 +44,7 @@ connection.create_connection = patched_create_connection
 
 def handler(request):
     def generator(handler):
-        Server().handler[request] = handler()
+        Server().handler[request.__name__] = handler()
         return handler
     return generator
 
@@ -57,10 +60,9 @@ class Task(object):
         self.loadPath = loadPath
 
 
-class Server(Singleton, threading.Thread):
+class Server(Singleton):
     def __init__(self) -> None:
         super().__init__()
-        threading.Thread.__init__(self)
         self.handler = {}
         self.session = requests.session()
         self.address = ""
@@ -164,9 +166,9 @@ class Server(Singleton, threading.Thread):
     def Send(self, request, token="", backParam="", isASync=True):
         self.__DealHeaders(request, token)
         if isASync:
-            self._inQueue.put(Task(request, backParam))
+            return self._inQueue.put(Task(request, backParam))
         else:
-            self._Send(Task(request, backParam))
+            return self._Send(Task(request, backParam))
 
     def _Send(self, task):
         try:
@@ -187,12 +189,14 @@ class Server(Singleton, threading.Thread):
         finally:
             Log.Info("response-> backId:{}, {}, {}".format(task.bakParam, task.req.__class__.__name__, task.res))
         try:
-            self.handler.get(task.req.__class__)(task)
+            self.handler.get(task.req.__class__.__name__)(task)
             if task.res.raw:
                 task.res.raw.close()
         except Exception as es:
             Log.Warn("task: {}, error".format(task.req.__class__))
             Log.Error(es)
+        finally:
+            return task.res
 
     def Post(self, task):
         request = task.req
@@ -202,6 +206,7 @@ class Server(Singleton, threading.Thread):
         if request.headers == None:
             request.headers = {}
 
+        task.res = res.BaseRes("", False)
         r = self.session.post(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=task.timeout, verify=False)
         task.res = res.BaseRes(r, request.isParseRes)
         return task
@@ -214,6 +219,7 @@ class Server(Singleton, threading.Thread):
         if request.headers == None:
             request.headers = {}
 
+        task.res = res.BaseRes("", False)
         r = self.session.put(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=60, verify=False)
         task.res = res.BaseRes(r, request.isParseRes)
         return task
@@ -231,9 +237,9 @@ class Server(Singleton, threading.Thread):
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 
-    def Download(self, request, token="", bakParams="", cacheAndLoadPath="", loadPath= "", isASync=True):
+    def Download(self, request, token="", backParams="", cacheAndLoadPath="", loadPath= "", isASync=True):
         self.__DealHeaders(request, token)
-        task = Task(request, bakParams, cacheAndLoadPath, loadPath)
+        task = Task(request, backParams, cacheAndLoadPath, loadPath)
         if isASync:
             self._downloadQueue.put(task)
         else:
@@ -246,9 +252,8 @@ class Server(Singleton, threading.Thread):
                     if cachePath and task.bakParam:
                         data = ToolUtil.LoadCachePicture(cachePath)
                         if data:
-                            from src.qt.util.qttask import QtTask
-                            QtTask().downloadBack.emit(task.bakParam, len(data), data)
-                            QtTask().downloadBack.emit(task.bakParam, 0, b"")
+                            TaskBase.taskObj.downloadBack.emit(task.bakParam, len(data), data)
+                            TaskBase.taskObj.downloadBack.emit(task.bakParam, 0, b"")
                             return
             request = task.req
             if request.params == None:
@@ -264,7 +269,7 @@ class Server(Singleton, threading.Thread):
         except Exception as es:
             Log.Warn(task.req.url + " " + es.__repr__())
             task.status = Status.NetError
-        self.handler.get(task.req.__class__)(task)
+        self.handler.get(task.req.__class__.__name__)(task)
         if task.res:
             task.res.close()
 

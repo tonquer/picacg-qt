@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LineEditHelp</class>
+ <widget class="QWidget" name="LineEditHelp">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>联想词</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListView" name="listView"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>条件</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>使用本地库</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="SwitchButton" name="localWidget" native="true"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QLabel" name="titleLabel">
+       <property name="text">
+        <string>标题</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="SwitchButton" name="titleWidget" native="true"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLabel" name="desLabel">
+       <property name="text">
+        <string>描述</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="SwitchButton" name="desWidget" native="true"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="categoryLabel">
+       <property name="text">
+        <string>分类</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="SwitchButton" name="categoryWidget" native="true"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="tagLabel">
+       <property name="text">
+        <string>TAG</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="SwitchButton" name="tagWidget" native="true"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="authorLabel">
+       <property name="text">
+        <string>作者</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="SwitchButton" name="authorWidget" native="true"/>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SwitchButton</class>
+   <extends>QWidget</extends>
+   <header location="global">component.button.switch_button.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

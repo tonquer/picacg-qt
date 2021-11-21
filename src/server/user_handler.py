@@ -1,136 +1,204 @@
 import os
+import pickle
 import re
 import time
 
-from conf import config
-from src.qt.util.qttask import QtTask
-from src.server import req, Status, Log, ToolUtil
+from config import config
+from task.qt_task import TaskBase
+from tools.log import Log
+from tools.status import Status
+from tools.tool import ToolUtil
+from tools.user import User
+from . import req
 from .server import handler
 
 
 @handler(req.InitReq)
 class InitHandler(object):
-    def __call__(self, backData):
-        from src.user.user import User
-        st = User().InitBack(backData)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            st = User().InitBack(task)
+            data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.InitAndroidReq)
 class InitAndroidHandler(object):
-    def __call__(self, backData):
-        from src.user.user import User
-        st = User().InitImageServer(backData)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            st = User().InitImageServer(task)
+            data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.LoginReq)
 class LoginHandler(object):
-    def __call__(self, backData):
-        from src.user.user import User
-        st = User().LoginBack(backData)
-        time.sleep(0.1)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
-
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            st = User().LoginBack(task)
+            data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 @handler(req.RegisterReq)
 class RegisterHandler(object):
-    def __call__(self, backData):
-        from src.user.user import User
-        st = User().RegisterBack(backData)
-        time.sleep(0.1)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            st = User().RegisterBack(task)
+            data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.GetUserInfo)
 class GetUserInfoHandler(object):
-    def __call__(self, backData):
-        from src.user.user import User
-        st = User().UpdateUserInfoBack(backData)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            st = User().UpdateUserInfoBack(task)
+            data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.SetAvatarInfoReq)
 class SetAvatarInfoHandler(object):
-    def __call__(self, backData):
-        st = Status.Ok
-        if backData.res.code != 200:
-            st = Status.SetHeadError
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
-
-
-@handler(req.SetTitleReq)
-class SetTitleHandler(object):
-    def __call__(self, backData):
-        st = Status.Ok
-        if backData.res.code != 200:
-            st = Status.SetHeadError
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.res.code != 200:
+                data["st"] = Status.SetHeadError
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.PunchIn)
 class PunchInHandler(object):
-    def __call__(self, backData):
-        from src.user.user import User
-        st = User().PunchedBack(backData)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            st = User().PunchedBack(task)
+            data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.CategoryReq)
 class CategoryHandler(object):
-    def __call__(self, backData):
-        from src.index.category import CateGoryMgr
-        CateGoryMgr().UpdateCateGoryBack(backData)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, Status.Ok)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            from tools.category import CateGoryMgr
+            CateGoryMgr().UpdateCateGoryBack(task)
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.GetComicsBookEpsReq)
 class GetComicsBookEpsHandler(object):
-    def __call__(self, backData):
-        from src.index.book import BookMgr
-        st = BookMgr().AddBookEpsInfoBack(backData)
-        if st == Status.WaitLoad:
-            return
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status == Status.Ok:
+                from tools.book import BookMgr
+                st = BookMgr().AddBookEpsInfoBack(task)
+                if st == Status.WaitLoad:
+                    return
+                data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        if task.bakParam:
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.GetComicsBookOrderReq)
 class GetComicsBookOrderHandler(object):
-    def __call__(self, backData):
-        from src.index.book import BookMgr
-        st = BookMgr().AddBookEpsPicInfoBack(backData)
-        if st == Status.WaitLoad:
-            return
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status == Status.Ok:
+                from tools.book import BookMgr
+                st = BookMgr().AddBookEpsPicInfoBack(task)
+                if st == Status.WaitLoad:
+                    return
+                data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        if task.bakParam:
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.GetComicsBookReq)
 class GetComicsBookHandler(object):
-    def __call__(self, backData):
-        from src.index.book import BookMgr
-        st = BookMgr().AddBookByIdBack(backData)
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, st)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+            from tools.book import BookMgr
+            st = BookMgr().AddBookByIdBack(task)
+            data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.SpeedTestPingReq)
 class SpeedTestPingHandler(object):
-    def __call__(self, backData):
-        if hasattr(backData.res.raw, "elapsed"):
-            QtTask().taskBack.emit(backData.bakParam, str(backData.res.raw.elapsed.total_seconds()))
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        if hasattr(task.res.raw, "elapsed"):
+            data["data"] = str(task.res.raw.elapsed.total_seconds())
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
         else:
-            QtTask().taskBack.emit(backData.bakParam, str(0))
+            data["data"] = "0"
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.DownloadBookReq)
@@ -138,24 +206,24 @@ class DownloadBookHandler(object):
     def __call__(self, backData):
         if backData.status != Status.Ok:
             if backData.bakParam:
-                QtTask().downloadBack.emit(backData.bakParam, -1, b"")
+                TaskBase.taskObj.downloadBack.emit(backData.bakParam, -1, b"")
         else:
             r = backData.res
             try:
                 if r.status_code != 200:
                     if backData.bakParam:
-                        QtTask().downloadBack.emit(backData.bakParam, -1, b"")
+                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, -1, b"")
                     return
                 fileSize = int(r.headers.get('Content-Length', 0))
                 getSize = 0
                 data = b""
                 for chunk in r.iter_content(chunk_size=1024):
                     if backData.bakParam:
-                        QtTask().downloadBack.emit(backData.bakParam, fileSize-getSize, chunk)
+                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, chunk)
                     getSize += len(chunk)
                     data += chunk
                 if backData.bakParam:
-                    QtTask().downloadBack.emit(backData.bakParam, 0, b"")
+                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, b"")
                 # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
                 if backData.cacheAndLoadPath and config.IsUseCache and len(data) > 0:
                     filePath = backData.cacheAndLoadPath
@@ -169,62 +237,71 @@ class DownloadBookHandler(object):
             except Exception as es:
                 Log.Error(es)
                 if backData.bakParam:
-                    QtTask().downloadBack.emit(backData.bakParam, -1, b"")
+                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, -1, b"")
 
 
 @handler(req.CheckUpdateDatabaseReq)
 @handler(req.DownloadDatabaseReq)
 class DownloadDatabaseReqHandler(object):
-    def __call__(self, backData):
-        if not backData.res.GetText() or backData.status == Status.NetError:
-            if backData.bakParam:
-                QtTask().taskBack.emit(backData.bakParam, "")
+    def __call__(self, task):
+        data = {"st": task.status, "data": ""}
+        if not task.res.GetText() or task.status == Status.NetError:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
             return
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+        if task.bakParam:
+            data["data"] = task.res.GetText()
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.CheckUpdateReq)
 class CheckUpdateHandler(object):
-    def __call__(self, backData):
-        if not backData.res.GetText() or backData.status == Status.NetError:
-            if backData.bakParam:
-                QtTask().taskBack.emit(backData.bakParam, "")
+    def __call__(self, task):
+        data = {"st": task.status, "data": ""}
+        if not task.res.GetText() or task.status == Status.NetError:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
             return
-        if backData.res.raw.status_code != 200:
-            if backData.bakParam:
-                QtTask().taskBack.emit(backData.bakParam, "")
+        if task.res.raw.status_code != 200:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
             return
 
-        updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", backData.res.raw.text)
+        updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", task.res.raw.text)
         if updateInfo:
-            data = updateInfo[0]
+            rawData = updateInfo[0]
         else:
-            data = ""
+            rawData = ""
 
-        info = re.findall(r"\d+\d*", os.path.basename(backData.res.raw.url))
-        version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
-        info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
-        curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
+        try:
+            info = re.findall(r"\d+\d*", os.path.basename(task.res.raw.url))
+            version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
+            info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
+            curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
 
-        data = "\n\nv" + ".".join(info) + "\n" + data
-        if version > curversion:
-            if backData.bakParam:
-                QtTask().taskBack.emit(backData.bakParam, data)
+            rawData = "\n\nv" + ".".join(info) + "\n" + rawData
+
+            data["data"] = rawData
+            if version > curversion:
+                if task.bakParam:
+                    TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
+        except Exception as es:
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.SpeedTestReq)
 class SpeedTestHandler(object):
     def __call__(self, backData):
+        data = {"st": backData.status, "data": ""}
         if backData.status != Status.Ok:
             if backData.bakParam:
-                QtTask().taskBack.emit(backData.bakParam, "")
+                TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
         else:
             r = backData.res
             try:
                 if r.status_code != 200:
                     if backData.bakParam:
-                        QtTask().taskBack.emit(backData.bakParam, "")
+                        TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
                     return
 
                 fileSize = int(r.headers.get('Content-Length', 0))
@@ -239,12 +316,13 @@ class SpeedTestHandler(object):
                 downloadSize = getSize / consume
                 speed = ToolUtil.GetDownloadSize(downloadSize)
                 if backData.bakParam:
-                    QtTask().taskBack.emit(backData.bakParam, speed)
+                    data["data"] = speed
+                    TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
 
             except Exception as es:
                 Log.Error(es)
                 if backData.bakParam:
-                    QtTask().taskBack.emit(backData.bakParam, "")
+                    TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
 
 
 @handler(req.GetUserCommentReq)
@@ -254,13 +332,13 @@ class SpeedTestHandler(object):
 @handler(req.CategoriesSearchReq)
 @handler(req.RankReq)
 @handler(req.KnightRankReq)
-@handler(req.GetComments)
+@handler(req.GetCommentsReq)
 @handler(req.GetComicsRecommendation)
 @handler(req.BookLikeReq)
 @handler(req.CommentsLikeReq)
 @handler(req.CommentsReportReq)
 @handler(req.GetKeywords)
-@handler(req.SendComment)
+@handler(req.SendCommentReq)
 @handler(req.SendCommentChildrenReq)
 @handler(req.GetCommentsChildrenReq)
 @handler(req.GetChatReq)
@@ -276,6 +354,7 @@ class SpeedTestHandler(object):
 @handler(req.SendGameCommentsReq)
 @handler(req.GameCommentsLikeReq)
 class MsgHandler(object):
-    def __call__(self, backData):
-        if backData.bakParam:
-            QtTask().taskBack.emit(backData.bakParam, backData.res.raw.text)
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        if task.bakParam:
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
