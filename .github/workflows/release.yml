@@ -119,8 +119,8 @@ jobs:
         pyinstaller -F -w -i resources\icon.ico start.py
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
-        cp LICENSE bika\
-        cp README.md bika\
+        cp ..\LICENSE bika\
+        cp ..\README.md bika\
         # mkdir ${{ env.PACKAGENAME }}
         # mv bika ${{ env.PACKAGENAME }}
         7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
