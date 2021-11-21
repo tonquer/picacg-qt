@@ -84,7 +84,8 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
             stat = waifu2x_vulkan.init()
             waifu2x_vulkan.setDebug(True)
             if stat < 0:
-                QtOwner().ShowMsg(self.tr("未发现支持VULKAN的GPU, Waiuf2x当前为CPU模式, " + ", code:{}".format(str(stat))))
+                pass
+                # QtOwner().ShowMsg(self.tr("未发现支持VULKAN的GPU, Waiuf2x当前为CPU模式, " + ", code:{}".format(str(stat))))
                 # CPU 模式，暂时不开放看图下的转换
                 # config.IsOpenWaifu = 0
                 # self.settingForm.checkBox.setEnabled(False)
@@ -100,7 +101,8 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
             Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(
                 config.Encode) + " version:" + waifu2x_vulkan.getVersion() + " code:" + str(sts))
         else:
-            QtOwner().ShowError(self.tr("waifu2x无法启用, ") + config.ErrorMsg)
+            pass
+            # QtOwner().ShowError(self.tr("waifu2x无法启用, ") + config.ErrorMsg)
 
         if not IsCanUse:
             self.settingView.checkBox.setEnabled(False)

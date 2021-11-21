@@ -32,8 +32,8 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
         self.picLabel.setAttribute(Qt.WA_TranslucentBackground)
         self.commentLabel.setWordWrap(True)
         self.toolButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.replayLabel.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.commentLabel.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.replayLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.commentLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
         # self.setStyleSheet("""
         #     background:transparent;
         #     border:2px solid red;
