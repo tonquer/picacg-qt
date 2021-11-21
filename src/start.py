@@ -5,8 +5,6 @@ import sys
 # macOS 修复
 import time
 
-from PySide2.QtWidgets import QDesktopWidget
-
 from config import config
 from config.setting import Setting
 from qt_owner import QtOwner
