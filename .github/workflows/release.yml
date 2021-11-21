@@ -63,7 +63,7 @@ jobs:
       run: |
         cd src
         cp ../res/icon/Icon.icns ./
-        pyinstaller --clean --log-level TRACE --onedir --name PicACG \
+        pyinstaller --clean --onedir --name PicACG \
             --hidden-import waifu2x_vulkan --hidden-import PySide6 --hidden-import requests \
             --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
             --strip --windowed -i Icon.icns \
