@@ -71,6 +71,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.user_icon.installEventFilter(self)
 
         self.commentButton.clicked.connect(self.OpenComment)
+        # self.epsListWidget.verticalScrollBar().rangeChanged.connect(self.ChageMaxNum)
+        self.epsListWidget.setMinimumHeight(300)
 
     def UpdateFavoriteIcon(self):
         p = QPixmap()
@@ -250,7 +252,13 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             item.setSizeHint(label.sizeHint() + QSize(20, 20))
             item.setToolTip(epsInfo.title)
             self.epsListWidget.setItemWidget(item, label)
+
         return
+
+    # def ChageMaxNum(self):
+    #     maxHeight = self.epsListWidget.verticalScrollBar().maximum()
+    #     print(maxHeight)
+    #     self.epsListWidget.setMinimumHeight(maxHeight)
 
     def AddDownload(self):
         QtOwner().OpenEpsInfo(self.bookId)
