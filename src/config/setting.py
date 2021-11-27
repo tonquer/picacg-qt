@@ -70,7 +70,7 @@ class Setting:
     IsHttpProxy = SettingValue("ProxySetting", 0, False)
     HttpProxy = SettingValue("ProxySetting", "", False)
     ChatProxy = SettingValue("ProxySetting", 0, False)
-    PreferCDNIP = SettingValue("ProxySetting", "1.0.0.1", False)
+    PreferCDNIP = SettingValue("ProxySetting", "104.16.109.107", False)
     IsUseHttps = SettingValue("ProxySetting", 1, False)
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)
 

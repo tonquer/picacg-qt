@@ -39,9 +39,11 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
             desktop = QGuiApplication.primaryScreen().geometry()
         else:
             desktop = screens[Setting.ScreenIndex.value].geometry()
-        self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-        self.move(desktop.width() // 8+desktop.x(), desktop.height() // 8+desktop.y())
 
+        self.adjustSize()
+        self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+        self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
+        print(desktop.size(), self.size())
         # self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.loadingDialog = LoadingDialog(self)
@@ -130,9 +132,12 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
             # QtOwner().ShowError(self.tr("waifu2x无法启用, ") + config.ErrorMsg)
 
         if not IsCanUse:
-            self.settingView.checkBox.setEnabled(False)
+            self.settingView.readCheckBox.setEnabled(False)
+            self.settingView.coverCheckBox.setEnabled(False)
+            self.settingView.downAuto.setEnabled(False)
             self.readView.frame.qtTool.checkBox.setEnabled(False)
             Setting.DownloadAuto.SetValue(0)
+            Setting.CoverIsOpenWaifu.SetValue(0)
             self.downloadView.radioButton.setEnabled(False)
             self.waifu2xToolView.checkBox.setEnabled(False)
             self.waifu2xToolView.changeButton.setEnabled(False)
