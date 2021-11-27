@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>章节下载</string>
   </property>
+
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="nameLabel">

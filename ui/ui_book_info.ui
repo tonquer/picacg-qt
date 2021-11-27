@@ -40,7 +40,9 @@ QToolButton:checked  {
 background-color:transparent;
   border-right: 0px;
   border-left: 0px;
-}</string>
+}
+QListWidget {background-color:transparent;}
+QScrollArea {background-color:transparent;}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="1" column="0">
@@ -605,6 +607,11 @@ QListWidget::item {
  </widget>
  <customwidgets>
   <customwidget>
+   <class>BaseListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.base_list_widget.h</header>
+  </customwidget>
+  <customwidget>
    <class>HeadLabel</class>
    <extends>QLabel</extends>
    <header location="global">component.label.head_label.h</header>
@@ -618,11 +625,6 @@ QListWidget::item {
    <class>IconToolButton</class>
    <extends>QToolButton</extends>
    <header location="global">component.button.icon_tool_button.h</header>
-  </customwidget>
-  <customwidget>
-   <class>BaseListWidget</class>
-   <extends>QListWidget</extends>
-   <header location="global">component.list.base_list_widget.h</header>
   </customwidget>
  </customwidgets>
  <resources>

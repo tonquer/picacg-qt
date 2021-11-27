@@ -19,6 +19,7 @@
   <property name="windowTitle">
    <string>搜索</string>
   </property>
+
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -300,14 +301,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TagListWidget</class>
-   <extends>QListWidget</extends>
-   <header location="global">component.list.tag_list_widget.h</header>
-  </customwidget>
-  <customwidget>
    <class>ComicListWidget</class>
    <extends>QListWidget</extends>
    <header location="global">component.list.comic_list_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TagListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.tag_list_widget.h</header>
   </customwidget>
   <customwidget>
    <class>SearchLineEdit</class>

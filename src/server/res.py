@@ -1,4 +1,5 @@
 from config import config
+from config.setting import Setting
 from tools.tool import ToolUtil
 
 
@@ -15,8 +16,11 @@ class BaseRes(object):
             ToolUtil.ParseFromData(self, self.raw.text)
 
     def __str__(self):
-        if config.LogIndex == 0:
+        if Setting.LogIndex.value == 0:
             return ""
+        elif Setting.LogIndex.value == 1:
+            return "code:{}".format(self.code)
+
         if self.isParseRes:
             data = self.GetText()
         else:

@@ -2,8 +2,8 @@ import base64
 import pickle
 
 from PySide6.QtCore import QUrl
-from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QWidget
+from PySide6.QtGui import QDesktopServices, Qt
+from PySide6.QtWidgets import QWidget, QMessageBox
 
 from config import config
 from config.setting import Setting
@@ -12,6 +12,7 @@ from server import req
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from tools.log import Log
+from tools.str import Str
 from tools.tool import ToolUtil
 
 
@@ -22,8 +23,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.updateUrl = [config.DatabaseUpdate2, config.DatabaseUpdate]
-        self.updateDbUrl = [config.DatabaseDownload2, config.DatabaseDownload]
+        self.dbUpdateUrl = [config.DatabaseUpdate2, config.DatabaseUpdate]
+        self.dbUpdateDbUrl = [config.DatabaseDownload2, config.DatabaseDownload]
         self.curIndex = 0
         self.curSubVersion = 0
         self.curUpdateTick = 0
@@ -32,14 +33,64 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.isCheckUp = False
         self.logButton.clicked.connect(self.OpenLogDir)
 
+        self.isHaveDb = False
+        self.dbCheck.clicked.connect(self.InitUpdateDatabase)
+        self.verCheck.clicked.connect(self.InitUpdate)
+
+        self.updateUrl = [config.UpdateUrl, config.UpdateUrl2]
+        self.checkUpdateIndex = 0
+
     def Init(self):
+        self.CheckDb()
+        # self.UpdateDbInfo()
+
+    def InitUpdate(self):
+        self.checkUpdateIndex = 0
+        self.UpdateText(self.verCheck, Str.CheckUp, "#7fb80e", False)
+        self.StartUpdate()
+
+    def StartUpdate(self):
+        if self.checkUpdateIndex > len(self.updateUrl) -1:
+            self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
+            return
+        self.AddHttpTask(req.CheckUpdateReq(self.updateUrl[self.checkUpdateIndex]), self.InitUpdateBack)
+
+    def InitUpdateBack(self, raw):
+        try:
+            data = raw["data"]
+            if not data:
+                self.checkUpdateIndex += 1
+                self.StartUpdate()
+
+                return
+            r = QMessageBox.information(self, Str.GetStr(Str.Update), Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n" + data,
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+            if r == QMessageBox.Yes:
+                QDesktopServices.openUrl(QUrl(self.updateUrl[self.checkUpdateIndex]))
+            self.UpdateText(self.verCheck, Str.HaveUpdate, "#d71345", True)
+        except Exception as es:
+            Log.Error(es)
+
+    def CheckDb(self):
+        self.AddSqlTask("book", "", SqlServer.TaskCheck, self.CheckDbBack)
+
+    def CheckDbBack(self, data):
+        if not data:
+            Log.Error("Not found book.db !!!!!!!!!!!!!!!")
+            from qt_owner import QtOwner
+            QtOwner().SetDbError()
+            return
+        self.isHaveDb = True
         self.UpdateDbInfo()
+        return
 
     def SwitchCurrent(self, **kwargs):
         self.UpdateDbInfo()
         return
 
     def UpdateDbInfo(self):
+        if not self.isHaveDb:
+            return
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectUpdate, self.UpdateDbInfoBack)
 
     def UpdateDbInfoBack(self, data):
@@ -47,7 +98,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.curSubVersion = version
         self.curUpdateTick = ToolUtil.GetTimeTickEx(timeStr)
         self.localNum.setText(str(num))
-        self.local.setText(timeStr)
+        self.localTime.setText(timeStr)
         if not self.isCheckUp:
             self.isCheckUp = True
             self.InitUpdateDatabase()
@@ -56,10 +107,12 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
     def InitUpdateDatabase(self):
         if self.curUpdateTick <= 0:
             return
-        # self.searchForm.SetUpdateText(self.tr("正在更新"), "#7fb80e", False)
-        if self.curIndex >= len(self.updateUrl):
+        if self.curIndex >= len(self.dbUpdateUrl):
             return
-        url = self.updateUrl[self.curIndex]
+
+        self.UpdateText(self.dbCheck, Str.CheckUp, "#7fb80e", False)
+        self.dbCheck.setEnabled(False)
+        url = self.dbUpdateUrl[self.curIndex]
         self.AddHttpTask(req.CheckUpdateDatabaseReq(url), self.InitUpdateDatabaseBack)
 
     def InitUpdateDatabaseBack(self, raw):
@@ -72,17 +125,28 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             Log.Error(es)
             self.curIndex += 1
             self.InitUpdateDatabase()
-            # self.searchForm.SetUpdateText(self.tr("无法连接 raw.githubusercontent.com"), "#d71345", True)
+
+            self.UpdateText(self.dbCheck, Str.NetError, "#d71345", True)
+
+    def UpdateText(self, label, text, color, enable):
+        label.setStyleSheet("background-color:transparent;color:{}".format(color))
+        label.setText("{}".format(Str.GetStr(text)))
+        label.setEnabled(enable)
+        if enable:
+            label.setCursor(Qt.PointingHandCursor)
+        else:
+            label.setCursor(Qt.ArrowCursor)
+        return
 
     def CheckLoadNextDayData(self, newTick):
         if newTick <= self.curUpdateTick:
-            # if self.curSubVersion > 0:
-            #     self.searchForm.SetUpdateText(self.tr("今日已更新") + str(self.curSubVersion), "#7fb80e", True)
-            # else:
-            #     self.searchForm.SetUpdateText(self.tr("已更新"), "#7fb80e", True)
+            if self.curSubVersion > 0:
+                self.UpdateText(self.dbCheck, Str.DailyUpdated, "#7fb80e", True)
+            else:
+                self.UpdateText(self.dbCheck, Str.Updated, "#7fb80e", True)
             return
         day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
-        url = self.updateDbUrl[self.curIndex]
+        url = self.dbUpdateDbUrl[self.curIndex]
         if day <= 0:
             self.AddHttpTask(req.DownloadDatabaseReq(url, newTick), self.DownloadDataBack, backParam=(newTick, newTick))
         else:
@@ -95,12 +159,11 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         try:
             data = raw["data"]
             if not data:
-                # self.searchForm.SetUpdateText(self.tr("无法连接 raw.githubusercontent.com"), "#d71345", True)
                 return
             Log.Info("db: check update, {}->{}->{}".format(self.curUpdateTick, updateTick, newTick))
             if len(data) <= 100:
                 Log.Info("Update code: {}".format(data))
-                pass
+                return
             elif data:
                 if ToolUtil.DiffDays(updateTick, self.curUpdateTick) <= 0:
                     # 分割数据

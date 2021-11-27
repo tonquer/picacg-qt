@@ -171,7 +171,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"PicACG", None))
         self.menuButton.setText(QCoreApplication.translate("MainWindow", u"\u83dc\u5355", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u">", None))
     # retranslateUi

@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>图片查看</string>
   </property>
+
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QGraphicsView" name="graphicsView"/>

@@ -26,7 +26,6 @@ class Ui_Index(object):
         if not Index.objectName():
             Index.setObjectName(u"Index")
         Index.resize(400, 300)
-        Index.setStyleSheet(u"")
         self.verticalLayout_2 = QVBoxLayout(Index)
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")

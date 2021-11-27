@@ -6,6 +6,7 @@ from PySide6.QtGui import QPixmap, QImage, QCursor, QGuiApplication
 from PySide6.QtWidgets import QMenu
 
 from config import config
+from config.setting import Setting
 from qt_owner import QtOwner
 from server import req, Status, Log
 from task.qt_task import QtTaskBase
@@ -39,7 +40,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         # self.gridLayout.addWidget(self.scrollArea)
         self.gridLayout.addWidget(self.frame)
         self.setMinimumSize(300, 300)
-        self.stripModel = ReadMode(config.LookReadMode)
         self.setWindowFlags(self.windowFlags() & ~ Qt.WindowMaximizeButtonHint & ~ Qt.WindowMinimizeButtonHint)
         self.category = []
         self.isInit = False
@@ -49,16 +49,17 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.customContextMenuRequested.connect(self.SelectMenu)
         self.isShowMenu = False
 
+        self.stripModel = ReadMode(Setting.LookReadMode.value)
+        self.ChangeReadMode(Setting.LookReadMode.value)
+        self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
+        self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
+
     @property
     def scrollArea(self):
         return self.frame.scrollArea
 
-    def LoadSetting(self):
-        self.stripModel = ReadMode(config.LookReadMode)
-        self.ChangeReadMode(config.LookReadMode)
-        self.qtTool.turnSpeed.setValue(config.TurnSpeed / 1000)
-        self.qtTool.scrollSpeed.setValue(config.ScrollSpeed)
-        return
+    def retranslateUi(self, View):
+        self.qtTool.retranslateUi(self.qtTool)
 
     def SelectMenu(self):
         popMenu = QMenu(self)
@@ -134,10 +135,9 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         QtOwner().CloseReadView()
 
     def Clear(self):
-        config.TurnSpeed = int(self.qtTool.turnSpeed.value() * 1000)
-        config.ScrollSpeed = int(self.qtTool.scrollSpeed.value())
-        QtOwner().SetV("Read/TurnSpeed", config.TurnSpeed)
-        QtOwner().SetV("Read/ScrollSpeed", config.ScrollSpeed)
+        Setting.TurnSpeed.SetValue(int(self.qtTool.turnSpeed.value() * 1000))
+        Setting.ScrollSpeed.SetValue(int(self.qtTool.scrollSpeed.value()))
+
         self.qtTool.UpdateText("")
         self.frame.UpdateProcessBar(None)
         self.qtTool.CloseScrollAndTurn()
@@ -148,7 +148,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.frame.oldValue = 0
         self.pictureData.clear()
         self.ClearTask()
-        self.ClearConvert()
         self.ClearQImageTask()
 
     def OpenPage(self, bookId, epsId, name, isLastEps=False, pageIndex=-1):
@@ -160,7 +159,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.category = info.tags[:]
             self.category.extend(info.categories)
 
-        self.qtTool.checkBox.setChecked(config.IsOpenWaifu)
+        self.qtTool.checkBox.setChecked(Setting.IsOpenWaifu.value)
         self.qtTool.SetData(isInit=True)
         # self.graphicsGroup.setPixmap(QPixmap())
         self.qtTool.SetData()
@@ -169,7 +168,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.bookId = bookId
         self.epsId = epsId
 
-        if config.LookReadFull:
+        if Setting.LookReadFull.value:
             QtOwner().owner.showFullScreen()
             self.qtTool.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
 
@@ -254,7 +253,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         for i in preLoadList:
             if i >= self.maxPic or i < 0:
                 continue
-            if config.IsOpenWaifu:
+            if Setting.IsOpenWaifu.value:
                 p = self.pictureData.get(i)
                 if not p or not p.data:
                     break
@@ -360,7 +359,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         waifu2x = False
         assert isinstance(p, QtFileData)
-        if not config.IsOpenWaifu:
+        if not Setting.IsOpenWaifu.value:
             p2 = p.cacheImage
 
         elif p.cacheWaifu2xImage:
@@ -408,7 +407,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.qtTool.modelBox.setEnabled(True)
         assert isinstance(p, QtFileData)
         waifu2x = False
-        if not config.IsOpenWaifu:
+        if not Setting.IsOpenWaifu.value:
             self.frame.waifu2xProcess.hide()
             self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
             p2 = p.cacheImage
@@ -422,7 +421,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         else:
             p2 = p.cacheImage
-            if config.IsOpenWaifu:
+            if Setting.IsOpenWaifu.value:
                 self.frame.waifu2xProcess.show()
             else:
                 self.frame.waifu2xProcess.hide()

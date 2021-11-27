@@ -37,6 +37,12 @@ class SmoothScrollBar(QScrollBar):
         self.__value = min(self.maximum(), self.__value)
         self.setValue(self.__value)
 
+    def ScrollTo(self, value):
+        self.__value = value
+        self.__value = max(self.minimum(), self.__value)
+        self.__value = min(self.maximum(), self.__value)
+        self.setValue(self.__value)
+
     def ResetValue(self, value):
         self.__value = value
 

@@ -5,6 +5,7 @@ import time
 from zlib import crc32
 
 from config import config
+from config.setting import Setting
 from task.qt_task import TaskBase, QtDownloadTask
 from tools.log import Log
 from tools.tool import CTime, ToolUtil
@@ -106,8 +107,8 @@ class TaskWaifu2x(TaskBase):
         info.model = model
         if path:
             a = crc32(json.dumps(model).encode("utf-8"))
-            if config.SavePath:
-                path2 = os.path.join(os.path.join(config.SavePath, config.CachePathDir), config.Waifu2xPath)
+            if Setting.SavePath.value:
+                path2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), config.Waifu2xPath)
                 path = os.path.join(path2, path)
                 info.cacheAndLoadPath = path + "-{}".format(a)
         if cleanFlag:

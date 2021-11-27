@@ -59,6 +59,10 @@ class DWaterProgress(QProgressBar):
         self.stop()
         return super(DWaterProgress, self).hide()
 
+    def close(self) -> bool:
+        self.stop()
+        return super(DWaterProgress, self).close()
+
     @Slot()
     def start(self):
         self.timer.start()

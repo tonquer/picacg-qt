@@ -81,8 +81,8 @@ jobs:
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
             --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
         zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
-        mv bika.zip ..
         mv ${{ env.PACKAGENAME }}.dmg ..
+        mv bika.zip ..
         cd ..
     - name: Upload
       uses: actions/upload-artifact@v2
@@ -127,11 +127,10 @@ jobs:
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         cp ..\LICENSE bika\
         cp ..\README.md bika\
-        # mkdir ${{ env.PACKAGENAME }}
-        # mv bika ${{ env.PACKAGENAME }}
-        7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
-        mv "$($Env:PACKAGENAME + '.zip')" ..
         cd ..
+        mkdir ${{ env.PACKAGENAME }}
+        mv src\bika ${{ env.PACKAGENAME }}
+        7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
     - name: Upload
       uses: actions/upload-artifact@v2
       with:

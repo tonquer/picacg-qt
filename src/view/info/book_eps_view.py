@@ -10,6 +10,7 @@ from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from tools.book import BookMgr
 from tools.status import Status
+from tools.str import Str
 
 
 class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
@@ -128,6 +129,6 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
         if not downloadIds:
             return
         QtOwner().downloadView.AddDownload(self.bookId, downloadIds)
-        QtOwner().ShowMsg(self.tr("添加下载成功"))
+        QtOwner().ShowMsg(Str.GetStr(Str.AddDownload))
         self.UpdateEpsInfo()
         return

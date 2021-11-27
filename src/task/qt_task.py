@@ -67,8 +67,10 @@ class QtTaskBase:
     def ClearTask(self):
         from task.task_http import TaskHttp
         from task.task_download import TaskDownload
+        from task.task_waifu2x import TaskWaifu2x
         TaskDownload().Cancel(self.__taskFlagId)
-        return TaskHttp().Cancel(self.__taskFlagId)
+        TaskHttp().Cancel(self.__taskFlagId)
+        TaskWaifu2x().Cancel(self.__taskFlagId)
 
     def ClearConvert(self):
         from task.task_waifu2x import TaskWaifu2x

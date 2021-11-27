@@ -15,7 +15,7 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
         # self.setWindowFlag(Qt.FramelessWindowHint)
         # self.setWindowFlag(Qt.Dialog)
         self.resize(400, 100)
-        self.setWindowTitle(self.tr("PicACG"))
+        self.setWindowTitle("PicACG")
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
 
         # p = QPixmap()
@@ -91,6 +91,7 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
     def SetPictureComment(self, data):
         pic = QPixmap()
         pic.loadFromData(data)
+        pic.setDevicePixelRatio(self.devicePixelRatio())
         self.data = data
         newPic = pic.scaled(500, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         # print(newPic.height(), newPic.width())
@@ -106,9 +107,11 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
             if event.button() == Qt.LeftButton:
                 if self.picData and (obj == self.picLabel):
                     QtOwner().OpenWaifu2xTool(self.picData)
+                    return True
                 elif self.data and obj == self.commentLabel:
                     QtOwner().OpenWaifu2xTool(self.data)
-                return True
+                    return True
+                return False
             else:
                 return False
         else:

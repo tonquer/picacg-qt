@@ -2,6 +2,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap, QIcon, QFont
 from PySide6.QtWidgets import QWidget
 
+from config.setting import Setting
 from interface.ui_comic_item import Ui_ComicItem
 from tools.str import Str
 
@@ -16,7 +17,10 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.url = ""
         self.path = ""
         # TODO 如何自适应
-        self.picLabel.setFixedSize(300, 400)
+        rate = Setting.CoverSize.value
+        width = 250 * rate / 100
+        height = 340 * rate / 100
+        self.picLabel.setFixedSize(width, height)
         # self.picLabel.setMinimumSize(300, 400)
         # self.picLabel.setMaximumSize(220, 308)
 
@@ -29,12 +33,13 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.starButton.setMinimumHeight(24)
         self.timeLabel.setMinimumHeight(24)
 
-        self.starButton.setMaximumWidth(280)
-        self.timeLabel.setMaximumWidth(280)
+        self.categoryLabel.setMaximumWidth(width-20)
+        self.starButton.setMaximumWidth(width-20)
+        self.timeLabel.setMaximumWidth(width-20)
 
         # self.nameLable.setMinimumSize(210, 25)
         # self.nameLable.setMaximumSize(210, 150)
-        self.nameLable.setMaximumWidth(280)
+        self.nameLable.setMaximumWidth(width-20)
         self.nameLable.adjustSize()
         self.nameLable.setWordWrap(True)
         font = QFont()
@@ -42,6 +47,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         font.setBold(True)
         self.nameLable.setFont(font)
         self.adjustSize()
+        self.isWaifu2x = False
 
     def GetTitle(self):
         return self.nameLable.text()
@@ -51,7 +57,22 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         pic = QPixmap()
         if data:
             pic.loadFromData(data)
-        newPic = pic.scaled(self.picLabel.width(), self.picLabel.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.isWaifu2x = False
+        radio = self.devicePixelRatio()
+        pic.setDevicePixelRatio(radio)
+        newPic = pic.scaled(self.picLabel.width() * radio, self.picLabel.height() * radio, Qt.KeepAspectRatio,
+                            Qt.SmoothTransformation)
+        self.picLabel.setPixmap(newPic)
+
+    def SetWaifu2xData(self, data):
+        pic = QPixmap()
+        if not data:
+            return
+        self.isWaifu2x = True
+        pic.loadFromData(data)
+        radio = self.devicePixelRatio()
+        pic.setDevicePixelRatio(radio)
+        newPic = pic.scaled(self.picLabel.width()*radio, self.picLabel.height()*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.picLabel.setPixmap(newPic)
 
     def SetPictureErr(self):

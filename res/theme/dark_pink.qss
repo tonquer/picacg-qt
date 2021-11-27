@@ -67,6 +67,14 @@ QTabWidget::pane {
   border: none;
 }
 
+QListWidget {
+  background-color:transparent;
+}
+
+QScrollArea {
+  background-color:transparent;
+}
+
 /*  ------------------------------------------------------------------------  */
 /*  Inputs  */
 
@@ -745,39 +753,116 @@ QProgressBar::chunk {
 
 QScrollBar:horizontal {
   border: 0;
-  background: #232629;
+  background: #31363b;
   height: 8px;
+padding-top:12px;
+    padding-bottom:12px;
 }
 
 QScrollBar:vertical {
   border: 0;
-  background: #232629;
+  background: #31363b;
   width: 8px;
+padding-top:12px;
+    padding-bottom:12px;
 }
 
 QScrollBar::handle:horizontal {
-  background: #4f5b62;
-  min-width: 20px;
+  background: #A0A0A0;
+  min-width: 10px;
 }
 
 QScrollBar::handle:vertical {
-  background: #4f5b62;
-  min-height: 20px;
+  background: #A0A0A0;
+  min-height: 10px;
 }
 
 QScrollBar::handle:vertical:hover,
 QScrollBar::handle:horizontal:hover {
   background: #ff4081;
 }
-
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical,
-QScrollBar::add-line:horizontal,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical,
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal {
+background: none;
+}
+/*纵向滚动条顶部三角形位置*/
+QScrollBar::sub-line:vertical {
+    height: 12px;
+    width: 10px;
+    background: transparent;
+    subcontrol-position: top;
+}
+/*横向滚动条左侧三角形位置*/
 QScrollBar::sub-line:horizontal {
-  border: 0;
-  background: transparent;
-  width: 0px;
-  height: 0px;
+    height: 10px;
+    width: 12px;
+    background: transparent;
+    subcontrol-position: left;
+}
+/*纵向滚动条向上的三角形小图标*/
+QScrollBar::up-arrow:vertical {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowup_normal.png);
+}
+/*横向滚动条左边的三角形小图标*/
+QScrollBar::left-arrow:horizontal {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowleft_normal.png);
+}
+/*纵向滚动条向上的三角形小图标 鼠标悬停*/
+QScrollBar::up-arrow:vertical:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowup_down.png);
+}
+/*横向滚动条左边的三角形小图标 鼠标悬停*/
+QScrollBar::left-arrow:horizontal:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowleft_down.png);
+}
+/*纵向滚动条向上的三角形小图标 鼠标按下*/
+QScrollBar::up-arrow:vertical:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowup_highlight.png);
+}
+/*横向滚动条左边的三角形小图标 鼠标按下*/
+QScrollBar::left-arrow:horizontal:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowleft_highlight.png);
+}
+
+/*纵向滚动条下面三角形部分*/
+QScrollBar::add-line:vertical {
+    height: 12px;
+    width: 10px;
+    background: transparent;
+    subcontrol-position: bottom;
+}
+/*横向滚动条右边的三角形部分*/
+QScrollBar::add-line:horizontal {
+    height: 10px;
+    width: 12px;
+    background: transparent;
+    subcontrol-position: right;
+}
+/*纵向滚动条下面三角形图标*/
+QScrollBar::down-arrow:vertical {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowdown_normal.png);
+}
+/*横向滚动条右侧三角形图标*/
+QScrollBar::right-arrow:horizontal {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowright_normal.png);
+}
+/*纵向滚动条下面三角形图标 鼠标悬停*/
+QScrollBar::down-arrow:vertical:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowdown_down.png);
+}
+/*横向滚动条右侧三角形图标 鼠标悬停*/
+QScrollBar::right-arrow:horizontal:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowright_down.png);
+}
+/*纵向滚动条下面三角形图标 鼠标按下*/
+QScrollBar::down-arrow:vertical:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowdown_highlight.png);
+}
+/*横向滚动条右侧三角形图标 鼠标按下*/
+QScrollBar::right-arrow:horizontal:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowright_highlight.png);
 }
 
 /*  ------------------------------------------------------------------------  */
@@ -905,26 +990,26 @@ QToolButton {
   height: 40px;
   margin: 3px;
   padding: 3px;
-  border-right: 10px solid #31363b;
-  border-left: 10px solid #31363b;
+  border-right: 5px solid #31363b;
+  border-left: 5px solid #31363b;
 }
 
 QToolButton:hover {
   background: #4f5b62;
-  border-right: 10px solid #4f5b62;
-  border-left: 10px solid #4f5b62;
+  border-right: 5px solid #4f5b62;
+  border-left: 5px solid #4f5b62;
 }
 
 QToolButton:pressed {
   background: #232629;
-  border-right: 10px solid #232629;
-  border-left: 10px solid #232629;
+  border-right: 5px solid #232629;
+  border-left: 5px solid #232629;
 }
 
 QToolButton:checked {
   background: #4f5b62;
-  border-left: 10px solid #4f5b62;
-  border-right: 10px solid #ff4081;
+  border-left: 5px solid #ff4081;
+  border-right: 5px solid #4f5b62;
 }
 
 /*  ------------------------------------------------------------------------  */

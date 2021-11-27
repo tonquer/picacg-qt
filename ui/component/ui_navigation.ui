@@ -60,6 +60,22 @@
         </property>
        </widget>
       </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QPushButton" name="pushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>登录</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QLabel" name="nameLabel">
         <property name="text">
@@ -69,6 +85,12 @@
       </item>
       <item>
        <widget class="QLabel" name="titleLabel">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -93,9 +115,9 @@
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>登录</string>
+       <widget class="Line" name="line_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -108,9 +130,9 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
-           <width>230</width>
-           <height>602</height>
+           <y>-460</y>
+           <width>211</width>
+           <height>608</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -138,17 +160,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="collectButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>我的收藏</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -170,17 +201,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="myCommentButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>我的评论</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -202,17 +242,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="lookButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>观看记录</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -248,17 +297,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="indexButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>首页</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -289,17 +347,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="searchButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>搜索</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -327,17 +394,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="msgButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>留言板</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -365,17 +441,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="categoryButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>分类</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -397,17 +482,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="rankButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>排行榜</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -429,17 +523,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="chatButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>聊天室</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -461,17 +564,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="gameButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>游戏区</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -507,17 +619,26 @@
           </item>
           <item>
            <widget class="QToolButton" name="downloadButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="minimumSize">
              <size>
-              <width>230</width>
+              <width>150</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string>下载</string>
             </property>
             <property name="icon">
-             <iconset resource="../../res/images.qrc">
+             <iconset>
               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
             </property>
             <property name="iconSize">
@@ -537,6 +658,19 @@
             </attribute>
            </widget>
           </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -550,17 +684,26 @@
       </item>
       <item>
        <widget class="QToolButton" name="helpButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
-          <width>230</width>
+          <width>0</width>
           <height>40</height>
          </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="text">
          <string>帮助</string>
         </property>
         <property name="icon">
-         <iconset resource="../../res/images.qrc">
+         <iconset>
           <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
         </property>
         <property name="iconSize">
@@ -582,11 +725,20 @@
       </item>
       <item>
        <widget class="QToolButton" name="settingButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
-          <width>230</width>
+          <width>150</width>
           <height>40</height>
          </size>
+        </property>
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -595,7 +747,7 @@
          <string>设置</string>
         </property>
         <property name="icon">
-         <iconset resource="../../res/images.qrc">
+         <iconset>
           <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
         </property>
         <property name="iconSize">
@@ -625,15 +777,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>HeadLabel</class>
-   <extends>QLabel</extends>
-   <header location="global">component.label.head_label.h</header>
-  </customwidget>
-  <customwidget>
    <class>SmoothScrollArea</class>
    <extends>QScrollArea</extends>
    <header location="global">component.scroll_area.smooth_scroll_area.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HeadLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">component.label.head_label.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -2,6 +2,7 @@ import hashlib
 import os
 
 from config import config
+from config.setting import Setting
 from task.qt_task import TaskBase, QtDownloadTask
 from tools.log import Log
 from tools.status import Status
@@ -33,8 +34,8 @@ class TaskDownload(TaskBase):
                 a = hashlib.md5(url.encode("utf-8")).hexdigest()
             else:
                 a = hashlib.md5(path.encode("utf-8")).hexdigest()
-            if config.SavePath:
-                filePath2 = os.path.join(os.path.join(config.SavePath, config.CachePathDir), os.path.dirname(path))
+            if Setting.SavePath.value:
+                filePath2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.dirname(path))
                 filePath2 = os.path.join(filePath2, a)
                 data.cacheAndLoadPath = filePath2
         if filePath:

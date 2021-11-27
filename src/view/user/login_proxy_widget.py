@@ -3,6 +3,7 @@ from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 
 from config import config
+from config.setting import Setting
 from interface.ui_login_proxy_widget import Ui_LoginProxyWidget
 from qt_owner import QtOwner
 from server import req, Log
@@ -71,7 +72,6 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             i += 1
 
         self.SetEnabled(False)
-        config.IsUseHttps = int(self.httpsBox.isChecked())
         self.StartSpeedPing()
 
     def StartSpeedPing(self):
@@ -88,6 +88,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             return
 
         request = req.SpeedTestPingReq()
+        request.isUseHttps = self.httpsBox.isChecked()
         if isHttpProxy:
             request.proxy = {"http": httpProxy, "https": httpProxy}
         else:
@@ -123,6 +124,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             return
 
         request = req.SpeedTestReq()
+        request.isUseHttps = self.httpsBox.isChecked()
         if isHttpProxy:
             request.proxy = {"http": httpProxy, "https": httpProxy}
         else:
@@ -144,46 +146,47 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         return
 
     def LoadSetting(self):
-        config.PreferCDNIP = QtOwner().settingView.GetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)
-        config.ProxySelectIndex = QtOwner().settingView.GetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
-        config.IsUseHttps = QtOwner().settingView.GetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
-        httpProxy = QtOwner().settingView.GetSettingV("Proxy/Http", config.HttpProxy)
+        # config.PreferCDNIP = QtOwner().settingView.GetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)
+        # config.ProxySelectIndex = QtOwner().settingView.GetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
+        # config.IsUseHttps = QtOwner().settingView.GetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
+        # httpProxy = QtOwner().settingView.GetSettingV("Proxy/Http", config.HttpProxy)
 
-        self.httpsBox.setChecked(config.IsUseHttps)
-        self.proxyBox.setChecked(config.IsHttpProxy)
-        self.httpLine.setText(httpProxy)
-        button = getattr(self, "radioButton_{}".format(config.ProxySelectIndex))
+        self.httpsBox.setChecked(Setting.IsUseHttps.value)
+        self.proxyBox.setChecked(Setting.IsHttpProxy.value)
+        self.httpLine.setText(Setting.HttpProxy.value)
+        button = getattr(self, "radioButton_{}".format(Setting.ProxySelectIndex.value))
         button.setChecked(True)
-        self.cdnIp.setText(config.PreferCDNIP)
+        self.cdnIp.setText(Setting.PreferCDNIP.value)
 
     def UpdateServer(self):
-        if config.ProxySelectIndex == 1:
+        if Setting.ProxySelectIndex.value == 1:
             imageServer = ""
             address = ""
-        elif config.ProxySelectIndex == 2:
+        elif Setting.ProxySelectIndex.value == 2:
             imageServer = config.ImageServer
             address = config.Address[0]
-        elif config.ProxySelectIndex == 3:
+        elif Setting.ProxySelectIndex.value == 3:
             imageServer = config.ImageServer
             address = config.Address[1]
         else:
-            imageServer = config.PreferCDNIP
-            address = config.PreferCDNIP
+            imageServer = Setting.PreferCDNIP.value
+            address = Setting.PreferCDNIP.value
         Server().UpdateDns(address, imageServer)
-        Log.Info("update proxy, setId:{}, image server:{}, address:{}".format(config.ProxySelectIndex, Server().imageServer, Server().address))
+        Log.Info("update proxy, setId:{}, image server:{}, address:{}".format(Setting.ProxySelectIndex.value, Server().imageServer, Server().address))
 
     def SaveSetting(self):
-        config.PreferCDNIP = self.cdnIp.text()
-        config.IsHttpProxy = int(self.proxyBox.isChecked())
-        httpProxy = self.httpLine.text()
-        config.ProxySelectIndex = self.buttonGroup.checkedId()
-        config.IsUseHttps = int(self.httpsBox.isChecked())
+        Setting.PreferCDNIP.SetValue(self.cdnIp.text())
+        Setting.IsHttpProxy.SetValue(int(self.proxyBox.isChecked()))
+        Setting.HttpProxy.SetValue(self.httpLine.text())
+        Setting.ProxySelectIndex.SetValue(self.buttonGroup.checkedId())
+        Setting.IsUseHttps.SetValue(int(self.httpsBox.isChecked()))
 
-        QtOwner().settingView.SetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
-        QtOwner().settingView.SetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)
-        QtOwner().settingView.SetSettingV("Proxy/Http", httpProxy)
-        QtOwner().settingView.SetSettingV("Proxy/IsHttp", config.IsHttpProxy)
-        QtOwner().settingView.SetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
+        # QtOwner().settingView.SetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
+        # QtOwner().settingView.SetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)
+        # QtOwner().settingView.SetSettingV("Proxy/Http", httpProxy)
+        # QtOwner().settingView.SetSettingV("Proxy/IsHttp", config.IsHttpProxy)
+        # QtOwner().settingView.SetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
+
         self.UpdateServer()
         QtOwner().ShowMsg(Str.GetStr(Str.SaveSuc))
         return

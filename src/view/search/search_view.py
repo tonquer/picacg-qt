@@ -41,6 +41,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def InitWordBack(self, data):
+        if not data:
+            return
         self.lineEdit.words = data
 
     def InitCategoryList(self):
@@ -49,14 +51,15 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.categoryList.AddItem(name, True)
 
     def SwitchCurrent(self, **kwargs):
-        self.text = kwargs.get("text")
+        text = kwargs.get("text")
         self.categories = kwargs.get("categories", "")
 
         if self.categories:
             self.bookList.clear()
             self.SetEnable(self.isLocal)
             self.SendSearchCategories(1)
-        elif self.text is not None:
+        elif text is not None:
+            self.text = text
             self.bookList.clear()
             isLocal = kwargs.get("isLocal")
 
@@ -71,13 +74,20 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.SendSearch(1)
         pass
 
+    def SetDbError(self):
+        self.isLocal = False
+        self.SetEnable(False)
+        self.lineEdit.SetDbError()
+
     def SetEnable(self, isLocal):
         self.sortId.setVisible(isLocal)
         self.sortKey.setVisible(isLocal)
         self.comboBox.setVisible(not isLocal)
 
     def SendSearchCategories(self, page):
-        self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, "dd"), self.SendSearchBack)
+        sort = ["dd", "da", "ld", "vd"]
+        sortId = sort[self.comboBox.currentIndex()]
+        self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
 
     def SendSearchBack(self, raw):
         QtOwner().CloseLoading()

@@ -9,12 +9,28 @@ class QtOwner(Singleton):
         Singleton.__init__(self)
         self._owner = None
         self._app = None
+        self.isUseDb = True
+
+    # db不可使用
+    def SetDbError(self):
+        self.owner.searchView.SetDbError()
+        return
 
     def ShowError(self, msg):
         return MsgLabel.ShowErrorEx(self.owner, msg)
 
     def ShowMsg(self, msg):
         return MsgLabel.ShowMsgEx(self.owner, msg)
+
+    def ShowMsgOne(self, msg):
+        if not hasattr(self.owner, "msgLabel"):
+            return
+        return self.owner.msgLabel.ShowMsg(msg)
+
+    def ShowErrOne(self, msg):
+        if not hasattr(self.owner, "msgLabel"):
+            return
+        return self.owner.msgLabel.ShowError(msg)
 
     def ShowLoading(self):
         self.owner.loadingDialog.show()
@@ -56,7 +72,7 @@ class QtOwner(Singleton):
 
     @property
     def favoriteView(self):
-        return self.owner.favoriteView
+        return self.owner.favorityView
 
     @property
     def indexView(self):
@@ -141,12 +157,6 @@ class QtOwner(Singleton):
     #
     # def ShowError(self, data):
     #     return self.owner.msgForm.ShowError(data)
-
-    def GetV(self, k, defV=""):
-        return self.owner.settingView.GetSettingV(k, defV)
-
-    def SetV(self, k, v):
-        return self.owner.settingView.SetSettingV(k, v)
 
     # def ShowMsgBox(self, type, title, msg):
     #     msg = QMessageBox(type, title, msg)

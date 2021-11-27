@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>评论</string>
   </property>
+
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="UserListWidget" name="listWidget"/>

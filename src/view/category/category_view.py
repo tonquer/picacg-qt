@@ -18,7 +18,9 @@ class CategoryView(QtWidgets.QWidget, Ui_Category, QtTaskBase):
         self.bookList.itemClicked.connect(self.SelectItem)
 
     def SwitchCurrent(self, **kwargs):
-        if self.bookList.count() <= 0:
+        refresh = kwargs.get("refresh")
+
+        if refresh or self.bookList.count() <= 0:
             QtOwner().ShowLoading()
             self.AddHttpTask(req.CategoryReq(), callBack=self.InitCateGoryBack)
         pass
@@ -27,6 +29,7 @@ class CategoryView(QtWidgets.QWidget, Ui_Category, QtTaskBase):
         QtOwner().CloseLoading()
         st = raw["st"]
         if st == Status.Ok:
+            self.bookList.clear()
             for index, info in enumerate(CateGoryMgr().idToCateGoryBase):
                 self.bookList.AddBookItem(info.id, info.title, info.thumb.get("fileServer"), info.thumb.get("path"))
             # QtOwner().owner.searchForm.InitCheckBox()

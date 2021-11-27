@@ -80,7 +80,9 @@ class BaseListWidget(QListWidget, QtTaskBase):
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.ForwardButton:
-            QtOwner().SwitchWidgetNext()
+            # QtOwner().SwitchWidgetNext()
+            event.ignore()
         elif event.button() == Qt.BackButton:
-            QtOwner().SwitchWidgetLast()
+            event.ignore()
+            # QtOwner().SwitchWidgetLast()
         return QListWidget.mousePressEvent(self, event)

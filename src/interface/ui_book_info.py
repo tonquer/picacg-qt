@@ -57,7 +57,9 @@ class Ui_BookInfo(object):
 "background-color:transparent;\n"
 "  border-right: 0px;\n"
 "  border-left: 0px;\n"
-"}")
+"}\n"
+"QListWidget {background-color:transparent;}\n"
+"QScrollArea {background-color:transparent;}")
         self.gridLayout_2 = QGridLayout(BookInfo)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.epsListWidget = BaseListWidget(BookInfo)

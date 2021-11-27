@@ -59,9 +59,9 @@ class RankView(QtWidgets.QWidget, Ui_Rank, QtTaskBase):
             else:
                 assert False
 
-            data = json.loads(raw["data"])
             st = raw["st"]
             if st == Status.Ok:
+                data = json.loads(raw["data"])
                 for v in data.get("data").get("comics"):
                     bookList.AddBookByDict(v)
             else:

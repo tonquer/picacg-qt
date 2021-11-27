@@ -7,6 +7,8 @@ class QtStrObj(QObject):
 
 
 class Str:
+    IconList = "😄😆😊😃😏😍😘😚😳😌😆😁😉😜😝😀😗😙😛😴😟😦😧😮😬😕😯😑😒😅😓😥😩😔😞😖😨😰😣😢😭😂😲😱😫😠😡😤😪😋😷😎😵👿😈😐😶😇👽💛💙💜💚💔💆💇💅👦👧👩👨👶👵👴👱👲👳👷👮👼👸😺😸😻😽😼🙀😿😹😾👹👺🙈🙉🙊💂💀🐾👄💋💧👂👀👃👅💌👤👥💬💭"
+
     obj = QtStrObj()
     strDict = dict()
 
@@ -47,6 +49,7 @@ class Str:
     WaifuStateCancle = 3006    # "不转换"
     WaifuStateEnd = 3007       # "转换完成"
     WaifuStateFail = 3008      # "转换失败"
+    OverResolution = 3009      # "超过设置分辨率"
 
     LoadingPicture = 1     # "图片加载中..."
     LoadingFail = 2        # "图片加载失败"
@@ -97,7 +100,7 @@ class Str:
     SpeedTest = 48         # 测速
     PasswordShort = 49     # 密码太短
     RegisterSuc = 50       # 注册成功
-    ComicFinished = 51     # 完本
+    ComicFinished = 51     # 完结
     SelectFold = 52        # 选择文件夹
     Save = 53              # 保存
     CommentLoadFail = 54   # 评论加载失败
@@ -133,6 +136,32 @@ class Str:
     Start = 84               # 开始
     StartConvert = 85        # 开始转换
     PauseConvert = 86        # 暂停转换
+
+    Open = 87                # 打开
+    LookCover = 88           # 查看封面
+    ReDownloadCover = 89     # 重下封面
+    Waifu2xConvert = 90      # Waifu2x转换
+    CopyTitle = 91           # 复制标题
+    Download = 92            # 下载
+    Delete = 93              # 删除
+    CurVersion = 94          # 当前版本
+    CheckUpdateAndUp = 95    # 检查到更新，是否前往更新
+    CopyAndroid = 96         # 复制Android下载地址
+    CopyIos = 97             # 复制IOS下载地址
+    SetDir = 98              # 请设置目录
+    AddDownload = 99         # 添加下载成功
+    LookFirst = 100          # 观看第1章
+    LastLook = 101           # 上次看到第
+    Chapter = 102            # 章
+    Looked = 103             # 看过
+    PressEnter = 104         # 按Enter发送消息
+    PressCtrlEnter = 105     # 按Ctrl+Enter发送消息
+    DelWaifu2xConvert = 106     # 取消Waifu2x转换
+    NeedResetSave = 107      # 需要重启保存
+    CheckUp = 108            # 检查更新
+    DailyUpdated = 109            # 今日已更新
+    HaveUpdate = 110            # 有更新
+    AlreadyUpdate = 111            # 已是最新
 
     @classmethod
     def Reload(cls):
@@ -176,6 +205,7 @@ class Str:
         cls.strDict[cls.WaifuStateCancle] = cls.obj.tr("不转换")
         cls.strDict[cls.WaifuStateEnd] = cls.obj.tr("转换完成")
         cls.strDict[cls.WaifuStateFail] = cls.obj.tr("转换失败")
+        cls.strDict[cls.OverResolution] = cls.obj.tr("超过设置分辨率")
 
         cls.strDict[cls.Menu] = cls.obj.tr("菜单")
         cls.strDict[cls.FullSwitch] = cls.obj.tr("全屏切换")
@@ -219,7 +249,7 @@ class Str:
         cls.strDict[cls.SpeedTest] = cls.obj.tr("测速")
         cls.strDict[cls.PasswordShort] = cls.obj.tr("密码太短")
         cls.strDict[cls.RegisterSuc] = cls.obj.tr("注册成功")
-        cls.strDict[cls.ComicFinished] = cls.obj.tr("完本")
+        cls.strDict[cls.ComicFinished] = cls.obj.tr("完结")
         cls.strDict[cls.SelectFold] = cls.obj.tr("选择文件夹")
         cls.strDict[cls.Save] = cls.obj.tr("保存")
         cls.strDict[cls.CommentLoadFail] = cls.obj.tr("评论加载失败")
@@ -255,6 +285,31 @@ class Str:
         cls.strDict[cls.Start] = cls.obj.tr("开始")
         cls.strDict[cls.StartConvert] = cls.obj.tr("开始转换")
         cls.strDict[cls.PauseConvert] = cls.obj.tr("暂停转换")
+        cls.strDict[cls.Open] = cls.obj.tr("打开")
+        cls.strDict[cls.LookCover] = cls.obj.tr("查看封面")
+        cls.strDict[cls.ReDownloadCover] = cls.obj.tr("重下封面")
+        cls.strDict[cls.Waifu2xConvert] = cls.obj.tr("Waifu2x转换")
+        cls.strDict[cls.CopyTitle] = cls.obj.tr("复制标题")
+        cls.strDict[cls.Download] = cls.obj.tr("下载")
+        cls.strDict[cls.Delete] = cls.obj.tr("删除")
+        cls.strDict[cls.CurVersion] = cls.obj.tr("当前版本")
+        cls.strDict[cls.CheckUpdateAndUp] = cls.obj.tr("检查到更新，是否前往更新")
+        cls.strDict[cls.CopyAndroid] = cls.obj.tr("复制Android下载地址")
+        cls.strDict[cls.CopyIos] = cls.obj.tr("复制IOS下载地址")
+        cls.strDict[cls.SetDir] = cls.obj.tr("请设置目录")
+        cls.strDict[cls.AddDownload] = cls.obj.tr("添加下载成功")
+        cls.strDict[cls.LookFirst] = cls.obj.tr("观看第1章")
+        cls.strDict[cls.LastLook] = cls.obj.tr("上次看到第")
+        cls.strDict[cls.Chapter] = cls.obj.tr("章")
+        cls.strDict[cls.Looked] = cls.obj.tr("看过")
+        cls.strDict[cls.PressEnter] = cls.obj.tr("按Enter发送消息")
+        cls.strDict[cls.PressCtrlEnter] = cls.obj.tr("按Ctrl+Enter发送消息")
+        cls.strDict[cls.DelWaifu2xConvert] = cls.obj.tr("取消Waifu2x转换")
+        cls.strDict[cls.NeedResetSave] = cls.obj.tr("需要重启保存")
+        cls.strDict[cls.CheckUp] = cls.obj.tr("检查更新")
+        cls.strDict[cls.DailyUpdated] = cls.obj.tr("今日已更新")
+        cls.strDict[cls.HaveUpdate] = cls.obj.tr("有更新")
+        cls.strDict[cls.AlreadyUpdate] = cls.obj.tr("已是最新")
 
     @classmethod
     def GetStr(cls, enumType):

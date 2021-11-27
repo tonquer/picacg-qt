@@ -4,13 +4,14 @@ import os
 import random
 import time
 
-from PySide6.QtCore import Signal, QTimer, Qt, QEvent
-from PySide6.QtGui import QFont, QTextCursor, QAction, QGuiApplication
-from PySide6.QtWidgets import QMenu, QWidget, QLabel
+from PySide6.QtCore import Signal, QTimer, Qt, QEvent, QSize
+from PySide6.QtGui import QFont, QTextCursor, QAction, QGuiApplication, QIcon
+from PySide6.QtWidgets import QMenu, QWidget, QLabel, QListWidgetItem
 
 from component.dialog.loading_dialog import LoadingDialog
 from component.label.msg_label import MsgLabel
 from config import config
+from config.setting import Setting
 from interface.ui_chat_room import Ui_ChatRoom
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
@@ -38,7 +39,8 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         Ui_ChatRoom.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-
+        self.setWindowTitle("PicACG")
+        self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
         # self.titleBar = Ui_TitleBar()
         # self.titleBar.setupUi(self.widget)
         # self.titleBar.closeButton.clicked.connect(self.close)
@@ -75,24 +77,24 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         self.cachePath = "."
         f = QFont()
         f.setPointSize(14)
-        # for icon in IconList:
-        #     item = QListWidgetItem(icon)
-        #     item.setTextAlignment(Qt.AlignCenter)
-        #     item.setFont(f)
-        #     item.setSizeHint(QSize(40, 40))
-        #     self.listWidget.addItem(item)
+        for icon in Str.IconList:
+            item = QListWidgetItem(icon)
+            item.setTextAlignment(Qt.AlignCenter)
+            item.setFont(f)
+            item.setSizeHint(QSize(40, 40))
+            self.listWidget.addItem(item)
         self.listWidget.setVisible(False)
         # ToolUtil.SetIcon(self)
 
         self.toolMenu = QMenu(self.toolButton)
-        self.action1 = QAction('按Enter发送消息', self.toolMenu, triggered=self.CheckAction1)
+        self.action1 = QAction(Str.GetStr(Str.PressEnter), self.toolMenu, triggered=self.CheckAction1)
         self.action1.setCheckable(True)
-        self.action2 = QAction('按Ctrl+Enter发送消息', self.toolMenu, triggered=self.CheckAction2)
+        self.action2 = QAction(Str.GetStr(Str.PressCtrlEnter), self.toolMenu, triggered=self.CheckAction2)
         self.action2.setCheckable(True)
         self.toolMenu.addAction(self.action1)
         self.toolMenu.addAction(self.action2)
         self.toolButton.setMenu(self.toolMenu)
-        if config.ChatSendAction == 2:
+        if Setting.ChatSendAction == 2:
             self.action2.setChecked(True)
         else:
             self.action1.setChecked(True)
@@ -105,17 +107,17 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
 
     def CheckAction1(self):
         self.action2.setChecked(not self.action1.isChecked())
-        config.ChatSendAction = 1
+        Setting.ChatSendAction.SetValue(1)
 
     def CheckAction2(self):
         self.action1.setChecked(not self.action2.isChecked())
-        config.ChatSendAction = 2
+        Setting.ChatSendAction.SetValue(0)
 
     def eventFilter(self, obj, event):
         if obj == self.textEdit and event.type() == QEvent.KeyPress:
             if event.key() == Qt.Key_Return:
                 # print(event.modifiers() == Qt.ControlModifier)
-                if (config.ChatSendAction == 2 and event.modifiers() != Qt.ControlModifier) or (config.ChatSendAction == 1 and (event.modifiers() == Qt.ControlModifier)):
+                if (Setting.ChatSendAction.value == 0 and event.modifiers() != Qt.ControlModifier) or (Setting.ChatSendAction.value == 1 and (event.modifiers() == Qt.ControlModifier)):
                     cursor = self.textEdit.textCursor()
                     textCursor = QTextCursor(self.textEdit.document())
                     textCursor.setPosition(cursor.position())
@@ -132,8 +134,8 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
 
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key_Return:
-            if (config.ChatSendAction == 2 and event.modifiers() != Qt.ControlModifier) or (
-                    config.ChatSendAction == 1 and (event.modifiers() == Qt.ControlModifier)):
+            if (Setting.ChatSendAction.value == 0 and event.modifiers() != Qt.ControlModifier) or (
+                    Setting.ChatSendAction.value == 1 and (event.modifiers() == Qt.ControlModifier)):
                 return
             else:
                 self.SendMsg()
@@ -263,8 +265,8 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
             try:
                 saveName = str(int(time.time())) + "_" + str(random.randint(1, 1000)) + ".3gp"
                 info.toolButton.setText(saveName)
-                if config.SavePath:
-                    path = os.path.join(config.SavePath, config.ChatSavePath)
+                if Setting.SavePath.value:
+                    path = os.path.join(Setting.SavePath.value, config.ChatSavePath)
                     saveName = os.path.join(path, saveName)
                     info.audioData = saveName
                     if not os.path.isdir(path):

@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>游戏区</string>
   </property>
+
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_3">

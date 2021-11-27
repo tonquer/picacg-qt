@@ -1,6 +1,7 @@
 import os
 import weakref
 
+from config.setting import Setting
 from server import req, config
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
@@ -160,18 +161,18 @@ class DownloadInfo(QtTaskBase):
             self.SetStatu(self.Error)
             return
         else:
-            if not config.SavePath:
+            if not Setting.SavePath.value:
                 self.SetStatu(self.Error)
                 return
 
             book = BookMgr().books.get(self.bookId)
             self.title = book.title
             if not self.savePath:
-                self.savePath = os.path.join(os.path.join(config.SavePath, config.SavePathDir),
+                self.savePath = os.path.join(os.path.join(Setting.SavePath.value, config.SavePathDir),
                                             ToolUtil.GetCanSaveName(self.title))
                 self.savePath = os.path.join(self.savePath, "original")
             if not self.convertPath:
-                self.convertPath = os.path.join(os.path.join(config.SavePath, config.SavePathDir),
+                self.convertPath = os.path.join(os.path.join(Setting.SavePath.value, config.SavePathDir),
                                          ToolUtil.GetCanSaveName(self.title))
                 self.convertPath = os.path.join(self.convertPath, "waifu2x")
             self.AddBookEpsInfos()
@@ -217,7 +218,7 @@ class DownloadInfo(QtTaskBase):
             if self in self.parent.downloadingList:
                 self.parent.downloadingList.remove(self)
             self.parent.HandlerDownloadList()
-            if config.DownloadAuto:
+            if Setting.DownloadAuto.value:
                 self.SetConvertStatu(self.Waiting)
                 self.parent.AddConvert(self.bookId)
             else:

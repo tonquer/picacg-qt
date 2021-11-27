@@ -1,8 +1,9 @@
 from enum import Enum
 
-from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize, QPoint
 
 from config import config
+from config.setting import Setting
 from tools.str import Str
 from tools.tool import ToolUtil
 
@@ -29,6 +30,7 @@ class QtFileData(object):
     WaifuStateCancle = Str.WaifuStateCancle
     WaifuStateEnd = Str.WaifuStateEnd
     WaifuStateFail = Str.WaifuStateFail
+    OverResolution = Str.OverResolution
 
     def __init__(self):
         self.size = 0
@@ -62,8 +64,17 @@ class QtFileData(object):
         if not data:
             self.state = self.DownloadError
             return
-        if config.IsOpenWaifu:
-            self.waifuState = self.WaifuWait
+
+        w, h = ToolUtil.GetPictureSize(data)
+        if max(w, h) <= Setting.LookMaxNum.value:
+
+            if Setting.IsOpenWaifu.value:
+                self.waifuState = self.WaifuWait
+            else:
+                self.waifuState = self.WaifuStateCancle
+        else:
+            self.waifuState = self.OverResolution
+
         self.data = data
         self.w, self.h = ToolUtil.GetPictureSize(data)
         self.model = ToolUtil.GetLookScaleModel(category)
@@ -80,3 +91,63 @@ class QtFileData(object):
         self.scaleW, self.scaleH = ToolUtil.GetPictureSize(data)
         self.waifuTick = tick
         return
+
+    @staticmethod
+    def GetReadScale(stripModel, scaleCnt, maxWidth, maxHeight):
+        if stripModel == ReadMode.LeftRight:
+            scale = (1 + scaleCnt * 0.1)
+            wight = min(maxWidth, int(maxWidth * scale))
+            height = maxHeight * scale
+            toScaleW = wight
+            toScaleH = height
+        elif stripModel in [ReadMode.RightLeftDouble]:
+            scale = (1 + scaleCnt * 0.1)
+            toScaleW = min(maxWidth // 2, int(maxWidth // 2 * scale))
+            toScaleH = maxHeight * scale
+        elif stripModel in [ReadMode.LeftRightDouble]:
+            scale = (1 + scaleCnt * 0.1)
+
+            toScaleW = min(maxWidth // 2, int(maxWidth // 2 * scale))
+            toScaleH = maxHeight * scale
+        elif stripModel in [ReadMode.LeftRightScroll]:
+            scale = (1 + scaleCnt * 0.1)
+            toScaleW = maxWidth * scale * 10
+            toScaleH = min(maxHeight, maxHeight * scale)
+
+        elif stripModel in [ReadMode.RightLeftScroll]:
+            scale = (1 + scaleCnt * 0.1)
+            toScaleW = maxWidth * scale * 10
+            toScaleH = min(maxHeight, maxHeight * scale)
+
+        elif stripModel in [ReadMode.UpDown]:
+            scale = (0.5 + scaleCnt * 0.1)
+            toScaleW = min(maxWidth, maxWidth * scale)
+            toScaleH = maxHeight * scale * 10
+        else:
+            return maxWidth, maxHeight
+        return toScaleW, toScaleH
+    
+    @staticmethod
+    def GetReadToPos(stripModel, maxWidth, maxHeight, toWidth, toHeight, index, curIndex):
+        if stripModel == ReadMode.LeftRight:
+            return QPoint(maxWidth//2 - toWidth//2, max(0, maxHeight//2-toHeight//2))
+        elif stripModel in [ReadMode.RightLeftDouble]:
+            if index == curIndex:
+                return QPoint(maxWidth//2, maxHeight//2 - toHeight//2)
+            else:
+                return QPoint(maxWidth//2-toWidth, maxHeight//2 - toHeight//2)
+        elif stripModel in [ReadMode.LeftRightDouble]:
+            if index != curIndex:
+                return QPoint(maxWidth//2, maxHeight//2 - toHeight//2)
+            else:
+                return QPoint(maxWidth//2-toWidth, maxHeight//2 - toHeight//2)
+        elif stripModel in [ReadMode.LeftRightScroll]:
+            return QPoint(0, max(0, maxHeight // 2 - toHeight // 2))
+
+        elif stripModel in [ReadMode.RightLeftScroll]:
+            return QPoint(0, max(0, maxHeight // 2 - toHeight // 2))
+
+        elif stripModel in [ReadMode.UpDown]:
+            return QPoint(maxWidth//2 - toWidth//2, 0)
+        else:
+            return QPoint(0, 0)

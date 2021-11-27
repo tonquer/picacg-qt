@@ -87,21 +87,22 @@ class CommentWidget(QtWidgets.QWidget, Ui_Comment, QtTaskBase):
             widget.SetLike(isLike)
 
     def KillComment(self, cfgId):
-        for index in range(self.listWidget.count()):
-            item = self.listWidget.item(index)
-            if not item:
-                continue
-            widget = self.listWidget.itemWidget(item)
-            if not widget:
-                continue
-            if widget.id != cfgId:
-                continue
-            r = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('举报'),
-                                     self.tr('是否举报') + widget.nameLabel.text() + ",\n" + self.tr(
-                                         "评论：") +"\n"+ widget.commentLabel.text() + "\n")
-            if r == 0:
-                QtOwner().ShowLoading()
-                self.AddHttpTask(self.reqKillComment(widget.id), self.KillCommentBack, backParam=cfgId)
+        return
+        # for index in range(self.listWidget.count()):
+        #     item = self.listWidget.item(index)
+        #     if not item:
+        #         continue
+        #     widget = self.listWidget.itemWidget(item)
+        #     if not widget:
+        #         continue
+        #     if widget.id != cfgId:
+        #         continue
+        #     r = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('举报'),
+        #                              self.tr('是否举报') + widget.nameLabel.text() + ",\n" + self.tr(
+        #                                  "评论：") +"\n"+ widget.commentLabel.text() + "\n")
+        #     if r == 0:
+        #         QtOwner().ShowLoading()
+        #         self.AddHttpTask(self.reqKillComment(widget.id), self.KillCommentBack, backParam=cfgId)
 
     def KillCommentBack(self, raw, backId):
         QtOwner().CloseLoading()

@@ -7,19 +7,22 @@ class HeadLabel(QLabel):
         super(HeadLabel, self).__init__(*args, **kwargs)
         self.antialiasing = True
         self.radius = 100
+        self.target = None
 
     def SetPicture(self, data, titleData=None):
         self.target = QPixmap(self.size())  # 大小和控件一样
         self.target.fill(Qt.transparent)  # 填充背景为透明
         q = QPixmap()
         q.loadFromData(data)
+        radio = self.devicePixelRatio()
+        q.setDevicePixelRatio(radio)
 
         offset = 0
         if titleData:
             offset = 20
 
         p = q.scaled(  # 加载图片并缩放和控件一样大
-            self.width()-offset, self.height()-offset, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+            (self.width()-offset)*radio, (self.height()-offset)*radio, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
 
         painter = QPainter(self.target)
         if self.antialiasing:
@@ -38,6 +41,7 @@ class HeadLabel(QLabel):
         if titleData:
             p = QPixmap()
             p.loadFromData(titleData)
+            p.setDevicePixelRatio(self.devicePixelRatio())
             titleP = p.scaled(  # 加载图片并缩放和控件一样大
                 self.height(), self.width(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
             painter = QPainter()

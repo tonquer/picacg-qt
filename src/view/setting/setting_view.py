@@ -1,193 +1,249 @@
 import base64
 import os
+import re
 import sys
+from functools import partial
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QSettings, Qt, QSize, QUrl, QFile
+from PySide6.QtCore import QSettings, Qt, QSize, QUrl, QFile, QTranslator, QLocale
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QFileDialog
 
 from config import config
-from config.setting import Setting
-from interface.ui_setting import Ui_Setting
+from config.setting import Setting, SettingValue
+from interface.ui_setting_new import Ui_SettingNew
 from qt_owner import QtOwner
 from tools.log import Log
 from tools.str import Str
 
 
-class SettingView(QtWidgets.QWidget, Ui_Setting):
+class SettingView(QtWidgets.QWidget, Ui_SettingNew):
     def __init__(self, parent=None):
         super(self.__class__, self).__init__(parent)
-        Ui_Setting.__init__(self)
+        Ui_SettingNew.__init__(self)
         self.setupUi(self)
-        path = os.path.join(Setting.GetConfigPath(), "config.ini")
-        self.settings = QSettings(path, QSettings.IniFormat)
-        self.setWindowModality(Qt.ApplicationModal)
+
         self.mainSize = None
         self.bookSize = None
         self.readSize = None
         self.userId = ""
         self.passwd = ""
         self.gpuInfos = []
-        self.themeGroup.setId(self.themeButton0, 0)
-        self.themeGroup.setId(self.themeButton1, 1)
-        self.themeGroup.setId(self.themeButton2, 2)
+        self.translate = QTranslator()
 
-        # self.themeGroup.idClicked.connect(self.SwitchTheme)
-        # self.preDownNum.setFocusPolicy(Qt.NoFocus)
-        # for text in QssDataMgr.files:
-        #     self.themeBox.addItem(text)
+        # RadioButton:
+        self.themeGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ThemeIndex))
+        self.languageGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.Language))
+        self.logGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.LogIndex))
+        self.mainScaleGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ScaleLevel))
 
-    # def show(self):
-    #     self.LoadSetting()
-    #     super(self.__class__, self).show()
+        # CheckButton:
+        self.checkBox_IsUpdate.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUpdate, self.checkBox_IsUpdate))
+        self.httpProxy.clicked.connect(partial(self.CheckButtonEvent, Setting.IsHttpProxy, self.httpProxy))
+        self.chatProxy.clicked.connect(partial(self.CheckButtonEvent, Setting.ChatProxy, self.chatProxy))
+        self.readCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenWaifu, self.readCheckBox))
+        self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
+        self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
 
-    def SwitchCurrent(self, **kwargs):
-        self.LoadSetting()
+        # LineEdit:
+        self.httpEdit.editingFinished.connect(partial(self.LineEditEvent, Setting.HttpProxy, self.httpEdit))
 
-    def LoadSetting(self):
-        config.IsUpdate = int(self.settings.value("IsUpdate") or config.IsUpdate)
-        self.checkBox_IsUpdate.setChecked(config.IsUpdate)
+        # Button:
 
-        # language
-        config.Language = str(self.settings.value('Language'))
-        # self.langSelect.setCurrentIndex(config.DownloadThreadNum - 2)
-        self.langSelect.setCurrentText(config.Language)
+        # comboBox:
+        # self.encodeSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, "LookReadMode"))
+        self.readModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookModel))
+        self.readNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookNoise))
+        self.coverModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookModel))
+        self.coverNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookNoise))
+        self.downModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadModel))
+        self.downNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadNoise))
+        self.encodeSelect.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.SelectEncodeGpu))
 
-        config.DownloadThreadNum = int(self.settings.value("DownloadThreadNum") or config.DownloadThreadNum)
-        self.comboBox.setCurrentIndex(config.DownloadThreadNum-2)
+        # spinBox
+        # self.preDownNum.valueChanged.connect(partial(self.SpinBoxEvent, "", self.preDownNum))
+        self.coverSize.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverSize))
+        self.readScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.LookScale))
+        self.coverScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverLookScale))
+        self.downScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.DownloadScale))
+        self.lookMaxBox.valueChanged.connect(partial(self.SpinBoxEvent, Setting.LookMaxNum))
+        self.coverMaxBox.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverMaxNum))
 
-        httpProxy = self.settings.value("Proxy/Http") or config.HttpProxy
-        if httpProxy:
-            config.HttpProxy = httpProxy
-            self.httpEdit.setText(config.HttpProxy)
+        self.generalButton.clicked.connect(partial(self.MoveToLabel, self.generalLabel))
+        # self.readButton.clicked.connect(partial(self.MoveToLabel, self.readLabel))
+        self.proxyButton.clicked.connect(partial(self.MoveToLabel, self.proxyLabel))
+        self.waifu2xButton.clicked.connect(partial(self.MoveToLabel, self.waifu2xLabel))
+        self.downloadButton.clicked.connect(partial(self.MoveToLabel, self.downloadLabel))
 
-        config.IsHttpProxy = self.GetSettingV("Proxy/IsHttp", config.IsHttpProxy)
-        self.httpProxy.setChecked(config.IsHttpProxy)
-        # if not config.IsHttpProxy:
-        #     config.HttpProxy = ""
+        self.setDirButton.clicked.connect(self.SelectSavePath)
+        self.openDownloadDir.clicked.connect(partial(self.OpenDir, self.downloadDir))
+        self.openChatDir.clicked.connect(partial(self.OpenDir, self.chatDir))
+        self.openCacheDir.clicked.connect(partial(self.OpenDir, self.cacheDir))
+        self.openWaifu2xDir.clicked.connect(partial(self.OpenDir, self.waifu2xDir))
 
-        config.ChatProxy = self.GetSettingV("ChatProxy", config.ChatProxy)
-        self.chatProxy.setChecked(bool(config.ChatProxy))
+        # TODO
+        self.languageButton3.setVisible(False)
 
-        config.SavePath = self.GetSettingV("SavePath", config.SavePath)
-        self.saveEdit.setText(config.SavePath)
+        self.msgLabel.setVisible(False)
 
-        config.PreLoading = self.GetSettingV("PreLoading", config.PreLoading)
-        self.preDownNum.setValue(config.PreLoading)
-
-        x = self.settings.value("MainSize_x")
-        y = self.settings.value("MainSize_y")
-        if x and y:
-            self.mainSize = QSize(int(x), int(y))
-
-        x = self.settings.value("BookSize_x")
-        y = self.settings.value("BookSize_y")
-        if x and y:
-            self.bookSize = QSize(int(x), int(y))
-
-        x = self.settings.value("ImgRead_x")
-        y = self.settings.value("ImgRead_y")
-        if x and y:
-            self.readSize = QSize(int(x), int(y))
-
-        config.SelectEncodeGpu = self.GetSettingV("Waifu2x/SelectEncodeGpu", "")
-        self.encodeSelect.setCurrentIndex(0)
-        for index in range(self.encodeSelect.count()):
-            if config.SelectEncodeGpu == self.encodeSelect.itemText(index):
-                self.encodeSelect.setCurrentIndex(index)
-
-        config.LookModel = self.GetSettingV("Waifu2x/LookModel", config.LookModel)
-        config.LookNoise = self.GetSettingV("Waifu2x/LookNoise", config.LookNoise)
-        config.LookScale = self.GetSettingV("Waifu2x/LookScale", config.LookScale)
-        self.readModel.setCurrentIndex(config.LookModel)
-        self.readNoise.setCurrentIndex(config.LookNoise+1)
-        self.readScale.setValue(config.LookScale)
-
-        config.DownloadModel = self.GetSettingV("Waifu2x/DownloadModel", config.DownloadModel)
-        config.DownloadNoise = self.GetSettingV("Waifu2x/DownloadNoise", config.DownloadNoise)
-        config.DownloadScale = self.GetSettingV("Waifu2x/DownloadScale", config.DownloadScale)
-        config.DonwloadAuto = self.GetSettingV("Waifu2x/DonwloadAuto", config.DownloadAuto)
-        self.downModel.setCurrentIndex(config.DownloadModel)
-        self.downNoise.setCurrentIndex(config.DownloadNoise+1)
-        self.downScale.setValue(config.DownloadScale)
-        self.downAuto.setChecked(config.DownloadAuto)
-
-        config.LogIndex = self.GetSettingV("Waifu2x/LogIndex", config.LogIndex)
-        self.logBox.setCurrentIndex(config.LogIndex)
-        Log.UpdateLoggingLevel()
-
-        # config.IsTips = self.GetSettingV("Waifu2x/IsTips", config.IsTips)
-        config.ChatSendAction = self.GetSettingV("Waifu2x/ChatSendAction", config.ChatSendAction)
-        config.IsOpenWaifu = self.GetSettingV("Waifu2x/IsOpen2", config.IsOpenWaifu)
-        self.checkBox.setChecked(config.IsOpenWaifu)
-
-        self.userId = self.settings.value("UserId")
-        self.passwd = self.settings.value("Passwd2")
-        self.userId = self.userId if isinstance(self.userId, str) else ""
-        self.passwd = base64.b64decode(self.passwd).decode("utf-8") if self.passwd else ""
-        config.ThemeIndex = self.GetSettingV("ThemeIndex", 0)
-        button = getattr(self, "themeButton{}".format(config.ThemeIndex))
-        button.setChecked(True)
-        self.SetTheme()
-
-        config.LookReadMode = self.GetSettingV("Read/LookReadMode", config.LookReadMode)
-        # config.LookReadScale = self.GetSettingV("Read/LookReadScale", config.LookReadScale)
-        config.LookReadFull = self.GetSettingV("Read/LookReadFull", config.LookReadFull)
-        config.TurnSpeed = self.GetSettingV("Read/TurnSpeed", config.TurnSpeed)
-        config.ScrollSpeed = self.GetSettingV("Read/ScrollSpeed", config.ScrollSpeed)
+    def MoveToLabel(self, label):
+        p = label.pos()
+        self.scrollArea.vScrollBar.ScrollTo(p.y())
         return
 
-    def GetSettingV(self, key, defV=None):
-        v = self.settings.value(key)
-        try:
-            if v:
-                if isinstance(defV, int):
-                    if v == "true" or v == "True":
-                        return 1
-                    elif v == "false" or v == "False":
-                        return 0
-                    return int(v)
-                elif isinstance(defV, float):
-                    return float(v)
-                else:
-                    return v
-            return defV
-        except Exception as es:
-            Log.Error(es)
-        return v
+    def CheckMsgLabel(self):
+        isNeed = False
+        for name in dir(Setting):
+            setItem = getattr(Setting, name)
+            if isinstance(setItem, SettingValue):
+                if setItem.isNeedReset:
+                    if setItem.value != setItem.setV:
+                        isNeed = True
+        if isNeed:
+            self.msgLabel.setVisible(True)
+            QtOwner().ShowErrOne(Str.GetStr(Str.NeedResetSave))
+        else:
+            self.msgLabel.setVisible(False)
+        return
 
-    def SetSettingV(self, key, val):
-        self.settings.setValue(key, val)
+    def ButtonClickEvent(self, setItem, button):
+        assert isinstance(setItem, SettingValue)
+        mo = re.search(r"\d+", button.objectName())
+        if mo:
+            value = int(mo.group())
+            setItem.SetValue(value)
+            if setItem == Setting.ThemeIndex:
+                self.SetTheme()
+            elif setItem == Setting.LogIndex:
+                Log.UpdateLoggingLevel()
+            elif setItem == Setting.Language:
+                self.SetLanguage()
+            QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
+        self.CheckMsgLabel()
+        return
+
+    def CheckButtonEvent(self, setItem, button):
+        assert isinstance(setItem, SettingValue)
+        setItem.SetValue(int(button.isChecked()))
+        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
+        self.CheckMsgLabel()
+        return
+
+    def CheckRadioEvent(self, setItem, value):
+        assert isinstance(setItem, SettingValue)
+        setItem.SetValue(value)
+        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
+        self.CheckMsgLabel()
+        return
+
+    def LineEditEvent(self, setItem, lineEdit):
+        assert isinstance(setItem, SettingValue)
+        value = lineEdit.text()
+        setItem.SetValue(value)
+        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
+        self.CheckMsgLabel()
+        return
+
+    def SpinBoxEvent(self, setItem, value):
+        assert isinstance(setItem, SettingValue)
+        setItem.SetValue(int(value))
+        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
+        self.CheckMsgLabel()
+        return
+
+    def SwitchCurrent(self, **kwargs):
+        return
+
+    def LoadSetting(self):
+        self.InitSetting()
+        self.SetTheme()
+        self.SetLanguage()
         return
 
     def ExitSaveSetting(self, mainQsize):
-        self.settings.setValue("MainSize_x", mainQsize.width())
-        self.settings.setValue("MainSize_y", mainQsize.height())
-        # self.settings.setValue("BookSize_x", bookQsize.width())
-        # self.settings.setValue("BookSize_y", bookQsize.height())
-        # self.settings.setValue("ImgRead_x", imgQsize.width())
-        # self.settings.setValue("ImgRead_y", imgQsize.height())
-        self.settings.setValue("UserId", self.userId)
-        self.settings.setValue("Passwd", base64.b64encode(self.passwd.encode("utf-8")))
-        self.settings.setValue("Passwd2", base64.b64encode(self.passwd.encode("utf-8")))
-        self.settings.setValue("Waifu2x/IsOpen2", int(config.IsOpenWaifu))
-        # self.settings.setValue("Waifu2x/IsTips", int(config.IsTips))
-        self.settings.setValue("Waifu2x/ChatSendAction", config.ChatSendAction)
+        return
 
-    def SwitchTheme(self):
-        config.ThemeIndex = self.themeGroup.checkedId()
-        self.SetTheme()
+    def InitSetting(self):
+        self.checkBox_IsUpdate.setChecked(Setting.IsUpdate.value)
+        self.SetRadioGroup("themeButton", Setting.ThemeIndex.value)
+        self.SetRadioGroup("languageButton", Setting.Language.value)
+        self.SetRadioGroup("mainScaleButton", Setting.ScaleLevel.value)
+        self.coverSize.setValue(Setting.CoverSize.value)
+        self.SetRadioGroup("logutton", Setting.LogIndex.value)
+        self.httpProxy.setChecked(Setting.IsHttpProxy.value)
+        self.httpEdit.setText(Setting.HttpProxy.value)
+        self.chatProxy.setChecked(Setting.ChatProxy.value)
+        for index in range(self.encodeSelect.count()):
+            if Setting.SelectEncodeGpu.value == self.encodeSelect.itemText(index):
+                self.encodeSelect.setCurrentIndex(index)
+
+        self.readCheckBox.setChecked(Setting.IsOpenWaifu.value)
+        self.readNoise.setCurrentIndex(Setting.LookNoise.value)
+        self.readScale.setValue(Setting.LookScale.value)
+        self.readModel.setCurrentIndex(Setting.LookModel.value)
+
+        self.coverCheckBox.setChecked(Setting.CoverIsOpenWaifu.value)
+        self.coverNoise.setCurrentIndex(Setting.CoverLookNoise.value)
+        self.coverScale.setValue(Setting.CoverLookScale.value)
+        self.coverModel.setCurrentIndex(Setting.CoverLookModel.value)
+
+        self.downAuto.setChecked(Setting.DownloadAuto.value)
+        self.downNoise.setCurrentIndex(Setting.DownloadNoise.value)
+        self.downScale.setValue(Setting.DownloadScale.value)
+        self.downModel.setCurrentIndex(Setting.DownloadModel.value)
+        self.SetDownloadLabel()
+
+    def retranslateUi(self, SettingNew):
+        Ui_SettingNew.retranslateUi(self, SettingNew)
+        self.SetDownloadLabel()
+
+    def SetRadioGroup(self, text, index):
+        radio = getattr(self, text+str(index))
+        if radio:
+            radio.setChecked(True)
+
+    def SetLanguage(self):
+        language = Setting.Language.value
+
+        # Auto
+        if language == 0:
+            locale = QLocale.system().name()
+            Log.Info("Init translate {}".format(locale))
+            if locale[:3].lower() == "zh_":
+                if locale.lower() == "zh_cn":
+                    language = 1
+                else:
+                    language = 2
+            else:
+                # TODO
+                # language = 3
+                language = 2
+
+        if language == Setting.Language.autoValue:
+            return
+
+        Setting.Language.autoValue = language
+
+        if language == 1:
+            QtOwner().app.removeTranslator(self.translate)
+        elif language == 2:
+            self.translate.load(":/file/tr/tr_hk.qm")
+            QtOwner().app.installTranslator(self.translate)
+        else:
+            self.translate.load(":/file/tr/tr_en.qm")
+            QtOwner().app.installTranslator(self.translate)
+        Str.Reload()
+        QtOwner().owner.RetranslateUi()
 
     def SetTheme(self):
-        themeId = config.ThemeIndex
+        themeId = Setting.ThemeIndex.value
         if themeId == 0:
             themeId = self.GetSysColor()
 
-        if themeId == config.CurrentSetTheme:
+        if themeId == Setting.ThemeIndex.autoValue:
             return
 
-        config.CurrentSetTheme = themeId
+        Setting.ThemeIndex.autoValue = themeId
 
         if themeId == 1:
             f = QFile(":/file/theme/dark_pink.qss")
@@ -196,9 +252,35 @@ class SettingView(QtWidgets.QWidget, Ui_Setting):
         f.open(QFile.ReadOnly)
         data = str(f.readAll(), encoding='utf-8')
         QtOwner().app.setStyleSheet(data)
+        self.SetSettingTheme(themeId)
         f.close()
 
+    def SetSettingTheme(self, themId):
+        if themId != 1:
+            qss = """
+                .QFrame
+                {
+                    background-color: rgb(253, 253, 253);
+                    
+                    border:2px solid rgb(234,234,234);
+                    border-radius:5px
+                }        
+                """
+        else:
+            qss = """
+                .QFrame
+                {
+                    background-color: rgb(50, 50, 50);
+
+                    border:2px solid rgb(35,35,35);
+                    border-radius:5px
+                }        
+                """
+        self.scrollArea.setStyleSheet(qss)
+
     def GetSysColor(self):
+        # TODO
+        # MacOS 和 KDE如何获取系统颜色
         if sys.platform == "win32":
             return self.GetWinSysColor() + 1
         return 1
@@ -210,74 +292,38 @@ class SettingView(QtWidgets.QWidget, Ui_Setting):
         value = settings.value(key, 0)
         return value
 
+    def GetMacOsSysColor(self):
+        cmd = "defaults read -g AppleInterfaceStyle"
+        return
+
     def SaveSetting(self):
-
-        config.IsUpdate = 1 if self.checkBox_IsUpdate.isChecked() else 0
-        config.Language = self.langSelect.currentText()
-        config.DownloadThreadNum = int(self.comboBox.currentText())
-        config.HttpProxy = self.httpEdit.text()
-        config.SavePath = self.saveEdit.text()
-        config.ChatProxy = 1 if self.chatProxy.isChecked() else 0
-        config.IsHttpProxy = 1 if self.httpProxy.isChecked() else 0
-        config.PreLoading = self.preDownNum.value()
-
-        self.settings.setValue("IsUpdate", config.IsUpdate)
-        self.settings.setValue('Language', config.Language)
-        self.settings.setValue("DownloadThreadNum", config.DownloadThreadNum)
-        self.settings.setValue("Proxy/Http", config.HttpProxy)
-        self.settings.setValue("Proxy/IsHttp", config.IsHttpProxy)
-        self.settings.setValue("SavePath", config.SavePath)
-        self.settings.setValue("ChatProxy", config.ChatProxy)
-        self.settings.setValue("PreLoading", config.PreLoading)
-
-        config.SelectEncodeGpu = self.encodeSelect.currentText()
-        config.Waifu2xThread = int(self.threadSelect.currentIndex()) + 1
-        config.IsOpenWaifu = int(self.checkBox.isChecked())
-        config.DownloadModel = int(self.downModel.currentIndex())
-        config.LogIndex = int(self.logBox.currentIndex())
-
-        self.settings.setValue("Waifu2x/DownloadModel", config.DownloadModel)
-        self.settings.setValue("Waifu2x/LogIndex", config.LogIndex)
-        self.settings.setValue("Waifu2x/SelectEncodeGpu", config.SelectEncodeGpu)
-        self.settings.setValue("Waifu2x/IsOpen2", config.IsOpenWaifu)
-
-        config.LookModel = self.readModel.currentIndex()
-        config.LookNoise = self.readNoise.currentIndex()-1
-        config.LookScale = self.readScale.value()
-        self.SetSettingV("Waifu2x/LookModel", config.LookModel)
-        self.SetSettingV("Waifu2x/LookNoise", config.LookNoise)
-        self.SetSettingV("Waifu2x/LookScale", config.LookScale)
-
-        config.DownloadModel = self.downModel.currentIndex()
-        config.DownloadNoise = self.downNoise.currentIndex()-1
-        config.DownloadScale = self.downScale.value()
-        config.DownloadAuto = int(self.downAuto.isChecked())
-        self.SetSettingV("Waifu2x/DownloadModel", config.DownloadModel)
-        self.SetSettingV("Waifu2x/DownloadNoise", config.DownloadNoise)
-        self.SetSettingV("Waifu2x/DownloadScale", config.DownloadScale)
-        self.SetSettingV("Waifu2x/DownloadAuto", config.DownloadAuto)
-
-        config.ThemeIndex = self.themeGroup.checkedId()
-        self.SetSettingV("ThemeIndex", config.ThemeIndex)
-
-        # QtOwner().owner.LoadTranslate()
-        # QtOwner().owner.RetranslateUi()
-        Log.UpdateLoggingLevel()
-        # QtWidgets.QMessageBox.information(self, '保存成功', "成功", QtWidgets.QMessageBox.Yes)
-        QtOwner().ShowMsg(Str.GetStr(Str.SaveSuc))
-        self.LoadSetting()
+        return
 
     def SelectSavePath(self):
-        url = QFileDialog.getExistingDirectory(self, self.tr("选择文件夹"))
+        url = QFileDialog.getExistingDirectory(self, Str.GetStr(Str.SelectFold))
         if url:
-            self.saveEdit.setText(url)
+            Setting.SavePath.SetValue(url)
+        self.SetDownloadLabel()
+
+    def SetDownloadLabel(self):
+        url = Setting.SavePath.value
+        if not url:
+            url = "./"
+        self.downloadDir.setText(os.path.join(url, config.SavePathDir))
+        self.chatDir.setText(os.path.join(url, config.ChatSavePath))
+        self.cacheDir.setText(os.path.join(url, config.CachePathDir))
+        self.waifu2xDir.setText(os.path.join(os.path.join(url, config.CachePathDir), config.Waifu2xPath))
+
+    def OpenDir(self, label):
+        QDesktopServices.openUrl(QUrl.fromLocalFile(label.text()))
+        return
 
     def SetGpuInfos(self, gpuInfo):
         self.gpuInfos = gpuInfo
-        config.EncodeGpu = config.SelectEncodeGpu
+        config.EncodeGpu = Setting.SelectEncodeGpu.value
 
         if not self.gpuInfos:
-            config.EncodeGpu = "CPU"
+            SettingView.EncodeGpu = "CPU"
             config.Encode = -1
             self.encodeSelect.addItem(config.EncodeGpu)
             self.encodeSelect.setCurrentIndex(0)

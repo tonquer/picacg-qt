@@ -48,13 +48,20 @@ class SearchLineEdit(QLineEdit):
         self.help.localWidget.Switch.connect(self.SetEnable)
         # self.listView.setModel(self.model)
         self.isNotReload = False
-        self.help.authorWidget.SetState(False)
+        # self.help.authorWidget.SetState(False)
         # self.help.tagWidget.SetState(False)
         self.help.categoryWidget.SetState(False)
+        self.isShowSearch = True
 
     @property
     def listView(self):
         return self.help.listView
+
+    def SetDbError(self):
+        self.isShowSearch = False
+        self.help.localWidget.SetState(False)
+        self.SetEnable(False)
+        return
 
     def SetEnable(self, isLocal):
         self.help.titleLabel.setVisible(isLocal)
@@ -151,6 +158,8 @@ class SearchLineEdit(QLineEdit):
 
     def ShowListView(self):
         if not self.widget.isHidden():
+            return
+        if not self.isShowSearch:
             return
         self.widget.show()
         pos = self.mapToGlobal(self.pos())

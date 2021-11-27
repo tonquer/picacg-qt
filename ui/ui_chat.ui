@@ -13,6 +13,7 @@
   <property name="windowTitle">
    <string>聊天室</string>
   </property>
+
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="UserListWidget" name="listWidget"/>

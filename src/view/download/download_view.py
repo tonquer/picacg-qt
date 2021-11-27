@@ -7,6 +7,7 @@ from PySide6.QtGui import QCursor, QDesktopServices, QAction
 from PySide6.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem
 
 from config import config
+from config.setting import Setting
 from interface.ui_download import Ui_Download
 from qt_owner import QtOwner
 from tools.log import Log
@@ -54,7 +55,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download):
         self.order = {}
 
         self.db = DownloadDb()
-        self.radioButton.setChecked(config.DownloadAuto)
+        self.radioButton.setChecked(Setting.DownloadAuto.value)
         datas = self.db.LoadDownload(self)
         for task in datas.values():
             self.downloadDict[task.bookId] = task
@@ -545,7 +546,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download):
             task.SetConvertStatu(task.Pause)
 
     def SetAutoConvert(self):
-        config.DownloadAuto = int(self.radioButton.isChecked())
+        Setting.DownloadAuto.SetValue(int(self.radioButton.isChecked()))
 
     def Sort(self, col):
         order = self.order.get(col, 1)

@@ -66,13 +66,13 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
     def CopyIos(self):
         clipboard = QApplication.clipboard()
         clipboard.setText(self.iosLink)
-        QtOwner().ShowMsg(self.tr("复制IOS下载地址"))
+        QtOwner().ShowMsg(Str.GetStr(Str.CopyIos))
         return
 
     def CopyAndroid(self):
         clipboard = QApplication.clipboard()
         clipboard.setText(self.androidLink)
-        QtOwner().ShowMsg(self.tr("复制Android下载地址"))
+        QtOwner().ShowMsg(Str.GetStr(Str.CopyAndroid))
         return
 
     # def OpenAutor(self):
@@ -129,7 +129,7 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
                 if data.get("data").get("game").get("ios"):
                     self.icon_4.setVisible(True)
                 self.description.setPlainText(description)
-                self.picture.setText(self.tr("图片加载中..."))
+                self.picture.setText(Str.GetStr(Str.LoadingPicture))
                 fileServer = data.get("data").get("game").get("icon").get("fileServer")
                 path = data.get("data").get("game").get("icon").get("path")
                 self.url = fileServer
@@ -170,7 +170,9 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
             self.pictureData = data
             pic = QtGui.QPixmap()
             pic.loadFromData(data)
-            newPic = pic.scaled(self.picture.size(), QtCore.Qt.KeepAspectRatio,  Qt.SmoothTransformation)
+            radio = self.devicePixelRatio()
+            pic.setDevicePixelRatio(radio)
+            newPic = pic.scaled(self.picture.size()*radio, QtCore.Qt.KeepAspectRatio,  Qt.SmoothTransformation)
             self.picture.setPixmap(newPic)
             # self.picture.setScaledContents(True)
         else:
@@ -190,6 +192,7 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
             self.listPictureInfo[backId] = data
             pic = QtGui.QPixmap()
             pic.loadFromData(data)
+            pic.setDevicePixelRatio(self.devicePixelRatio())
             newPic = pic.scaled(QSize(self.width()-40, 300), QtCore.Qt.KeepAspectRatio,  Qt.SmoothTransformation)
             widget.setPixmap(newPic)
 

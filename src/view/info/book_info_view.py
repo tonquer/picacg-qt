@@ -3,6 +3,7 @@ from PySide6.QtCore import Qt, QSize, QEvent
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
 from PySide6.QtWidgets import QListWidgetItem, QLabel
 
+from config.setting import Setting
 from interface.ui_book_info import Ui_BookInfo
 from qt_owner import QtOwner
 from server import req, ToolUtil, config, Status
@@ -84,7 +85,6 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.starButton.setIcon(QIcon(":/png/icon/icon_bookmark_off.png"))
         else:
             self.starButton.setIcon(QIcon(":/png/icon/icon_bookmark_on.png"))
-
 
     def Clear(self):
         self.ClearTask()
@@ -190,11 +190,28 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.pictureData = data
             pic = QtGui.QPixmap()
             pic.loadFromData(data)
-            newPic = pic.scaled(self.picture.size(), QtCore.Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            radio = self.devicePixelRatio()
+            pic.setDevicePixelRatio(radio)
+            newPic = pic.scaled(self.picture.size()*radio, QtCore.Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.picture.setPixmap(newPic)
             # self.picture.setScaledContents(True)
+            if Setting.CoverIsOpenWaifu.value:
+                w, h = ToolUtil.GetPictureSize(self.pictureData)
+                if max(w, h) <= Setting.CoverMaxNum.value:
+                    model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value)
+                    self.AddConvertTask(self.path, self.pictureData, model, self.Waifu2xPictureBack)
         else:
             self.picture.setText(Str.GetStr(Str.LoadingFail))
+        return
+
+    def Waifu2xPictureBack(self, data, waifuId, index, tick):
+        if data:
+            pic = QtGui.QPixmap()
+            pic.loadFromData(data)
+            radio = self.devicePixelRatio()
+            pic.setDevicePixelRatio(radio)
+            newPic = pic.scaled(self.picture.size()*radio, QtCore.Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.picture.setPixmap(newPic)
         return
 
     def GetEpsBack(self, raw):
@@ -283,12 +300,11 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def LoadHistory(self):
         info = QtOwner().historyView.GetHistory(self.bookId)
         if not info:
-            self.startRead.setText(self.tr("观看第1章"))
+            self.startRead.setText(Str.GetStr(Str.LookFirst))
             return
         if self.lastEpsId == info.epsId:
             self.lastIndex = info.picIndex
-            self.startRead.setText(
-                self.tr("上次看到第") + str(self.lastEpsId + 1) + self.tr("章") + str(info.picIndex + 1) + self.tr("页"))
+            self.startRead.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
             return
 
         if self.lastEpsId >= 0:
@@ -306,8 +322,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         item.setBackground(QColor(238, 162, 164))
         self.lastEpsId = info.epsId
         self.lastIndex = info.picIndex
-        self.startRead.setText(
-            self.tr("上次看到第") + str(self.lastEpsId + 1) + self.tr("章") + str(info.picIndex + 1) + self.tr("页"))
+        self.startRead.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
 
     def ClickCategoriesItem(self, item):
         text = item.text()

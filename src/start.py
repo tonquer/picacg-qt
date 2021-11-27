@@ -5,6 +5,9 @@ import sys
 # macOS 修复
 import time
 
+from PySide6.QtCore import Qt, QCoreApplication
+from PySide6.QtGui import QGuiApplication
+
 from config import config
 from config.setting import Setting
 from qt_owner import QtOwner
@@ -39,8 +42,20 @@ DbBook()
 if __name__ == "__main__":
     Log.Init()
     Setting.Init()
+    Setting.InitLoadSetting()
     Str.Reload()
-    # QtWidgets.QApplication.testAttribute(Qt.HighDpiScaleFactorRoundingPolicy)
+
+    indexV = Setting.ScaleLevel.GetIndexV()
+    if indexV and indexV != "Auto":
+        if indexV == 100:
+            QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
+        else:
+            os.environ["QT_SCALE_FACTOR"] = str(indexV / 100)
+
+    # print(QtWidgets.QApplication.testAttribute(Qt.AA_EnableHighDpiScaling))
+    # print(QtWidgets.QApplication.testAttribute(Qt.AA_UseHighDpiPixmaps))
+    # QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    # print(QGuiApplication.highDpiScaleFactorRoundingPolicy())
     # QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
     try:

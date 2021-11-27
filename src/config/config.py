@@ -7,19 +7,13 @@ BuildVersion = "45"
 Accept = "application/vnd.picacomic.com.v1+json"
 Agent = "okhttp/3.8.1"
 Platform = "android"
-
-IsUpdate = 1                   # 是否在启动时检查更新
-Language = 'Chinese-Simplified'           # 选择的语言
-ThreadNum = 10                 # 线程
-DownloadThreadNum = 5          # 下载线程
 ImageQuality = "original"      # 画质，original, low, medium, high
 Uuid = "defaultUuid"
-IsHttpProxy = 0                # 是否启用代理
-HttpProxy = ""                 # 代理
-ChatProxy = 1                  # 聊天室启用代理
-ChatSavePath = "chat"
 
-SavePath = ''
+
+ThreadNum = 10                 # 线程
+DownloadThreadNum = 5          # 下载线程
+ChatSavePath = "chat"
 SavePathDir = "commies"        # 下载目录
 ResetCnt = 5                   # 下载重试次数
 
@@ -31,10 +25,10 @@ PreLook = 4                    # 预显示
 
 IsLoadingPicture = True
 
-UpdateUrl = "https://github.com/tonquer/picacg-windows/releases/latest"
-UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-windows/releases/latest"
-UpdateUrl2 = "https://github.com/tonquer/picacg-windows/releases"
-UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-windows/releases"
+UpdateUrl = "https://github.com/tonquer/picacg-qt/releases/latest"
+UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-qt/releases/latest"
+UpdateUrl2 = "https://github.com/tonquer/picacg-qt/releases"
+UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-qt/releases"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data/"
@@ -47,52 +41,26 @@ UpdateVersion = "v1.2.8"
 CanWaifu2x = True
 ErrorMsg = ""
 
-Encode = 0
+Encode = 0             # 当前正在使用的索引
 EncodeGpu = ""
-SelectEncodeGpu = ""
 
-Waifu2xThread = 2
 Format = "jpg"
 Waifu2xPath = "waifu2x"
-IsOpenWaifu = 0
 
 ThemeText = "dark"  # 主题
-ThemeIndex = 0  # 主题
+ThemeIndex = 0  # 主题·
 CurrentSetTheme = 0
 
-LogIndex = 0    # Warn Info Debug
 IsTips = 1
 
-ChatSendAction = 2
-
-DownloadModel = 0
-DownloadNoise = 3
-DownloadScale = 2.0
-DownloadAuto = 0
-
-# 看图模式
-LookModel = 0
-LookNoise = 3
-LookScale = 2.0
-
-LookReadMode = 1      # 看图模式
-# LookReadScale = 2     # 默认缩放
-LookReadFull = 0      # 是否全屏
-
-TurnSpeed = 5000   # 翻页速度
-ScrollSpeed = 400  # 滚动速度
-
 # ISSUES
-Issues = "https://github.com/tonquer/picacg-windows/issues"
+Issues = "https://github.com/tonquer/picacg-qt/issues"
 
 # 代理与分流相关
-ProxyUrl = "https://github.com/tonquer/picacg-windows/discussions/48"
+ProxyUrl = "https://github.com/tonquer/picacg-qt/discussions/48"
 
 # Waifu2x相关
-Waifu2xUrl = "https://github.com/tonquer/picacg-windows/discussions/76"
-
-ProxySelectIndex = 1
-IsUseHttps = 1   # 使用Https
+Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 
 Address = ['104.20.180.50', '104.20.181.50']  # 分类2，3 Ip列表
 ImageServer = 'storage.wikawika.xyz'          # 分流2，3 使用的图片服务器
@@ -109,7 +77,3 @@ ImageDomain = [
     "pica-pica.wikawika.xyz",
     "www.picacomic.com"
 ]
-
-# https://www.cloudflare.com/zh-cn/ips/
-# https://cloud.tencent.com/developer/article/1675133
-PreferCDNIP = "1.0.0.1"   # CloudFlare的优选Ip，

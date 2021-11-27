@@ -32,15 +32,28 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.allFavoriteIds = dict()
         self.maxSortId = 0
         self.bookList.isDelMenu = True
+        self.bookList.LoadCallBack = self.LoadNextPage
         self.bookList.DelCallBack = self.DelCallBack
         self.resetCnt = 5
+        self.sortIdCombox.currentIndexChanged.connect(self.RefreshDataFocus)
+        self.sortCombox.currentIndexChanged.connect(self.RefreshDataFocus)
+        self.sortKeyCombox.currentIndexChanged.connect(self.RefreshDataFocus)
 
-    def close(self):
-        self.timer.close()
-        super(self.__class__, self).close()
+        # TODO 判断是否使用本地
+        self.isLocal = False
+        self.SetLocal(False)
 
     def SwitchCurrent(self, **kwargs):
-        self.RefreshDataFocus()
+        refresh = kwargs.get("refresh")
+        if refresh or self.bookList.count() <= 0:
+            self.RefreshDataFocus()
+
+    def SetLocal(self, isLocal):
+        self.isLocal = isLocal
+        self.sortCombox.setVisible(not isLocal)
+        self.sortIdCombox.setVisible(isLocal)
+        self.sortKeyCombox.setVisible(isLocal)
+        return
 
     def UpdatePageNum(self):
         maxFovorite = len(self.allFavoriteIds)
@@ -52,12 +65,19 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.bookList.UpdateState()
 
     def InitFavorite(self):
+        if not QtOwner().isUseDb:
+            self.SetLocal(False)
+            return
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectFavorite, self.LoadAllFavoriteBack)
         return
 
     def LoadAllFavoriteBack(self, data):
-        for _id in data:
-            self.allFavoriteIds[_id] = 0
+        if not data and not QtOwner().isUseDb:
+            return
+        for _id, sordId in data:
+            self.allFavoriteIds[_id] = sordId
+        if self.allFavoriteIds:
+            self.maxSortId = max(self.allFavoriteIds.values()) + 1
         self.UpdatePageNum()
         self.LoadPage(1)
         return
@@ -86,8 +106,9 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
             info = BookMgr().books.get(bookId)
             if info:
                 info.isFavourite = False
-            sql = "delete from favorite where id='{}' and user='{}';".format(bookId, User().userId)
-            self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)
+            if self.isLocal:
+                sql = "delete from favorite where id='{}' and user='{}';".format(bookId, User().userId)
+                self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)
             if bookId in self.allFavoriteIds:
                 self.allFavoriteIds.pop(bookId)
             self.RefreshDataFocus()
@@ -97,7 +118,8 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
             sortId = self.allFavoriteIds[bookId]
         else:
             sortId = self.UpdateSortId(bookId)
-        self.AddSqlTask("book", [(bookId, sortId)], SqlServer.TaskTypeUpdateFavorite)
+        if self.isLocal:
+            self.AddSqlTask("book", [(bookId, sortId)], SqlServer.TaskTypeUpdateFavorite)
 
     def LoadNextPage(self):
         self.bookList.page += 1
@@ -118,17 +140,40 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
 
     def RefreshData(self):
         QtOwner().ShowLoading()
-        sortId1 = self.comboBox.currentIndex()
-        sortId2 = self.comboBox_2.currentIndex()
-        sql = SqlServer.SearchFavorite(self.bookList.page, sortId1, sortId2)
-        self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.SeachBack)
+        sortId = self.sortIdCombox.currentIndex()
+        sortKey = self.sortKeyCombox.currentIndex()
+        if self.isLocal:
+            sql = SqlServer.SearchFavorite(self.bookList.page, sortKey, sortId)
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.SearchLocalBack)
+        else:
+            sort = self.sortList[self.sortCombox.currentIndex()]
+            self.AddHttpTask(req.FavoritesReq(self.bookList.page, sort), self.SearchBack, self.bookList.page)
 
-    def SeachBack(self, bookList):
+    def SearchLocalBack(self, bookList):
         QtOwner().CloseLoading()
         for info in bookList:
             self.bookList.AddBookItemByBook(info, isShowHistory=True)
         self.UpdatePageNum()
         return
+
+    def SearchBack(self, raw, page):
+        QtOwner().CloseLoading()
+        try:
+            data = raw["data"]
+            data = json.loads(data)
+            info = data.get("data", {}).get("comics", {})
+            total = info["total"]
+            page = info["page"]
+            pages = info["pages"]
+            self.bookList.UpdateState()
+            self.bookList.UpdatePage(page, pages)
+            self.spinBox.setMaximum(pages)
+            self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(total))
+            for bookInfo in info.get("docs", []):
+                bookId = bookInfo.get("_id")
+                self.bookList.AddBookByDict(bookInfo)
+        except Exception as es:
+            Log.Error(es)
 
     def UpdatePagesBack(self, raw, page):
         loadPage = 0
@@ -136,15 +181,30 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
             data = raw["data"]
             data = json.loads(data)
             info = data.get("data", {}).get("comics", {})
-            # total = info["total"]
+            total = info["total"]
             page = info["page"]
             pages = info["pages"]
             bookIds = []
+
+            # 判断一下 如果数量相等，并且这一页的数据全有，则不再做更新数据
+            isContinue = False
+            updateDict = {}
+            maxSortId = self.maxSortId
             for bookInfo in info.get("docs", []):
                 bookId = bookInfo.get("_id")
                 self.reupdateBookIds.add(bookId)
-                sortId = self.UpdateSortId(bookId)
-                bookIds.append((bookId, sortId))
+                maxSortId += 1
+                updateDict[bookId] = maxSortId
+                bookIds.append((bookId, maxSortId))
+                if bookId not in self.allFavoriteIds:
+                    isContinue = True
+
+            #
+            if page == 1 and isContinue == False and len(self.allFavoriteIds) == total:
+                self.LoadPageComplete(False)
+                return
+            self.maxSortId = maxSortId
+            self.allFavoriteIds.update(updateDict)
             self.AddSqlTask("book", bookIds, SqlServer.TaskTypeUpdateFavorite)
             if pages > page:
                 loadPage = page + 1
@@ -153,19 +213,21 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
             Log.Error(es)
             loadPage = page
             self.resetCnt -= 1
-        finally:
-            if self.resetCnt <= 0:
-                self.msgLabel.setText(Str.GetStr(Str.Error))
+        if self.resetCnt <= 0:
+            self.msgLabel.setText(Str.GetStr(Str.Error))
+            self.SetLocal(False)
+        else:
+            if loadPage > 0:
+                self.LoadPage(loadPage)
             else:
-                if loadPage > 0:
-                    self.LoadPage(loadPage)
-                else:
-                    self.LoadPageComplete()
+                self.LoadPageComplete()
 
-    def LoadPageComplete(self):
+    def LoadPageComplete(self, isUpdate=True):
+        self.SetLocal(True)
         self.msgLabel.setText(Str.GetStr(Str.Updated))
-        delBookIds = set(self.allFavoriteIds.keys()) - self.reupdateBookIds
-        for bookId in delBookIds:
-            self.allFavoriteIds.pop(bookId)
-            sql = "delete from favorite where id='{}' and user='{}';".format(bookId, User().userId)
-            self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)
+        if isUpdate:
+            delBookIds = set(self.allFavoriteIds.keys()) - self.reupdateBookIds
+            for bookId in delBookIds:
+                self.allFavoriteIds.pop(bookId)
+                sql = "delete from favorite where id='{}' and user='{}';".format(bookId, User().userId)
+                self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)

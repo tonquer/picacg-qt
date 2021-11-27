@@ -1,18 +1,22 @@
+import sys
 from functools import partial
 
-from PySide6.QtCore import Qt, QUrl
-from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QDesktopServices
-from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel, QMainWindow, QMessageBox
+from PySide6.QtCore import Qt, QUrl, QEvent, QPoint
+from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QDesktopServices, QPalette
+from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel, QMainWindow, QMessageBox, QApplication
 
 from component.dialog.loading_dialog import LoadingDialog
+from component.label.msg_label import MsgLabel
 from component.widget.frame_less_widget import FrameLessWidget
 from config import config
+from config.setting import Setting
 from interface.ui_main_windows import Ui_MainWindow
 from qt_owner import QtOwner
 from server import req
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from tools.log import Log
+from tools.str import Str
 from view.download.download_dir_view import DownloadDirView
 
 
@@ -25,15 +29,21 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         QtOwner().SetOwner(self)
         self.setupUi(self)
         self.resize(600, 600)
-        self.setWindowTitle(self.tr("PicACG"))
+        self.setWindowTitle("PicACG")
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
         # self.setAttribute(Qt.WA_TranslucentBackground)
 
-        desktop = QGuiApplication.primaryScreen().geometry()
+        screens = QGuiApplication.screens()
+        # print(screens[0].geometry(), screens[1].geometry())
+        if Setting.ScreenIndex.value >= len(screens):
+            desktop = QGuiApplication.primaryScreen().geometry()
+        else:
+            desktop = screens[Setting.ScreenIndex.value].geometry()
         self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-        self.move(desktop.width() // 8, desktop.height() // 8)
+        self.move(desktop.width() // 8+desktop.x(), desktop.height() // 8+desktop.y())
 
         # self.setAttribute(Qt.WA_StyledBackground, True)
+
         self.loadingDialog = LoadingDialog(self)
         self.__initWidget()
 
@@ -47,10 +57,8 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
 
         self.subStackWidget.setCurrentIndex(0)
         self.settingView.LoadSetting()
-        self.readView.LoadSetting()
+        # self.readView.LoadSetting()
 
-        self.updateUrl = [config.UpdateUrl, config.UpdateUrl2]
-        self.checkUpdateIndex = 0
 
     @property
     def subStackList(self):
@@ -75,7 +83,24 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         self.navigationWidget.gameButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.gameView)))
         self.navigationWidget.helpButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.helpView)))
 
-        # self.navigationWidget.chatButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.chatView)))
+    def RetranslateUi(self):
+        Ui_MainWindow.retranslateUi(self, self)
+        self.indexView.retranslateUi(self.indexView)
+        self.settingView.retranslateUi(self.settingView)
+        self.downloadView.retranslateUi(self.downloadView)
+        self.categoryView.retranslateUi(self.categoryView)
+        self.searchView.retranslateUi(self.searchView)
+        self.rankView.retranslateUi(self.rankView)
+        self.commentView.retranslateUi(self.commentView)
+        self.chatView.retranslateUi(self.chatView)
+        self.favorityView.retranslateUi(self.favorityView)
+        self.readView.retranslateUi(self.readView)
+        self.myCommentView.retranslateUi(self.myCommentView)
+        self.gameCommentView.retranslateUi(self.gameCommentView)
+        self.subCommentView.retranslateUi(self.subCommentView)
+        self.gameView.retranslateUi(self.gameView)
+        self.helpView.retranslateUi(self.helpView)
+        self.waifu2xToolView.retranslateUi(self.waifu2xToolView)
 
     def Init(self):
         IsCanUse = False
@@ -97,7 +122,7 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
             # if not gpuInfo or (gpuInfo and config.Encode < 0) or (gpuInfo and config.Encode >= len(gpuInfo)):
             #     config.Encode = 0
 
-            sts = waifu2x_vulkan.initSet(config.Encode, config.Waifu2xThread)
+            sts = waifu2x_vulkan.initSet(config.Encode, Setting.Waifu2xThread.value)
             Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(
                 config.Encode) + " version:" + waifu2x_vulkan.getVersion() + " code:" + str(sts))
         else:
@@ -107,20 +132,22 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         if not IsCanUse:
             self.settingView.checkBox.setEnabled(False)
             self.readView.frame.qtTool.checkBox.setEnabled(False)
-            config.DownloadAuto = 0
+            Setting.DownloadAuto.SetValue(0)
             self.downloadView.radioButton.setEnabled(False)
             self.waifu2xToolView.checkBox.setEnabled(False)
             self.waifu2xToolView.changeButton.setEnabled(False)
             self.waifu2xToolView.changeButton.setEnabled(False)
             self.waifu2xToolView.comboBox.setEnabled(False)
             self.waifu2xToolView.SetStatus(False)
-            config.IsOpenWaifu = 0
+            Setting.IsOpenWaifu.SetValue(0)
 
-        if config.IsUpdate:
-            self.InitUpdate()
+        if Setting.IsUpdate.value:
+            self.helpView.InitUpdate()
 
         self.searchView.InitWord()
-        if not config.SavePath:
+        self.msgLabel = MsgLabel(self)
+        self.msgLabel.hide()
+        if not Setting.SavePath.value:
             view = DownloadDirView(self)
             view.exec()
         self.OpenLoginView()
@@ -219,12 +246,19 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
     def closeEvent(self, a0) -> None:
         super().closeEvent(a0)
         # reply = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('提示'), self.tr('确定要退出吗？'))
-        reply = 0
-        if reply == 0:
-            a0.accept()
-            self.settingView.ExitSaveSetting(self.size())
-        else:
-            a0.ignore()
+        self.GetExitScreen()
+        a0.accept()
+
+    def GetExitScreen(self):
+        screens = QGuiApplication.screens()
+        # print(self.pos())
+        # for screen in screens:
+        #     print(screen.geometry())
+        screen = QGuiApplication.screenAt(self.pos()+QPoint(self.width()//2, self.height()//2))
+        if screen in screens:
+            index = screens.index(screen)
+            Setting.ScreenIndex.SetValue(index)
+            Log.Info("Exit screen index:{}".format(str(index)))
 
     def CheckShowMenu(self):
         if self.navigationWidget.isHidden():
@@ -236,7 +270,7 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
     def keyReleaseEvent(self, event) -> None:
         if event.key() == Qt.Key_Escape:
             self.SwitchWidgetLast()
-        return FrameLessWidget.keyReleaseEvent(self, event)
+        return super(self.__class__, self).keyReleaseEvent(event)
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.ForwardButton:
@@ -244,7 +278,21 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         elif event.button() == Qt.BackButton:
             self.SwitchWidgetLast()
         self.searchView.lineEdit.CheckClick(event.pos())
-        return QMainWindow.mousePressEvent(self, event)
+        return super(self.__class__, self).mousePressEvent(event)
+    #
+    # def changeEvent(self, ev):
+    #     if sys.platform == 'darwin':
+    #         OSX_LIGHT_MODE = 236
+    #         OSX_DARK_MODE = 50
+    #         if ev.type() == QEvent.PaletteChange:
+    #             bg = self.palette().color(QPalette.Active, QPalette.Window)
+    #             if bg.lightness() == OSX_LIGHT_MODE:
+    #                 print("MacOS light theme")
+    #                 return
+    #             elif bg.lightness() == OSX_DARK_MODE:
+    #                 print("MacOS dark theme")
+    #                 return
+    #     return super(self.__class__, self).changeEvent(ev)
 
     def nativeEvent(self, eventType, message):
         # print(eventType, message)
@@ -257,32 +305,15 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
 
             msg = ctypes.wintypes.MSG.from_address(message.__int__())
             # print(msg.message, self.GetWinSysColor())
-            if msg.message == 26:
-               if config.ThemeIndex == 0:
-                   self.settingView.SetTheme()
+            if msg.message == 26 and config.ThemeIndex == 0:
+                self.settingView.SetTheme()
 
         return super(self.__class__, self).nativeEvent(eventType, message)
 
     def Close(self):
+        # TODO 停止所有的定时器以及线程
+        self.loadingDialog.close()
         self.downloadView.Close()
         SqlServer().Stop()
         # QtTask().Stop()
 
-    def InitUpdate(self):
-        if self.checkUpdateIndex > len(self.updateUrl) -1:
-            return
-        self.AddHttpTask(req.CheckUpdateReq(self.updateUrl[self.checkUpdateIndex]), self.InitUpdateBack)
-
-    def InitUpdateBack(self, raw):
-        try:
-            data = raw["data"]
-            if not data:
-                self.checkUpdateIndex += 1
-                self.InitUpdate()
-                return
-            r = QMessageBox.information(self, self.tr("更新"), self.tr("当前版本") + config.UpdateVersion + ", "+ self.tr("检查到更新，是否前往更新\n") + data,
-                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-            if r == QMessageBox.Yes:
-                QDesktopServices.openUrl(QUrl(self.updateUrl[self.checkUpdateIndex]))
-        except Exception as es:
-            Log.Error(es)

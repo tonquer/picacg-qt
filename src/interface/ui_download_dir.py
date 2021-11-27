@@ -15,7 +15,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFormLayout, QHBoxLayout, QLabel,
+from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
     QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
     QVBoxLayout, QWidget)
 
@@ -23,7 +23,7 @@ class Ui_DownloadDir(object):
     def setupUi(self, DownloadDir):
         if not DownloadDir.objectName():
             DownloadDir.setObjectName(u"DownloadDir")
-        DownloadDir.resize(400, 300)
+        DownloadDir.resize(401, 300)
         self.verticalLayout = QVBoxLayout(DownloadDir)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -56,50 +56,50 @@ class Ui_DownloadDir(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.formLayout = QFormLayout()
-        self.formLayout.setObjectName(u"formLayout")
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
         self.label_3 = QLabel(DownloadDir)
         self.label_3.setObjectName(u"label_3")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label_3)
+        self.gridLayout.addWidget(self.label_3, 0, 0, 1, 1)
 
         self.downloadDir = QLabel(DownloadDir)
         self.downloadDir.setObjectName(u"downloadDir")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.downloadDir)
+        self.gridLayout.addWidget(self.downloadDir, 0, 1, 1, 1)
 
         self.label_5 = QLabel(DownloadDir)
         self.label_5.setObjectName(u"label_5")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_5)
+        self.gridLayout.addWidget(self.label_5, 1, 0, 1, 1)
 
         self.cacheDir = QLabel(DownloadDir)
         self.cacheDir.setObjectName(u"cacheDir")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.cacheDir)
+        self.gridLayout.addWidget(self.cacheDir, 1, 1, 1, 1)
 
         self.label_7 = QLabel(DownloadDir)
         self.label_7.setObjectName(u"label_7")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_7)
+        self.gridLayout.addWidget(self.label_7, 2, 0, 1, 1)
 
         self.chatDir = QLabel(DownloadDir)
         self.chatDir.setObjectName(u"chatDir")
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.chatDir)
+        self.gridLayout.addWidget(self.chatDir, 2, 1, 1, 1)
 
         self.label_4 = QLabel(DownloadDir)
         self.label_4.setObjectName(u"label_4")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_4)
+        self.gridLayout.addWidget(self.label_4, 3, 0, 1, 1)
 
         self.waifu2xDir = QLabel(DownloadDir)
         self.waifu2xDir.setObjectName(u"waifu2xDir")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.waifu2xDir)
+        self.gridLayout.addWidget(self.waifu2xDir, 3, 1, 1, 1)
 
 
-        self.verticalLayout.addLayout(self.formLayout)
+        self.verticalLayout.addLayout(self.gridLayout)
 
         self.saveDir = QPushButton(DownloadDir)
         self.saveDir.setObjectName(u"saveDir")

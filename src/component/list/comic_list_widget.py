@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QListWidgetItem, QMenu, QApplication
 from component.list.base_list_widget import BaseListWidget
 from component.widget.comic_item_widget import ComicItemWidget
 from config import config
+from config.setting import Setting
 from qt_owner import QtOwner
 from tools.status import Status
 from tools.str import Str
@@ -32,20 +33,28 @@ class ComicListWidget(BaseListWidget):
 
     def SelectMenuBook(self, pos):
         index = self.indexAt(pos)
-        if index.isValid():
+        widget = self.indexWidget(index)
+        if index.isValid() and widget:
             popMenu = QMenu(self)
-            action = popMenu.addAction(self.tr("打开"))
+            action = popMenu.addAction(Str.GetStr(Str.Open))
             action.triggered.connect(partial(self.OpenBookInfoHandler, index))
-            action = popMenu.addAction(self.tr("查看封面"))
+            action = popMenu.addAction(Str.GetStr(Str.LookCover))
             action.triggered.connect(partial(self.OpenPicture, index))
-            action = popMenu.addAction(self.tr("重下封面"))
+            action = popMenu.addAction(Str.GetStr(Str.ReDownloadCover))
             action.triggered.connect(partial(self.ReDownloadPicture, index))
-            action = popMenu.addAction(self.tr("复制标题"))
+            if config.CanWaifu2x and widget.picData:
+                if not widget.isWaifu2x:
+                    action = popMenu.addAction(Str.GetStr(Str.Waifu2xConvert))
+                    action.triggered.connect(partial(self.Waifu2xPicture, index))
+                else:
+                    action = popMenu.addAction(Str.GetStr(Str.DelWaifu2xConvert))
+                    action.triggered.connect(partial(self.CancleWaifu2xPicture, index))
+            action = popMenu.addAction(Str.GetStr(Str.CopyTitle))
             action.triggered.connect(partial(self.CopyHandler, index))
-            action = popMenu.addAction(self.tr("下载"))
+            action = popMenu.addAction(Str.GetStr(Str.Download))
             action.triggered.connect(partial(self.DownloadHandler, index))
             if self.isDelMenu:
-                action = popMenu.addAction(self.tr("删除"))
+                action = popMenu.addAction(Str.GetStr(Str.Delete))
                 action.triggered.connect(partial(self.DelHandler, index))
             popMenu.exec_(QCursor.pos())
         return
@@ -83,8 +92,7 @@ class ComicListWidget(BaseListWidget):
         if isShowHistory:
             info = QtOwner().owner.historyView.GetHistory(_id)
             if info:
-                categories = self.tr("上次观看到第") + str(info.epsId + 1) + self.tr("章") + "/" + str(v.epsCount) + self.tr(
-                    "章")
+                categories = Str.GetStr(Str.LastLook) + str(info.epsId + 1) + Str.GetStr(Str.Chapter) + "/" + str(v.epsCount) + Str.GetStr(Str.Chapter)
         self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished)
 
     def AddBookItemByHistory(self, v):
@@ -92,7 +100,7 @@ class ComicListWidget(BaseListWidget):
         title = v.name
         path = v.path
         url = v.url
-        categories = "{}看过".format(ToolUtil.GetUpdateStrByTick(v.tick))
+        categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.tick), Str.GetStr(Str.Looked))
         self.AddBookItem(_id, title, categories, url, path)
 
     def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished=""):
@@ -120,7 +128,7 @@ class ComicListWidget(BaseListWidget):
         if pagesCount:
             title += "<font color=#d5577c>{}</font>".format("("+str(pagesCount)+"P)")
         if finished:
-            title += "<font color=#d5577c>{}</font>".format("(完)")
+            title += "<font color=#d5577c>{}</font>".format("({})".format(Str.GetStr(Str.ComicFinished)))
 
         item = QListWidgetItem(self)
         item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
@@ -138,6 +146,10 @@ class ComicListWidget(BaseListWidget):
             if not widget:
                 return
             widget.SetPicture(data)
+            if Setting.CoverIsOpenWaifu.value:
+                item = self.item(index)
+                indexModel = self.indexFromItem(item)
+                self.Waifu2xPicture(indexModel, True)
             pass
         else:
             item = self.item(index)
@@ -178,6 +190,25 @@ class ComicListWidget(BaseListWidget):
                 widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
                 self.AddDownloadTask(widget.url, widget.path, None, self.LoadingPictureComplete, True, count, False)
                 pass
+
+    def Waifu2xPicture(self, index, isIfSize=False):
+        widget = self.indexWidget(index)
+        if widget and widget.picData:
+            w, h = ToolUtil.GetPictureSize(widget.picData)
+            if max(w, h) <= Setting.CoverMaxNum.value or not isIfSize:
+                model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value)
+                self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index)
+
+    def CancleWaifu2xPicture(self, index):
+        widget = self.indexWidget(index)
+        if widget.isWaifu2x and widget.picData:
+            widget.SetPicture(widget.picData)
+
+    def Waifu2xPictureBack(self, data, waifuId, index, tick):
+        widget = self.indexWidget(index)
+        if data and widget:
+            widget.SetWaifu2xData(data)
+        return
 
     def CopyHandler(self, index):
         widget = self.indexWidget(index)

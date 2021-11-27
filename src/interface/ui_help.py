@@ -15,7 +15,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFormLayout, QHBoxLayout, QLabel,
+from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
     QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
     QWidget)
 import images_rc
@@ -24,7 +24,9 @@ class Ui_Help(object):
     def setupUi(self, Help):
         if not Help.objectName():
             Help.setObjectName(u"Help")
-        Help.resize(426, 516)
+        Help.resize(545, 582)
+        Help.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
+"QScrollArea {background-color:transparent;}")
         self.verticalLayout = QVBoxLayout(Help)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout = QHBoxLayout()
@@ -49,11 +51,15 @@ class Ui_Help(object):
 
         self.label_2 = QLabel(self.widget)
         self.label_2.setObjectName(u"label_2")
+        font = QFont()
+        font.setPointSize(12)
+        self.label_2.setFont(font)
 
         self.verticalLayout_2.addWidget(self.label_2, 0, Qt.AlignHCenter)
 
         self.label_3 = QLabel(self.widget)
         self.label_3.setObjectName(u"label_3")
+        self.label_3.setFont(font)
 
         self.verticalLayout_2.addWidget(self.label_3, 0, Qt.AlignHCenter)
 
@@ -64,57 +70,92 @@ class Ui_Help(object):
 
         self.widget_2 = QWidget(self.widget)
         self.widget_2.setObjectName(u"widget_2")
-        self.formLayout = QFormLayout(self.widget_2)
-        self.formLayout.setObjectName(u"formLayout")
-        self.label_4 = QLabel(self.widget_2)
-        self.label_4.setObjectName(u"label_4")
-
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label_4)
-
-        self.version = QLabel(self.widget_2)
-        self.version.setObjectName(u"version")
-
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.version)
-
-        self.label_6 = QLabel(self.widget_2)
-        self.label_6.setObjectName(u"label_6")
-
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_6)
-
-        self.waifu2x = QLabel(self.widget_2)
-        self.waifu2x.setObjectName(u"waifu2x")
-
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.waifu2x)
-
-        self.label_8 = QLabel(self.widget_2)
-        self.label_8.setObjectName(u"label_8")
-
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_8)
-
-        self.local = QLabel(self.widget_2)
-        self.local.setObjectName(u"local")
-
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.local)
-
+        self.gridLayout = QGridLayout(self.widget_2)
+        self.gridLayout.setObjectName(u"gridLayout")
         self.label_5 = QLabel(self.widget_2)
         self.label_5.setObjectName(u"label_5")
+        self.label_5.setMinimumSize(QSize(80, 50))
+        self.label_5.setFont(font)
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_5)
+        self.gridLayout.addWidget(self.label_5, 3, 0, 1, 1)
 
-        self.localNum = QLabel(self.widget_2)
-        self.localNum.setObjectName(u"localNum")
+        self.verCheck = QPushButton(self.widget_2)
+        self.verCheck.setObjectName(u"verCheck")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.localNum)
-
-        self.label_7 = QLabel(self.widget_2)
-        self.label_7.setObjectName(u"label_7")
-
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_7)
+        self.gridLayout.addWidget(self.verCheck, 1, 2, 1, 1)
 
         self.logButton = QPushButton(self.widget_2)
         self.logButton.setObjectName(u"logButton")
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.logButton)
+        self.gridLayout.addWidget(self.logButton, 5, 2, 1, 1)
+
+        self.label_7 = QLabel(self.widget_2)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setMinimumSize(QSize(80, 50))
+        self.label_7.setFont(font)
+
+        self.gridLayout.addWidget(self.label_7, 5, 0, 1, 1)
+
+        self.localTime = QLabel(self.widget_2)
+        self.localTime.setObjectName(u"localTime")
+        self.localTime.setFont(font)
+
+        self.gridLayout.addWidget(self.localTime, 4, 1, 1, 1)
+
+        self.dbCheck = QPushButton(self.widget_2)
+        self.dbCheck.setObjectName(u"dbCheck")
+
+        self.gridLayout.addWidget(self.dbCheck, 4, 2, 1, 1)
+
+        self.label_4 = QLabel(self.widget_2)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setMinimumSize(QSize(80, 50))
+        self.label_4.setFont(font)
+
+        self.gridLayout.addWidget(self.label_4, 0, 0, 1, 1)
+
+        self.localNum = QLabel(self.widget_2)
+        self.localNum.setObjectName(u"localNum")
+        self.localNum.setFont(font)
+
+        self.gridLayout.addWidget(self.localNum, 3, 1, 1, 1)
+
+        self.label_9 = QLabel(self.widget_2)
+        self.label_9.setObjectName(u"label_9")
+        self.label_9.setFont(font)
+
+        self.gridLayout.addWidget(self.label_9, 1, 0, 1, 1)
+
+        self.version = QLabel(self.widget_2)
+        self.version.setObjectName(u"version")
+        self.version.setFont(font)
+
+        self.gridLayout.addWidget(self.version, 0, 1, 1, 1)
+
+        self.label_6 = QLabel(self.widget_2)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setMinimumSize(QSize(80, 50))
+        self.label_6.setFont(font)
+
+        self.gridLayout.addWidget(self.label_6, 2, 0, 1, 1)
+
+        self.label_11 = QLabel(self.widget_2)
+        self.label_11.setObjectName(u"label_11")
+        self.label_11.setFont(font)
+
+        self.gridLayout.addWidget(self.label_11, 4, 0, 1, 1)
+
+        self.label_10 = QLabel(self.widget_2)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setFont(font)
+
+        self.gridLayout.addWidget(self.label_10, 1, 1, 1, 1)
+
+        self.waifu2x = QLabel(self.widget_2)
+        self.waifu2x.setObjectName(u"waifu2x")
+        self.waifu2x.setFont(font)
+
+        self.gridLayout.addWidget(self.waifu2x, 2, 1, 1, 1)
 
 
         self.verticalLayout_2.addWidget(self.widget_2)
@@ -140,20 +181,24 @@ class Ui_Help(object):
     # setupUi
 
     def retranslateUi(self, Help):
-        Help.setWindowTitle(QCoreApplication.translate("Help", u"Form", None))
+        Help.setWindowTitle(QCoreApplication.translate("Help", u"\u5e2e\u52a9", None))
         self.label.setText("")
         self.label_2.setText(QCoreApplication.translate("Help", u"\u9700\u8981\u53cd\u9988\u4f7f\u7528\u8fc7\u7a0b\u4e2d\u7684\u95ee\u9898\uff1f", None))
         self.label_3.setText(QCoreApplication.translate("Help", u"\u60f3\u63d0\u4f9b\u4e00\u4e9b\u5efa\u8bae\uff1f", None))
         self.pushButton.setText(QCoreApplication.translate("Help", u"Github Issue", None))
+        self.label_5.setText(QCoreApplication.translate("Help", u"\u672c\u5730\u5e93\u6570\u91cf:", None))
+        self.verCheck.setText(QCoreApplication.translate("Help", u"\u68c0\u6d4b\u66f4\u65b0", None))
+        self.logButton.setText(QCoreApplication.translate("Help", u"\u6253\u5f00\u65e5\u5fd7\u76ee\u5f55", None))
+        self.label_7.setText(QCoreApplication.translate("Help", u"\u65e5\u5fd7:", None))
+        self.localTime.setText("")
+        self.dbCheck.setText(QCoreApplication.translate("Help", u"\u68c0\u6d4b\u66f4\u65b0", None))
         self.label_4.setText(QCoreApplication.translate("Help", u"\u7248\u672c\u53f7:", None))
+        self.localNum.setText("")
+        self.label_9.setText(QCoreApplication.translate("Help", u"\u4e0a\u6b21\u66f4\u65b0\u65f6\u95f4\uff1a", None))
         self.version.setText(QCoreApplication.translate("Help", u"v1.2.8", None))
         self.label_6.setText(QCoreApplication.translate("Help", u"waifu2x\u7248\u672c:", None))
+        self.label_11.setText(QCoreApplication.translate("Help", u"\u672c\u5730\u6570\u636e\u4e0a\u6b21\u66f4\u65b0:", None))
+        self.label_10.setText(QCoreApplication.translate("Help", u"2021-11-27", None))
         self.waifu2x.setText(QCoreApplication.translate("Help", u"v1.0.8", None))
-        self.label_8.setText(QCoreApplication.translate("Help", u"\u672c\u5730\u5e93\u7248\u672c:", None))
-        self.local.setText("")
-        self.label_5.setText(QCoreApplication.translate("Help", u"\u672c\u5730\u5e93\u6570\u91cf:", None))
-        self.localNum.setText("")
-        self.label_7.setText(QCoreApplication.translate("Help", u"\u65e5\u5fd7:", None))
-        self.logButton.setText(QCoreApplication.translate("Help", u"\u6253\u5f00\u65e5\u5fd7\u76ee\u5f55", None))
     # retranslateUi
 

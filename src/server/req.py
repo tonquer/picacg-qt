@@ -2,6 +2,7 @@ import base64
 from urllib.parse import quote
 
 from config import config
+from config.setting import Setting
 from tools.tool import ToolUtil
 
 
@@ -13,21 +14,24 @@ class ServerReq(object):
         self.method = method
         self.isParseRes = True
         self.useImgProxy = True
-        if config.IsHttpProxy:
-            self.proxy = {"http": config.HttpProxy, "https": config.HttpProxy}
+        self.isUseHttps = True
+        if Setting.IsHttpProxy.value:
+            self.proxy = {"http": Setting.HttpProxy.value, "https": Setting.HttpProxy.value}
         else:
             self.proxy = {}
 
     def __str__(self):
-        if config.LogIndex == 0:
+        if Setting.LogIndex.value == 0:
             return self.__class__.__name__
+        elif Setting.LogIndex.value == 1:
+            return "{}, url:{}".format(self.__class__.__name__, self.url)
         headers = dict()
         headers.update(self.headers)
-        if config.LogIndex == 1 and "authorization" in headers:
+        if Setting.LogIndex.value == 1 and "authorization" in headers:
             headers["authorization"] = "**********"
         params = dict()
         params.update(self.params)
-        if config.LogIndex == 1 and "password" in params:
+        if Setting.LogIndex.value == 1 and "password" in params:
             params["password"] = "******"
         return "{}, url:{}, proxy:{}, method:{}, headers:{}, params:{}".format(self.__class__.__name__, self.url, self.proxy, self.method, headers, params)
 

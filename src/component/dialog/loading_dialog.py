@@ -1,7 +1,9 @@
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import QTimer, QFile
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import QGridLayout
 
+from component.label.gif_group_label import GifGroupLabel
 from component.label.gif_label import GifLabel
 
 
@@ -13,21 +15,18 @@ class LoadingDialog(QtWidgets.QDialog):
         self.setWindowFlag(QtCore.Qt.Dialog)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
-        self.label = GifLabel(self)
+        self.label = GifGroupLabel(self)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
         self.timer = QTimer(self.label)
         self.timer.setInterval(100)
-        f = QFile(":/png/icon/loading2.gif")
-        f.open(QFile.ReadOnly)
-        self.label.Init(f.readAll())
-        f.close()
-        self.label.resize(200, 200)
+        self.label.Init()
+        self.label.resize(250, 250)
         self.cnt = 0
         self.closeCnt = 50
         self.timer.timeout.connect(self.UpdatePic)
-        self.resize(200, 200)
+        self.resize(250, 250)
 
     def show(self) -> None:
         self.timer.start()
@@ -40,6 +39,7 @@ class LoadingDialog(QtWidgets.QDialog):
 
     def UpdatePic(self):
         self.cnt += 1
+        self.label.ShowNextPixMap()
         if self.cnt >= self.closeCnt:
             self.close()
         pass

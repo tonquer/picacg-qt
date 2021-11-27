@@ -5,9 +5,11 @@ from PySide6.QtWidgets import QFileDialog
 
 from component.dialog.base_mask_dialog import BaseMaskDialog
 from config import config
+from config.setting import Setting
 from interface.ui_download_dir import Ui_DownloadDir
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
+from tools.str import Str
 
 
 class DownloadDirView(BaseMaskDialog, Ui_DownloadDir, QtTaskBase):
@@ -23,7 +25,7 @@ class DownloadDirView(BaseMaskDialog, Ui_DownloadDir, QtTaskBase):
         self.saveDir.clicked.connect(self.SavePath)
 
     def SelectSavePath(self):
-        url = QFileDialog.getExistingDirectory(self, self.tr("选择文件夹"))
+        url = QFileDialog.getExistingDirectory(self, Str.GetStr(Str.SelectFold))
         if url:
             self.lineEdit.setText(url)
             self.downloadDir.setText(os.path.join(url, config.SavePathDir))
@@ -34,9 +36,7 @@ class DownloadDirView(BaseMaskDialog, Ui_DownloadDir, QtTaskBase):
     def SavePath(self):
         path = self.lineEdit.text()
         if not path:
-            QtOwner().ShowMsg(self.tr("请设置目录"))
+            QtOwner().ShowMsg(Str.GetStr(Str.SetDir))
             return
-        config.SavePath = path
-
-        QtOwner().SetV("SavePath", config.SavePath)
+        Setting.SavePath.SetValue(path)
         self.close()

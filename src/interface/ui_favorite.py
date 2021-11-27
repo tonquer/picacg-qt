@@ -25,14 +25,14 @@ class Ui_Favorite(object):
     def setupUi(self, Favorite):
         if not Favorite.objectName():
             Favorite.setObjectName(u"Favorite")
-        Favorite.resize(628, 335)
+        Favorite.resize(628, 334)
         self.gridLayout_2 = QGridLayout(Favorite)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_3 = QGridLayout()
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.bookList = ComicListWidget(Favorite)
         self.bookList.setObjectName(u"bookList")
-        self.bookList.setStyleSheet(u"QListWidget {background-color:transparent;}")
+        self.bookList.setStyleSheet(u"")
 
         self.gridLayout_3.addWidget(self.bookList, 0, 0, 1, 1)
 
@@ -47,6 +47,36 @@ class Ui_Favorite(object):
         self.msgLabel.setObjectName(u"msgLabel")
 
         self.horizontalLayout.addWidget(self.msgLabel)
+
+        self.sortKeyCombox = QComboBox(Favorite)
+        self.sortKeyCombox.addItem("")
+        self.sortKeyCombox.addItem("")
+        self.sortKeyCombox.addItem("")
+        self.sortKeyCombox.addItem("")
+        self.sortKeyCombox.addItem("")
+        self.sortKeyCombox.addItem("")
+        self.sortKeyCombox.setObjectName(u"sortKeyCombox")
+        self.sortKeyCombox.setEnabled(True)
+        self.sortKeyCombox.setMinimumSize(QSize(100, 0))
+
+        self.horizontalLayout.addWidget(self.sortKeyCombox)
+
+        self.sortIdCombox = QComboBox(Favorite)
+        self.sortIdCombox.addItem("")
+        self.sortIdCombox.addItem("")
+        self.sortIdCombox.setObjectName(u"sortIdCombox")
+        self.sortIdCombox.setEnabled(True)
+
+        self.horizontalLayout.addWidget(self.sortIdCombox)
+
+        self.sortCombox = QComboBox(Favorite)
+        self.sortCombox.addItem("")
+        self.sortCombox.addItem("")
+        self.sortCombox.addItem("")
+        self.sortCombox.addItem("")
+        self.sortCombox.setObjectName(u"sortCombox")
+
+        self.horizontalLayout.addWidget(self.sortCombox)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -76,27 +106,6 @@ class Ui_Favorite(object):
         self.line.setFrameShadow(QFrame.Sunken)
 
         self.horizontalLayout.addWidget(self.line)
-
-        self.comboBox = QComboBox(Favorite)
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setMinimumSize(QSize(75, 30))
-
-        self.horizontalLayout.addWidget(self.comboBox)
-
-        self.comboBox_2 = QComboBox(Favorite)
-        self.comboBox_2.addItem("")
-        self.comboBox_2.addItem("")
-        self.comboBox_2.setObjectName(u"comboBox_2")
-        self.comboBox_2.setMinimumSize(QSize(40, 30))
-
-        self.horizontalLayout.addWidget(self.comboBox_2)
 
         self.line_4 = QFrame(Favorite)
         self.line_4.setObjectName(u"line_4")
@@ -135,8 +144,6 @@ class Ui_Favorite(object):
 
         self.retranslateUi(Favorite)
         self.jumpButton.clicked.connect(Favorite.JumpPage)
-        self.comboBox.currentIndexChanged.connect(Favorite.RefreshDataFocus)
-        self.comboBox_2.currentIndexChanged.connect(Favorite.RefreshDataFocus)
 
         QMetaObject.connectSlotsByName(Favorite)
     # setupUi
@@ -144,19 +151,23 @@ class Ui_Favorite(object):
     def retranslateUi(self, Favorite):
         Favorite.setWindowTitle(QCoreApplication.translate("Favorite", u"\u6536\u85cf", None))
         self.msgLabel.setText("")
+        self.sortKeyCombox.setItemText(0, QCoreApplication.translate("Favorite", u"\u66f4\u65b0\u65f6\u95f4", None))
+        self.sortKeyCombox.setItemText(1, QCoreApplication.translate("Favorite", u"\u521b\u5efa\u65f6\u95f4", None))
+        self.sortKeyCombox.setItemText(2, QCoreApplication.translate("Favorite", u"\u7231\u5fc3\u6570", None))
+        self.sortKeyCombox.setItemText(3, QCoreApplication.translate("Favorite", u"\u89c2\u770b\u6570", None))
+        self.sortKeyCombox.setItemText(4, QCoreApplication.translate("Favorite", u"\u7ae0\u8282\u6570", None))
+        self.sortKeyCombox.setItemText(5, QCoreApplication.translate("Favorite", u"\u56fe\u7247\u6570", None))
+
+        self.sortIdCombox.setItemText(0, QCoreApplication.translate("Favorite", u"\u964d\u5e8f", None))
+        self.sortIdCombox.setItemText(1, QCoreApplication.translate("Favorite", u"\u5347\u5e8f", None))
+
+        self.sortCombox.setItemText(0, QCoreApplication.translate("Favorite", u"\u65b0\u5230\u65e7", None))
+        self.sortCombox.setItemText(1, QCoreApplication.translate("Favorite", u"\u65e7\u5230\u65b0", None))
+        self.sortCombox.setItemText(2, QCoreApplication.translate("Favorite", u"\u6700\u591a\u7231\u5fc3", None))
+        self.sortCombox.setItemText(3, QCoreApplication.translate("Favorite", u"\u6700\u591a\u7ec5\u58eb\u6307\u6570", None))
+
         self.nums.setText(QCoreApplication.translate("Favorite", u"\u6536\u85cf\u6570\uff1a", None))
         self.pages.setText(QCoreApplication.translate("Favorite", u"\u9875", None))
-        self.comboBox.setItemText(0, QCoreApplication.translate("Favorite", u"\u66f4\u65b0\u65f6\u95f4", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("Favorite", u"\u6536\u85cf\u65f6\u95f4", None))
-        self.comboBox.setItemText(2, QCoreApplication.translate("Favorite", u"\u521b\u5efa\u65f6\u95f4", None))
-        self.comboBox.setItemText(3, QCoreApplication.translate("Favorite", u"\u7231\u5fc3\u6570", None))
-        self.comboBox.setItemText(4, QCoreApplication.translate("Favorite", u"\u7ae0\u8282\u6570", None))
-        self.comboBox.setItemText(5, QCoreApplication.translate("Favorite", u"\u7ae0\u8282\u6570", None))
-        self.comboBox.setItemText(6, QCoreApplication.translate("Favorite", u"\u56fe\u7247\u6570", None))
-
-        self.comboBox_2.setItemText(0, QCoreApplication.translate("Favorite", u"\u964d\u5e8f", None))
-        self.comboBox_2.setItemText(1, QCoreApplication.translate("Favorite", u"\u5347\u5e8f", None))
-
         self.jumpButton.setText(QCoreApplication.translate("Favorite", u"\u8df3\u8f6c", None))
 #if QT_CONFIG(shortcut)
         self.jumpButton.setShortcut(QCoreApplication.translate("Favorite", u"Return", None))

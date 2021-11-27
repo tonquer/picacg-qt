@@ -29,7 +29,7 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
 
         # self.bookList.InitBook(self.LoadNextPage)
         self.pageNums = 20
-
+        self.bookList.LoadCallBack = self.LoadNextPage
         self.history = {}
         self.db = QSqlDatabase.addDatabase("QSQLITE", "history")
         path = os.path.join(Setting.GetConfigPath(), "history.db")

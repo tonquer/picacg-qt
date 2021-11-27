@@ -4,7 +4,7 @@ import time
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
 from PySide6.QtGui import QPainter, QPixmap, QDoubleValidator, \
-    QIntValidator
+    QIntValidator, QMouseEvent
 from PySide6.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog
 
 from config import config
@@ -25,7 +25,6 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.bookId = ""
         self.epsId = 0
         self.curIndex = 0
-        self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.resize(800, 900)
         self.checkBox.setChecked(True)
         self.index = 0
@@ -109,11 +108,16 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
     def ShowImg(self, data):
         self.gpuLabel.setText(config.EncodeGpu)
         self.scaleCnt = 0
-        self.pixMap = QPixmap()
-        self.pixMap.loadFromData(data)
+        p = QPixmap()
+        p.loadFromData(data)
+        # radio = self.devicePixelRatio()
+        # p.setDevicePixelRatio(radio)
+        self.pixMap = p
         self.show()
         self.graphicsItem.setPixmap(self.pixMap)
         self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
+        # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width()*radio, self.pixMap.height()*radio)))
+
         size = ToolUtil.GetDownloadSize(len(data))
         self.sizeLabel.setText(size)
         weight, height = ToolUtil.GetPictureSize(data)
@@ -173,6 +177,15 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
             return True
         else:
             return super(self.__class__, self).eventFilter(obj, ev)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.ForwardButton:
+            # QtOwner().SwitchWidgetNext()
+            event.ignore()
+        elif event.button() == Qt.BackButton:
+            event.ignore()
+            # QtOwner().SwitchWidgetLast()
+        return super(self.__class__, self).mousePressEvent(event)
 
     def wheelEvent(self, event):
         if event.angleDelta().y() > 0:
@@ -298,7 +311,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
             return
         try:
             today = time.strftime("%Y%m%d%H%M%S", time.localtime(time.time()))
-            filepath = QFileDialog.getSaveFileName(self, self.tr("保存"), "{}.jpg".format(today))
+            filepath = QFileDialog.getSaveFileName(self, Str.GetStr(Str.Save), "{}.jpg".format(today))
             if filepath and len(filepath) >= 1:
                 name = filepath[0]
                 f = open(name, "wb")

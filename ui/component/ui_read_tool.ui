@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>314</width>
+    <width>328</width>
     <height>825</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>工具</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -33,462 +33,679 @@
     <number>4</number>
    </property>
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <property name="spacing">
-      <number>6</number>
+    <widget class="SmoothScrollArea" name="scrollArea22">
+     <property name="widgetResizable">
+      <bool>true</bool>
      </property>
-     <property name="leftMargin">
-      <number>4</number>
-     </property>
-     <property name="topMargin">
-      <number>4</number>
-     </property>
-     <property name="rightMargin">
-      <number>4</number>
-     </property>
-     <property name="bottomMargin">
-      <number>4</number>
-     </property>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <property name="sizeConstraint">
-        <enum>QLayout::SetDefaultConstraint</enum>
-       </property>
-       <property name="leftMargin">
-        <number>4</number>
-       </property>
-       <property name="topMargin">
-        <number>4</number>
-       </property>
-       <property name="rightMargin">
-        <number>4</number>
-       </property>
-       <property name="bottomMargin">
-        <number>4</number>
-       </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>318</width>
+        <height>815</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="Line" name="line_6">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>6</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="styleSheet">
-          <string notr="true">color: #ee2a24</string>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
          </property>
-         <property name="text">
-          <string>图片信息</string>
+         <property name="leftMargin">
+          <number>0</number>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+         <property name="topMargin">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="resolutionLabel">
-         <property name="styleSheet">
-          <string notr="true"/>
+         <property name="rightMargin">
+          <number>0</number>
          </property>
-         <property name="text">
-          <string>分辨率：</string>
+         <property name="bottomMargin">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="sizeLabel">
-         <property name="text">
-          <string>大小：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="stateLable">
-         <property name="text">
-          <string>状态：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="epsLabel">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>位置：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="Line" name="line">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="styleSheet">
-          <string notr="true">color: #ee2a24</string>
-         </property>
-         <property name="text">
-          <string>Waifu2x参数</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="5" column="0">
-          <widget class="QLabel" name="resolutionWaifu">
+         <item>
+          <widget class="Line" name="line_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="styleSheet">
+            <string notr="true">color: #ee2a24</string>
+           </property>
+           <property name="text">
+            <string>图片信息</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="resolutionLabel">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="text">
             <string>分辨率：</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
-           <item>
-            <widget class="QLabel" name="noiseLabel">
-             <property name="text">
-              <string>3</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="noiseBox">
-             <item>
-              <property name="text">
-               <string>自动</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>1</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>3</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBox">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>打开Waifu2x</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="sizeWaifu">
+         <item>
+          <widget class="QLabel" name="sizeLabel">
            <property name="text">
             <string>大小：</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="maximumSize">
-            <size>
-             <width>35</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>模型：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>放大倍数：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="stateWaifu">
+         <item>
+          <widget class="QLabel" name="stateLable">
            <property name="text">
             <string>状态：</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="QLabel" name="scaleLabel">
+         <item>
+          <widget class="QLabel" name="epsLabel">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>位置：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="styleSheet">
+            <string notr="true">color: #ee2a24</string>
+           </property>
+           <property name="text">
+            <string>Waifu2x参数</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="5" column="0">
+            <widget class="QLabel" name="resolutionWaifu">
              <property name="text">
-              <string>2</string>
+              <string>分辨率：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLabel" name="noiseLabel">
+               <property name="text">
+                <string>3</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="WheelComboBox" name="noiseBox">
+               <item>
+                <property name="text">
+                 <string>自动</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>3</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="checkBox">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>打开Waifu2x</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0">
+            <widget class="QLabel" name="sizeWaifu">
+             <property name="text">
+              <string>大小：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="maximumSize">
+              <size>
+               <width>35</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>模型：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>放大倍数：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QLabel" name="stateWaifu">
+             <property name="text">
+              <string>状态：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QLabel" name="scaleLabel">
+               <property name="text">
+                <string>2</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="WheelDoubleSpinBox" name="scaleBox">
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <double>32.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>2.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>去噪等级：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
+            <widget class="QLabel" name="tickLabel">
+             <property name="text">
+              <string>耗时：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>转换模式：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QLabel" name="modelLabel">
+               <property name="text">
+                <string>CUNET</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="WheelComboBox" name="modelBox">
+               <item>
+                <property name="text">
+                 <string>自动</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>cunet</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>photo</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>anime_style_art_rgb</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLabel" name="gpuLabel">
+             <property name="text">
+              <string>GPU</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QLabel" name="waifu2xRes">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLabel" name="waifu2xSize">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QLabel" name="waifu2xTick">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="waifu2xStatus">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QPushButton" name="waifu2xSave">
+               <property name="text">
+                <string>修改</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="waifu2xCancle">
+               <property name="text">
+                <string>保存</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_6">
+           <property name="styleSheet">
+            <string notr="true">color: #ee2a24</string>
+           </property>
+           <property name="text">
+            <string>翻页设置</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="maximumSize">
+              <size>
+               <width>90</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>翻页模式：</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QDoubleSpinBox" name="scaleBox">
-             <property name="decimals">
+            <widget class="WheelComboBox" name="comboBox">
+             <item>
+              <property name="text">
+               <string>上下滚动</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>默认</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>左右双页</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>右左双页</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>左右滚动</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>右左滚动</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <item>
+            <widget class="QLabel" name="zoomLabel">
+             <property name="text">
+              <string>缩放（120%）</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="WheelSlider" name="zoomSlider">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="minimum">
+              <number>10</number>
+             </property>
+             <property name="maximum">
+              <number>200</number>
+             </property>
+             <property name="singleStep">
+              <number>10</number>
+             </property>
+             <property name="value">
+              <number>120</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="styleSheet">
+            <string notr="true">color: #ee2a24</string>
+           </property>
+           <property name="text">
+            <string>自动滚动/翻页</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="maximumSize">
+              <size>
+               <width>90</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>滚动速度（像素）：</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="WheelSpinBox" name="scrollSpeed">
+             <property name="minimum">
               <number>1</number>
              </property>
              <property name="maximum">
-              <double>32.000000000000000</double>
+              <number>4000</number>
+             </property>
+             <property name="value">
+              <number>200</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <item>
+            <widget class="QLabel" name="label_11">
+             <property name="maximumSize">
+              <size>
+               <width>90</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>翻页速度（秒）：</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="WheelDoubleSpinBox" name="turnSpeed">
+             <property name="minimum">
+              <double>0.100000000000000</double>
              </property>
              <property name="singleStep">
               <double>0.100000000000000</double>
              </property>
              <property name="value">
-              <double>2.000000000000000</double>
+              <double>5.000000000000000</double>
              </property>
             </widget>
            </item>
           </layout>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>去噪等级：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="tickLabel">
-           <property name="text">
-            <string>耗时：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>转换模式：</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
-           <item>
-            <widget class="QLabel" name="modelLabel">
-             <property name="text">
-              <string>CUNET</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QComboBox" name="modelBox">
-             <item>
-              <property name="text">
-               <string>自动</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>cunet</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>photo</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>anime_style_art_rgb</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLabel" name="gpuLabel">
-           <property name="text">
-            <string>GPU</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLabel" name="waifu2xRes">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLabel" name="waifu2xSize">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QLabel" name="waifu2xTick">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="1">
-          <widget class="QLabel" name="waifu2xStatus">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <layout class="QHBoxLayout" name="horizontalLayout_9">
-           <item>
-            <widget class="QPushButton" name="waifu2xSave">
-             <property name="text">
-              <string>修改</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="waifu2xCancle">
-             <property name="text">
-              <string>保存</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="styleSheet">
-          <string notr="true">color: #ee2a24</string>
-         </property>
-         <property name="text">
-          <string>翻页设置</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
-          <widget class="QLabel" name="label_5">
+          <widget class="Line" name="line_8">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="text">
+            <string>隐藏</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="fullButton">
+           <property name="text">
+            <string>全屏</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="returePage">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
-             <width>90</width>
+             <width>16777215</width>
              <height>16777215</height>
             </size>
            </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
            <property name="text">
-            <string>翻页模式：</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            <string>返回</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox">
-           <item>
-            <property name="text">
-             <string>上下滚动</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>默认</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>左右双页</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>右左双页</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>左右滚动</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>右左滚动</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_10">
-         <item>
-          <widget class="QLabel" name="zoomLabel">
-           <property name="text">
-            <string>缩放（120%）</string>
+          <widget class="Line" name="line_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="zoomSlider">
-           <property name="styleSheet">
-            <string notr="true"/>
+          <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QPushButton" name="pushButton_4">
+             <property name="text">
+              <string>上一章</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_5">
+             <property name="text">
+              <string>下一章</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="Line" name="line_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
-           <property name="minimum">
-            <number>10</number>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="lastPage">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>上一页</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="nextPage">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>下一页</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
            </property>
-           <property name="maximum">
-            <number>200</number>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
            </property>
-           <property name="singleStep">
-            <number>10</number>
-           </property>
-           <property name="value">
-            <number>120</number>
-           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="Line" name="line_4">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -496,216 +713,40 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_7">
-         <property name="styleSheet">
-          <string notr="true">color: #ee2a24</string>
-         </property>
-         <property name="text">
-          <string>自动滚动/翻页</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_12">
-         <item>
-          <widget class="QLabel" name="label_10">
-           <property name="maximumSize">
-            <size>
-             <width>90</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>滚动速度（像素）：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QSpinBox" name="scrollSpeed">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>4000</number>
-           </property>
-           <property name="value">
-            <number>200</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_13">
-         <item>
-          <widget class="QLabel" name="label_11">
-           <property name="maximumSize">
-            <size>
-             <width>90</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>翻页速度（秒）：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="turnSpeed">
-           <property name="minimum">
-            <double>0.100000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-           <property name="value">
-            <double>5.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line_8">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>隐藏</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="fullButton">
-         <property name="text">
-          <string>全屏</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="returePage">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>返回</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="Line" name="line_5">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7"/>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QPushButton" name="pushButton_4">
-           <property name="text">
-            <string>上一章</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton_5">
-           <property name="text">
-            <string>下一章</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line_7">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QPushButton" name="lastPage">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>上一页</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="nextPage">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>下一页</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
       </layout>
-     </item>
-    </layout>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SmoothScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header location="global">component.scroll_area.smooth_scroll_area.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>WheelComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">component.box.wheel_combo_box.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WheelDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header location="global">component.box.wheel_double_spin_box.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WheelSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header location="global">component.box.wheel_spin_box.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WheelSlider</class>
+   <extends>QSlider</extends>
+   <header location="global">component.box.wheel_slider.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

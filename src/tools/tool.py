@@ -6,6 +6,7 @@ import uuid
 from hashlib import sha256
 
 from config import config
+from config.setting import Setting
 from tools.log import Log
 
 
@@ -234,7 +235,7 @@ class ToolUtil(object):
 
     @staticmethod
     def GetLookScaleModel(category):
-        return ToolUtil.GetModelByIndex(config.LookNoise, config.LookScale, ToolUtil.GetLookModel(category))
+        return ToolUtil.GetModelByIndex(Setting.LookNoise.value, Setting.LookScale.value, ToolUtil.GetLookModel(category))
 
     @staticmethod
     def GetDownloadScaleModel(w, h):
@@ -242,7 +243,7 @@ class ToolUtil(object):
         # 条漫不放大
         if not config.CanWaifu2x:
             return {}
-        return ToolUtil.GetModelByIndex(config.DownloadNoise, config.DownloadScale, config.DownloadModel)
+        return ToolUtil.GetModelByIndex(Setting.DownloadNoise.value, Setting.DownloadScale.value, Setting.DownloadModel.value)
 
     @staticmethod
     def GetPictureFormat(data):
@@ -254,6 +255,8 @@ class ToolUtil(object):
 
     @staticmethod
     def GetPictureSize(data):
+        if not data:
+            return 0, 0
         from PIL import Image
         from io import BytesIO
         a = BytesIO(data)
@@ -314,12 +317,12 @@ class ToolUtil(object):
 
     @staticmethod
     def GetLookModel(category):
-        if config.LookModel == 0:
+        if Setting.LookModel.value == 0:
             if "Cosplay" in category or "cosplay" in category or "CosPlay" in category or "COSPLAY" in category:
                 return 2
             return 3
         else:
-            return config.LookModel
+            return Setting.LookModel.value
 
 
     @staticmethod

@@ -1,6 +1,9 @@
+import base64
+
 from PySide6.QtCore import Signal
 
 from component.dialog.base_mask_dialog import BaseMaskDialog
+from config.setting import Setting
 from interface.ui_login import Ui_Login
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
@@ -16,18 +19,17 @@ class LoginView(BaseMaskDialog, Ui_Login, QtTaskBase):
         QtTaskBase.__init__(self)
         self.widget.adjustSize()
         self.setupUi(self.widget)
-        self.closeButton.clicked.connect(self.close)
         self.tabWidget.currentChanged.connect(self._SwichWidget)
         self.loginButton.clicked.connect(self._ClickButton)
 
-        userId = QtOwner().settingView.userId
+        userId = Setting.UserId.value
         if userId and isinstance(userId, str):
             self.loginWidget.userEdit_2.setText(userId)
 
-        passwd = QtOwner().settingView.passwd
+        passwd = Setting.Password.value
+        passwd = base64.b64decode(passwd).decode("utf-8") if passwd else ""
         if passwd and isinstance(passwd, str):
             self.loginWidget.passwdEdit_2.setText(passwd)
-
 
     @property
     def loginWidget(self):

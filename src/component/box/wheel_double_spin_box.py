@@ -6,5 +6,5 @@ class WheelDoubleSpinBox(QDoubleSpinBox):
         QDoubleSpinBox.__init__(self, parent)
 
     def wheelEvent(self, event):
-        return
+        event.ignore()
 

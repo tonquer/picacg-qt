@@ -16,7 +16,6 @@ class RegisterWidget(QtWidgets.QWidget, Ui_RegisterWidget, QtTaskBase):
         Ui_RegisterWidget.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.setWindowModality(Qt.ApplicationModal)
         reg = QRegularExpression("^[A-Z0-9a-z\\.\\_]{1,16}$")
         validator = QRegularExpressionValidator(reg, self.userEdit)
         self.userEdit.setValidator(validator)

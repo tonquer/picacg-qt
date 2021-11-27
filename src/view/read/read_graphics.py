@@ -1,6 +1,6 @@
 import time
 
-from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect
+from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect, QFile
 from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics
 from PySide6.QtWidgets import QGraphicsView, QFrame, QGraphicsItem, QGraphicsScene, \
     QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider
@@ -10,7 +10,8 @@ from component.scroll.read_scroll import ReadScroll
 from component.scroll.smooth_scroll import SmoothScroll
 from config import config
 from qt_owner import QtOwner
-from view.read.read_enum import ReadMode
+from tools.str import Str
+from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_pool import QtReadImgPoolManager
 
 
@@ -118,6 +119,18 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     def scaleCnt(self):
         return self.readImg.frame.scaleCnt
 
+    def radioWidth(self):
+        return int(self.devicePixelRatioF()*self.width())
+
+    def radioWidthF(self):
+        return self.devicePixelRatioF() * self.width()
+
+    def radioHeight(self):
+        return int(self.devicePixelRatioF()*self.height())
+
+    def radioHeightF(self):
+        return self.devicePixelRatioF() * self.height()
+
     # def Finished(self):
     #     QtOwner().readForm.frame.scrollArea.OnValueChange(self.value())
 
@@ -150,6 +163,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         return
 
     def ScrollValue(self, value):
+        if self.initReadMode == ReadMode.LeftRight:
+            return
         if self.initReadMode in [ReadMode.UpDown, ReadMode.LeftRight]:
             QScroller.scroller(self).scrollTo(QPoint(0, self.verticalScrollBar().value() + value), 500)
         else:
@@ -257,7 +272,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 ## 切换上一图片
                 if addValue > 0 and value >= nextPictureSize:
                     if self.readImg.curIndex <= 0:
-                        MsgLabel().ShowMsgEx(self.readImg, self.tr("已经到第一页"))
+                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastPage))
                         return
                     self.readImg.curIndex -= 1
                     # print(self.readImg.curIndex)
@@ -266,7 +281,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 ## 切换下一图片
                 elif addValue < 0 and newValue < curPictureSize:
                     if self.readImg.curIndex >= self.readImg.maxPic - 1:
-                        MsgLabel().ShowMsgEx(self.readImg, self.tr("已经到最后一页"))
+                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
                         return
                     self.readImg.curIndex += 1
                     # print(self.readImg.curIndex)
@@ -280,7 +295,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 ## 切换上一图片
                 if addValue < 0 and value < curPictureSize:
                     if self.readImg.curIndex <= 0:
-                        MsgLabel().ShowMsgEx(self.readImg, self.tr("已经到第一页"))
+                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastPage))
                         return
                     self.readImg.curIndex -= 1
                     self.changeLastPage.emit(self.readImg.curIndex)
@@ -288,7 +303,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 ## 切换下一图片
                 elif addValue > 0 and value >= nextPictureSize:
                     if self.readImg.curIndex >= self.readImg.maxPic - 1:
-                        MsgLabel().ShowMsgEx(self.readImg, self.tr("已经到最后一页"))
+                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
                         return
                     self.readImg.curIndex += 1
                     self.changeNextPage.emit(self.readImg.curIndex)
@@ -439,12 +454,13 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         font = QFont()
         font.setPointSize(64)
         fm = QFontMetrics(font)
-        p = QPixmap(self.width(), self.height())
+        p = QPixmap(self.radioWidth(), self.radioHeight())
+        p.setDevicePixelRatio(self.devicePixelRatio())
         rect = QRect(self.width()//2, self.height()//2 - fm.height()//2, self.width()//2, self.height()//2+fm.height()//2)
         p.fill(Qt.transparent)
         painter = QPainter(p)
         painter.setFont(font)
-        if config.ThemeText == "flatblack":
+        if config.CurrentSetTheme == 1:
             painter.setPen(Qt.white)
         else:
             painter.setPen(Qt.black)
@@ -495,7 +511,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 QtReadImgPoolManager().AddProxyItem(proxy)
                 return oldHeight, oldWidth
             else:
-                return proxy.pixmap().height(), proxy.pixmap().width()
+                return proxy.pixmap().height()//self.devicePixelRatio(), proxy.pixmap().width()//self.devicePixelRatio()
         elif (self.initReadMode == ReadMode.RightLeftDouble and index == self.readImg.curIndex) or (self.initReadMode == ReadMode.LeftRightDouble and index != self.readImg.curIndex):
             self.graphicsItem2.pixmap().height(), self.graphicsItem2.pixmap().width()
         return self.graphicsItem1.pixmap().height(), self.graphicsItem1.pixmap().width()
@@ -510,6 +526,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 return
             else:
                 data = self.MakePixItem(index)
+        else:
+            data.setDevicePixelRatio(self.devicePixelRatio())
 
         oldHeight, oldWidth = self.LabelToPixmap(index)
         label = self.GetLabel(index)
@@ -519,55 +537,18 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             if label.pixmap() and waifu2x == isWaifu2x and not self.resetImg:
                 return
         self.labelWaifu2xState[index] = isWaifu2x
-        oldPos = label.pos()
 
-        if self.qtTool.stripModel == ReadMode.LeftRight:
-            scale = (1 + self.scaleCnt * 0.1)
-            wight = min(self.width(), int(self.width() * scale))
-            height = self.height() * scale
-            newData = data.scaled(wight, height, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            label.setPos(self.width()//2 - newData.width()//2, max(0, self.height()//2-newData.height()//2))
-        elif self.qtTool.stripModel in [ReadMode.RightLeftDouble]:
-            scale = (1 + self.scaleCnt * 0.1)
-            newData = data.scaled(min(self.width()//2, int(self.width()//2*scale)), self.height()*scale,
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            if index == self.readImg.curIndex:
-                label.setPos(self.width()//2, self.height()//2 - newData.height()//2)
-            else:
-                label.setPos(self.width()//2-newData.width(), self.height()//2 - newData.height()//2)
-        elif self.qtTool.stripModel in [ReadMode.LeftRightDouble]:
-            scale = (1 + self.scaleCnt * 0.1)
-            newData = data.scaled(min(self.width()//2, int(self.width()//2*scale)), self.height()*scale,
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            if index != self.readImg.curIndex:
-                label.setPos(self.width()//2, self.height()//2 - newData.height()//2)
-            else:
-                label.setPos(self.width()//2-newData.width(), self.height()//2 - newData.height()//2)
-        elif self.qtTool.stripModel in [ReadMode.LeftRightScroll]:
-            scale = (1 + self.scaleCnt * 0.1)
-            newData = data.scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            label.setPos(oldPos.x(), max(0, self.height() // 2 - newData.height() // 2))
-
-        elif self.qtTool.stripModel in [ReadMode.RightLeftScroll]:
-            scale = (1 + self.scaleCnt * 0.1)
-            newData = data.scaled(self.width() * scale*10, min(self.height(), self.height() * scale),
-                                          Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            label.setPos(oldPos.x(), max(0, self.height() // 2 - newData.height() // 2))
-
-        elif self.qtTool.stripModel in [ReadMode.UpDown]:
-            scale = (0.5 + self.scaleCnt * 0.1)
-            minWidth = min(self.width(), self.width() * scale)
-            minHeight = self.height() * scale * 10
-            newData = data.scaled(minWidth, minHeight, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            label.setPos(self.width()//2 - newData.width()//2, oldPos.y())
-
+        radio = self.devicePixelRatio()
+        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height())
+        newData = data.scaled(toW*radio, toH*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), newData.width()/radio, newData.height()//radio, index, self.readImg.curIndex)
+        label.setPos(pos)
         label.setPixmap(newData)
 
         if self.initReadMode == ReadMode.UpDown:
-            self.UpdateOtherHeight(index, oldHeight, label.pixmap().height())
+            self.UpdateOtherHeight(index, oldHeight, label.pixmap().height()//radio)
         else:
-            self.UpdateOtherHeight(index, oldWidth, label.pixmap().width())
+            self.UpdateOtherHeight(index, oldWidth, label.pixmap().width()//radio)
 
     def UpdateOtherHeight(self, index, oldHeight, height):
         # 修改了图片导致label长宽变化，重新计算

@@ -26,7 +26,8 @@ class IndexView(QWidget, Ui_Index, QtTaskBase):
 
     def SwitchCurrent(self, **kwargs):
         if User().token:
-            self.Init()
+            if not self.godList.count():
+                self.Init()
             if not self.randomList.count():
                 self.InitRandom()
         pass

@@ -81,6 +81,7 @@ jobs:
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
             --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
         zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
+        mv ${{ env.PACKAGENAME }}.dmg ..
         mv bika.zip ..
         cd ..
     - name: Upload

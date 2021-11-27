@@ -12,11 +12,11 @@ class Log(object):
 
     @staticmethod
     def UpdateLoggingLevel():
-        if config.LogIndex == 0:
+        if Setting.LogIndex.value == 0:
             Log.logger.setLevel(logging.WARN)
-        elif config.LogIndex == 1:
+        elif Setting.LogIndex.value == 1:
             Log.logger.setLevel(logging.INFO)
-        elif config.LogIndex == 2:
+        elif Setting.LogIndex.value == 2:
             Log.logger.setLevel(logging.DEBUG)
         return
 

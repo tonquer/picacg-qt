@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>426</width>
-    <height>516</height>
+    <width>545</width>
+    <height>582</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>帮助</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QListWidget {background-color:transparent;}
+QScrollArea {background-color:transparent;}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -57,6 +61,11 @@
         </item>
         <item alignment="Qt::AlignHCenter">
          <widget class="QLabel" name="label_2">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>需要反馈使用过程中的问题？</string>
           </property>
@@ -64,6 +73,11 @@
         </item>
         <item alignment="Qt::AlignHCenter">
          <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
           <property name="text">
            <string>想提供一些建议？</string>
           </property>
@@ -78,74 +92,181 @@
         </item>
         <item>
          <widget class="QWidget" name="widget_2" native="true">
-          <layout class="QFormLayout" name="formLayout">
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_4">
-             <property name="text">
-              <string>版本号:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="version">
-             <property name="text">
-              <string>v1.2.8</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>waifu2x版本:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLabel" name="waifu2x">
-             <property name="text">
-              <string>v1.0.8</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>本地库版本:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLabel" name="local">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
+          <layout class="QGridLayout" name="gridLayout">
            <item row="3" column="0">
             <widget class="QLabel" name="label_5">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>本地库数量:</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QLabel" name="localNum">
+           <item row="1" column="2">
+            <widget class="QPushButton" name="verCheck">
              <property name="text">
-              <string/>
+              <string>检测更新</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="2">
+            <widget class="QPushButton" name="logButton">
+             <property name="text">
+              <string>打开日志目录</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
             <widget class="QLabel" name="label_7">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>日志:</string>
              </property>
             </widget>
            </item>
            <item row="4" column="1">
-            <widget class="QPushButton" name="logButton">
+            <widget class="QLabel" name="localTime">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
-              <string>打开日志目录</string>
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QPushButton" name="dbCheck">
+             <property name="text">
+              <string>检测更新</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>版本号:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLabel" name="localNum">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>上次更新时间：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="version">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>v1.2.8</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>waifu2x版本:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_11">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>本地数据上次更新:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLabel" name="label_10">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>2021-11-27</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="waifu2x">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>v1.0.8</string>
              </property>
             </widget>
            </item>

@@ -1,4 +1,4 @@
-from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve
+from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile
 from PySide6.QtWidgets import QWidget
 
 from config import config
@@ -21,6 +21,10 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.__ani = QPropertyAnimation(self, b"geometry")
         self.__connect = None
         self.pictureData = ""
+        f = QFile(u":/png/icon/placeholder_avatar.png")
+        f.open(QFile.ReadOnly)
+        self.picLabel.SetPicture(f.readAll())
+        f.close()
         self.pushButton.clicked.connect(self.OpenLoginView)
 
     def OpenLoginView(self):

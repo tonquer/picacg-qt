@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QLabel
 
 from component.label.msg_label import MsgLabel
 from config import config
+from config.setting import Setting
 from interface.ui_read_tool import Ui_ReadImg
 from qt_owner import QtOwner
 from tools.book import BookMgr
@@ -91,7 +92,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         # self.setAttribute(Qt.WA_StyledBackground, False)
         # palette = QPalette(self.palette())
         # palette.setColor(QPalette.Background, Qt.white)
-        self.setAutoFillBackground(True)
+        # self.setAutoFillBackground(True)
         # self.setPalette(palette)
         # self.setAttribute(Qt.WA_TranslucentBackground, False)
         self.downloadMaxSize = 0
@@ -257,7 +258,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             self.waifu2xSize.setText("" + ToolUtil.GetDownloadSize(waifuDataLen))
 
         if state or isInit:
-            self.stateLable.setText(Str.GetStr(Str.State) + Str.GetStr(state))
+            self.stateLable.setText(Str.GetStr(Str.State) + ": " + Str.GetStr(state))
 
         if waifuState or isInit:
             if waifuState == QtFileData.WaifuStateStart:
@@ -285,11 +286,11 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def OpenWaifu(self):
         if self.checkBox.isChecked():
-            config.IsOpenWaifu = 1
+            Setting.IsOpenWaifu.SetValue(1)
             if config.EncodeGpu == "CPU":
                 QtOwner().ShowMsg(Str.GetStr(Str.NotRecommendWaifu2x))
         else:
-            config.IsOpenWaifu = 0
+            Setting.IsOpenWaifu.SetValue(0)
         self.scrollArea.changeScale.emit(self.scaleCnt)
         return
 
@@ -366,22 +367,21 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
             QtOwner().owner.showNormal()
             self.fullButton.setText(Str.GetStr(Str.FullScreen))
-            config.LookReadFull = 0
+            Setting.LookReadFull.SetValue(0)
         else:
             QtOwner().owner.showFullScreen()
             self.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
-            config.LookReadFull = 1
+            Setting.LookReadFull.SetValue(1)
         # self.readImg.raise_()
         self.scrollArea.changeScale.emit(self.scaleCnt)
-        QtOwner().SetV("Read/LookReadFull", config.LookReadFull)
 
     def Waifu2xSave(self):
         self.SetWaifu2xCancle(True)
 
     def Waifu2xCancle(self):
-        config.LookNoise = self.noiseBox.currentIndex() -1
-        config.LookScale = self.scaleBox.value()
-        config.LookModel = self.modelBox.currentIndex()
+        Setting.LookNoise.SetValue(self.noiseBox.currentIndex() -1)
+        Setting.LookScale.SetValue(self.scaleBox.value())
+        Setting.LookModel.SetValue(self.modelBox.currentIndex())
 
         for data in self.readImg.pictureData.values():
 
@@ -391,7 +391,11 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             data.model = model
             data.waifuData = None
             data.cacheWaifu2xImage = None
-            data.waifuState = data.WaifuWait
+            w, h = ToolUtil.GetPictureSize(data.data)
+            if max(w, h) <= Setting.LookMaxNum.value:
+               data.waifuState = data.WaifuWait
+            else:
+                data.waifuState = data.OverResolution
             data.waifuDataSize = 0
             data.scaleW, data.scaleH = 0, 0
             data.waifuTick = 0
@@ -469,7 +473,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.readImg.ShowImg()
         self.readImg.ShowOtherPage()
 
-        config.LookReadMode = index
+        Setting.LookReadMode.SetValue(index)
         # QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
         self.imgFrame.InitHelp()
 

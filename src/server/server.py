@@ -137,7 +137,7 @@ class Server(Singleton):
             if not is_ipaddress(self.imageServer):
                 request.url = request.url.replace(host, self.imageServer)
 
-        if not config.IsUseHttps:
+        if not request.isUseHttps:
             request.url = request.url.replace("https://", "http://")
 
         # host = ToolUtil.GetUrlHost(request.url)
@@ -187,7 +187,7 @@ class Server(Singleton):
             Log.Warn(task.req.url + " " + es.__repr__())
             Log.Debug(es)
         finally:
-            Log.Info("response-> backId:{}, {}, {}".format(task.bakParam, task.req.__class__.__name__, task.res))
+            Log.Info("response-> backId:{}, {}, st:{}, {}".format(task.bakParam, task.req.__class__.__name__, task.status, task.res))
         try:
             self.handler.get(task.req.__class__.__name__)(task)
             if task.res.raw:
@@ -254,6 +254,7 @@ class Server(Singleton):
                         if data:
                             TaskBase.taskObj.downloadBack.emit(task.bakParam, len(data), data)
                             TaskBase.taskObj.downloadBack.emit(task.bakParam, 0, b"")
+                            Log.Info("request cache -> backId:{}, {}".format(task.bakParam, task.req))
                             return
             request = task.req
             if request.params == None:

@@ -5,6 +5,7 @@ from queue import Queue
 import websocket
 
 from config import config
+from config.setting import Setting
 from tools.log import Log
 
 
@@ -84,8 +85,8 @@ class ChatWebSocket:
                                         on_error=self.on_error,
                                         on_close=self.on_close)
             self.ws = ws
-            if config.HttpProxy and config.ChatProxy:
-                data = config.HttpProxy.split(":")
+            if Setting.HttpProxy.value and Setting.ChatProxy.value:
+                data = Setting.HttpProxy.value.split(":")
                 if len(data) == 3:
                     port = data[2]
                     host = data[1].replace("//", "")

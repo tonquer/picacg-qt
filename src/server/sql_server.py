@@ -1,11 +1,14 @@
+import os
 import pickle
 import sqlite3
+import sys
 import threading
 import time
 from queue import Queue
 
 # 一本书
 from config import config
+from config.setting import Setting
 from task.task_sql import TaskSql
 from tools.book import BookMgr
 from tools.langconv import Converter
@@ -42,6 +45,7 @@ class SqlServer(Singleton):
     DbInfos = dict()
     DbInfos["book"] = "data/book.db"
 
+    TaskCheck = 0
     TaskTypeSql = 1
     TaskTypeSelectBook = 100
     TaskTypeSelectWord = 101
@@ -69,7 +73,20 @@ class SqlServer(Singleton):
 
     def _Run(self, bookName):
         bookPath = self.DbInfos.get(bookName)
-        conn = sqlite3.connect(bookPath)
+        isInit = True
+        conn = None
+        try:
+            if sys.platform == "linux":
+                path = os.path.join(Setting.GetConfigPath(), bookPath)
+                conn = sqlite3.connect(path)
+            else:
+                conn = sqlite3.connect(bookPath)
+        except Exception as es:
+            Log.Error(es)
+            from qt_owner import QtOwner
+            QtOwner().isUseDb = False
+            isInit = False
+
         inQueue = self._inQueue[bookName]
         while True:
             try:
@@ -80,7 +97,16 @@ class SqlServer(Singleton):
             inQueue.task_done()
             try:
                 (taskType, data, backId) = task
-                if taskType == self.TaskTypeSql:
+
+                if taskType == self.TaskTypeClose:
+                    break
+                if not isInit:
+                    TaskSql().taskObj.sqlBack.emit(backId, pickle.dumps(""))
+                    continue
+                if taskType == self.TaskCheck:
+                    data2 = pickle.dumps(str(int(isInit)))
+                    TaskSql().taskObj.sqlBack.emit(backId, data2)
+                elif taskType == self.TaskTypeSql:
                     cur = conn.cursor()
                     cur.execute(data)
                     cur.execute("COMMIT")
@@ -101,11 +127,10 @@ class SqlServer(Singleton):
                     self._UpdateFavorite(conn, data, backId)
                 elif taskType == self.TaskTypeUpdateBook:
                     self._UpdateBookInfo(conn, data, backId)
-                elif taskType == self.TaskTypeClose:
-                    break
             except Exception as es:
                 Log.Error(es)
-        conn.close()
+        if conn:
+            conn.close()
         Log.Info("db: close conn:{}".format(bookName))
         return
 
@@ -171,10 +196,11 @@ class SqlServer(Singleton):
 
     def _SelectFavoriteIds(self, conn, sql, backId):
         cur = conn.cursor()
-        cur.execute("select * from favorite where user ='{}'".format(User().userId))
+        sql = "select id,sortId from favorite where user ='{}'".format(User().userId)
+        cur.execute(sql)
         allFavoriteIds = []
         for data in cur.fetchall():
-            allFavoriteIds.append(data[0])
+            allFavoriteIds.append((data[0], data[1]))
         data = pickle.dumps(allFavoriteIds)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)

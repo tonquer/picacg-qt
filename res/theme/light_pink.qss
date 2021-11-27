@@ -35,11 +35,11 @@
 /*  Basic widgets  */
 
 QWidget {
-  background-color: #e6e6e6;
+  background-color: #f3f3f3;
 }
 
 QFrame {
-  background-color: #e6e6e6;
+  background-color: #f3f3f3;
   border: 1px solid #f5f5f5;
   border-radius: 4px;
 }
@@ -67,6 +67,14 @@ QTabWidget::pane {
   border: none;
 }
 
+QListWidget {
+  background-color:transparent;
+}
+
+QScrollArea {
+  background-color:transparent;
+}
+
 /*  ------------------------------------------------------------------------  */
 /*  Inputs  */
 
@@ -77,7 +85,7 @@ QTextEdit,
 QLineEdit,
 QPushButton {
   color: #ff4081;
-  background-color: #e6e6e6;
+  background-color: #f3f3f3;
   border: 2px solid #ff4081;
   border-radius: 4px;
   padding: 8px 16px ;
@@ -103,7 +111,7 @@ QComboBox {
 QPlainTextEdit {
   border-radius: 4px;
   padding: 8px 16px;
-  background-color: #e6e6e6;
+  background-color: #f3f3f3;
   border: 1px solid #f5f5f5;
 }
 
@@ -243,7 +251,7 @@ QPushButton {
 
 QPushButton:checked,
 QPushButton:pressed {
-  color: #e6e6e6;
+  color: #f3f3f3;
   background-color: #ff4081;
 }
 
@@ -266,7 +274,7 @@ QPushButton:flat:checked {
 
 QPushButton:disabled,
 QPushButton:flat:disabled {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 64, 129, 0.75);
   background-color: transparent;
   border-color:  #f5f5f5;
 }
@@ -333,7 +341,7 @@ QTabBar::tab:left:hover {
 QTabBar QToolButton:hover,
 QTabBar QToolButton {
   border: 20px;
-  background-color: #e6e6e6;
+  background-color: #f3f3f3;
 }
 
 QTabBar QToolButton::up-arrow {
@@ -394,7 +402,7 @@ QGroupBox::title {
   subcontrol-position: top left;
   padding: 0 15px;
   margin-top: 10px;
-  background-color: #e6e6e6;
+  background-color: #f3f3f3;
   background-color: transparent;
   height: 20px;
 }
@@ -743,41 +751,119 @@ QProgressBar::chunk {
 /*  ------------------------------------------------------------------------  */
 /*  QScrollBar  */
 
+
 QScrollBar:horizontal {
   border: 0;
-  background: #f5f5f5;
+  background: #f3f3f3;
   height: 8px;
+padding-top:12px;
+    padding-bottom:12px;
 }
 
 QScrollBar:vertical {
   border: 0;
-  background: #f5f5f5;
+  background: #f3f3f3;
   width: 8px;
+padding-top:12px;
+    padding-bottom:12px;
 }
 
 QScrollBar::handle:horizontal {
-  background: #ffffff;
-  min-width: 20px;
+  background: #878787;
+  min-width: 10px;
 }
 
 QScrollBar::handle:vertical {
-  background: #ffffff;
-  min-height: 20px;
+  background: #878787;
+  min-height: 10px;
 }
 
 QScrollBar::handle:vertical:hover,
 QScrollBar::handle:horizontal:hover {
   background: #ff4081;
 }
-
-QScrollBar::add-line:vertical,
-QScrollBar::sub-line:vertical,
-QScrollBar::add-line:horizontal,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical,
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal {
+background: none;
+}
+/*纵向滚动条顶部三角形位置*/
+QScrollBar::sub-line:vertical {
+    height: 12px;
+    width: 10px;
+    background: transparent;
+    subcontrol-position: top;
+}
+/*横向滚动条左侧三角形位置*/
 QScrollBar::sub-line:horizontal {
-  border: 0;
-  background: transparent;
-  width: 0px;
-  height: 0px;
+    height: 10px;
+    width: 12px;
+    background: transparent;
+    subcontrol-position: left;
+}
+/*纵向滚动条向上的三角形小图标*/
+QScrollBar::up-arrow:vertical {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowup_normal.png);
+}
+/*横向滚动条左边的三角形小图标*/
+QScrollBar::left-arrow:horizontal {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowleft_normal.png);
+}
+/*纵向滚动条向上的三角形小图标 鼠标悬停*/
+QScrollBar::up-arrow:vertical:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowup_down.png);
+}
+/*横向滚动条左边的三角形小图标 鼠标悬停*/
+QScrollBar::left-arrow:horizontal:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowleft_down.png);
+}
+/*纵向滚动条向上的三角形小图标 鼠标按下*/
+QScrollBar::up-arrow:vertical:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowup_highlight.png);
+}
+/*横向滚动条左边的三角形小图标 鼠标按下*/
+QScrollBar::left-arrow:horizontal:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowleft_highlight.png);
+}
+
+/*纵向滚动条下面三角形部分*/
+QScrollBar::add-line:vertical {
+    height: 12px;
+    width: 10px;
+    background: transparent;
+    subcontrol-position: bottom;
+}
+/*横向滚动条右边的三角形部分*/
+QScrollBar::add-line:horizontal {
+    height: 10px;
+    width: 12px;
+    background: transparent;
+    subcontrol-position: right;
+}
+/*纵向滚动条下面三角形图标*/
+QScrollBar::down-arrow:vertical {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowdown_normal.png);
+}
+/*横向滚动条右侧三角形图标*/
+QScrollBar::right-arrow:horizontal {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowright_normal.png);
+}
+/*纵向滚动条下面三角形图标 鼠标悬停*/
+QScrollBar::down-arrow:vertical:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowdown_down.png);
+}
+/*横向滚动条右侧三角形图标 鼠标悬停*/
+QScrollBar::right-arrow:horizontal:hover {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowright_down.png);
+}
+/*纵向滚动条下面三角形图标 鼠标按下*/
+QScrollBar::down-arrow:vertical:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowdown_highlight.png);
+}
+/*横向滚动条右侧三角形图标 鼠标按下*/
+QScrollBar::right-arrow:horizontal:pressed {
+    image: url(:/icon/theme/scrollbar/scrollbar_arrowright_highlight.png);
 }
 
 /*  ------------------------------------------------------------------------  */
@@ -864,7 +950,7 @@ QFrame[frameShape="5"] {
 /*  QToolBar  */
 
 QToolBar {
-  background: #e6e6e6;
+  background: #f3f3f3;
   border: 0px solid;
 }
 
@@ -899,39 +985,41 @@ QToolBar::separator:vertical {
 /*  ------------------------------------------------------------------------  */
 /*  QToolButton  */
 
+
 QToolButton {
-  background: #e6e6e6;
+  background: #f3f3f3;
   border: 0px;
   height: 40px;
   margin: 3px;
   padding: 3px;
-  border-right: 10px solid #e6e6e6;
-  border-left: 10px solid #e6e6e6;
+  border-right: 5px solid #f3f3f3;
+  border-left: 5px solid #f3f3f3;
 }
 
 QToolButton:hover {
-  background: #ffffff;
-  border-right: 10px solid #ffffff;
-  border-left: 10px solid #ffffff;
+  background: #eaeaea;
+  border-right: 5px solid #eaeaea;
+  border-left: 5px solid #eaeaea;
 }
 
 QToolButton:pressed {
-  background: #f5f5f5;
-  border-right: 10px solid #f5f5f5;
-  border-left: 10px solid #f5f5f5;
+  background: #eaeaea;
+  border-right: 5px solid #f5f5f5;
+  border-left: 5px solid #f5f5f5;
 }
 
 QToolButton:checked {
-  background: #ffffff;
-  border-left: 10px solid #ffffff;
-  border-right: 10px solid #ff4081;
+  background: #eaeaea;
+  border-left: 5px solid #ff4081;
+  border-right: 5px solid #f3f3f3;
 }
+
 
 /*  ------------------------------------------------------------------------  */
 /*  General viewers  */
 
 QTableView {
-  background-color: #e6e6e6;
+  background-color: #f3f3f3;
   border: 1px solid #f5f5f5;
   border-radius: 4px;
 }
@@ -1034,7 +1122,7 @@ QPushButton.danger {
 
 QPushButton.danger:checked,
 QPushButton.danger:pressed {
-  color: #e6e6e6;
+  color: #f3f3f3;
   background-color: #dc3545;
 }
 
@@ -1045,7 +1133,7 @@ QPushButton.warning{
 
 QPushButton.warning:checked,
 QPushButton.warning:pressed {
-  color: #e6e6e6;
+  color: #f3f3f3;
   background-color: #ffc107;
 }
 
@@ -1056,7 +1144,7 @@ QPushButton.success {
 
 QPushButton.success:checked,
 QPushButton.success:pressed {
-  color: #e6e6e6;
+  color: #f3f3f3;
   background-color: #17a2b8;
 }
 
@@ -1098,7 +1186,7 @@ QTableCornerButton::section {
   border-radius: 0px;
   border-right: 1px solid;
   border-bottom: 1px solid;
-  border-color: #e6e6e6;
+  border-color: #f3f3f3;
 }
 
 QTableView {
@@ -1118,7 +1206,7 @@ QHeaderView::section {
   border-radius: 0px;
   border-right: 1px solid;
   border-bottom: 1px solid;
-  border-color: #e6e6e6;
+  border-color: #f3f3f3;
 }
 
 
@@ -1167,7 +1255,7 @@ QListView QLineEdit {
 
 QToolTip {
   padding: 5px;
-  border: 1px solid #e6e6e6;
+  border: 1px solid #f3f3f3;
   border-radius: 4px;
   color: #555555;
   background-color: #ffffff;

@@ -28,6 +28,7 @@ class ReadFrame(QFrame):
         self.startPos = QPoint()
         self.endPos = QPoint()
         self.process = DWaterProgress(self)
+        self.process.hide()
         self.waifu2xProcess = GifLabel(self)
         self.waifu2xProcess.setVisible(False)
         f = QFile(":/png/icon/loading_gif.gif")
@@ -108,7 +109,8 @@ class ReadFrame(QFrame):
         h = size.height()
         self.scrollArea.setGeometry(0, 0, w, h)
         # h2 = min(800, h)
-        self.qtTool.setGeometry(w - 220, 0, 220, h)
+        # self.qtTool.adjustSize()
+        self.qtTool.setGeometry(w - 300, 0, 300, h)
 
         # w = max((w - 150)//2, 0)
         # h = max((h - 150)//2, 0)

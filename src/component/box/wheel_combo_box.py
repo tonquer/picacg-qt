@@ -6,5 +6,5 @@ class WheelComboBox(QComboBox):
         QComboBox.__init__(self, parent)
 
     def wheelEvent(self, event):
-        return
+        event.ignore()
 
