@@ -35,7 +35,7 @@ DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database
 
 DatabaseUpdate2 = "https://gitee.com/bika-robot/picacg-database/raw/main/version.txt"
 DatabaseDownload2 = "https://gitee.com/bika-robot/picacg-database/raw/main/data/"
-UpdateVersion = "v1.2.8"
+UpdateVersion = "v1.2.9"
 
 # waifu2x
 CanWaifu2x = True

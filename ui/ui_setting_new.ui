@@ -95,7 +95,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-1120</y>
+          <y>-1409</y>
           <width>661</width>
           <height>2154</height>
          </rect>
@@ -1439,11 +1439,6 @@
                   <height>0</height>
                  </size>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>自动</string>
-                 </property>
-                </item>
                 <item>
                  <property name="text">
                   <string>0</string>

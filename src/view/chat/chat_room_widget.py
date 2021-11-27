@@ -74,6 +74,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         self.listWidget.setWrapping(True)
         self.listWidget.setResizeMode(self.listWidget.Adjust)
         self.listWidget.itemClicked.connect(self.IconSelect)
+        # self.listWidget.setMinimumHeight(200)
         self.cachePath = "."
         f = QFont()
         f.setPointSize(14)
@@ -81,7 +82,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
             item = QListWidgetItem(icon)
             item.setTextAlignment(Qt.AlignCenter)
             item.setFont(f)
-            item.setSizeHint(QSize(40, 40))
+            item.setSizeHint(QSize(60, 60))
             self.listWidget.addItem(item)
         self.listWidget.setVisible(False)
         # ToolUtil.SetIcon(self)
@@ -128,7 +129,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
                 else:
                     self.SendMsg()
                     return True
-
+            return False
         else:
             return super(self.__class__, self).eventFilter(obj, event)
 
