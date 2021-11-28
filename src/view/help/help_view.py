@@ -40,6 +40,10 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.updateUrl = [config.UpdateUrl, config.UpdateUrl2]
         self.checkUpdateIndex = 0
 
+    def retranslateUi(self, Help):
+        Ui_Help.retranslateUi(self, Help)
+        self.version.setText(config.RealVersion)
+
     def Init(self):
         self.CheckDb()
         # self.UpdateDbInfo()
