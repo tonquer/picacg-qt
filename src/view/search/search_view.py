@@ -55,11 +55,13 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.categories = kwargs.get("categories", "")
 
         if self.categories:
+            self.lineEdit.setText(self.categories)
             self.bookList.clear()
             self.SetEnable(self.isLocal)
             self.SendSearchCategories(1)
         elif text is not None:
             self.text = text
+            self.lineEdit.setText(self.text)
             self.bookList.clear()
             isLocal = kwargs.get("isLocal")
 
