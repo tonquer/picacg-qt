@@ -388,6 +388,6 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         data = self.waifu2xData if self.waifu2xData else self.data
         if not data:
             return
-        QtOwner().owner.userForm.UpdatePictureData(data)
+        QtOwner().owner.navigationWidget.UpdatePictureData(data)
         QtOwner().ShowMsg(Str.GetStr(Str.HeadUpload))
-        return
+        # QtImgMgr().SetHeadStatus(not self.isHeadUp)

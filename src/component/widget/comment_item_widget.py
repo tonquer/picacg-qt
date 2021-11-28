@@ -1,3 +1,5 @@
+import re
+
 from PySide6 import QtWidgets
 from PySide6.QtCore import QEvent, Qt, QSize
 from PySide6.QtGui import QPixmap, QIcon
@@ -52,16 +54,16 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         self.killButton.setCursor(Qt.PointingHandCursor)
 
     def SetLike(self, isLike=True):
-        # p = QPixmap()
-        # if isLike:
-        #     p.loadFromData(DataMgr.GetData("icon_comment_liked"))
-        # else:
-        #     p.loadFromData(DataMgr.GetData("icon_comment_like"))
-        # nums = re.findall("\d+", self.starButton.text())
-        # if nums:
-        #     num = int(nums[0]) + 1 if isLike else int(nums[0]) - 1
-        #     self.starButton.setText("({})".format(str(num)))
-        # self.starButton.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
+        p = QPixmap()
+        if isLike:
+            p.load(":/png/icon/icon_comment_liked.png")
+        else:
+            p.load(":/png/icon/icon_comment_like.png")
+        nums = re.findall("\d+", self.starButton.text())
+        if nums:
+            num = int(nums[0]) + 1 if isLike else int(nums[0]) - 1
+            self.starButton.setText("({})".format(str(num)))
+        self.starButton.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
         self.starButton.setChecked(isLike)
 
     def SetPicture(self, data):

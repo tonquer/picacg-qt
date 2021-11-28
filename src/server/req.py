@@ -501,7 +501,7 @@ class GetGameCommentsReq(ServerReq):
 # 游戏区评论爱心
 class GameCommentsLikeReq(ServerReq):
     def __init__(self, gameId):
-        url = config.Url + "games/{}/like".format(gameId)
+        url = config.Url + "comments/{}/like".format(gameId)
         method = "POST"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)

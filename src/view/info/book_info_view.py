@@ -318,7 +318,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         if self.lastEpsId >= 0:
             item = self.epsListWidget.item(self.lastEpsId)
             if item:
-                downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
+                downloadIds = QtOwner().downloadView.GetDownloadCompleteEpsId(self.bookId)
                 if self.lastEpsId in downloadIds:
                     item.setBackground(QColor(18, 161, 130))
                 else:

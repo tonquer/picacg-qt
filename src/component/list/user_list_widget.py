@@ -1,3 +1,5 @@
+from functools import partial
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QListWidgetItem
 
@@ -88,7 +90,7 @@ class UserListWidget(BaseListWidget):
             iwidget.SetLike()
 
         if likeCallBack:
-            iwidget.starButton.clicked.connect(likeCallBack)
+            iwidget.starButton.clicked.connect(partial(likeCallBack, commnetId))
 
         if commentsCount == "":
             iwidget.commentButton.hide()

@@ -110,7 +110,7 @@ class ReadFrame(QFrame):
         self.scrollArea.setGeometry(0, 0, w, h)
         # h2 = min(800, h)
         # self.qtTool.adjustSize()
-        self.qtTool.setGeometry(w - 300, 0, 300, h)
+        self.qtTool.setGeometry(w - 400, 0, 400, h)
 
         # w = max((w - 150)//2, 0)
         # h = max((h - 150)//2, 0)

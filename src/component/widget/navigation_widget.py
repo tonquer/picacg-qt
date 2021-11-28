@@ -1,4 +1,5 @@
-from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile
+from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent
+from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtWidgets import QWidget
 
 from config import config
@@ -26,6 +27,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.picLabel.SetPicture(f.readAll())
         f.close()
         self.pushButton.clicked.connect(self.OpenLoginView)
+        self.picLabel.installEventFilter(self)
+        self.picData = None
 
     def OpenLoginView(self):
         if User().isLogin:
@@ -61,6 +64,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
 
     def ShowUserImg(self, data, st):
         if st == Status.Ok:
+            self.picData = data
             self.SetPicture(data)
         return
 
@@ -83,6 +87,22 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
     def SetPicture(self, data):
         self.pictureData = data
         self.picLabel.SetPicture(data)
+        return
+
+    def UpdatePictureData(self, data):
+        if not data:
+            return
+        self.picLabel.setPixmap(QPixmap())
+        self.picLabel.setText(self.tr("头像上传中......"))
+        self.AddHttpTask(req.SetAvatarInfoReq(data), self.UpdatePictureDataBack)
+        return
+
+    def UpdatePictureDataBack(self, data):
+        st = data["st"]
+        if st == Status.Ok:
+            self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
+        else:
+            QtOwner().ShowError(Str.GetStr(st))
 
     def aniShow(self):
         """ 动画显示 """
@@ -109,3 +129,15 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         if self.__connect:
             self.__ani.disconnect(self.__connect)
             self.__connect = None
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.LeftButton:
+                if self.picData and (obj == self.picLabel):
+                    QtOwner().OpenWaifu2xTool(self.picData)
+                    return True
+                return False
+            else:
+                return False
+        else:
+            return super(self.__class__, self).eventFilter(obj, event)

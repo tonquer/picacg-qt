@@ -128,7 +128,7 @@ class QtFileData(object):
         return toScaleW, toScaleH
     
     @staticmethod
-    def GetReadToPos(stripModel, maxWidth, maxHeight, toWidth, toHeight, index, curIndex):
+    def GetReadToPos(stripModel, maxWidth, maxHeight, toWidth, toHeight, index, curIndex, oldPos):
         if stripModel == ReadMode.LeftRight:
             return QPoint(maxWidth//2 - toWidth//2, max(0, maxHeight//2-toHeight//2))
         elif stripModel in [ReadMode.RightLeftDouble]:
@@ -142,12 +142,12 @@ class QtFileData(object):
             else:
                 return QPoint(maxWidth//2-toWidth, maxHeight//2 - toHeight//2)
         elif stripModel in [ReadMode.LeftRightScroll]:
-            return QPoint(0, max(0, maxHeight // 2 - toHeight // 2))
+            return QPoint(oldPos.x(), max(0, maxHeight // 2 - toHeight // 2))
 
         elif stripModel in [ReadMode.RightLeftScroll]:
-            return QPoint(0, max(0, maxHeight // 2 - toHeight // 2))
+            return QPoint(oldPos.x(), max(0, maxHeight // 2 - toHeight // 2))
 
         elif stripModel in [ReadMode.UpDown]:
-            return QPoint(maxWidth//2 - toWidth//2, 0)
+            return QPoint(maxWidth//2 - toWidth//2, oldPos.y())
         else:
             return QPoint(0, 0)

@@ -29,9 +29,9 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         self.pictureData = {}
         self.maxPic = 0
-        desktop = QGuiApplication.primaryScreen().geometry()
-        self.resize(desktop.width() // 4 * 3, desktop.height() - 100)
-        self.move(desktop.width() // 8, 0)
+        # desktop = QGuiApplication.primaryScreen().geometry()
+        # self.resize(desktop.width() // 4 * 3, desktop.height() - 100)
+        # self.move(desktop.width() // 8, 0)
 
         self.gridLayout = QtWidgets.QGridLayout(self)
         self.gridLayout.setSpacing(0)

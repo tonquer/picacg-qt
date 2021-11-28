@@ -1,9 +1,9 @@
 import time
 
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect, QFile
-from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics
+from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics, QWheelEvent
 from PySide6.QtWidgets import QGraphicsView, QFrame, QGraphicsItem, QGraphicsScene, \
-    QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider
+    QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider, QApplication
 
 from component.label.msg_label import MsgLabel
 from component.scroll.read_scroll import ReadScroll
@@ -95,6 +95,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
 
         self.horizontalScrollBar().actionTriggered.connect(self.OnActionTriggered)
+        self.verticalScrollBar()
         self.startPos = QPoint()
         self.labelWaifu2xState = {}
         # self.setSceneRect(-self.width()//2, -self.height()//2, self.width(), self.height())
@@ -166,9 +167,11 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         if self.initReadMode == ReadMode.LeftRight:
             return
         if self.initReadMode in [ReadMode.UpDown, ReadMode.LeftRight]:
-            QScroller.scroller(self).scrollTo(QPoint(0, self.verticalScrollBar().value() + value), 500)
+            self.vScrollBar.Scroll(value, 500)
+            # QScroller.scroller(self).scrollTo(QPoint(0, self.verticalScrollBar().value() + value), 500)
         else:
-            QScroller.scroller(self).scrollTo(QPoint(self.horizontalScrollBar().value() + value, 0), 500)
+            self.hScrollBar.Scroll(value, 500)
+            # QScroller.scroller(self).scrollTo(QPoint(self.horizontalScrollBar().value() + value, 0), 500)
         return
 
     def eventFilter(self, obj, ev) -> bool:
@@ -369,8 +372,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             value = self.labelSize.get(curIndex)
             self.oldValue = value
             self.GetScrollBar().setValue(value)
-            print(value)
-            print(self.labelSize)
+            # print(value)
+            # print(self.labelSize)
         elif self.initReadMode in [ReadMode.LeftRight]:
 
             self.graphicsItem1.setPos(0, 0)
@@ -402,8 +405,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             self.GetScrollBar().setMaximum(self.labelSize.get(maxNum - 1, 0))
             self.GetOtherScrollBar().setMaximum(0)
         else:
-            self.graphicsScene.setSceneRect(0, 0, self.width(), max(self.height(), self.graphicsItem1.pixmap().height()))
-            self.verticalScrollBar().setMaximum(max(0, self.graphicsItem1.pixmap().height()- self.height()))
+            self.graphicsScene.setSceneRect(0, 0, self.width(), max(self.height(), self.graphicsItem1.pixmap().height()//self.graphicsItem1.pixmap().devicePixelRatio()))
+            self.verticalScrollBar().setMaximum(max(0, self.graphicsItem1.pixmap().height()//self.graphicsItem1.pixmap().devicePixelRatio()- self.height()))
             self.horizontalScrollBar().setMaximum(0)
 
     def ResetLabelSize(self, size):
@@ -421,12 +424,12 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                     if isinstance(proxy, QGraphicsProxyWidget):
                         height += proxy.widget().height()
                     else:
-                        height += proxy.pixmap().height()
+                        height += proxy.pixmap().height()//proxy.pixmap().devicePixelRatio()
                 else:
                     if isinstance(proxy, QGraphicsProxyWidget):
                         height += proxy.widget().width()
                     else:
-                        height += proxy.pixmap().width()
+                        height += proxy.pixmap().width()//proxy.pixmap().devicePixelRatio()
 
         self.ResetMaxNum()
 
@@ -484,9 +487,9 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 label.setAlignment(Qt.AlignCenter)
                 label.setFont(font)
                 label.setText(text)
-                label.resize(proxy.pixmap().width(), proxy.pixmap().height())
-                newProxy.widget().setMinimumSize(proxy.pixmap().width(), proxy.pixmap().height())
-                newProxy.widget().setMaximumSize(proxy.pixmap().width(), proxy.pixmap().height())
+                label.resize(proxy.pixmap().width()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().height()//proxy.pixmap().devicePixelRatio())
+                newProxy.widget().setMinimumSize(proxy.pixmap().width()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().height()//proxy.pixmap().devicePixelRatio())
+                newProxy.widget().setMaximumSize(proxy.pixmap().width()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().height()//proxy.pixmap().devicePixelRatio())
                 newProxy.setPos(oldPox)
                 # print(index, newProxy.widget().width(), newProxy.widget().height())
                 self.graphicsScene.addItem(newProxy)
@@ -511,7 +514,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 QtReadImgPoolManager().AddProxyItem(proxy)
                 return oldHeight, oldWidth
             else:
-                return proxy.pixmap().height()//self.devicePixelRatio(), proxy.pixmap().width()//self.devicePixelRatio()
+                return proxy.pixmap().height()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().width()//proxy.pixmap().devicePixelRatio()
         elif (self.initReadMode == ReadMode.RightLeftDouble and index == self.readImg.curIndex) or (self.initReadMode == ReadMode.LeftRightDouble and index != self.readImg.curIndex):
             self.graphicsItem2.pixmap().height(), self.graphicsItem2.pixmap().width()
         return self.graphicsItem1.pixmap().height(), self.graphicsItem1.pixmap().width()
@@ -537,14 +540,14 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             if label.pixmap() and waifu2x == isWaifu2x and not self.resetImg:
                 return
         self.labelWaifu2xState[index] = isWaifu2x
-
-        radio = self.devicePixelRatio()
+        oldPos = label.pos()
+        radio = data.devicePixelRatio()
         toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height())
         newData = data.scaled(toW*radio, toH*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), newData.width()/radio, newData.height()//radio, index, self.readImg.curIndex)
+        pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), newData.width()/radio, newData.height()//radio, index, self.readImg.curIndex, oldPos)
+        # print(index, pos, radio, newData.size(), self.size())
         label.setPos(pos)
         label.setPixmap(newData)
-
         if self.initReadMode == ReadMode.UpDown:
             self.UpdateOtherHeight(index, oldHeight, label.pixmap().height()//radio)
         else:
@@ -582,14 +585,17 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         for i in indexList:
             proxy = self.allItems[i]
             oldPos = proxy.pos()
+
             if self.initReadMode == ReadMode.UpDown:
                 if isinstance(proxy, QGraphicsPixmapItem):
-                    proxy.setPos(max(0, self.width()//2 - proxy.pixmap().width()//2), oldPos.y() + addHeight)
+                    radio = proxy.pixmap().devicePixelRatio()
+                    proxy.setPos(max(0, self.width()//2 - proxy.pixmap().width()//radio//2), oldPos.y() + addHeight)
                 else:
                     proxy.setPos(oldPos.x(), oldPos.y() + addHeight)
             else:
                 if isinstance(proxy, QGraphicsPixmapItem):
-                    proxy.setPos(oldPos.x() + addHeight, max(0, self.height()//2 - proxy.pixmap().height()//2))
+                    radio = proxy.pixmap().devicePixelRatio()
+                    proxy.setPos(oldPos.x() + addHeight, max(0, self.height()//2 - proxy.pixmap().height()//radio//2))
                 else:
                     proxy.setPos(oldPos.x() + addHeight, oldPos.y())
             self.labelSize[i] += addHeight
