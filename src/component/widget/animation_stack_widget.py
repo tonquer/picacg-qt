@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PySide6.QtCore import QPropertyAnimation, QRectF
+from PySide6.QtCore import QPropertyAnimation, QRectF, Property
 from PySide6.QtGui import QPaintEvent, QPainter, QPixmap
 from PySide6.QtWidgets import QStackedWidget
 
@@ -13,7 +13,8 @@ class AnimationEnum(Enum):
 class AnimationStackWidget(QStackedWidget):
     def __init__(self, parent=None):
         QStackedWidget.__init__(self, parent)
-        self.animation = QPropertyAnimation()
+        self._value = 0
+        self.animation = QPropertyAnimation(self, b"value")
         self.animation.valueChanged.connect(self.ValueChanged)
         self.animation.finished.connect(self.Finished)
         self.currentValue = 0
@@ -21,6 +22,14 @@ class AnimationStackWidget(QStackedWidget):
         self.subStackList = [0]
         self.animationType = AnimationEnum.LeftToRight
         self.switchArg = {}
+
+    @Property(int)
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
 
     def ValueChanged(self, value):
         self.currentValue = value
