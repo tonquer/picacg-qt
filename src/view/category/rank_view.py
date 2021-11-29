@@ -27,11 +27,11 @@ class RankView(QtWidgets.QWidget, Ui_Rank, QtTaskBase):
         pass
 
     def SwitchPage(self, index):
-        if index == 0:
+        if index == 0 and self.h24BookList.count() <= 0:
             self.AddHttpTask(req.RankReq("H24"), self.InitBack, backParam="H24")
-        elif index == 1:
+        elif index == 1 and self.d7BookList.count() <= 0:
             self.AddHttpTask(req.RankReq("D7"), self.InitBack, backParam="D7")
-        elif index == 2:
+        elif index == 2 and self.d30BookList.count() <= 0:
             self.AddHttpTask(req.RankReq("D30"), self.InitBack, backParam="D30")
         elif index == 3 and not self.isInitKind:
             QtOwner().ShowLoading()
