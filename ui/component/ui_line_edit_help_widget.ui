@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QListView" name="listView"/>
+    <widget class="QListView" name="listView">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>120</height>
+      </size>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="label_2">
@@ -51,7 +58,7 @@
        <property name="minimumSize">
         <size>
          <width>75</width>
-         <height>35</height>
+         <height>25</height>
         </size>
        </property>
       </widget>
@@ -91,7 +98,7 @@
        <property name="minimumSize">
         <size>
          <width>75</width>
-         <height>35</height>
+         <height>25</height>
         </size>
        </property>
       </widget>
@@ -131,7 +138,7 @@
        <property name="minimumSize">
         <size>
          <width>75</width>
-         <height>35</height>
+         <height>25</height>
         </size>
        </property>
       </widget>
@@ -171,7 +178,7 @@
        <property name="minimumSize">
         <size>
          <width>75</width>
-         <height>35</height>
+         <height>25</height>
         </size>
        </property>
       </widget>
@@ -211,7 +218,7 @@
        <property name="minimumSize">
         <size>
          <width>75</width>
-         <height>35</height>
+         <height>25</height>
         </size>
        </property>
       </widget>
@@ -251,7 +258,7 @@
        <property name="minimumSize">
         <size>
          <width>75</width>
-         <height>35</height>
+         <height>25</height>
         </size>
        </property>
       </widget>

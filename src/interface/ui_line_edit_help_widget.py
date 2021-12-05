@@ -24,7 +24,7 @@ class Ui_LineEditHelp(object):
     def setupUi(self, LineEditHelp):
         if not LineEditHelp.objectName():
             LineEditHelp.setObjectName(u"LineEditHelp")
-        LineEditHelp.resize(400, 300)
+        LineEditHelp.resize(400, 440)
         self.verticalLayout_2 = QVBoxLayout(LineEditHelp)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label = QLabel(LineEditHelp)
@@ -34,6 +34,7 @@ class Ui_LineEditHelp(object):
 
         self.listView = QListView(LineEditHelp)
         self.listView.setObjectName(u"listView")
+        self.listView.setMinimumSize(QSize(0, 120))
 
         self.verticalLayout_2.addWidget(self.listView)
 
@@ -52,7 +53,7 @@ class Ui_LineEditHelp(object):
 
         self.localWidget = SwitchButton(LineEditHelp)
         self.localWidget.setObjectName(u"localWidget")
-        self.localWidget.setMinimumSize(QSize(75, 35))
+        self.localWidget.setMinimumSize(QSize(75, 25))
 
         self.horizontalLayout_2.addWidget(self.localWidget, 0, Qt.AlignLeft)
 
@@ -73,7 +74,7 @@ class Ui_LineEditHelp(object):
 
         self.titleWidget = SwitchButton(LineEditHelp)
         self.titleWidget.setObjectName(u"titleWidget")
-        self.titleWidget.setMinimumSize(QSize(75, 35))
+        self.titleWidget.setMinimumSize(QSize(75, 25))
 
         self.horizontalLayout_4.addWidget(self.titleWidget)
 
@@ -94,7 +95,7 @@ class Ui_LineEditHelp(object):
 
         self.desWidget = SwitchButton(LineEditHelp)
         self.desWidget.setObjectName(u"desWidget")
-        self.desWidget.setMinimumSize(QSize(75, 35))
+        self.desWidget.setMinimumSize(QSize(75, 25))
 
         self.horizontalLayout_5.addWidget(self.desWidget, 0, Qt.AlignLeft)
 
@@ -115,7 +116,7 @@ class Ui_LineEditHelp(object):
 
         self.categoryWidget = SwitchButton(LineEditHelp)
         self.categoryWidget.setObjectName(u"categoryWidget")
-        self.categoryWidget.setMinimumSize(QSize(75, 35))
+        self.categoryWidget.setMinimumSize(QSize(75, 25))
 
         self.horizontalLayout_3.addWidget(self.categoryWidget, 0, Qt.AlignLeft)
 
@@ -136,7 +137,7 @@ class Ui_LineEditHelp(object):
 
         self.tagWidget = SwitchButton(LineEditHelp)
         self.tagWidget.setObjectName(u"tagWidget")
-        self.tagWidget.setMinimumSize(QSize(75, 35))
+        self.tagWidget.setMinimumSize(QSize(75, 25))
 
         self.horizontalLayout.addWidget(self.tagWidget, 0, Qt.AlignLeft)
 
@@ -157,7 +158,7 @@ class Ui_LineEditHelp(object):
 
         self.authorWidget = SwitchButton(LineEditHelp)
         self.authorWidget.setObjectName(u"authorWidget")
-        self.authorWidget.setMinimumSize(QSize(75, 35))
+        self.authorWidget.setMinimumSize(QSize(75, 25))
 
         self.horizontalLayout_6.addWidget(self.authorWidget, 0, Qt.AlignLeft)
 
