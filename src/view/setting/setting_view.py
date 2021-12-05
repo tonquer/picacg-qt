@@ -63,6 +63,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         # spinBox
         # self.preDownNum.valueChanged.connect(partial(self.SpinBoxEvent, "", self.preDownNum))
         self.coverSize.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverSize))
+        self.categorySize.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CategorySize))
         self.readScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.LookScale))
         self.coverScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverLookScale))
         self.downScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.DownloadScale))
@@ -169,6 +170,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.SetRadioGroup("languageButton", Setting.Language.value)
         self.SetRadioGroup("mainScaleButton", Setting.ScaleLevel.value)
         self.coverSize.setValue(Setting.CoverSize.value)
+        self.categorySize.setValue(Setting.CategorySize.value)
         self.SetRadioGroup("logutton", Setting.LogIndex.value)
         self.httpProxy.setChecked(Setting.IsHttpProxy.value)
         self.httpEdit.setText(Setting.HttpProxy.value)

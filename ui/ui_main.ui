@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Main</class>
+ <widget class="QMainWindow" name="Main">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PicACG</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QStackedWidget" name="totalStackWidget">
+      <widget class="QWidget" name="subMainWindow">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="NavigationWidget" name="navigationWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>240</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>280</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <layout class="QHBoxLayout" name="menuLayout">
+              <item>
+               <widget class="QPushButton" name="menuButton">
+                <property name="text">
+                 <string>菜单</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>&gt;</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="AnimationStackWidget" name="subStackWidget">
+            <widget class="IndexView" name="indexView"/>
+            <widget class="HelpView" name="helpView"/>
+            <widget class="MyCommentView" name="myCommentView"/>
+            <widget class="SettingView" name="settingView"/>
+            <widget class="DownloadView" name="downloadView"/>
+            <widget class="CategoryView" name="categoryView"/>
+            <widget class="SearchView" name="searchView"/>
+            <widget class="RankView" name="rankView"/>
+            <widget class="CommentView" name="commentView"/>
+            <widget class="SubCommentView" name="subCommentView"/>
+            <widget class="ChatView" name="chatView"/>
+            <widget class="FavoriteView" name="favorityView"/>
+            <widget class="HistoryView" name="historyView"/>
+            <widget class="BookInfoView" name="bookInfoView"/>
+            <widget class="GameCommentView" name="gameCommentView"/>
+            <widget class="GameInfoView" name="gameInfoView"/>
+            <widget class="GameView" name="gameView"/>
+            <widget class="Waifu2xToolView" name="waifu2xToolView"/>
+            <widget class="BookEpsView" name="bookEpsView"/>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="ReadView" name="readView"/>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ReadView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.read.read_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>IndexView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.index.index_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SettingView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.setting.setting_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DownloadView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.download.download_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CategoryView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.category.category_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NavigationWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">component.widget.navigation_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AnimationStackWidget</class>
+   <extends>QStackedWidget</extends>
+   <header location="global">component.widget.animation_stack_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SearchView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.search.search_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RankView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.category.rank_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CommentView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.comment.comment_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SubCommentView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.comment.sub_comment_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChatView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.chat.chat_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FavoriteView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.user.favorite_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HistoryView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.user.history_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BookInfoView</class>
+   <extends>QWidget</extends>
+   <header>view.info.book_info_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GameCommentView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.comment.game_comment_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Waifu2xToolView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.waifu2x_tool_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GameInfoView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.info.game_info_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GameView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.game.game_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MyCommentView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.comment.my_comment_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>BookEpsView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.info.book_eps_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HelpView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.help.help_view.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

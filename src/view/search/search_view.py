@@ -55,6 +55,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.categories = kwargs.get("categories", "")
 
         if self.categories:
+            self.isLocal = False
             self.lineEdit.setText(self.categories)
             self.bookList.clear()
             self.SetEnable(self.isLocal)
@@ -88,6 +89,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def SendSearchCategories(self, page):
         sort = ["dd", "da", "ld", "vd"]
+        QtOwner().ShowLoading()
         sortId = sort[self.comboBox.currentIndex()]
         self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
 

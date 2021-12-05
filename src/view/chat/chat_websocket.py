@@ -13,25 +13,28 @@ class ChatWebSocket:
     def __init__(self, parent):
         self._parent = weakref.ref(parent)
         self.ws = None
+        self._inQueue = Queue()
         self.sendThread = threading.Thread(target=self.SendDataRun)
+        self.sendThread.setName("ChatSendThread")
         self.sendThread.setDaemon(True)
         self.sendThread.start()
-        self._inQueue = Queue()
         pass
 
     @property
     def parent(self):
         return self._parent()
 
+    def Stop(self):
+        self._inQueue.put("")
+        return
+
     def SendDataRun(self):
         while True:
-            try:
-                task = self._inQueue.get(True)
-            except Exception as es:
-                continue
-                pass
+            task = self._inQueue.get(True)
             self._inQueue.task_done()
             try:
+                if task == "":
+                    break
                 self._SendData(task)
             except Exception as es:
                 Log.Error(es)
@@ -102,7 +105,7 @@ class ChatWebSocket:
         thread.setDaemon(True)
         thread.start()
 
-    def Stop(self):
+    def Close(self):
         if self.ws:
             self.ws.close()
             self.ws = None

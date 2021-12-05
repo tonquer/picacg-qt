@@ -121,9 +121,11 @@ class DownloadView(QtWidgets.QWidget, Ui_Download):
     def UpdateTable(self):
         for task in self.downloadingList:
             assert isinstance(task, DownloadInfo)
-            self.UpdateTableItem(task)
+            if task.status != task.Downloading:
+                continue
             task.speedStr = ToolUtil.GetDownloadSize(task.speed) + "/s"
             task.speed = 0
+            self.UpdateTableItem(task)
 
     def AddDownload(self, bookId, downloadIds):
         if bookId not in self.downloadDict:
@@ -206,9 +208,11 @@ class DownloadView(QtWidgets.QWidget, Ui_Download):
 
     def UpdateTableItem(self, info):
         assert isinstance(info, DownloadInfo)
-
         self.tableWidget.setItem(info.tableRow, 0, QTableWidgetItem(info.bookId))
-        self.tableWidget.setItem(info.tableRow, 1, QTableWidgetItem(info.title))
+        item = QTableWidgetItem(info.title)
+        item.setToolTip(info.title)
+        self.tableWidget.setItem(info.tableRow, 1, item)
+
         self.tableWidget.setItem(info.tableRow, 2, QTableWidgetItem(Str.GetStr(info.status)))
         self.tableWidget.setItem(info.tableRow, 3,
                                  QTableWidgetItem("{}/{}".format(str(info.curDownloadPic), str(info.maxDownloadPic))))

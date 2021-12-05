@@ -1,4 +1,33 @@
 <RCC>
+  <qresource prefix="/">
+  <file>title_bar/close_button_hover_57_40.png</file>
+  <file>title_bar/close_button_pressed_57_40.png</file>
+  <file>title_bar/down_button_pressed_57_40.png</file>
+  <file>title_bar/white_close_button_57_40.png</file>
+  <file>title_bar/white_down_57_40.png</file>
+  <file>title_bar/white_down_button_57_40.png</file>
+  <file>title_bar/white_max_button_57_40.png</file>
+  <file>title_bar/white_min_button_57_40.png</file>
+  <file>title_bar/white_return_button_60_40.png</file>
+  <file>title_bar/white_return_button_hover_60_40.png</file>
+  <file>title_bar/white_return_button_pressed_60_40.png</file>
+  <file>title_bar/green_down_button_hover_57_40.png</file>
+  <file>title_bar/green_max_button_hover_57_40.png</file>
+  <file>title_bar/green_min_button_hover_57_40.png</file>
+  <file>title_bar/open_white_close_button_57_40.png</file>
+  <file>title_bar/open_black_close_button_57_40.png</file>
+  <file>title_bar/open_black_max_button_57_40.png</file>
+  <file>title_bar/open_black_min_button_57_40.png</file>
+  <file>title_bar/black_close_button_57_40.png</file>
+  <file>title_bar/black_down_button_57_40.png</file>
+  <file>title_bar/black_max_button_57_40.png</file>
+  <file>title_bar/black_max_button_pressed_57_40.png</file>
+  <file>title_bar/black_min_button_57_40.png</file>
+  <file>title_bar/black_min_button_pressed_57_40.png</file>
+  <file>title_bar/black_return_button_60_40.png</file>
+  <file>title_bar/black_return_button_hover_60_40.png</file>
+  <file>title_bar/black_return_button_pressed_60_40.png</file>
+  </qresource>
   <qresource prefix="png">
     <file>icon/audio.png</file>
     <file>icon/bubble_r_9.9.png</file>
@@ -41,6 +70,17 @@
 	<file>icon/loading/loading_8.png</file>
 	<file>icon/loading/loading_9.png</file>
 	<file>icon/loading/loading_10.png</file>
+    <file>icon/icon_unknown_error.png</file>
+    <file>icon/icon_success.png</file>
+    <file>icon/icon_question_error.png</file>
+    <file>icon/icon_no_comment.png</file>
+    <file>icon/icon_leave.png</file>
+    <file>icon/icon_exclamation_error.png</file>
+    <file>icon/icon_empty.png</file>
+    <file>icon/cat_latest.jpg</file>
+    <file>icon/cat_forum.jpg</file>
+    <file>icon/cat_random.jpg</file>
+    <file>icon/cat_leaderboard.jpg</file>
   </qresource>
   <qresource prefix="icon">
     <file>theme/dark_pink/disabled/base.svg</file>

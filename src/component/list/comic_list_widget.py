@@ -46,6 +46,8 @@ class ComicListWidget(BaseListWidget):
                 if not widget.isWaifu2x:
                     action = popMenu.addAction(Str.GetStr(Str.Waifu2xConvert))
                     action.triggered.connect(partial(self.Waifu2xPicture, index))
+                    if widget.isWaifu2xLoading or not config.CanWaifu2x:
+                        action.setEnabled(False)
                 else:
                     action = popMenu.addAction(Str.GetStr(Str.DelWaifu2xConvert))
                     action.triggered.connect(partial(self.CancleWaifu2xPicture, index))
@@ -106,6 +108,7 @@ class ComicListWidget(BaseListWidget):
     def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished=""):
         index = self.count()
         widget = ComicItemWidget()
+        widget.setFocusPolicy(Qt.NoFocus)
         widget.id = _id
         widget.url = url
         widget.path = path
@@ -197,6 +200,7 @@ class ComicListWidget(BaseListWidget):
             w, h = ToolUtil.GetPictureSize(widget.picData)
             if max(w, h) <= Setting.CoverMaxNum.value or not isIfSize:
                 model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value)
+                widget.isWaifu2xLoading = True
                 self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index)
 
     def CancleWaifu2xPicture(self, index):

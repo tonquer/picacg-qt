@@ -13,7 +13,6 @@
   <property name="windowTitle">
    <string>评论</string>
   </property>
-
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="UserListWidget" name="listWidget"/>
@@ -27,6 +26,9 @@
       <widget class="QPushButton" name="pushButton">
        <property name="text">
         <string>回复</string>
+       </property>
+       <property name="shortcut">
+        <string>Return</string>
        </property>
       </widget>
      </item>

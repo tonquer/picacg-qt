@@ -40,7 +40,6 @@ class BaseListWidget(QListWidget, QtTaskBase):
         self.lastIndex = -1
         self.doubleClickType = 0
 
-
     def ClearWheelEvent(self):
         pass
         # self.vScrollBar.stop()

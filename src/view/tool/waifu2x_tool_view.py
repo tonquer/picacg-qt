@@ -67,7 +67,9 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
 
         # self.radioButton.installEventFilter(self)
         # self.radioButton_2.installEventFilter(self)
-        self.graphicsView.installEventFilter(self)
+        # self.graphicsItem.installSceneEventFilter(self.graphicsItem)
+        # self.graphicsView.installEventFilter(self)
+        self.graphicsScene.installEventFilter(self)
         self.graphicsView.setWindowFlag(Qt.FramelessWindowHint)
         # tta有BUG，暂时屏蔽 TODO
         self.ttaModel.setEnabled(False)
@@ -123,6 +125,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         weight, height = ToolUtil.GetPictureSize(data)
         self.resolutionLabel.setText(str(weight) + "x" + str(height))
         self.ScalePicture()
+        self.CheckScaleRadio()
 
     def ScalePicture(self):
         rect = QRectF(self.graphicsItem.pos(), QSizeF(
@@ -158,7 +161,8 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
 
     def keyReleaseEvent(self, ev):
         if ev.key() == Qt.Key_Escape:
-            self.hide()
+            # self.hide()
+            ev.ignore()
             return
         if ev.key() == Qt.Key_Plus or ev.key() == Qt.Key_Equal:
             self.zoomIn()
@@ -174,7 +178,20 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
 
     def eventFilter(self, obj, ev):
         if ev.type() == QEvent.KeyPress:
+
             return True
+        elif ev.type() == QEvent.GraphicsSceneMousePress:
+            if ev.button() == Qt.ForwardButton:
+                return True
+            elif ev.button() == Qt.BackButton:
+                return True
+            return False
+        elif ev.type() == QEvent.GraphicsSceneMouseRelease:
+            if ev.button() == Qt.ForwardButton:
+                return True
+            elif ev.button() == Qt.BackButton:
+                return True
+            return False
         else:
             return super(self.__class__, self).eventFilter(obj, ev)
 
@@ -242,6 +259,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
                     self.data = data
                     self.waifu2xData = None
                     self.ClearConvert()
+                    self.backStatus = ""
                     self.ShowImg(data)
         except Exception as ex:
             Log.Error(ex)

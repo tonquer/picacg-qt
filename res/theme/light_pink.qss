@@ -38,6 +38,10 @@ QWidget {
   background-color: #f3f3f3;
 }
 
+QWidget#MainWindows{
+border:2px solid rgb(177,177,177);border-radius:10px;
+}
+
 QFrame {
   background-color: #f3f3f3;
   border: 1px solid #f5f5f5;

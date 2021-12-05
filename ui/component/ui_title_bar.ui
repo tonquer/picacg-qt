@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1360</width>
-    <height>78</height>
+    <height>49</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,27 +21,43 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QToolButton" name="menuButton">
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Minimum</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>10</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item alignment="Qt::AlignHCenter|Qt::AlignBottom">
+    <widget class="QLabel" name="label_2">
      <property name="minimumSize">
       <size>
-       <width>40</width>
-       <height>40</height>
+       <width>25</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>25</width>
+       <height>25</height>
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">QToolButton{ border-image:url(:/images/navigation_interface/GlobalNavButton.png);}
-QToolButton:hover{ border-image:url(:/images/navigation_interface/GlobalNavButton.png);}
-QToolButton:pressed{ border-image:url(:/images/navigation_interface/GlobalNavButton.png);}
-border: none; margin: 0px</string>
+      <string notr="true">border-image: url(:/png/icon/logo_round.png);</string>
      </property>
      <property name="text">
       <string/>
      </property>
-     <property name="iconSize">
-      <size>
-       <width>60</width>
-       <height>40</height>
-      </size>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignHCenter</set>
      </property>
     </widget>
    </item>
@@ -56,7 +72,23 @@ border: none; margin: 0px</string>
      <property name="text">
       <string>PicACG</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QToolButton" name="minButton">
@@ -67,9 +99,9 @@ border: none; margin: 0px</string>
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">QToolButton{ border-image:url(:/images/title_bar/open_black_min_button_57_40.png);}
-QToolButton:hover{ border-image:url(:/images/title_bar/green_min_button_hover_57_40.png);}
-QToolButton:pressed{ border-image:url(:/images/title_bar/black_min_button_pressed_57_40.png);}
+      <string notr="true">QToolButton{ border-image:url(:/title_bar/open_black_min_button_57_40.png);}
+QToolButton:hover{ border-image:url(:/title_bar/green_min_button_hover_57_40.png);}
+QToolButton:pressed{ border-image:url(:/title_bar/black_min_button_pressed_57_40.png);}
 border: none; margin: 0px</string>
      </property>
      <property name="text">
@@ -86,12 +118,12 @@ border: none; margin: 0px</string>
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">QToolButton[isMax=false]{ border-image:url(:/images/title_bar/open_black_max_button_57_40.png);}
-QToolButton:hover[isMax=false]{ border-image:url(:/images/title_bar/green_max_button_hover_57_40.png);}
-QToolButton:pressed[isMax=false]{ border-image:url(:/images/title_bar/black_max_button_pressed_57_40.png);}
-QToolButton[isMax=true]{ border-image:url(:/images/title_bar/black_down_button_57_40.png);}
-QToolButton:hover[isMax=true]{ border-image:url(:/images/title_bar/green_down_button_hover_57_40.png);}
-QToolButton:pressed[isMax=true]{ border-image:url(:/images/title_bar/down_button_pressed_57_40.png);}
+      <string notr="true">QToolButton[isMax=false]{ border-image:url(:/title_bar/open_black_max_button_57_40.png);}
+QToolButton:hover[isMax=false]{ border-image:url(:/title_bar/green_max_button_hover_57_40.png);}
+QToolButton:pressed[isMax=false]{ border-image:url(:/title_bar/black_max_button_pressed_57_40.png);}
+QToolButton[isMax=true]{ border-image:url(:/title_bar/black_down_button_57_40.png);}
+QToolButton:hover[isMax=true]{ border-image:url(:/title_bar/green_down_button_hover_57_40.png);}
+QToolButton:pressed[isMax=true]{ border-image:url(:/title_bar/down_button_pressed_57_40.png);}
 border: none;
 margin: 0px</string>
      </property>
@@ -112,9 +144,9 @@ margin: 0px</string>
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">QToolButton{ border-image:url(:/images/title_bar/open_black_close_button_57_40.png);}
-QToolButton:hover{ border-image:url(:/images/title_bar/close_button_hover_57_40.png);}
-QToolButton:pressed{ border-image:url(:/images/title_bar/close_button_pressed_57_40.png);}
+      <string notr="true">QToolButton{ border-image:url(:/title_bar/open_black_close_button_57_40.png);}
+QToolButton:hover{ border-image:url(:/title_bar/close_button_hover_57_40.png);}
+QToolButton:pressed{ border-image:url(:/title_bar/close_button_pressed_57_40.png);}
 border: none; margin: 0px</string>
      </property>
      <property name="text">

@@ -58,3 +58,6 @@ class LoginView(BaseMaskDialog, Ui_Login, QtTaskBase):
     def _ClickButton(self):
         index = self.tabWidget.currentIndex()
         self.tabWidget.widget(index).ClickButton()
+
+    # def event(self, event) -> bool:
+    #     return BaseMaskDialog.event(event)

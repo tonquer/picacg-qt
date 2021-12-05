@@ -1,6 +1,5 @@
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import QTimer, QFile
-from PySide6.QtGui import QGuiApplication
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QGridLayout
 
 from component.label.gif_group_label import GifGroupLabel

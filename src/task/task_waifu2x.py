@@ -19,14 +19,19 @@ class TaskWaifu2x(TaskBase):
         self.thread.start()
 
         self.thread2 = threading.Thread(target=self.RunLoad2)
+        self.thread2.setName("Task-" + str("Waifu2x"))
         self.thread2.setDaemon(True)
+
+    def Start(self):
         self.thread2.start()
+        return
 
     def Run(self):
         while True:
             try:
                 taskId = self._inQueue.get(True)
-                if taskId < 0:
+                self._inQueue.task_done()
+                if taskId == "":
                     break
 
                 if taskId not in self.tasks:
@@ -68,10 +73,11 @@ class TaskWaifu2x(TaskBase):
         while True:
             info = self.LoadData()
             if not info:
-                continue
+                break
             t1 = CTime()
             data, convertId, taskId, tick = info
-            if taskId not in self.tasks:
+            info = self.tasks.get(taskId)
+            if not info:
                 continue
             if not data:
                 lenData = 0
@@ -81,7 +87,6 @@ class TaskWaifu2x(TaskBase):
             Log.Warn("convert suc, taskId: {}, dataLen:{}, sts:{} tick:{}".format(str(taskId), lenData,
                                                                                           str(convertId),
                                                                                           str(tick)))
-            info = self.tasks[taskId]
             assert isinstance(info, QtDownloadTask)
             info.saveData = data
             info.tick = tick

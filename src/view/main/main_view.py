@@ -1,33 +1,31 @@
-import sys
 from functools import partial
 
-from PySide6.QtCore import Qt, QUrl, QEvent, QPoint
-from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QDesktopServices, QPalette
-from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel, QMainWindow, QMessageBox, QApplication
+from PySide6.QtCore import Qt, QEvent, QPoint
+from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication
+from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel, QMainWindow, QApplication
 
 from component.dialog.loading_dialog import LoadingDialog
 from component.label.msg_label import MsgLabel
-from component.widget.frame_less_widget import FrameLessWidget
+from component.widget.main_widget import Main
 from config import config
 from config.setting import Setting
-from interface.ui_main_windows import Ui_MainWindow
 from qt_owner import QtOwner
-from server import req
+from server.server import Server
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
+from task.task_qimage import TaskQImage
+from task.task_waifu2x import TaskWaifu2x
 from tools.log import Log
-from tools.str import Str
 from view.download.download_dir_view import DownloadDirView
 
 
-class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
+class MainView(Main, QtTaskBase):
     """ 主窗口 """
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        QtTaskBase.__init__(self)
+    def __init__(self):
         QtOwner().SetOwner(self)
-        self.setupUi(self)
+        Main.__init__(self)
+        QtTaskBase.__init__(self)
         self.resize(600, 600)
         self.setWindowTitle("PicACG")
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
@@ -44,7 +42,7 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
         self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
         print(desktop.size(), self.size())
-        # self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.loadingDialog = LoadingDialog(self)
         self.__initWidget()
@@ -60,7 +58,28 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         self.subStackWidget.setCurrentIndex(0)
         self.settingView.LoadSetting()
         # self.readView.LoadSetting()
+        # QApplication.instance().installEventFilter(self)
+        # QtOwner().app.paletteChanged.connect(self.CheckPaletteChanged)
 
+    # def eventFilter(self, watched, event) -> bool:
+    #     if watched == QtOwner().app:
+    #         print(event.type(), event)
+    #     return False
+
+    # def event(self, ev):
+    #     """Catch system events."""
+    #     # print(ev)
+    #     if ev.type() == QEvent.ApplicationPaletteChange:  # detect theme switches
+    #         pass
+    #         # style = interface_style()  # light or dark
+    #         # if style is not None:
+    #         #     QIcon.setThemeName(style)
+    #         # else:
+    #         #     QIcon.setThemeName("light")  # fallback
+    #     return super().event(ev)
+    #
+    # def CheckPaletteChanged(self, data):
+    #     print(data)
 
     @property
     def subStackList(self):
@@ -86,7 +105,7 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         self.navigationWidget.helpButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.helpView)))
 
     def RetranslateUi(self):
-        Ui_MainWindow.retranslateUi(self, self)
+        Main.retranslateUi(self, self)
         self.indexView.retranslateUi(self.indexView)
         self.settingView.retranslateUi(self.settingView)
         self.downloadView.retranslateUi(self.downloadView)
@@ -125,8 +144,12 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
             #     config.Encode = 0
 
             sts = waifu2x_vulkan.initSet(config.Encode, Setting.Waifu2xThread.value)
+            TaskWaifu2x().Start()
+            version = waifu2x_vulkan.getVersion()
+            config.Waifu2xVersion = version
+            self.helpView.waifu2x.setText(config.Waifu2xVersion)
             Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(
-                config.Encode) + " version:" + waifu2x_vulkan.getVersion() + " code:" + str(sts))
+                config.Encode) + " version:" + version + " code:" + str(sts))
         else:
             pass
             # QtOwner().ShowError(self.tr("waifu2x无法启用, ") + config.ErrorMsg)
@@ -249,6 +272,10 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
     #     self.adjustWidgetGeometry()
 
     def closeEvent(self, a0) -> None:
+        if self.totalStackWidget.currentIndex() == 1:
+            self.totalStackWidget.setCurrentIndex(0)
+            a0.ignore()
+            return
         super().closeEvent(a0)
         # reply = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('提示'), self.tr('确定要退出吗？'))
         self.GetExitScreen()
@@ -310,7 +337,7 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
 
             msg = ctypes.wintypes.MSG.from_address(message.__int__())
             # print(msg.message, self.GetWinSysColor())
-            if msg.message == 26 and config.ThemeIndex == 0:
+            if msg.message == 26 and Setting.ThemeIndex.value == 0:
                 self.settingView.SetTheme()
 
         return super(self.__class__, self).nativeEvent(eventType, message)
@@ -319,6 +346,10 @@ class MainView(QMainWindow, Ui_MainWindow, QtTaskBase):
         # TODO 停止所有的定时器以及线程
         self.loadingDialog.close()
         self.downloadView.Close()
+        self.chatView.Stop()
+        TaskWaifu2x().Stop()
+        TaskQImage().Stop()
+        Server().Stop()
         SqlServer().Stop()
         # QtTask().Stop()
 

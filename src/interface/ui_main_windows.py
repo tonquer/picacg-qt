@@ -15,12 +15,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow,
-    QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
+    QSizePolicy, QSpacerItem, QStackedWidget, QVBoxLayout,
+    QWidget)
 
 from component.widget.animation_stack_widget import AnimationStackWidget
 from component.widget.navigation_widget import NavigationWidget
+from component.widget.title_bar_widget import TitleBarWidget
 from view.category.category_view import CategoryView
 from view.category.rank_view import RankView
 from view.chat.chat_view import ChatView
@@ -42,17 +43,23 @@ from view.tool.waifu2x_tool_view import Waifu2xToolView
 from view.user.favorite_view import FavoriteView
 from view.user.history_view import HistoryView
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(800, 600)
-        self.centralwidget = QWidget(MainWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
-        self.horizontalLayout = QHBoxLayout(self.centralwidget)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.totalStackWidget = QStackedWidget(self.centralwidget)
+class Ui_MainWindows(object):
+    def setupUi(self, MainWindows):
+        if not MainWindows.objectName():
+            MainWindows.setObjectName(u"MainWindows")
+        MainWindows.resize(903, 489)
+        self.verticalLayout = QVBoxLayout(MainWindows)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(9, 9, 9, 9)
+        self.widget = TitleBarWidget(MainWindows)
+        self.widget.setObjectName(u"widget")
+        self.widget.setMinimumSize(QSize(0, 40))
+        self.widget.setMaximumSize(QSize(16777215, 40))
+
+        self.verticalLayout.addWidget(self.widget)
+
+        self.totalStackWidget = QStackedWidget(MainWindows)
         self.totalStackWidget.setObjectName(u"totalStackWidget")
         self.subMainWindow = QWidget()
         self.subMainWindow.setObjectName(u"subMainWindow")
@@ -65,8 +72,8 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2.addWidget(self.navigationWidget)
 
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.menuLayout = QHBoxLayout()
@@ -89,7 +96,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
 
         self.subStackWidget = AnimationStackWidget(self.subMainWindow)
         self.subStackWidget.setObjectName(u"subStackWidget")
@@ -151,28 +158,27 @@ class Ui_MainWindow(object):
         self.bookEpsView.setObjectName(u"bookEpsView")
         self.subStackWidget.addWidget(self.bookEpsView)
 
-        self.verticalLayout.addWidget(self.subStackWidget)
+        self.verticalLayout_2.addWidget(self.subStackWidget)
 
 
-        self.horizontalLayout_2.addLayout(self.verticalLayout)
+        self.horizontalLayout_2.addLayout(self.verticalLayout_2)
 
         self.totalStackWidget.addWidget(self.subMainWindow)
         self.readView = ReadView()
         self.readView.setObjectName(u"readView")
         self.totalStackWidget.addWidget(self.readView)
 
-        self.horizontalLayout.addWidget(self.totalStackWidget)
+        self.verticalLayout.addWidget(self.totalStackWidget)
 
-        MainWindow.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(MainWindows)
 
-        QMetaObject.connectSlotsByName(MainWindow)
+        QMetaObject.connectSlotsByName(MainWindows)
     # setupUi
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"PicACG", None))
-        self.menuButton.setText(QCoreApplication.translate("MainWindow", u"\u83dc\u5355", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u">", None))
+    def retranslateUi(self, MainWindows):
+        MainWindows.setWindowTitle(QCoreApplication.translate("MainWindows", u"Form", None))
+        self.menuButton.setText(QCoreApplication.translate("MainWindows", u"\u83dc\u5355", None))
+        self.label.setText(QCoreApplication.translate("MainWindows", u">", None))
     # retranslateUi
 

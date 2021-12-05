@@ -77,33 +77,41 @@ class Server(Singleton):
 
         for i in range(self.threadNum):
             thread = threading.Thread(target=self.Run)
+            thread.setName("HTTP-"+str(i))
             thread.setDaemon(True)
             thread.start()
 
         for i in range(self.downloadNum):
             thread = threading.Thread(target=self.RunDownload)
+            thread.setName("Download-" + str(i))
             thread.setDaemon(True)
             thread.start()
 
     def Run(self):
         while True:
-            try:
-                task = self._inQueue.get(True)
-            except Exception as es:
-                continue
-                pass
+            task = self._inQueue.get(True)
             self._inQueue.task_done()
             try:
+                if task == "":
+                    break
                 self._Send(task)
             except Exception as es:
                 Log.Error(es)
         pass
+
+    def Stop(self):
+        for i in range(self.threadNum):
+            self._inQueue.put("")
+        for i in range(self.downloadNum):
+            self._downloadQueue.put("")
 
     def RunDownload(self):
         while True:
             task = self._downloadQueue.get(True)
             self._downloadQueue.task_done()
             try:
+                if task == "":
+                    break
                 self._Download(task)
             except Exception as es:
                 Log.Error(es)

@@ -106,6 +106,9 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         self.resize(desktop.width() // 4 * 1, desktop.height() // 4 * 3)
         self.move(desktop.width() // 2, desktop.height() // 8)
 
+    def Stop(self):
+        self.socket.Stop()
+
     def CheckAction1(self):
         self.action2.setChecked(not self.action1.isChecked())
         Setting.ChatSendAction.SetValue(1)
@@ -145,7 +148,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
             return super(self.__class__, self).keyPressEvent(event)
 
     def closeEvent(self, event) -> None:
-        self.socket.Stop()
+        self.socket.Close()
         return super(self.__class__, self).closeEvent(event)
 
     def GetName(self):

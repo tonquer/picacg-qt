@@ -29,7 +29,7 @@ class SearchLineEdit(QLineEdit):
         self.help.setupUi(self.widget)
 
         self.widget.setParent(self, Qt.Popup)
-        self.widget.setFocusPolicy(Qt.NoFocus)
+        # self.widget.setFocusPolicy(Qt.NoFocus)
         self.widget.setFocusProxy(self)
         # self.setFocusPolicy(proxy)
         # self.widget.setFocusPolicy(Qt.NoFocus)
@@ -52,6 +52,9 @@ class SearchLineEdit(QLineEdit):
         # self.help.tagWidget.SetState(False)
         self.help.categoryWidget.SetState(False)
         self.isShowSearch = True
+
+        self.searchTag1 = "<font color=#232629>"
+        self.searchTag2 = "</font>"
 
     @property
     def listView(self):
@@ -77,7 +80,9 @@ class SearchLineEdit(QLineEdit):
 
     def SetText(self, index):
         item = self.model.itemData(index)
-        self.setText(item.get(0))
+        text = item.get(0)
+        # self.setText(text.replace(self.searchTag1, "").replace(self.searchTag2, ""))
+        self.setText(text)
         self.Search()
         return
 
@@ -101,6 +106,7 @@ class SearchLineEdit(QLineEdit):
             if strings == data:
                 isSelf = True
             elif strings in data:
+                # datas.append(data.replace(strings, self.searchTag1+strings+self.searchTag2))
                 datas.append(data)
         datas.sort()
         if isSelf:
@@ -121,7 +127,33 @@ class SearchLineEdit(QLineEdit):
 
     def keyReleaseEvent(self, ev):
         # print(ev.key())
+        count = self.listView.model().rowCount()
+        currentIndex = self.listView.currentIndex()
+        if ev.key() == Qt.Key_Up:
+            if count > 0:
+                if currentIndex.row() < 0:
+                    row = 0
+                elif currentIndex.row() == 0:
+                    row = count - 1
+                else:
+                    row = currentIndex.row() - 1 if currentIndex.row() > 0 else 0
+                index = self.listView.model().index(row, 0)
+                self.listView.setCurrentIndex(index)
+
+        elif ev.key() == Qt.Key_Down:
+            if count > 0:
+                if currentIndex.row() < 0:
+                    row = 0
+                else:
+                    row = currentIndex.row() + 1 if currentIndex.row() + 1 < count else 0
+                index = self.listView.model().index(row, 0)
+                self.listView.setCurrentIndex(index)
+
         if ev.key() == Qt.Key_Enter or ev.key() == Qt.Key_Return:
+            currentIndex = self.listView.currentIndex()
+            if currentIndex.row() >= 0:
+                text = currentIndex.data()
+                self.setText(text)
             self.Search()
         return QLineEdit.keyReleaseEvent(self, ev)
 

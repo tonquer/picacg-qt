@@ -76,6 +76,9 @@ class Ui_Comment(object):
     def retranslateUi(self, Comment):
         Comment.setWindowTitle(QCoreApplication.translate("Comment", u"\u8bc4\u8bba", None))
         self.pushButton.setText(QCoreApplication.translate("Comment", u"\u56de\u590d", None))
+#if QT_CONFIG(shortcut)
+        self.pushButton.setShortcut(QCoreApplication.translate("Comment", u"Return", None))
+#endif // QT_CONFIG(shortcut)
         self.nums.setText(QCoreApplication.translate("Comment", u"TextLabel", None))
         self.skipButton.setText(QCoreApplication.translate("Comment", u"\u8df3\u8f6c", None))
     # retranslateUi

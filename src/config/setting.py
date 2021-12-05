@@ -64,6 +64,7 @@ class Setting:
     ThemeIndex = SettingValue("GeneraSetting", 0, False, ["Auto", "light", "dark"])  #
     LogIndex = SettingValue("GeneraSetting", 0, False, ["warn", "info", "debug"])  # Warn Info Debug
     CoverSize = SettingValue("GeneraSetting", 100, False)  #
+    CategorySize = SettingValue("GeneraSetting", 80, False)  #
     ScaleLevel = SettingValue("GeneraSetting", 0, True, ["Auto", 100, 125, 150, 175, 200])
 
     # 代理设置

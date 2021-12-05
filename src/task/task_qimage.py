@@ -16,7 +16,10 @@ class TaskQImage(TaskBase):
     def Run(self):
         while True:
             try:
-                taskId, data = self._inQueue.get(True)
+                v = self._inQueue.get(True)
+                if v == "":
+                    break
+                taskId, data = v
             except Exception as es:
                 continue
             self._inQueue.task_done()

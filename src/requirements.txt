@@ -4,3 +4,4 @@ requests==2.26.0
 urllib3==1.25.11
 pillow==8.3.2
 waifu2x-vulkan>=1.0.9
+# pywin32==302

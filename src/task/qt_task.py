@@ -122,11 +122,16 @@ class TaskBase(Singleton):
 
     def __init__(self):
         Singleton.__init__(self)
-        self.thread = threading.Thread(target=self.Run)
-        self.thread.setDaemon(True)
         self._inQueue = Queue()
+        self.thread = threading.Thread(target=self.Run)
+        self.thread.setName("Task-" + str(self.__class__.__name__))
+        self.thread.setDaemon(True)
         self.tasks = {}
         self.flagToIds = {}
+
+    def Stop(self):
+        self._inQueue.put("")
+        return
 
     def Run(self):
         return

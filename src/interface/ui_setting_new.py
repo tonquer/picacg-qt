@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -1409, 661, 2154))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -372, 661, 2209))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -281,6 +281,31 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_17.addLayout(self.horizontalLayout_15)
+
+        self.label_29 = QLabel(self.frame_14)
+        self.label_29.setObjectName(u"label_29")
+        self.label_29.setFont(font1)
+
+        self.verticalLayout_17.addWidget(self.label_29)
+
+        self.horizontalLayout_22 = QHBoxLayout()
+        self.horizontalLayout_22.setObjectName(u"horizontalLayout_22")
+        self.categorySize = WheelSpinBox(self.frame_14)
+        self.categorySize.setObjectName(u"categorySize")
+        self.categorySize.setMinimumSize(QSize(140, 0))
+        self.categorySize.setMinimum(30)
+        self.categorySize.setMaximum(250)
+        self.categorySize.setSingleStep(10)
+        self.categorySize.setValue(80)
+
+        self.horizontalLayout_22.addWidget(self.categorySize)
+
+        self.horizontalSpacer_21 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_22.addItem(self.horizontalSpacer_21)
+
+
+        self.verticalLayout_17.addLayout(self.horizontalLayout_22)
 
 
         self.verticalLayout_4.addWidget(self.frame_14)
@@ -1017,6 +1042,7 @@ class Ui_SettingNew(object):
         self.mainScaleButton4.setText(QCoreApplication.translate("SettingNew", u"175%", None))
         self.mainScaleButton5.setText(QCoreApplication.translate("SettingNew", u"200%", None))
         self.label_2.setText(QCoreApplication.translate("SettingNew", u"\u5c01\u9762\u663e\u793a\u5927\u5c0f\uff08\u9ed8\u8ba4\u4e3a100%\uff09\uff1a", None))
+        self.label_29.setText(QCoreApplication.translate("SettingNew", u"\u5206\u7c7b\u5c01\u9762\u5927\u5c0f\uff1a", None))
         self.label_10.setText(QCoreApplication.translate("SettingNew", u"\u65e5\u5fd7\u7b49\u7ea7\uff1a", None))
         self.logutton0.setText(QCoreApplication.translate("SettingNew", u"Warn", None))
         self.logutton1.setText(QCoreApplication.translate("SettingNew", u"Info", None))

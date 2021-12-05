@@ -19,6 +19,9 @@ class ChatView(QWidget, Ui_Chat, QtTaskBase):
         self.listWidget.itemClicked.connect(self.OpenChatRoom)
         self.chatRoom = ChatRoomWidget()
 
+    def Stop(self):
+        self.chatRoom.Stop()
+
     def SwitchCurrent(self, **kwargs):
         if self.listWidget.count() > 0:
             return

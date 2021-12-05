@@ -35,8 +35,10 @@ DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database
 
 DatabaseUpdate2 = "https://gitee.com/bika-robot/picacg-database/raw/main/version.txt"
 DatabaseDownload2 = "https://gitee.com/bika-robot/picacg-database/raw/main/data/"
-UpdateVersion = "v1.2.9"
-RealVersion = "v1.2.9.1"
+UpdateVersion = "v1.3.0"
+RealVersion = "v1.3.0"
+
+Waifu2xVersion = "1.0.9"
 
 # waifu2x
 CanWaifu2x = True
@@ -47,10 +49,6 @@ EncodeGpu = ""
 
 Format = "jpg"
 Waifu2xPath = "waifu2x"
-
-ThemeText = "dark"  # 主题
-ThemeIndex = 0  # 主题·
-CurrentSetTheme = 0
 
 IsTips = 1
 

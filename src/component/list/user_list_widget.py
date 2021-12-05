@@ -70,7 +70,7 @@ class UserListWidget(BaseListWidget):
 
         index = self.count()
         iwidget = CommentItemWidget(self)
-
+        iwidget.setFocusPolicy(Qt.NoFocus)
         if isinstance(info.get("_comic"), dict):
             iwidget.linkId = info.get("_comic").get("_id")
             linkData = info.get("_comic").get("title", "")
@@ -143,6 +143,7 @@ class UserListWidget(BaseListWidget):
 
         index = self.count()
         iwidget = CommentItemWidget(self)
+        iwidget.setFocusPolicy(Qt.NoFocus)
         iwidget.killButton.hide()
         iwidget.nameLabel.setCursor(Qt.PointingHandCursor)
         iwidget.nameLabel.installEventFilter(iwidget)

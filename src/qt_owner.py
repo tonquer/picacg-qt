@@ -1,5 +1,7 @@
 import weakref
 
+from PySide6.QtCore import QFile
+
 from component.label.msg_label import MsgLabel
 from tools.singleton import Singleton
 
@@ -86,6 +88,13 @@ class QtOwner(Singleton):
     def searchView(self):
         return self.owner.searchView
 
+    def GetFileData(self, fileName):
+        f = QFile(fileName)
+        f.open(QFile.ReadOnly)
+        data = f.readAll()
+        f.close()
+        return bytes(data)
+
     def OpenComment(self, bookId):
         arg = {"bookId": bookId}
         self.owner.SwitchWidget(self.owner.commentView, **arg)
@@ -93,6 +102,14 @@ class QtOwner(Singleton):
     def OpenGameComment(self, commentId):
         arg = {"bookId": commentId}
         self.owner.SwitchWidget(self.owner.gameCommentView, **arg)
+
+    def OpenRank(self):
+        arg = {"refresh": True}
+        self.owner.SwitchWidget(self.owner.rankView, **arg)
+
+    def OpenIndex(self):
+        arg = {"refresh": True}
+        self.owner.SwitchWidget(self.owner.indexView, **arg)
 
     def OpenSubComment(self, commentId, widget):
         # self.owner.subCommentView.SetOpenEvent(commentId, widget)
@@ -103,6 +120,10 @@ class QtOwner(Singleton):
     def OpenSearch(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor):
         arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor}
         self.owner.SwitchWidget(self.owner.searchView, **arg)
+
+    def OpenSearchByText(self, text):
+        self.owner.searchView.lineEdit.setText(text)
+        self.owner.searchView.lineEdit.Search()
 
     def OpenReadView(self, bookId, index, name, pageIndex):
         self.owner.totalStackWidget.setCurrentIndex(1)

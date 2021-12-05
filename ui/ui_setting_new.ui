@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-1409</y>
+          <y>-372</y>
           <width>661</width>
-          <height>2154</height>
+          <height>2209</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -427,6 +427,57 @@
               </item>
               <item>
                <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_29">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>分类封面大小：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_22">
+              <item>
+               <widget class="WheelSpinBox" name="categorySize">
+                <property name="minimumSize">
+                 <size>
+                  <width>140</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="minimum">
+                 <number>30</number>
+                </property>
+                <property name="maximum">
+                 <number>250</number>
+                </property>
+                <property name="singleStep">
+                 <number>10</number>
+                </property>
+                <property name="value">
+                 <number>80</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_21">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -1928,9 +1979,9 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="languageGroup"/>
   <buttongroup name="mainScaleGroup"/>
-  <buttongroup name="logGroup"/>
   <buttongroup name="themeGroup"/>
+  <buttongroup name="languageGroup"/>
+  <buttongroup name="logGroup"/>
  </buttongroups>
 </ui>

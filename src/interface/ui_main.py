@@ -15,13 +15,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
-    QSizePolicy, QSpacerItem, QStackedWidget, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow,
+    QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
+    QVBoxLayout, QWidget)
 
 from component.widget.animation_stack_widget import AnimationStackWidget
 from component.widget.navigation_widget import NavigationWidget
-from component.widget.title_bar_widget import TitleBarWidget
 from view.category.category_view import CategoryView
 from view.category.rank_view import RankView
 from view.chat.chat_view import ChatView
@@ -47,20 +46,13 @@ class Ui_Main(object):
     def setupUi(self, Main):
         if not Main.objectName():
             Main.setObjectName(u"Main")
-        Main.resize(400, 300)
-        self.verticalLayout_2 = QVBoxLayout(Main)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(-1, 0, -1, -1)
-        self.titleBar = TitleBarWidget(Main)
-        self.titleBar.setObjectName(u"titleBar")
-        self.titleBar.setMinimumSize(QSize(0, 40))
-        self.titleBar.setMaximumSize(QSize(16777215, 40))
-
-        self.verticalLayout_2.addWidget(self.titleBar)
-
-        self.horizontalLayout = QHBoxLayout()
+        Main.resize(800, 600)
+        self.centralwidget = QWidget(Main)
+        self.centralwidget.setObjectName(u"centralwidget")
+        self.horizontalLayout = QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.totalStackWidget = QStackedWidget(Main)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.totalStackWidget = QStackedWidget(self.centralwidget)
         self.totalStackWidget.setObjectName(u"totalStackWidget")
         self.subMainWindow = QWidget()
         self.subMainWindow.setObjectName(u"subMainWindow")
@@ -171,9 +163,7 @@ class Ui_Main(object):
 
         self.horizontalLayout.addWidget(self.totalStackWidget)
 
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
-
+        Main.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Main)
 

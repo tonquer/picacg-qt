@@ -162,6 +162,10 @@ class Str:
     DailyUpdated = 109            # 今日已更新
     HaveUpdate = 110            # 有更新
     AlreadyUpdate = 111            # 已是最新
+    AgoUpdate = 112                # 最近更新
+    LeaveMsg = 113                # 留言板
+    Rank = 114                # 排行榜
+    RandomBook = 115                # 随机本子
 
     @classmethod
     def Reload(cls):
@@ -310,7 +314,29 @@ class Str:
         cls.strDict[cls.DailyUpdated] = cls.obj.tr("今日已更新")
         cls.strDict[cls.HaveUpdate] = cls.obj.tr("有更新")
         cls.strDict[cls.AlreadyUpdate] = cls.obj.tr("已是最新")
+        cls.strDict[cls.AgoUpdate] = cls.obj.tr("最近更新")
+        cls.strDict[cls.LeaveMsg] = cls.obj.tr("留言板")
+        cls.strDict[cls.Rank] = cls.obj.tr("排行版")
+        cls.strDict[cls.RandomBook] = cls.obj.tr("随机本子")
 
     @classmethod
     def GetStr(cls, enumType):
         return cls.strDict.get(enumType, "")
+
+    @classmethod
+    def CheckStr(cls):
+        allEnum = set()
+        for name in dir(cls):
+            value = getattr(cls, name)
+            if not isinstance(value, int):
+                continue
+            if value in allEnum:
+                raise Exception("Already exists str: " + name)
+            allEnum.add(value)
+            if value not in cls.strDict:
+                raise Exception("Not Found str: " + name)
+
+
+if __name__ == "__main__":
+    Str.Reload()
+    Str.CheckStr()

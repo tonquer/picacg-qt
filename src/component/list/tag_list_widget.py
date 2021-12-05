@@ -1,8 +1,9 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QListWidgetItem, QLabel
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QAbstractItemView
 
 from component.list.base_list_widget import BaseListWidget
+from component.scroll.smooth_scroll_bar import SmoothScrollBar
 
 
 class TagListWidget(BaseListWidget):
@@ -14,6 +15,14 @@ class TagListWidget(BaseListWidget):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setMaximumHeight(30)
         self.setFocusPolicy(Qt.NoFocus)
+        self.hScrollBar = SmoothScrollBar()
+        self.hScrollBar.setOrientation(Qt.Horizontal)
+        self.setHorizontalScrollBar(self.hScrollBar)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.horizontalScrollBar().setSingleStep(30)
+
+    def wheelEvent(self, arg__1) -> None:
+        self.hScrollBar.ScrollValue(-arg__1.angleDelta().y())
 
     def AddItem(self, name, isSelectable=False):
         label = QLabel(name)

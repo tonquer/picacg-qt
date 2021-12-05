@@ -111,11 +111,12 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         action = menu3.addAction(Str.GetStr(Str.NextChapter))
         action.triggered.connect(self.qtTool.OpenNextEps)
 
+        action = popMenu.addAction(Str.GetStr(Str.AutoScroll))
+        action.triggered.connect(self.qtTool.SwitchScrollAndTurn)
+
         action = popMenu.addAction(Str.GetStr(Str.Exit))
         action.triggered.connect(self.Close)
 
-        action = popMenu.addAction(Str.GetStr(Str.AutoScroll))
-        action.triggered.connect(self.qtTool.SwitchScrollAndTurn)
         if self.qtTool.IsStartScrollAndTurn():
             action.setCheckable(True)
             action.setChecked(True)
@@ -129,6 +130,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
     def Close(self):
         self.ReturnPage()
+        self.frame.scrollArea.ClearPixItem()
         self.Clear()
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
             QtOwner().owner.showNormal()
@@ -137,7 +139,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
     def Clear(self):
         Setting.TurnSpeed.SetValue(int(self.qtTool.turnSpeed.value() * 1000))
         Setting.ScrollSpeed.SetValue(int(self.qtTool.scrollSpeed.value()))
-
         self.qtTool.UpdateText("")
         self.frame.UpdateProcessBar(None)
         self.qtTool.CloseScrollAndTurn()

@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets
+from PySide6.QtCore import QFile
 from PySide6.QtWidgets import QListWidgetItem
 
 from interface.ui_category import Ui_Category
@@ -30,6 +31,8 @@ class CategoryView(QtWidgets.QWidget, Ui_Category, QtTaskBase):
         st = raw["st"]
         if st == Status.Ok:
             self.bookList.clear()
+            if len(CateGoryMgr().idToCateGoryBase) > 0:
+                self.AddStaticCategory()
             for index, info in enumerate(CateGoryMgr().idToCateGoryBase):
                 self.bookList.AddBookItem(info.id, info.title, info.thumb.get("fileServer"), info.thumb.get("path"))
             # QtOwner().owner.searchForm.InitCheckBox()
@@ -37,8 +40,27 @@ class CategoryView(QtWidgets.QWidget, Ui_Category, QtTaskBase):
             QtOwner().ShowError(Str.GetStr(st))
         return
 
+    def AddStaticCategory(self):
+        self.bookList.AddBookItem("1", Str.GetStr(Str.Rank), "", "")
+        self.bookList.LoadingPictureComplete(QtOwner().GetFileData(":/png/icon/cat_leaderboard.jpg"), Status.Ok, 0)
+        self.bookList.AddBookItem("2", Str.GetStr(Str.LeaveMsg), "", "")
+        self.bookList.LoadingPictureComplete(QtOwner().GetFileData(":/png/icon/cat_forum.jpg"), Status.Ok, 1)
+        self.bookList.AddBookItem("3", Str.GetStr(Str.AgoUpdate), "", "")
+        self.bookList.LoadingPictureComplete(QtOwner().GetFileData(":/png/icon/cat_latest.jpg"), Status.Ok, 2)
+        self.bookList.AddBookItem("4", Str.GetStr(Str.RandomBook), "", "")
+        self.bookList.LoadingPictureComplete(QtOwner().GetFileData(":/png/icon/cat_random.jpg"), Status.Ok, 3)
+
     def SelectItem(self, item):
         assert isinstance(item, QListWidgetItem)
         widget = self.bookList.itemWidget(item)
-        QtOwner().OpenSearchByCategory(widget.nameLable.text())
+        if widget.id == "1":
+            QtOwner().OpenRank()
+        elif widget.id == "2":
+            QtOwner().OpenComment("5822a6e3ad7ede654696e482")
+        elif widget.id == "3":
+            QtOwner().OpenSearchByText("")
+        elif widget.id == "4":
+            QtOwner().OpenIndex()
+        else:
+            QtOwner().OpenSearchByCategory(widget.nameLable.text())
         return

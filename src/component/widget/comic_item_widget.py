@@ -8,8 +8,8 @@ from tools.str import Str
 
 
 class ComicItemWidget(QWidget, Ui_ComicItem):
-    def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
+    def __init__(self, isCategory=False):
+        QWidget.__init__(self)
         Ui_ComicItem.__init__(self)
         self.setupUi(self)
         self.picData = None
@@ -17,9 +17,18 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.url = ""
         self.path = ""
         # TODO 如何自适应
-        rate = Setting.CoverSize.value
-        width = 250 * rate / 100
-        height = 340 * rate / 100
+        if not isCategory:
+            rate = Setting.CoverSize.value
+            baseW = 250
+            baseH = 340
+        else:
+            rate = Setting.CategorySize.value
+            baseW = 300
+            baseH = 300
+
+        width = baseW * rate / 100
+        height = baseH * rate / 100
+
         self.picLabel.setFixedSize(width, height)
         # self.picLabel.setMinimumSize(300, 400)
         # self.picLabel.setMaximumSize(220, 308)
@@ -48,6 +57,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.nameLable.setFont(font)
         self.adjustSize()
         self.isWaifu2x = False
+        self.isWaifu2xLoading = False
 
     def GetTitle(self):
         return self.nameLable.text()
@@ -58,6 +68,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         if data:
             pic.loadFromData(data)
         self.isWaifu2x = False
+        self.isWaifu2xLoading = False
         radio = self.devicePixelRatio()
         pic.setDevicePixelRatio(radio)
         newPic = pic.scaled(self.picLabel.width() * radio, self.picLabel.height() * radio, Qt.KeepAspectRatio,
@@ -69,6 +80,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         if not data:
             return
         self.isWaifu2x = True
+        self.isWaifu2xLoading = False
         pic.loadFromData(data)
         radio = self.devicePixelRatio()
         pic.setDevicePixelRatio(radio)

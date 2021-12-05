@@ -36,7 +36,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
             return
 
         loginView = LoginView(QtOwner().owner)
-        loginView.exec_()
+        loginView.exec()
 
         if User().isLogin:
             self.LoginSucBack()
