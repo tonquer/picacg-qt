@@ -1,7 +1,7 @@
 ---
 name: "[FeatureRequest] 功能请求模板"
 about: 提交你希望增加的功能
-title: "[Feature Request] "
+title: ""
 labels: enhancement
 
 ---

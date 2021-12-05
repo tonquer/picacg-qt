@@ -1,7 +1,7 @@
 ---
 name: "[BUG] 问题提交模板"
 about: 请从符号">"后面开始填写内容
-title: "[BUG]"
+title: ""
 labels: bug
 
 ---
