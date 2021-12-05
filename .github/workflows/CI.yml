@@ -117,7 +117,7 @@ jobs:
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         cp ..\LICENSE bika\
-        cp ..\CHANGELOG.md bika\
+        cp ..\CHANGELOG bika\
         cd ..
         mkdir ${{ env.PACKAGENAME }}
         mv src\bika ${{ env.PACKAGENAME }}
