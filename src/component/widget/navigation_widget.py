@@ -127,7 +127,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         super().hide()
         self.resize(60, self.height())
         if self.__connect:
-            self.__ani.disconnect(self.__connect)
+            self.__ani.finished.disconnect()
             self.__connect = None
 
     def eventFilter(self, obj, event):
