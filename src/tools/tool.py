@@ -364,7 +364,7 @@ class ToolUtil(object):
     def GetCanSaveName(name):
         return name.replace("/", "").replace("|", "").replace("*", "").\
             replace("\\", "").replace("?", "").replace(":", "").replace("*", "").\
-            replace("<", "").replace(">", "").replace("\"", "").replace(" ", "")
+            replace("<", "").replace(">", "").replace("\"", "").replace(" ", "").replace(".", "")
 
     @staticmethod
     def LoadCachePicture(filePath):
