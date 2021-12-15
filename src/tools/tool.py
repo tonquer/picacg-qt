@@ -1,6 +1,7 @@
 import hmac
 import json
 import os
+import re
 import time
 import uuid
 from hashlib import sha256
@@ -362,9 +363,7 @@ class ToolUtil(object):
 
     @staticmethod
     def GetCanSaveName(name):
-        return name.replace("/", "").replace("|", "").replace("*", "").\
-            replace("\\", "").replace("?", "").replace(":", "").replace("*", "").\
-            replace("<", "").replace(">", "").replace("\"", "").replace(" ", "").replace(".", "")
+        return re.sub('[\\\/:*?"<>|\0\r\n]', '', name).rstrip(".")
 
     @staticmethod
     def LoadCachePicture(filePath):
