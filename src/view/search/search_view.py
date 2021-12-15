@@ -38,12 +38,13 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def InitWord(self):
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectWord, self.InitWordBack)
+        self.lineEdit.SetCacheWord()
         return
 
     def InitWordBack(self, data):
         if not data:
             return
-        self.lineEdit.words = data
+        self.lineEdit.SetWordData(data)
 
     def InitCategoryList(self):
         self.categoryList.clear()
@@ -74,6 +75,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.isCategory = kwargs.get("isCategory")
             self.isTag = kwargs.get("isTag")
             self.isAuthor = kwargs.get("isAuthor")
+            self.lineEdit.AddCacheWord(self.text)
             self.SendSearch(1)
         pass
 

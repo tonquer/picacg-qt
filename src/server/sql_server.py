@@ -58,6 +58,8 @@ class SqlServer(Singleton):
 
     def __init__(self):
         self._inQueue = {}
+        self.cacheWord = []
+        self.data = []
         for i in self.DbInfos.keys():
             self._inQueue[i] = Queue()
             thread = threading.Thread(target=self._Run, args=(i, ))
@@ -68,7 +70,12 @@ class SqlServer(Singleton):
     def AddSqlTask(self, table, taskType, data, taskId):
         self._inQueue[table].put((taskType, data, taskId))
 
+    def SetCacheWord(self, data):
+        self.cacheWord = data
+        self.LoadCacheWord()
+
     def Stop(self):
+        SqlServer.SaveCacheWord()
         for i in self.DbInfos.keys():
             self._inQueue[i].put((self.TaskTypeClose, "", ""))
 
@@ -128,6 +135,7 @@ class SqlServer(Singleton):
                     self._UpdateFavorite(conn, data, backId)
                 elif taskType == self.TaskTypeUpdateBook:
                     self._UpdateBookInfo(conn, data, backId)
+
             except Exception as es:
                 Log.Error(es)
         if conn:
@@ -361,3 +369,30 @@ class SqlServer(Singleton):
             sql += "ASC"
         sql += "  limit {},{};".format((page-1)*20, 20)
         return sql
+
+    @staticmethod
+    def SaveCacheWord():
+        path = os.path.join(Setting.GetConfigPath(), "cache_word")
+        try:
+            if not SqlServer().cacheWord:
+                return
+            f = open(path, "w+", encoding="utf-8")
+            f.write("\n".join(SqlServer().cacheWord))
+            f.close()
+        except Exception as es:
+            Log.Error(es)
+
+    @staticmethod
+    def LoadCacheWord():
+        path = os.path.join(Setting.GetConfigPath(), "cache_word")
+        try:
+            if not os.path.isfile(path):
+                return
+            f = open(path, "r", encoding="utf-8")
+            data = f.read()
+            f.close()
+            for v in data.split("\n"):
+                if v:
+                    SqlServer().cacheWord.append(v)
+        except Exception as es:
+            Log.Error(es)
