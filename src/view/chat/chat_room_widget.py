@@ -185,6 +185,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         self.close()
         self.url = ""
         for info in self.msgInfo.values():
+            self.verticalLayout_2.removeWidget(info)
             info.setParent(None)
         self.msgInfo.clear()
         self.indexMsgId = 0
@@ -242,7 +243,9 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         info.nameLabel.setText(name)
         info.levelLabel.setText("<font color=#130c0e>{}</font>".format(" LV"+str(level))+" ")
         info.titleLabel.setText("<font color=#130c0e>{}</font>".format(" " + title + " "))
-        info.indexLabel.setText("{}".format(str(self.indexMsgId + 1))+ Str.GetStr(Str.Floor))
+        # info.indexLabel.setText("{}".format(str(self.indexMsgId + 1))+ Str.GetStr(Str.Floor))
+        date = time.strftime("%H:%M:%S")
+        info.indexLabel.setText(date)
         # info.numLabel.setText("{}楼".format(str(self.indexMsgId+1)))
         info.infoLabel.setText(data.get("platform", "")+" ")
         imageData = data.get("image")
@@ -299,6 +302,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         if len(self.msgInfo) > self.maxMsgInfo:
             removeInfo = self.msgInfo.get(self.removeMsgId)
             if removeInfo:
+                self.verticalLayout_2.removeWidget(removeInfo)
                 removeInfo.setParent(None)
                 self.msgInfo.pop(self.removeMsgId)
             self.removeMsgId += 1
