@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QLineEdit, QLabel, QWidget, \
 
 from interface.ui_line_edit_help_widget import Ui_LineEditHelp
 from qt_owner import QtOwner
+from server.sql_server import SqlServer
 from tools.langconv import Converter
 
 
@@ -41,6 +42,7 @@ class SearchLineEdit(QLineEdit):
         # self.model = QWidgetListModel(self)
         # self.listView.setWindowFlags(Qt.ToolTip)
         self.words = []
+        self.cacheWords = []
         self.model = QStringListModel(self)
         self.listView.setModel(self.model)
         self.textChanged.connect(self.setCompleter)
@@ -59,6 +61,22 @@ class SearchLineEdit(QLineEdit):
     @property
     def listView(self):
         return self.help.listView
+
+    def SetWordData(self, data):
+        self.words = data
+
+    def SetCacheWord(self):
+        SqlServer().SetCacheWord(self.cacheWords)
+        self.model.setStringList(self.cacheWords)
+        return
+
+    def AddCacheWord(self, word):
+        if not word:
+            return
+        if word in self.cacheWords:
+            self.cacheWords.remove(word)
+        self.cacheWords.insert(0, word)
+        del self.cacheWords[200:]
 
     def SetDbError(self):
         self.isShowSearch = False
@@ -88,42 +106,35 @@ class SearchLineEdit(QLineEdit):
 
     def setCompleter(self, strings):
         if not strings:
-            # self.widget.hide()
-            self.model.setStringList([])
+            # 显示搜索历史
+            self.model.setStringList(self.cacheWords)
             return
+
         if self.isNotReload:
             return
-        datas = []
         strings = strings.upper()
 
         strings2 = re.split('&|\|', strings)
         strings = strings2.pop() if len(strings2) > 0 else ""
         isSelf = False
         strings = Converter('zh-hans').convert(strings)
+        matchIndex = {}
         for data in self.words:
             assert isinstance(data, str)
-            # if fuzz.token_sort_ratio(strings, data) >= 80:
             if strings == data:
                 isSelf = True
-            elif strings in data:
-                # datas.append(data.replace(strings, self.searchTag1+strings+self.searchTag2))
-                datas.append(data)
-        datas.sort()
+
+            else:
+                index = data.find(strings)
+                if index < 0:
+                    continue
+                matchIndex[data] = index
+        datas = list(matchIndex.keys())
+        datas.sort(key=matchIndex.get)
+
         if isSelf:
             datas.insert(0, strings)
-        # if not datas:
-            # self.listView.hide()
-            # return
         self.model.setStringList(datas)
-        # index = self.listView.model().index(0, 0)
-        # self.listView.setCurrentIndex(index)
-        # self.listView.setMinimumHeight(self.height())
-        # self.listView.setMinimumWidth(self.width())
-        # p = QPoint(0, self.height())
-        # x = self.mapToGlobal(p).x()
-        # y = self.mapToGlobal(p).y() + 1
-        # self.listView.move(x, y)
-        # self.listView.show()
 
     def keyReleaseEvent(self, ev):
         # print(ev.key())
