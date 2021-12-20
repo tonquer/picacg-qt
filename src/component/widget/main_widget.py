@@ -3,13 +3,14 @@ import sys
 
 from PySide6.QtCore import Qt
 
+from config.setting import Setting
 from tools.log import Log
 
 MainType = 1
 
 Main = None
 
-if sys.platform == "win32":
+if sys.platform == "win32" and not Setting.IsNotUseTitleBar.value:
     try:
         from interface.ui_main_windows import Ui_MainWindows
         from .windows.frame_less_widget import FrameLessWidget

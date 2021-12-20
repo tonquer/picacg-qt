@@ -76,7 +76,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -372, 661, 2209))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 661, 2284))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -243,6 +243,26 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_4.addWidget(self.frame_13)
+
+        self.frame = QFrame(self.scrollAreaWidgetContents)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_14 = QVBoxLayout(self.frame)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.label_30 = QLabel(self.frame)
+        self.label_30.setObjectName(u"label_30")
+        self.label_30.setFont(font1)
+
+        self.verticalLayout_14.addWidget(self.label_30)
+
+        self.titleBox = QCheckBox(self.frame)
+        self.titleBox.setObjectName(u"titleBox")
+
+        self.verticalLayout_14.addWidget(self.titleBox)
+
+
+        self.verticalLayout_4.addWidget(self.frame)
 
         self.frame_14 = QFrame(self.scrollAreaWidgetContents)
         self.frame_14.setObjectName(u"frame_14")
@@ -1034,6 +1054,8 @@ class Ui_SettingNew(object):
         self.mainScaleButton3.setText(QCoreApplication.translate("SettingNew", u"150%", None))
         self.mainScaleButton4.setText(QCoreApplication.translate("SettingNew", u"175%", None))
         self.mainScaleButton5.setText(QCoreApplication.translate("SettingNew", u"200%", None))
+        self.label_30.setText(QCoreApplication.translate("SettingNew", u"\u6807\u9898\u680f\u8bbe\u7f6e\uff08\u9700\u91cd\u542f\uff09", None))
+        self.titleBox.setText(QCoreApplication.translate("SettingNew", u"\u4f7f\u7528\u9ed8\u8ba4\u6807\u9898\u680f\uff08\u5982\u679c\u6807\u9898\u680f\u51fa\u73b0\u663e\u793a\u5f02\u5e38\uff0c\u8bf7\u52fe\u9009\uff09", None))
         self.label_2.setText(QCoreApplication.translate("SettingNew", u"\u5c01\u9762\u663e\u793a\u5927\u5c0f\uff08\u9ed8\u8ba4\u4e3a100%\uff09\uff1a", None))
         self.label_29.setText(QCoreApplication.translate("SettingNew", u"\u5206\u7c7b\u5c01\u9762\u5927\u5c0f\uff1a", None))
         self.label_10.setText(QCoreApplication.translate("SettingNew", u"\u65e5\u5fd7\u7b49\u7ea7\uff1a", None))

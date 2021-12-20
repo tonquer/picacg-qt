@@ -13,7 +13,6 @@ from config.setting import Setting
 from qt_owner import QtOwner
 from tools.log import Log
 from tools.str import Str
-from view.main.main_view import MainView
 
 if sys.platform == 'darwin':
     # 确保工作区为当前可执行文件所在目录
@@ -62,6 +61,7 @@ if __name__ == "__main__":
     Log.Warn("init scene ratio: {}".format(app.devicePixelRatio()))
     try:
         QtOwner().SetApp(app)
+        from view.main.main_view import MainView
         main = MainView()
     except Exception as es:
         Log.Error(es)

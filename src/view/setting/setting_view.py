@@ -44,6 +44,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.readCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenWaifu, self.readCheckBox))
         self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
         self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
+        self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotUseTitleBar, self.titleBox))
 
         # LineEdit:
         self.httpEdit.editingFinished.connect(partial(self.LineEditEvent, Setting.HttpProxy, self.httpEdit))
@@ -176,6 +177,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.httpProxy.setChecked(Setting.IsHttpProxy.value)
         self.httpEdit.setText(Setting.HttpProxy.value)
         self.chatProxy.setChecked(Setting.ChatProxy.value)
+        self.titleBox.setChecked(Setting.IsNotUseTitleBar.value)
         for index in range(self.encodeSelect.count()):
             if Setting.SelectEncodeGpu.value == self.encodeSelect.itemText(index):
                 self.encodeSelect.setCurrentIndex(index)

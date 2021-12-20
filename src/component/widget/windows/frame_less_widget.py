@@ -11,8 +11,6 @@ from ctypes import POINTER
 from PySide6.QtGui import QPainter, QBrush, QColor, QPainterPath
 from PySide6.QtWidgets import QWidget, QStyleOption, QStyle
 from win32 import win32api, win32gui
-from win32.win32gui import ReleaseCapture
-from win32.win32api import SendMessage
 from win32.lib import win32con
 
 from config.setting import Setting
@@ -164,10 +162,10 @@ class FrameLessWidget(QWidget):
             self.__monitorInfo = win32api.GetMonitorInfo(monitor)
         # 调整窗口大小
         params = cast(msg.lParam, POINTER(NCCALCSIZE_PARAMS)).contents
-        params.rgrc[0].left = self.__monitorInfo['Work'][0]
-        params.rgrc[0].top = self.__monitorInfo['Work'][1]
-        params.rgrc[0].right = self.__monitorInfo['Work'][2]
-        params.rgrc[0].bottom = self.__monitorInfo['Work'][3]
+        # params.rgrc[0].left = self.__monitorInfo['Work'][0]
+        # params.rgrc[0].top = self.__monitorInfo['Work'][1]
+        # params.rgrc[0].right = self.__monitorInfo['Work'][2]
+        # params.rgrc[0].bottom = self.__monitorInfo['Work'][3]
 
     # def moveArea(self, pos: QPointF):
     #     if pos.y() < self.m_nBorder:
@@ -272,23 +270,3 @@ class FrameLessWidget(QWidget):
     #     self.m_bPress = False
     #     self.setCursor(Qt.ArrowCursor)
 
-    def mousePressEvent(self, event):
-        """ 移动窗口 """
-        # 判断鼠标点击位置是否允许拖动
-        if self.__isPointInDragRegion(event.pos()):
-            ReleaseCapture()
-            SendMessage(
-                self.window().winId(),
-                win32con.WM_SYSCOMMAND,
-                win32con.SC_MOVE + win32con.HTCAPTION,
-                0,
-            )
-            event.ignore()
-
-    def __isPointInDragRegion(self, pos) -> bool:
-        """ 检查鼠标按下的点是否属于允许拖动的区域 """
-        x = pos.x()
-        left = 0
-        # 如果最小化按钮看不见也意味着最大化按钮看不见
-        right = self.width() - 57
-        return left < x < right
