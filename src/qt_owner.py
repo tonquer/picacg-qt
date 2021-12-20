@@ -88,6 +88,9 @@ class QtOwner(Singleton):
     def searchView(self):
         return self.owner.searchView
 
+    def SetSubTitle(self, text):
+        return self.owner.setSubTitle(text)
+
     def GetFileData(self, fileName):
         f = QFile(fileName)
         f.open(QFile.ReadOnly)

@@ -30,6 +30,10 @@ if sys.platform == "win32":
                 self.widget.setVisible(True)
                 return FrameLessWidget.showNormal(self)
 
+            def setSubTitle(self, text):
+                self.widget.subTitle.setText(text)
+                return
+
         Main = MainWidget
         MainType = 2
     except Exception as es:
@@ -45,5 +49,7 @@ if not Main:
             Ui_Main.__init__(self)
             self.setupUi(self)
 
+        def setSubTitle(self, text):
+            return
 
     Main = MainWidget

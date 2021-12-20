@@ -129,6 +129,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         return self.frame.qtTool
 
     def Close(self):
+        QtOwner().SetSubTitle("")
         self.ReturnPage()
         self.frame.scrollArea.ClearPixItem()
         self.Clear()
@@ -187,7 +188,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.epsName = name
         QtOwner().ShowLoading()
         self.StartLoadPicUrl(isLastEps, pageIndex)
-        # self.setWindowTitle(self.epsName)
+        QtOwner().SetSubTitle(self.epsName)
         # self.show()
 
         # if config.LookReadFull:

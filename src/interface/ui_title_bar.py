@@ -24,29 +24,48 @@ class Ui_TitleBar(object):
         self.horizontalLayout_2.setSpacing(0)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalSpacer_2 = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
-
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
-
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setSpacing(3)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(8, -1, -1, -1)
         self.label_2 = QLabel(TitleBar)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setMinimumSize(QSize(25, 25))
         self.label_2.setMaximumSize(QSize(25, 25))
         self.label_2.setStyleSheet(u"border-image: url(:/png/icon/logo_round.png);")
-        self.label_2.setAlignment(Qt.AlignBottom|Qt.AlignHCenter)
+        self.label_2.setAlignment(Qt.AlignCenter)
 
-        self.horizontalLayout_2.addWidget(self.label_2, 0, Qt.AlignHCenter|Qt.AlignBottom)
+        self.horizontalLayout_3.addWidget(self.label_2)
 
         self.label = QLabel(TitleBar)
         self.label.setObjectName(u"label")
         self.label.setMinimumSize(QSize(60, 40))
+        font = QFont()
+        font.setPointSize(12)
+        self.label.setFont(font)
         self.label.setAlignment(Qt.AlignCenter)
 
-        self.horizontalLayout_2.addWidget(self.label)
+        self.horizontalLayout_3.addWidget(self.label)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout_2.addItem(self.horizontalSpacer)
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_3)
+
+
+        self.horizontalLayout_2.addLayout(self.horizontalLayout_3)
+
+        self.subTitle = QLabel(TitleBar)
+        self.subTitle.setObjectName(u"subTitle")
+        self.subTitle.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_2.addWidget(self.subTitle)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setSpacing(0)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
         self.minButton = QToolButton(TitleBar)
         self.minButton.setObjectName(u"minButton")
@@ -56,7 +75,7 @@ class Ui_TitleBar(object):
 "QToolButton:pressed{ border-image:url(:/title_bar/black_min_button_pressed_57_40.png);}\n"
 "border: none; margin: 0px")
 
-        self.horizontalLayout_2.addWidget(self.minButton)
+        self.horizontalLayout_4.addWidget(self.minButton)
 
         self.maxBt = QToolButton(TitleBar)
         self.maxBt.setObjectName(u"maxBt")
@@ -71,7 +90,7 @@ class Ui_TitleBar(object):
 "margin: 0px")
         self.maxBt.setProperty("isMax", False)
 
-        self.horizontalLayout_2.addWidget(self.maxBt)
+        self.horizontalLayout_4.addWidget(self.maxBt)
 
         self.closeButton = QToolButton(TitleBar)
         self.closeButton.setObjectName(u"closeButton")
@@ -81,8 +100,14 @@ class Ui_TitleBar(object):
 "QToolButton:pressed{ border-image:url(:/title_bar/close_button_pressed_57_40.png);}\n"
 "border: none; margin: 0px")
 
-        self.horizontalLayout_2.addWidget(self.closeButton)
+        self.horizontalLayout_4.addWidget(self.closeButton)
 
+
+        self.horizontalLayout_2.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout_2.setStretch(0, 1)
+        self.horizontalLayout_2.setStretch(1, 1)
+        self.horizontalLayout_2.setStretch(2, 1)
 
         self.retranslateUi(TitleBar)
 
@@ -93,6 +118,7 @@ class Ui_TitleBar(object):
         TitleBar.setWindowTitle(QCoreApplication.translate("TitleBar", u"Form", None))
         self.label_2.setText("")
         self.label.setText(QCoreApplication.translate("TitleBar", u"PicACG", None))
+        self.subTitle.setText("")
         self.minButton.setText("")
         self.maxBt.setText("")
         self.closeButton.setText("")

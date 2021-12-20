@@ -21,7 +21,6 @@ class CTime(object):
         if diff >= checkTime:
             text = 'CTime2 consume:{} ms, {}.{}'.format(diff, clsName, des)
             Log.Warn(text)
-            # 超过0.5秒超时写入数据库
         self._t1 = t2
         return diff
 
@@ -34,7 +33,6 @@ def time_me(fn):
         if diff >= 50:
             clsName = args[0]
             strLog = 'time_me consume,{} ms, {}.{}'.format(diff, clsName, fn.__name__)
-            # Log.w(strLog)
             Log.Warn(strLog)
         return rt
     return _wrapper
@@ -203,7 +201,6 @@ class ToolUtil(object):
         else:
             return "{}".format(second) + Str.GetStr(Str.SecondAgo)
 
-
     @staticmethod
     def GetDownloadSize(downloadLen):
         kb = downloadLen / 1024.0
@@ -218,23 +215,6 @@ class ToolUtil(object):
         return size
 
     @staticmethod
-    def GetScaleAndNoise(w, h):
-        dot = w * h
-        # 条漫不放大
-        if max(w, h) >= 2561:
-            return 1, 3
-        if dot >= 1920 * 1440:
-            return 2, 3
-        if dot >= 1920 * 1080:
-            return 2, 3
-        elif dot >= 720 * 1080:
-            return 2, 3
-        elif dot >= 240 * 720:
-            return 2, 3
-        else:
-            return 2, 3
-
-    @staticmethod
     def GetLookScaleModel(category):
         return ToolUtil.GetModelByIndex(Setting.LookNoise.value, Setting.LookScale.value, ToolUtil.GetLookModel(category))
 
@@ -247,14 +227,6 @@ class ToolUtil(object):
         return ToolUtil.GetModelByIndex(Setting.DownloadNoise.value, Setting.DownloadScale.value, Setting.DownloadModel.value)
 
     @staticmethod
-    def GetPictureFormat(data):
-        if data[:8] == b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a":
-            return "png"
-        elif data[:2] == b"\xff\xd8":
-            return "jpg"
-        return "jpg"
-
-    @staticmethod
     def GetPictureSize(data):
         if not data:
             return 0, 0
@@ -264,57 +236,6 @@ class ToolUtil(object):
         img = Image.open(a)
         a.close()
         return img.width, img.height
-        # picFormat = ToolUtil.GetPictureFormat(data)
-        # weight, height = 1, 1
-        # if picFormat == "png":
-        #     # head = 8 + 4 + 4
-        #     data2 = data[16:24]
-        #     weight = int.from_bytes(data2[:4], byteorder='big', signed=False)
-        #     height = int.from_bytes(data2[5:], byteorder='big', signed=False)
-        # elif picFormat == "jpg":
-        #     size = min(1000, len(data))
-        #
-        #     index = 0
-        #     while index < size:
-        #         if data[index] == 255:
-        #             index += 1
-        #             if 192 <= data[index] <= 206:
-        #                 index += 4
-        #                 if index + 4 >= size:
-        #                     continue
-        #                 height = int.from_bytes(data[index:index + 2], byteorder='big', signed=False)
-        #                 weight = int.from_bytes(data[index + 2:index + 4], byteorder='big', signed=False)
-        #                 break
-        #             else:
-        #                 continue
-        #         index += 1
-        # return weight, height
-
-    @staticmethod
-    def GetDataModel(data):
-        picFormat = ToolUtil.GetPictureFormat(data)
-        if picFormat == "png":
-            IDATEnd = 8 + 25
-            dataSize = int.from_bytes(data[IDATEnd:IDATEnd + 4], byteorder="big", signed=False)
-            if dataSize >= 10:
-                return ""
-            dataType = data[IDATEnd + 4:IDATEnd + 8]
-            if dataType == b"tEXt":
-                return data[IDATEnd + 8:IDATEnd + 8 + dataSize].decode("utf-8")
-            return ""
-        elif picFormat == "jpg":
-            if data[:4] != b"\xff\xd8\xff\xe0":
-                return ""
-            size = int.from_bytes(data[4:6], byteorder="big", signed=False)
-            if size >= 100:
-                return ""
-            if data[4 + size:4 + size + 2] != b"\xff\xfe":
-                return
-            size2 = int.from_bytes(data[4 + size + 2:4 + size + 2 + 2], byteorder="big", signed=False) - 2
-            if size2 >= 100:
-                return
-            return data[4 + size2 + 2 + 2:4 + size2 + 2 + 2 + size2].decode("utf-8")
-        return ""
 
     @staticmethod
     def GetLookModel(category):
@@ -324,7 +245,6 @@ class ToolUtil(object):
             return 3
         else:
             return Setting.LookModel.value
-
 
     @staticmethod
     def GetModelAndScale(model):
@@ -341,8 +261,7 @@ class ToolUtil(object):
             model = "photo"
         else:
             model = "anime_style_art_rgb"
-        return  model, noise, scale
-
+        return model, noise, scale
 
     @staticmethod
     def GetModelByIndex(noise, scale, index):

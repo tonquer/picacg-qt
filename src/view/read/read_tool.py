@@ -361,7 +361,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def UpdateSlider(self):
         self.slider.setValue(self.readImg.curIndex+1)
-        self.readImg.setWindowTitle(self.readImg.epsName + "（{}/{}）".format(self.slider.value(), self.slider.maximum()))
+        if self.readImg.epsName:
+            QtOwner().SetSubTitle(self.readImg.epsName + "（{}/{}）".format(self.slider.value(), self.slider.maximum()))
 
     def FullScreen(self):
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
