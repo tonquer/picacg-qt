@@ -43,13 +43,11 @@ if __name__ == "__main__":
     Log.Init()
     Setting.Init()
     Setting.InitLoadSetting()
-    Str.Reload()
-
     indexV = Setting.ScaleLevel.GetIndexV()
     if indexV and indexV != "Auto":
-        if indexV == 100:
-            QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
-        else:
+        # if indexV == 100:
+        #     QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
+        # else:
             os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
             os.environ["QT_SCALE_FACTOR"] = str(indexV / 100)
     # os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
@@ -59,6 +57,8 @@ if __name__ == "__main__":
     # print(QGuiApplication.highDpiScaleFactorRoundingPolicy())
     # QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
+    Str.Reload()
+
     Log.Warn("init scene ratio: {}".format(app.devicePixelRatio()))
     try:
         QtOwner().SetApp(app)

@@ -45,6 +45,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ui/ui_book_info.ui" line="264"/>
+        <source>开始阅读</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../ui/ui_book_info.ui" line="313"/>
         <source>标题：</source>
         <translation type="unfinished"></translation>
@@ -87,11 +92,6 @@
     <message>
         <location filename="../ui/ui_book_info.ui" line="567"/>
         <source>观看数</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_book_info.ui" line="264"/>
-        <source>开始阅读</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -397,16 +397,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/ui_favorite.ui" line="89"/>
-        <source>降序</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_favorite.ui" line="94"/>
-        <source>升序</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui/ui_favorite.ui" line="52"/>
         <source>更新时间</source>
         <translation type="unfinished"></translation>
@@ -434,6 +424,16 @@
     <message>
         <location filename="../ui/ui_favorite.ui" line="77"/>
         <source>图片数</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_favorite.ui" line="89"/>
+        <source>降序</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_favorite.ui" line="94"/>
+        <source>升序</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -567,9 +567,24 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ui/ui_help.ui" line="125"/>
+        <source>本地库数量:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../ui/ui_help.ui" line="132"/>
         <location filename="../ui/ui_help.ui" line="176"/>
         <source>检测更新</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_help.ui" line="139"/>
+        <source>打开日志目录</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_help.ui" line="157"/>
+        <source>日志:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -605,21 +620,6 @@
     <message>
         <location filename="../ui/ui_help.ui" line="284"/>
         <source>v1.0.8</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_help.ui" line="125"/>
-        <source>本地库数量:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_help.ui" line="157"/>
-        <source>日志:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_help.ui" line="139"/>
-        <source>打开日志目录</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -883,7 +883,7 @@
     <name>MainWindows</name>
     <message>
         <location filename="../ui/ui_main_windows.ui" line="14"/>
-        <source>Form</source>
+        <source>PicACG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1406,54 +1406,17 @@
     </message>
 </context>
 <context>
-    <name>SearchItem</name>
-    <message>
-        <location filename="../ui/component/ui_search_item.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/component/ui_search_item.ui" line="20"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SettingItem</name>
-    <message>
-        <location filename="../ui/component/ui_setting_item.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/component/ui_setting_item.ui" line="36"/>
-        <location filename="../ui/component/ui_setting_item.ui" line="45"/>
-        <location filename="../ui/component/ui_setting_item.ui" line="52"/>
-        <location filename="../ui/component/ui_setting_item.ui" line="61"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/component/ui_setting_item.ui" line="68"/>
-        <source>...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SettingItemTheme</name>
-    <message>
-        <location filename="../ui/component/ui_setting_item_theme.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/component/ui_setting_item_theme.ui" line="20"/>
-        <source>浅色</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>SettingNew</name>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="14"/>
+        <source>设置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="29"/>
+        <source>你修改的部分设置，需要重启生效</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <location filename="../ui/ui_setting_new.ui" line="40"/>
         <location filename="../ui/ui_setting_new.ui" line="115"/>
@@ -1467,29 +1430,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/ui_setting_new.ui" line="765"/>
-        <source>Waifu2x设置</source>
+        <location filename="../ui/ui_setting_new.ui" line="54"/>
+        <source>Waifu2x</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../ui/ui_setting_new.ui" line="61"/>
         <location filename="../ui/ui_setting_new.ui" line="1688"/>
         <source>下载与缓存</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="14"/>
-        <source>设置</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="29"/>
-        <source>你修改的部分设置，需要重启生效</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="54"/>
-        <source>Waifu2x</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1613,51 +1561,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/ui_setting_new.ui" line="1178"/>
-        <source>Waifu2x封面模式（开启后所有封面会经过Waifu2x处理）</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1194"/>
-        <source>为了保证速度，封面分辨率小于等于该值时才进行转换（默认400P）</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1450"/>
-        <source>waifu2x下载模式（开启后下载完成会经过Waifu2x处理）</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1717"/>
-        <source>下载和缓存路径（缓存文件需自己手动清除）</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1756"/>
-        <source>下载</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1776"/>
-        <location filename="../ui/ui_setting_new.ui" line="1826"/>
-        <location filename="../ui/ui_setting_new.ui" line="1876"/>
-        <location filename="../ui/ui_setting_new.ui" line="1926"/>
-        <source>打开目录</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1806"/>
-        <source>缓存</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1856"/>
-        <source>聊天缓存</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="1906"/>
-        <source>Waifu2x缓存</source>
+        <location filename="../ui/ui_setting_new.ui" line="622"/>
+        <source>Http代理：</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1670,6 +1575,21 @@
         <location filename="../ui/ui_setting_new.ui" line="632"/>
         <location filename="../ui/ui_setting_new.ui" line="717"/>
         <source>启用代理</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="647"/>
+        <source>代理地址：</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="710"/>
+        <source>聊天室：</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="765"/>
+        <source>Waifu2x设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1686,6 +1606,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ui/ui_setting_new.ui" line="847"/>
+        <source>CPU/GPU选择（需重启生效）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../ui/ui_setting_new.ui" line="906"/>
         <source>Waifu2x看图模式</source>
         <translation type="unfinished"></translation>
@@ -1697,6 +1622,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ui/ui_setting_new.ui" line="922"/>
+        <source>为了保证速度，图片分辨率小于等于该值时才进行转换（默认4096P）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../ui/ui_setting_new.ui" line="977"/>
         <location filename="../ui/ui_setting_new.ui" line="1249"/>
         <location filename="../ui/ui_setting_new.ui" line="1481"/>
@@ -1704,42 +1634,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/ui_setting_new.ui" line="1057"/>
-        <location filename="../ui/ui_setting_new.ui" line="1329"/>
-        <location filename="../ui/ui_setting_new.ui" line="1561"/>
-        <source>自动</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../ui/ui_setting_new.ui" line="991"/>
         <location filename="../ui/ui_setting_new.ui" line="1263"/>
         <location filename="../ui/ui_setting_new.ui" line="1495"/>
         <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="622"/>
-        <source>Http代理：</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="647"/>
-        <source>代理地址：</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="710"/>
-        <source>聊天室：</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="847"/>
-        <source>CPU/GPU选择（需重启生效）</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/ui_setting_new.ui" line="922"/>
-        <source>为了保证速度，图片分辨率小于等于该值时才进行转换（默认4096P）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1761,6 +1659,13 @@
         <location filename="../ui/ui_setting_new.ui" line="1315"/>
         <location filename="../ui/ui_setting_new.ui" line="1547"/>
         <source>模型</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1057"/>
+        <location filename="../ui/ui_setting_new.ui" line="1329"/>
+        <location filename="../ui/ui_setting_new.ui" line="1561"/>
+        <source>自动</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1792,13 +1697,61 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ui/ui_setting_new.ui" line="1178"/>
+        <source>Waifu2x封面模式（开启后所有封面会经过Waifu2x处理）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1194"/>
+        <source>为了保证速度，封面分辨率小于等于该值时才进行转换（默认400P）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1450"/>
+        <source>waifu2x下载模式（开启后下载完成会经过Waifu2x处理）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../ui/ui_setting_new.ui" line="1457"/>
         <source>下载完后自动转换</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../ui/ui_setting_new.ui" line="1717"/>
+        <source>下载和缓存路径（缓存文件需自己手动清除）</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../ui/ui_setting_new.ui" line="1726"/>
         <source>设置目录</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1756"/>
+        <source>下载</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1776"/>
+        <location filename="../ui/ui_setting_new.ui" line="1826"/>
+        <location filename="../ui/ui_setting_new.ui" line="1876"/>
+        <location filename="../ui/ui_setting_new.ui" line="1926"/>
+        <source>打开目录</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1806"/>
+        <source>缓存</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1856"/>
+        <source>聊天缓存</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_setting_new.ui" line="1906"/>
+        <source>Waifu2x缓存</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1818,7 +1771,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../ui/component/ui_title_bar.ui" line="73"/>
+        <location filename="../ui/component/ui_title_bar.ui" line="85"/>
         <source>PicACG</source>
         <translation type="unfinished"></translation>
     </message>

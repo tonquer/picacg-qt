@@ -8,15 +8,16 @@ from ctypes.wintypes import MSG
 
 from ctypes import POINTER
 
-from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPainter, QBrush, QColor, QPainterPath
 from PySide6.QtWidgets import QWidget, QStyleOption, QStyle
 from win32 import win32api, win32gui
 from win32.win32gui import ReleaseCapture
 from win32.win32api import SendMessage
 from win32.lib import win32con
 
-from .c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
+from config.setting import Setting
 from .window_effect import WindowEffect
+from .c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
 
 
 class MoveEnum(Enum):
@@ -36,9 +37,10 @@ class FrameLessWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
-        #                     Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
+                            Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.resize(500, 500)
         self.m_nBorder = 40
         # self.setMouseTracking(True)
@@ -46,7 +48,6 @@ class FrameLessWidget(QWidget):
         self.m_bPress = False
         self.m_area = 0
         self.m_currentPos = 0
-        plat = sys.platform
         self.isWin = False
         self.__monitorInfo = None
         self.windowEffect = WindowEffect()
@@ -54,75 +55,95 @@ class FrameLessWidget(QWidget):
         # self.setMouseTracking(True)
 
     def paintEvent(self, event):
-        # 解决QSS问题
-        option = QStyleOption()
-        option.initFrom(self)
-        painter = QPainter(self)
-        self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
         QWidget.paintEvent(self, event)
+        painter = QPainter(self)
+        painter.setPen(Qt.transparent)
+        if Setting.ThemeIndex.autoValue == 2:
+            painter.setBrush(QBrush(QColor(243, 243, 243)))
+        else:
+            painter.setBrush(QBrush(QColor(49, 54, 59)))
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
+        rect = self.rect()
+        rect.setWidth(rect.width()-1)
+        rect.setHeight(rect.height()-1)
+        painter.drawRoundedRect(rect, 10, 10)
+        # painterPath = QPainterPath()
+        # painterPath.addRoundedRect(rect, 15, 15)
+        # painter.drawPath(painterPath)
+
+    # def paintEvent(self, event):
+    #     # 解决QSS问题
+    #     option = QStyleOption()
+    #     option.initFrom(self)
+    #     painter = QPainter(self)
+    #     self.style().drawPrimitive(QStyle.PE_Widget, option, painter, self)
+    #     QWidget.paintEvent(self, event)
 
     def nativeEvent(self, eventType, message):
-        """ 处理windows消息 """
-        msg = MSG.from_address(message.__int__())
-        if msg.message == win32con.WM_NCHITTEST:
-            # 解决多屏下会出现鼠标一直为拖动状态的问题
-            x = win32api.LOWORD(msg.lParam)
-            y = win32api.HIWORD(msg.lParam)
+        if eventType == "windows_generic_MSG":
+            """ 处理windows消息 """
+            msg = MSG.from_address(message.__int__())
+            # print(msg.message)
+            if msg.message == win32con.WM_NCHITTEST:
+                # 解决多屏下会出现鼠标一直为拖动状态的问题
+                x = win32api.LOWORD(msg.lParam)
+                y = win32api.HIWORD(msg.lParam)
 
-            radio = self.devicePixelRatio()
-            xPos = (x-
-                    self.frameGeometry().x()*radio) % 65536
-            yPos = y - self.frameGeometry().y()*radio
-            # print(self.frameGeometry().x(), self.frameGeometry().y(), x, y, xPos, yPos)
-            w, h = self.width()*radio, self.height()*radio
-            lx = xPos < self.BORDER_WIDTH
-            rx = xPos + 9 > w - self.BORDER_WIDTH
-            ty = yPos < self.BORDER_WIDTH
-            by = yPos > h - self.BORDER_WIDTH
-            if lx and ty:
-                return True, win32con.HTTOPLEFT
-            elif rx and by:
-                return True, win32con.HTBOTTOMRIGHT
-            elif rx and ty:
-                return True, win32con.HTTOPRIGHT
-            elif lx and by:
-                return True, win32con.HTBOTTOMLEFT
-            elif ty:
-                return True, win32con.HTTOP
-            elif by:
-                return True, win32con.HTBOTTOM
-            elif lx:
-                return True, win32con.HTLEFT
-            elif rx:
-                return True, win32con.HTRIGHT
-        elif msg.message == win32con.WM_NCCALCSIZE:
-            if self._isWindowMaximized(msg.hWnd):
-                self.__monitorNCCALCSIZE(msg)
-            return True, 0
-        elif msg.message == win32con.WM_GETMINMAXINFO:
-            if self._isWindowMaximized(msg.hWnd):
-                window_rect = win32gui.GetWindowRect(msg.hWnd)
-                if not window_rect:
-                    return False, 0
-                # 获取显示器句柄
-                monitor = win32api.MonitorFromRect(window_rect)
-                if not monitor:
-                    return False, 0
-                # 获取显示器信息
-                __monitorInfo = win32api.GetMonitorInfo(monitor)
-                monitor_rect = __monitorInfo['Monitor']
-                work_area = __monitorInfo['Work']
-                # 将lParam转换为MINMAXINFO指针
-                info = cast(msg.lParam, POINTER(MINMAXINFO)).contents
-                # 调整窗口大小
-                info.ptMaxSize.x = work_area[2] - work_area[0]
-                info.ptMaxSize.y = work_area[3] - work_area[1]
-                info.ptMaxTrackSize.x = info.ptMaxSize.x
-                info.ptMaxTrackSize.y = info.ptMaxSize.y
-                # 修改左上角坐标
-                info.ptMaxPosition.x = abs(window_rect[0] - monitor_rect[0])
-                info.ptMaxPosition.y = abs(window_rect[1] - monitor_rect[1])
-                return True, 1
+                radio = self.devicePixelRatio()
+                xPos = (x-
+                        self.frameGeometry().x()*radio) % 65536
+                yPos = y - self.frameGeometry().y()*radio
+                # print(self.frameGeometry().x(), self.frameGeometry().y(), x, y, xPos, yPos)
+                w, h = self.width()*radio, self.height()*radio
+                lx = xPos < self.BORDER_WIDTH
+                rx = xPos + 9 > w - self.BORDER_WIDTH
+                ty = yPos < self.BORDER_WIDTH
+                by = yPos > h - self.BORDER_WIDTH
+                if lx and ty:
+                    return True, win32con.HTTOPLEFT
+                elif rx and by:
+                    return True, win32con.HTBOTTOMRIGHT
+                elif rx and ty:
+                    return True, win32con.HTTOPRIGHT
+                elif lx and by:
+                    return True, win32con.HTBOTTOMLEFT
+                elif ty:
+                    return True, win32con.HTTOP
+                elif by:
+                    return True, win32con.HTBOTTOM
+                elif lx:
+                    return True, win32con.HTLEFT
+                elif rx:
+                    return True, win32con.HTRIGHT
+            elif msg.message == win32con.WM_NCCALCSIZE:
+                if self._isWindowMaximized(msg.hWnd):
+                    self.__monitorNCCALCSIZE(msg)
+                return True, 0
+            elif msg.message == win32con.WM_GETMINMAXINFO:
+                if self._isWindowMaximized(msg.hWnd):
+                    window_rect = win32gui.GetWindowRect(msg.hWnd)
+                    if not window_rect:
+                        return False, 0
+                    # 获取显示器句柄
+                    monitor = win32api.MonitorFromRect(window_rect)
+                    if not monitor:
+                        return False, 0
+                    # 获取显示器信息
+                    __monitorInfo = win32api.GetMonitorInfo(monitor)
+                    monitor_rect = __monitorInfo['Monitor']
+                    work_area = __monitorInfo['Work']
+                    # 将lParam转换为MINMAXINFO指针
+                    info = cast(msg.lParam, POINTER(MINMAXINFO)).contents
+                    # 调整窗口大小
+                    info.ptMaxSize.x = work_area[2] - work_area[0]
+                    info.ptMaxSize.y = work_area[3] - work_area[1]
+                    info.ptMaxTrackSize.x = info.ptMaxSize.x
+                    info.ptMaxTrackSize.y = info.ptMaxSize.y
+                    # 修改左上角坐标
+                    info.ptMaxPosition.x = abs(window_rect[0] - monitor_rect[0])
+                    info.ptMaxPosition.y = abs(window_rect[1] - monitor_rect[1])
+                    return True, 1
         return QWidget.nativeEvent(self, eventType, message)
 
     def _isWindowMaximized(self, hWnd) -> bool:

@@ -3,45 +3,39 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_main_windows.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.1
+## Created by: Qt User Interface Compiler version 6.1.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QPushButton,
-    QSizePolicy, QSpacerItem, QStackedWidget, QVBoxLayout,
-    QWidget)
+from PySide6.QtCore import *  # type: ignore
+from PySide6.QtGui import *  # type: ignore
+from PySide6.QtWidgets import *  # type: ignore
 
-from component.widget.animation_stack_widget import AnimationStackWidget
-from component.widget.navigation_widget import NavigationWidget
-from component.widget.title_bar_widget import TitleBarWidget
-from view.category.category_view import CategoryView
-from view.category.rank_view import RankView
-from view.chat.chat_view import ChatView
-from view.comment.comment_view import CommentView
-from view.comment.game_comment_view import GameCommentView
-from view.comment.my_comment_view import MyCommentView
-from view.comment.sub_comment_view import SubCommentView
-from view.download.download_view import DownloadView
-from view.game.game_view import GameView
-from view.help.help_view import HelpView
-from view.index.index_view import IndexView
-from view.info.book_eps_view import BookEpsView
-from view.info.book_info_view import BookInfoView
-from view.info.game_info_view import GameInfoView
 from view.read.read_view import ReadView
-from view.search.search_view import SearchView
+from view.index.index_view import IndexView
 from view.setting.setting_view import SettingView
-from view.tool.waifu2x_tool_view import Waifu2xToolView
+from view.download.download_view import DownloadView
+from view.category.category_view import CategoryView
+from component.widget.navigation_widget import NavigationWidget
+from component.widget.animation_stack_widget import AnimationStackWidget
+from view.search.search_view import SearchView
+from view.category.rank_view import RankView
+from view.comment.comment_view import CommentView
+from view.comment.sub_comment_view import SubCommentView
+from view.chat.chat_view import ChatView
 from view.user.favorite_view import FavoriteView
 from view.user.history_view import HistoryView
+from view.info.book_info_view import BookInfoView
+from view.comment.game_comment_view import GameCommentView
+from view.tool.waifu2x_tool_view import Waifu2xToolView
+from view.info.game_info_view import GameInfoView
+from view.game.game_view import GameView
+from view.comment.my_comment_view import MyCommentView
+from view.info.book_eps_view import BookEpsView
+from view.help.help_view import HelpView
+from component.widget.title_bar_widget import TitleBarWidget
+
 
 class Ui_MainWindows(object):
     def setupUi(self, MainWindows):
@@ -51,7 +45,7 @@ class Ui_MainWindows(object):
         self.verticalLayout = QVBoxLayout(MainWindows)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(9, 9, 9, 9)
+        self.verticalLayout.setContentsMargins(3, 3, 3, 3)
         self.widget = TitleBarWidget(MainWindows)
         self.widget.setObjectName(u"widget")
         self.widget.setMinimumSize(QSize(0, 40))
@@ -177,7 +171,7 @@ class Ui_MainWindows(object):
     # setupUi
 
     def retranslateUi(self, MainWindows):
-        MainWindows.setWindowTitle(QCoreApplication.translate("MainWindows", u"Form", None))
+        MainWindows.setWindowTitle(QCoreApplication.translate("MainWindows", u"PicACG", None))
         self.menuButton.setText(QCoreApplication.translate("MainWindows", u"\u83dc\u5355", None))
         self.label.setText(QCoreApplication.translate("MainWindows", u">", None))
     # retranslateUi

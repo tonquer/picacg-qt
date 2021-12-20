@@ -3,28 +3,21 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_book_info.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.1
+## Created by: Qt User Interface Compiler version 6.1.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QLayout, QListView,
-    QListWidgetItem, QPlainTextEdit, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtCore import *  # type: ignore
+from PySide6.QtGui import *  # type: ignore
+from PySide6.QtWidgets import *  # type: ignore
 
-from component.button.icon_tool_button import IconToolButton
+from component.scroll_area.smooth_scroll_area import SmoothScrollArea
+from component.list.tag_list_widget import TagListWidget
 from component.label.head_label import HeadLabel
 from component.list.base_list_widget import BaseListWidget
-from component.list.tag_list_widget import TagListWidget
-from component.scroll_area.smooth_scroll_area import SmoothScrollArea
+from component.button.icon_tool_button import IconToolButton
+
 import images_rc
 
 class Ui_BookInfo(object):

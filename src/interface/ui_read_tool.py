@@ -3,27 +3,21 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_read_tool.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.1
+## Created by: Qt User Interface Compiler version 6.1.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QLayout, QPushButton,
-    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtCore import *  # type: ignore
+from PySide6.QtGui import *  # type: ignore
+from PySide6.QtWidgets import *  # type: ignore
 
+from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 from component.box.wheel_combo_box import WheelComboBox
 from component.box.wheel_double_spin_box import WheelDoubleSpinBox
-from component.box.wheel_slider import WheelSlider
 from component.box.wheel_spin_box import WheelSpinBox
-from component.scroll_area.smooth_scroll_area import SmoothScrollArea
+from component.box.wheel_slider import WheelSlider
+
 
 class Ui_ReadImg(object):
     def setupUi(self, ReadImg):

@@ -2,7 +2,7 @@ from functools import partial
 
 from PySide6.QtCore import Qt, QEvent, QPoint
 from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication
-from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel, QMainWindow, QApplication
+from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
 
 from component.dialog.loading_dialog import LoadingDialog
 from component.label.msg_label import MsgLabel
@@ -31,17 +31,17 @@ class MainView(Main, QtTaskBase):
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
         # self.setAttribute(Qt.WA_TranslucentBackground)
 
-        screens = QGuiApplication.screens()
-        # print(screens[0].geometry(), screens[1].geometry())
-        if Setting.ScreenIndex.value >= len(screens):
-            desktop = QGuiApplication.primaryScreen().geometry()
-        else:
-            desktop = screens[Setting.ScreenIndex.value].geometry()
-
-        self.adjustSize()
-        self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-        self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
-        print(desktop.size(), self.size())
+        # screens = QGuiApplication.screens()
+        # # print(screens[0].geometry(), screens[1].geometry())
+        # if Setting.ScreenIndex.value >= len(screens):
+        #     desktop = QGuiApplication.primaryScreen().geometry()
+        # else:
+        #     desktop = screens[Setting.ScreenIndex.value].geometry()
+        #
+        # self.adjustSize()
+        # self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+        # self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
+        # print(desktop.size(), self.size())
         self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.loadingDialog = LoadingDialog(self)

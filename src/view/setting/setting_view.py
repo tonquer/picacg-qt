@@ -153,6 +153,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         return
 
     def SwitchCurrent(self, **kwargs):
+        self.InitSetting()
         return
 
     def LoadSetting(self):

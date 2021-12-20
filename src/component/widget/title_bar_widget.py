@@ -17,10 +17,25 @@ class TitleBarWidget(QWidget, Ui_TitleBar):
         self.maxBt.clicked.connect(self._ShowRestoreWindow)
         self.closeButton.clicked.connect(self._Close)
         self.minButton.clicked.connect(self._ShowMinimized)
-        # self.setAttribute(Qt.WA_TranslucentBackground)
 
     def _ShowRestoreWindow(self):
+        self.__showRestoreWindow()
         return
+
+    def mouseDoubleClickEvent(self, event):
+        self._ShowRestoreWindow()
+
+    def __showRestoreWindow(self):
+        if self.window().isMaximized():
+            self.maxBt.setProperty("isMax", False)
+            self.maxBt.style().unpolish(self.maxBt)
+            self.maxBt.style().polish(self.maxBt)
+            self.window().showNormal()
+        else:
+            self.maxBt.setProperty("isMax", True)
+            self.maxBt.style().unpolish(self.maxBt)
+            self.maxBt.style().polish(self.maxBt)
+            self.window().showMaximized()
 
     def _Close(self):
         return self.window().close()

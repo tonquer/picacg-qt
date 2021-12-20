@@ -61,7 +61,7 @@ class Setting:
     # 通用设置
     IsUpdate = SettingValue("GeneraSetting", 1, False)
     Language = SettingValue("GeneraSetting", 0, False, ["Auto", "zh", "hk", "en"])  # ch-zh ch-hk eu
-    ThemeIndex = SettingValue("GeneraSetting", 0, False, ["Auto", "light", "dark"])  #
+    ThemeIndex = SettingValue("GeneraSetting", 0, False, ["Auto", "dark", "light"])  #
     LogIndex = SettingValue("GeneraSetting", 0, False, ["warn", "info", "debug"])  # Warn Info Debug
     CoverSize = SettingValue("GeneraSetting", 100, False)  #
     CategorySize = SettingValue("GeneraSetting", 80, False)  #

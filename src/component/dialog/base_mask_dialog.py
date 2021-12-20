@@ -1,5 +1,6 @@
 # coding:utf-8
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt
+from PySide6.QtGui import QPainter, QColor, QBrush
 from PySide6.QtWidgets import (QDialog, QGraphicsDropShadowEffect,
                                QGraphicsOpacityEffect, QWidget, QSpacerItem, QSizePolicy, QVBoxLayout)
 
@@ -17,8 +18,8 @@ class BaseMaskDialog(QDialog):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setGeometry(self.parent().geometry())
         self.windowMask.resize(self.size())
-
-        self.windowMask.setStyleSheet('background:rgba(255, 255, 255, 0.6)')
+        self.windowMask.setAttribute(Qt.WA_TranslucentBackground)
+        # self.windowMask.setStyleSheet('background:rgba(255, 255, 255, 0.6)')
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.vBoxLayout.addItem(self.verticalSpacer)
         self.vBoxLayout.addWidget(self.widget, 0, Qt.AlignHCenter)
@@ -26,6 +27,18 @@ class BaseMaskDialog(QDialog):
         self.vBoxLayout.addItem(self.verticalSpacer2)
 
         self.__setShadowEffect()
+
+    def paintEvent(self, event):
+        QWidget.paintEvent(self, event)
+        painter = QPainter(self)
+        painter.setPen(Qt.transparent)
+        painter.setBrush(QBrush(QColor(255, 255, 255, 100)))
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
+        rect = self.rect()
+        rect.setWidth(rect.width()-1)
+        rect.setHeight(rect.height()-1)
+        painter.drawRoundedRect(rect, 10, 10)
 
     def __setShadowEffect(self):
         """ 添加阴影 """
