@@ -36,14 +36,15 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
             return
 
         loginView = LoginView(QtOwner().owner)
-        loginView.exec()
+        loginView.show()
+        loginView.closed.connect(self.LoginSucBack)
 
-        if User().isLogin:
-            self.LoginSucBack()
-            QtOwner().owner.LoginSucBack()
         return
 
     def LoginSucBack(self):
+        if not User().isLogin:
+            return
+        QtOwner().owner.LoginSucBack()
         self.pushButton.setText(Str.GetStr(Str.Sign))
         self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
 

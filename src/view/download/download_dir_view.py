@@ -13,7 +13,6 @@ from tools.str import Str
 
 
 class DownloadDirView(BaseMaskDialog, Ui_DownloadDir, QtTaskBase):
-    CloseLogin = Signal()
 
     def __init__(self, parent=None):
         BaseMaskDialog.__init__(self, parent)

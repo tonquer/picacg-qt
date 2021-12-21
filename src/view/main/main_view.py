@@ -30,6 +30,7 @@ class MainView(Main, QtTaskBase):
         self.setWindowTitle("PicACG")
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
         # self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setAttribute(Qt.WA_QuitOnClose, True)
 
         screens = QGuiApplication.screens()
         # print(screens[0].geometry(), screens[1].geometry())
@@ -177,8 +178,10 @@ class MainView(Main, QtTaskBase):
         self.msgLabel.hide()
         if not Setting.SavePath.value:
             view = DownloadDirView(self)
-            view.exec()
-        self.OpenLoginView()
+            view.show()
+            view.closed.connect(self.OpenLoginView)
+        else:
+            self.OpenLoginView()
 
     def ClearTabBar(self):
         for toolButton in self.toolButtons:

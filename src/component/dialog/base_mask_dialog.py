@@ -1,5 +1,5 @@
 # coding:utf-8
-from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, Qt, Signal
 from PySide6.QtGui import QPainter, QColor, QBrush
 from PySide6.QtWidgets import (QDialog, QGraphicsDropShadowEffect,
                                QGraphicsOpacityEffect, QWidget, QSpacerItem, QSizePolicy, QVBoxLayout)
@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (QDialog, QGraphicsDropShadowEffect,
 
 class BaseMaskDialog(QDialog):
     """ 带遮罩的对话框抽象基类 """
+    closed = Signal()
 
     def __init__(self, parent):
         QDialog.__init__(self, parent=parent)
@@ -16,6 +17,7 @@ class BaseMaskDialog(QDialog):
         self.widget = QWidget(self, objectName='centerWidget')
         self.setWindowFlags(Qt.FramelessWindowHint|Qt.Window)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setAttribute(Qt.WA_QuitOnClose, False)
         self.setGeometry(self.parent().geometry())
         self.windowMask.resize(self.size())
         self.windowMask.setAttribute(Qt.WA_TranslucentBackground)
@@ -40,6 +42,13 @@ class BaseMaskDialog(QDialog):
         rect.setHeight(rect.height()-1)
         painter.drawRoundedRect(rect, 10, 10)
 
+    def reject(self):
+        self.close()
+
+    def closeEvent(self, arg__1) -> None:
+        self.closed.emit()
+        arg__1.accept()
+
     def __setShadowEffect(self):
         """ 添加阴影 """
         shadowEffect = QGraphicsDropShadowEffect(self.widget)
@@ -60,16 +69,16 @@ class BaseMaskDialog(QDialog):
         opacityAni.start()
         super().showEvent(e)
 
-    def closeEvent(self, e):
-        """ 淡出 """
-        self.widget.setGraphicsEffect(None)
-        opacityEffect = QGraphicsOpacityEffect(self)
-        self.setGraphicsEffect(opacityEffect)
-        opacityAni = QPropertyAnimation(opacityEffect, b'opacity', self)
-        opacityAni.setStartValue(1)
-        opacityAni.setEndValue(0)
-        opacityAni.setDuration(100)
-        opacityAni.setEasingCurve(QEasingCurve.OutCubic)
-        opacityAni.finished.connect(self.deleteLater)
-        opacityAni.start()
-        e.ignore()
+    # def closeEvent(self, e):
+    #     """ 淡出 """
+    #     self.widget.setGraphicsEffect(None)
+    #     opacityEffect = QGraphicsOpacityEffect(self)
+    #     self.setGraphicsEffect(opacityEffect)
+    #     opacityAni = QPropertyAnimation(opacityEffect, b'opacity', self)
+    #     opacityAni.setStartValue(1)
+    #     opacityAni.setEndValue(0)
+    #     opacityAni.setDuration(100)
+    #     opacityAni.setEasingCurve(QEasingCurve.OutCubic)
+    #     opacityAni.finished.connect(self.deleteLater)
+    #     opacityAni.start()
+    #     e.ignore()
