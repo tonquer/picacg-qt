@@ -327,6 +327,7 @@ class SqlServer(Singleton):
                 if not word:
                     continue
                 if isTitle:
+                    data3 += " title like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
                     data3 += " title2 like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
                 if isAutor:
                     data3 += " author like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))

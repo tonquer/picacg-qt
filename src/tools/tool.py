@@ -282,7 +282,7 @@ class ToolUtil(object):
 
     @staticmethod
     def GetCanSaveName(name):
-        return re.sub('[\\\/:*?"<>|\0\r\n]', '', name).rstrip(".")
+        return re.sub('[\\\/:*?"<>|\0\r\n]', '', name).rstrip(".").strip(" ")
 
     @staticmethod
     def LoadCachePicture(filePath):

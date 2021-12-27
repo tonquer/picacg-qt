@@ -13,7 +13,7 @@ jobs:
   ubuntu:
     runs-on: ubuntu-18.04
     env:
-      PACKAGENAME: jmcomic_py37_ubuntu_x86_64
+      PACKAGENAME: bika_py37_ubuntu_x86_64
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
@@ -22,6 +22,9 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
+        ldd --version
+        apt-get install -y libxcb*
+        apt-get install -y libvulkan1
         python -m pip install --upgrade pip
         pip install pyinstaller==4.5.1
         pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.0.9/waifu2x_vulkan-1.0.9-cp37-cp37m-linux_x86_64.whl
@@ -38,10 +41,13 @@ jobs:
         cp ../data picacg.AppDir/ -r
         cp start/* picacg.AppDir/usr/bin -r
         mv picacg.AppDir/usr/bin/start picacg.AppDir/usr/bin/PicACG
+        chmod +x picacg.AppDir/AppRun
+        chmod +x picacg.AppDir/usr/bin/PicACG
 
         wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
         chmod +x appimagetool-x86_64.AppImage
         ./appimagetool-x86_64.AppImage picacg.AppDir
+        chmod +x PicACG-x86_64.AppImage
         mv PicACG-x86_64.AppImage ../../
         cd ../../
     - name: Upload
