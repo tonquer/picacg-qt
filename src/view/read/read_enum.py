@@ -65,8 +65,8 @@ class QtFileData(object):
             self.state = self.DownloadError
             return
 
-        w, h = ToolUtil.GetPictureSize(data)
-        if max(w, h) <= Setting.LookMaxNum.value:
+        self.w, self.h, mat = ToolUtil.GetPictureSize(data)
+        if max(self.w, self.h) <= Setting.LookMaxNum.value:
 
             if Setting.IsOpenWaifu.value:
                 self.waifuState = self.WaifuWait
@@ -76,8 +76,7 @@ class QtFileData(object):
             self.waifuState = self.OverResolution
 
         self.data = data
-        self.w, self.h = ToolUtil.GetPictureSize(data)
-        self.model = ToolUtil.GetLookScaleModel(category)
+        self.model = ToolUtil.GetLookScaleModel(category, mat)
         self.state = self.DownloadSuc
         self.size = len(data)
 
@@ -88,7 +87,7 @@ class QtFileData(object):
         self.waifuData = data
         self.waifuState = self.WaifuStateEnd
         self.waifuDataSize = len(self.waifuData)
-        self.scaleW, self.scaleH = ToolUtil.GetPictureSize(data)
+        self.scaleW, self.scaleH, _ = ToolUtil.GetPictureSize(data)
         self.waifuTick = tick
         return
 

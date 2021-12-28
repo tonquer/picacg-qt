@@ -3,20 +3,27 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_setting_new.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.1.3
+## Created by: Qt User Interface Compiler version 6.2.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import *  # type: ignore
-from PySide6.QtGui import *  # type: ignore
-from PySide6.QtWidgets import *  # type: ignore
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QCommandLinkButton,
+    QFrame, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
+    QVBoxLayout, QWidget)
 
-from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 from component.box.wheel_combo_box import WheelComboBox
 from component.box.wheel_double_spin_box import WheelDoubleSpinBox
 from component.box.wheel_spin_box import WheelSpinBox
-
+from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 
 class Ui_SettingNew(object):
     def setupUi(self, SettingNew):
@@ -76,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 661, 2284))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -993, 661, 2293))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -471,6 +478,28 @@ class Ui_SettingNew(object):
         self.frame_10.setStyleSheet(u"")
         self.verticalLayout_12 = QVBoxLayout(self.frame_10)
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.label_20 = QLabel(self.frame_10)
+        self.label_20.setObjectName(u"label_20")
+        self.label_20.setMaximumSize(QSize(16777215, 21))
+        self.label_20.setFont(font1)
+
+        self.verticalLayout_12.addWidget(self.label_20)
+
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.encodeSelect = WheelComboBox(self.frame_10)
+        self.encodeSelect.setObjectName(u"encodeSelect")
+        self.encodeSelect.setMinimumSize(QSize(150, 0))
+
+        self.horizontalLayout_17.addWidget(self.encodeSelect)
+
+        self.horizontalSpacer_14 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_17.addItem(self.horizontalSpacer_14)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_17)
+
         self.label_11 = QLabel(self.frame_10)
         self.label_11.setObjectName(u"label_11")
         self.label_11.setMaximumSize(QSize(16777215, 21))
@@ -494,28 +523,6 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_12.addLayout(self.horizontalLayout_16)
-
-        self.label_20 = QLabel(self.frame_10)
-        self.label_20.setObjectName(u"label_20")
-        self.label_20.setMaximumSize(QSize(16777215, 21))
-        self.label_20.setFont(font1)
-
-        self.verticalLayout_12.addWidget(self.label_20)
-
-        self.horizontalLayout_17 = QHBoxLayout()
-        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.encodeSelect = WheelComboBox(self.frame_10)
-        self.encodeSelect.setObjectName(u"encodeSelect")
-        self.encodeSelect.setMinimumSize(QSize(150, 0))
-
-        self.horizontalLayout_17.addWidget(self.encodeSelect)
-
-        self.horizontalSpacer_14 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_14)
-
-
-        self.verticalLayout_12.addLayout(self.horizontalLayout_17)
 
 
         self.verticalLayout_4.addWidget(self.frame_10)
@@ -1076,10 +1083,10 @@ class Ui_SettingNew(object):
         self.label_9.setText(QCoreApplication.translate("SettingNew", u"\u804a\u5929\u5ba4\uff1a", None))
         self.chatProxy.setText(QCoreApplication.translate("SettingNew", u"\u542f\u7528\u4ee3\u7406", None))
         self.waifu2xLabel.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u8bbe\u7f6e", None))
-        self.label_11.setText(QCoreApplication.translate("SettingNew", u"waifu2x\u7ebf\u7a0b\u6570", None))
-        self.threadSelect.setItemText(0, QCoreApplication.translate("SettingNew", u"2", None))
-
         self.label_20.setText(QCoreApplication.translate("SettingNew", u"CPU/GPU\u9009\u62e9\uff08\u9700\u91cd\u542f\u751f\u6548\uff09", None))
+        self.label_11.setText(QCoreApplication.translate("SettingNew", u"\u4f7f\u7528CPU\u6570\u91cf\uff08CPU\u6a21\u5f0f\u751f\u6548\uff0c\u9700\u91cd\u542f\uff09", None))
+        self.threadSelect.setItemText(0, QCoreApplication.translate("SettingNew", u"Auto", None))
+
         self.label_12.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u770b\u56fe\u6a21\u5f0f", None))
         self.readCheckBox.setText(QCoreApplication.translate("SettingNew", u"\u662f\u5426\u542f\u7528", None))
         self.label_28.setText(QCoreApplication.translate("SettingNew", u"\u4e3a\u4e86\u4fdd\u8bc1\u901f\u5ea6\uff0c\u56fe\u7247\u5206\u8fa8\u7387\u5c0f\u4e8e\u7b49\u4e8e\u8be5\u503c\u65f6\u624d\u8fdb\u884c\u8f6c\u6362\uff08\u9ed8\u8ba44096P\uff09", None))

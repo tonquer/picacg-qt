@@ -49,10 +49,15 @@ class TaskWaifu2x(TaskBase):
                     continue
                 if config.CanWaifu2x:
                     from waifu2x_vulkan import waifu2x_vulkan
-                    sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.downloadId, format="jpg", width=task.model.get("width", 0),
-                                           high=task.model.get("high", 0), scale=task.model.get("scale", 0))
+                    scale = task.model.get("scale", 0)
+                    mat = task.model.get("format", "jpg")
+                    if scale <= 0:
+                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.downloadId, task.model.get("width", 0),
+                                          task.model.get("high", 0), mat)
+                    else:
+                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.downloadId, scale, mat)
 
-                    Log.Warn("add convert info, taskId: {}, model:{}, sts:{}".format(str(task.taskId), task.model,
+                    Log.Info("Add convert info, taskId: {}, model:{}, sts:{}".format(str(task.downloadId), task.model,
                                                                                              str(sts)))
                 else:
                     sts = -1
@@ -60,6 +65,7 @@ class TaskWaifu2x(TaskBase):
                     self.taskObj.convertBack.emit(taskId)
                     continue
             except Exception as es:
+                Log.Error(es)
                 continue
 
     def LoadData(self):

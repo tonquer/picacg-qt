@@ -3,18 +3,24 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_navigation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.1.3
+## Created by: Qt User Interface Compiler version 6.2.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import *  # type: ignore
-from PySide6.QtGui import *  # type: ignore
-from PySide6.QtWidgets import *  # type: ignore
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QFrame, QHBoxLayout,
+    QLabel, QPushButton, QSizePolicy, QSpacerItem,
+    QToolButton, QVBoxLayout, QWidget)
 
-from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 from component.label.head_label import HeadLabel
-
+from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 import images_rc
 
 class Ui_Navigation(object):
@@ -291,6 +297,20 @@ class Ui_Navigation(object):
 
         self.verticalLayout_3.addWidget(self.downloadButton)
 
+        self.waifu2xButton = QToolButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.waifu2xButton)
+        self.waifu2xButton.setObjectName(u"waifu2xButton")
+        sizePolicy1.setHeightForWidth(self.waifu2xButton.sizePolicy().hasHeightForWidth())
+        self.waifu2xButton.setSizePolicy(sizePolicy1)
+        self.waifu2xButton.setMinimumSize(QSize(150, 40))
+        self.waifu2xButton.setFocusPolicy(Qt.NoFocus)
+        self.waifu2xButton.setIcon(icon)
+        self.waifu2xButton.setIconSize(QSize(32, 32))
+        self.waifu2xButton.setCheckable(True)
+        self.waifu2xButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.verticalLayout_3.addWidget(self.waifu2xButton)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout_3.addItem(self.verticalSpacer)
@@ -367,6 +387,7 @@ class Ui_Navigation(object):
         self.gameButton.setText(QCoreApplication.translate("Navigation", u"\u6e38\u620f\u533a", None))
         self.label_3.setText(QCoreApplication.translate("Navigation", u"\u5176\u4ed6", None))
         self.downloadButton.setText(QCoreApplication.translate("Navigation", u"\u4e0b\u8f7d", None))
+        self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"Waifu2x", None))
         self.helpButton.setText(QCoreApplication.translate("Navigation", u"\u5e2e\u52a9", None))
         self.settingButton.setText(QCoreApplication.translate("Navigation", u"\u8bbe\u7f6e", None))
     # retranslateUi

@@ -392,7 +392,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             data.model = model
             data.waifuData = None
             data.cacheWaifu2xImage = None
-            w, h = ToolUtil.GetPictureSize(data.data)
+            w, h, _ = ToolUtil.GetPictureSize(data.data)
             if max(w, h) <= Setting.LookMaxNum.value:
                data.waifuState = data.WaifuWait
             else:

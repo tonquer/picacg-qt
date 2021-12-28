@@ -215,27 +215,31 @@ class ToolUtil(object):
         return size
 
     @staticmethod
-    def GetLookScaleModel(category):
-        return ToolUtil.GetModelByIndex(Setting.LookNoise.value, Setting.LookScale.value, ToolUtil.GetLookModel(category))
+    def GetLookScaleModel(category, mat="jpg"):
+        return ToolUtil.GetModelByIndex(Setting.LookNoise.value, Setting.LookScale.value, ToolUtil.GetLookModel(category), mat)
 
     @staticmethod
-    def GetDownloadScaleModel(w, h):
+    def GetDownloadScaleModel(w, h, mat):
         dot = w * h
         # 条漫不放大
         if not config.CanWaifu2x:
             return {}
-        return ToolUtil.GetModelByIndex(Setting.DownloadNoise.value, Setting.DownloadScale.value, Setting.DownloadModel.value)
+        return ToolUtil.GetModelByIndex(Setting.DownloadNoise.value, Setting.DownloadScale.value, Setting.DownloadModel.value, mat)
 
     @staticmethod
     def GetPictureSize(data):
         if not data:
-            return 0, 0
+            return 0, 0, "jpg"
         from PIL import Image
         from io import BytesIO
         a = BytesIO(data)
         img = Image.open(a)
         a.close()
-        return img.width, img.height
+        if img.format == "PNG":
+            mat = "png"
+        else:
+            mat = "jpg"
+        return img.width, img.height, mat
 
     @staticmethod
     def GetLookModel(category):
@@ -264,21 +268,24 @@ class ToolUtil(object):
         return model, noise, scale
 
     @staticmethod
-    def GetModelByIndex(noise, scale, index):
+    def GetModelByIndex(noise, scale, index, mat="jpg"):
         if not config.CanWaifu2x:
             return {}
         if noise < 0:
             noise = 3
+        data = {"format": mat, "noise": noise, "scale": scale, "index": index}
         from waifu2x_vulkan import waifu2x_vulkan
         if index == 0:
-            return {"model": getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            data["model"] = getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise))
         elif index == 1:
-            return {"model": getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            data["model"] = getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise))
         elif index == 2:
-            return {"model": getattr(waifu2x_vulkan, "MODEL_PHOTO_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            data["model"] = getattr(waifu2x_vulkan, "MODEL_PHOTO_NOISE" + str(noise))
         elif index == 3:
-            return {"model": getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
-        return {"model": getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise)), "noise":noise, "scale": scale, "index": index}
+            data["model"] = getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise))
+        else:
+            data["model"] = getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise))
+        return data
 
     @staticmethod
     def GetCanSaveName(name):

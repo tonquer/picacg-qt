@@ -38,13 +38,14 @@ DatabaseDownload2 = "https://gitee.com/bika-robot/picacg-database/raw/main/data/
 UpdateVersion = "v1.3.1"
 RealVersion = "v1.3.1"
 
-Waifu2xVersion = "1.0.9"
+Waifu2xVersion = "1.1.1"
 
 # waifu2x
 CanWaifu2x = True
 ErrorMsg = ""
 
 Encode = 0             # 当前正在使用的索引
+UseCpuNum = 0
 EncodeGpu = ""
 
 Format = "jpg"

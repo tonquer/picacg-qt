@@ -60,6 +60,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.downModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadModel))
         self.downNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadNoise))
         self.encodeSelect.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.SelectEncodeGpu))
+        self.threadSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.Waifu2xCpuCore))
 
         # spinBox
         # self.preDownNum.valueChanged.connect(partial(self.SpinBoxEvent, "", self.preDownNum))
@@ -284,22 +285,36 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.scrollArea.setStyleSheet(qss)
 
     def GetSysColor(self):
-        # TODO
-        # MacOS 和 KDE如何获取系统颜色
+        # TODO KDE如何获取系统颜色
         if sys.platform == "win32":
             return self.GetWinSysColor() + 1
+        elif sys.platform == "darwin":
+            return self.GetWinSysColor()
         return 1
 
     def GetWinSysColor(self):
-        path = "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
-        key = "AppsUseLightTheme"
-        settings = QSettings(path, QSettings.NativeFormat)
-        value = settings.value(key, 0)
-        return value
+        try:
+            path = "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+            key = "AppsUseLightTheme"
+            settings = QSettings(path, QSettings.NativeFormat)
+            value = settings.value(key, 0)
+            return value
+        except Exception as es:
+            Log.Error(es)
+        return 1
 
     def GetMacOsSysColor(self):
-        cmd = "defaults read -g AppleInterfaceStyle"
-        return
+        try:
+            import subprocess
+            cmd = "defaults read -g AppleInterfaceStyle"
+            results = subprocess.getoutput(cmd)
+            if results == "Dark":
+                return 1
+            else:
+                return 2
+        except Exception as es:
+            Log.Error(es)
+        return 1
 
     def SaveSetting(self):
         return
@@ -323,7 +338,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         QDesktopServices.openUrl(QUrl.fromLocalFile(label.text()))
         return
 
-    def SetGpuInfos(self, gpuInfo):
+    def SetGpuInfos(self, gpuInfo, cpuNum):
         self.gpuInfos = gpuInfo
         config.EncodeGpu = Setting.SelectEncodeGpu.value
 
@@ -347,11 +362,18 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             index += 1
 
         self.encodeSelect.addItem("CPU")
+
         if config.EncodeGpu == "CPU":
+            config.UseCpuNum = Setting.Waifu2xCpuCore.value
             config.Encode = -1
             self.encodeSelect.setCurrentIndex(index)
+            if config.UseCpuNum > cpuNum:
+                config.UseCpuNum = cpuNum
+            for i in range(cpuNum):
+                self.threadSelect.addItem(str(i+1))
+            self.threadSelect.setCurrentIndex(config.UseCpuNum)
 
-        Log.Info("waifu2x GPU: " + str(self.gpuInfos) + ",select: " + config.EncodeGpu)
+        Log.Info("waifu2x GPU: " + str(self.gpuInfos) + ",select: " + str(config.EncodeGpu) + ",use cpu num: " + str(config.UseCpuNum))
         return
 
     def GetGpuName(self):

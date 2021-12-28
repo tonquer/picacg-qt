@@ -415,8 +415,8 @@ class DownloadEpsInfo(QtTaskBase):
                 data = f.read()
                 f.close()
 
-                w, h = ToolUtil.GetPictureSize(data)
-                model = ToolUtil.GetDownloadScaleModel(w, h)
+                w, h, mat = ToolUtil.GetPictureSize(data)
+                model = ToolUtil.GetDownloadScaleModel(w, h, mat)
                 self.AddConvertTask("", data, model, self.AddConvertBack)
                 break
         self.parent.UpdateTableItem()

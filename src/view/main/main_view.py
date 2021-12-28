@@ -40,8 +40,8 @@ class MainView(Main, QtTaskBase):
             desktop = screens[Setting.ScreenIndex.value].geometry()
 
         self.adjustSize()
-        self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-        self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
+        # self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+        # self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
         # print(desktop.size(), self.size())
         self.setAttribute(Qt.WA_StyledBackground, True)
 
@@ -104,6 +104,7 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.myCommentButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.myCommentView)))
         self.navigationWidget.gameButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.gameView)))
         self.navigationWidget.helpButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.helpView)))
+        self.navigationWidget.waifu2xButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.waifu2xToolView)))
 
     def RetranslateUi(self):
         Main.retranslateUi(self, self)
@@ -128,6 +129,7 @@ class MainView(Main, QtTaskBase):
         IsCanUse = False
         if config.CanWaifu2x:
             from waifu2x_vulkan import waifu2x_vulkan
+            
             stat = waifu2x_vulkan.init()
             waifu2x_vulkan.setDebug(True)
             if stat < 0:
@@ -140,20 +142,20 @@ class MainView(Main, QtTaskBase):
 
             IsCanUse = True
             gpuInfo = waifu2x_vulkan.getGpuInfo()
-            self.settingView.SetGpuInfos(gpuInfo)
+            cpuNum = waifu2x_vulkan.getCpuCoreNum()
+            self.settingView.SetGpuInfos(gpuInfo, cpuNum)
             # if not gpuInfo or (gpuInfo and config.Encode < 0) or (gpuInfo and config.Encode >= len(gpuInfo)):
             #     config.Encode = 0
 
-            sts = waifu2x_vulkan.initSet(config.Encode, Setting.Waifu2xThread.value)
+            sts = waifu2x_vulkan.initSet(config.Encode, config.UseCpuNum)
             TaskWaifu2x().Start()
             version = waifu2x_vulkan.getVersion()
             config.Waifu2xVersion = version
             self.helpView.waifu2x.setText(config.Waifu2xVersion)
-            Log.Info("waifu2x初始化: " + str(stat) + " encode: " + str(
-                config.Encode) + " version:" + version + " code:" + str(sts))
+            Log.Warn("Waifu2x init: " + str(stat) + " encode: " + str(
+                config.Encode) + " version:" + version + " code:" + str(sts) + " cpuNum:" + str(config.UseCpuNum))
         else:
-            pass
-            # QtOwner().ShowError(self.tr("waifu2x无法启用, ") + config.ErrorMsg)
+            QtOwner().ShowError("Waifu2x Error, " + config.ErrorMsg)
 
         if not IsCanUse:
             self.settingView.readCheckBox.setEnabled(False)

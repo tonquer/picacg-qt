@@ -81,7 +81,7 @@ class Setting:
 
     # Waifu2x设置
     SelectEncodeGpu = SettingValue("Waifu2xSetting", "", True)
-    Waifu2xThread = SettingValue("Waifu2xSetting", 2, True)
+    Waifu2xCpuCore = SettingValue("Waifu2xSetting", 0, True)
 
     # 封面 Waifu2x
     CoverIsOpenWaifu = SettingValue("Waifu2xSetting", 0, False)
