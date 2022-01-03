@@ -5,7 +5,7 @@ from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from config.setting import Setting
 from tools.log import Log
-from view.download.download_info import DownloadInfo, DownloadEpsInfo
+from view.download.download_item import DownloadItem, DownloadEpsItem
 
 
 class DownloadDb(object):
@@ -67,7 +67,7 @@ class DownloadDb(object):
         return
 
     def AddDownloadDB(self, task):
-        assert isinstance(task, DownloadInfo)
+        assert isinstance(task, DownloadItem)
 
         query = QSqlQuery(self.db)
         sql = "INSERT INTO download(bookId, downloadEpsIds, curDownloadEpsId, curConvertEpsId, title, " \
@@ -75,7 +75,7 @@ class DownloadDb(object):
               "VALUES ('{0}', '{1}', {2}, {3}, '{4}', '{5}', '{6}', '{7}', '{8}') " \
               "ON CONFLICT(bookId) DO UPDATE SET downloadEpsIds='{1}', curDownloadEpsId={2}, curConvertEpsId={3}, " \
               "title = '{4}', savePath = '{5}', convertPath= '{6}', status = '{7}', convertStatus = '{8}'".\
-            format(task.bookId, json.dumps(task.downloadEpsIds), task.curDownloadEpsId, task.curConvertEpsId, task.title.replace("'", "''"),
+            format(task.bookId, json.dumps(task.epsIds), task.curDownloadEpsId, task.curConvertEpsId, task.title.replace("'", "''"),
                    task.savePath.replace("'", "''"), task.convertPath.replace("'", "''"), task.status, task.convertStatus)
 
         suc = query.exec_(sql)
@@ -84,13 +84,13 @@ class DownloadDb(object):
         return
 
     def AddDownloadEpsDB(self, info):
-        assert isinstance(info, DownloadEpsInfo)
+        assert isinstance(info, DownloadEpsItem)
         query = QSqlQuery(self.db)
         sql = "INSERT INTO download_eps(bookId, epsId, epsTitle, picCnt, curPreDownloadIndex, curPreConvertId) " \
               "VALUES ('{0}', {1}, '{2}', {3}, {4}, {5}) " \
               "ON CONFLICT(bookId, epsId) DO UPDATE SET epsTitle='{2}', picCnt={3}, curPreDownloadIndex={4}, " \
               "curPreConvertId = {5}".\
-            format(info.parent.bookId, info.epsId, info.epsTitle.replace("'", "''"), info.picCnt, info.curPreDownloadIndex,
+            format(info.bookId, info.epsId, info.epsTitle.replace("'", "''"), info.picCnt, info.curPreDownloadIndex,
                    info.curPreConvertId)
 
         suc = query.exec_(sql)
@@ -110,10 +110,10 @@ class DownloadDb(object):
         downloads = {}
         while query.next():
             # bookId, downloadEpsIds, curDownloadEpsId, curConvertEpsId, title, savePath, convertPath
-            info = DownloadInfo(owner)
+            info = DownloadItem()
             info.bookId = query.value(0)
             data = json.loads(query.value(1))
-            info.downloadEpsIds = [int(i) for i in data]
+            info.epsIds = [int(i) for i in data]
             info.curDownloadEpsId = query.value(2)
             info.curConvertEpsId = query.value(3)
             info.title = query.value(4)
@@ -138,7 +138,8 @@ class DownloadDb(object):
             task = downloads.get(bookId)
             if not task:
                 continue
-            info = DownloadEpsInfo(task)
+            info = DownloadEpsItem()
+            info.bookId = bookId
             info.epsId = query.value(1)
             info.epsTitle = query.value(2)
             info.picCnt = query.value(3)

@@ -364,14 +364,16 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.encodeSelect.addItem("CPU")
 
         if config.EncodeGpu == "CPU":
-            config.UseCpuNum = Setting.Waifu2xCpuCore.value
+
             config.Encode = -1
             self.encodeSelect.setCurrentIndex(index)
-            if config.UseCpuNum > cpuNum:
-                config.UseCpuNum = cpuNum
-            for i in range(cpuNum):
-                self.threadSelect.addItem(str(i+1))
-            self.threadSelect.setCurrentIndex(config.UseCpuNum)
+
+        config.UseCpuNum = Setting.Waifu2xCpuCore.value
+        if config.UseCpuNum > cpuNum:
+            config.UseCpuNum = cpuNum
+        for i in range(cpuNum):
+            self.threadSelect.addItem(str(i + 1))
+        self.threadSelect.setCurrentIndex(config.UseCpuNum)
 
         Log.Info("waifu2x GPU: " + str(self.gpuInfos) + ",select: " + str(config.EncodeGpu) + ",use cpu num: " + str(config.UseCpuNum))
         return

@@ -61,7 +61,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         url = User().avatar.get("fileServer")
         path = User().avatar.get("path")
         if url and path and config.IsLoadingPicture:
-            self.AddDownloadTask(url, path, None, self.ShowUserImg)
+            self.AddDownloadTask(url, path, completeCallBack=self.ShowUserImg)
 
     def ShowUserImg(self, data, st):
         if st == Status.Ok:

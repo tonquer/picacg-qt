@@ -6,10 +6,33 @@ from zlib import crc32
 
 from config import config
 from config.setting import Setting
-from task.qt_task import TaskBase, QtDownloadTask
+from task.qt_task import TaskBase
 from tools.log import Log
+from tools.status import Status
+from tools.str import Str
 from tools.tool import CTime, ToolUtil
 
+
+class QConvertTask(object):
+    def __init__(self, taskId=0):
+        self.taskId = taskId
+        self.callBack = None       # addData, laveSize
+        self.backParam = None
+        self.cleanFlag = ""
+        self.status = Status.Ok
+        self.tick = 0
+        self.loadPath = ""  #
+        self.cachePath = ""  #
+        self.savePath = ""  #
+        self.imgData = b""
+        self.saveData = b""
+
+        self.model = {
+            "model": 1,
+            "scale": 2,
+            "toH": 100,
+            "toW": 100,
+        }
 
 class TaskWaifu2x(TaskBase):
 
@@ -28,44 +51,68 @@ class TaskWaifu2x(TaskBase):
 
     def Run(self):
         while True:
-            try:
-                taskId = self._inQueue.get(True)
-                self._inQueue.task_done()
-                if taskId == "":
-                    break
+            taskId = self._inQueue.get(True)
+            self._inQueue.task_done()
+            if taskId == "":
+                break
 
-                if taskId not in self.tasks:
-                    continue
-                task = self.tasks.get(taskId)
+            task = self.tasks.get(taskId)
+            if not task:
+                continue
+            assert isinstance(task, QConvertTask)
+            try:
+                assert isinstance(task, QConvertTask)
                 isFind = False
-                for cachePath in [task.cacheAndLoadPath, task.loadPath]:
-                    data = ToolUtil.LoadCachePicture(cachePath)
+
+                if task.cachePath:
+                    data = ToolUtil.LoadCachePicture(task.loadPath)
                     if data:
                         task.saveData = data
                         self.taskObj.convertBack.emit(taskId)
-                        isFind = True
                         continue
+
+                if task.savePath:
+                    if ToolUtil.IsHaveFile(task.savePath):
+                        self.taskObj.convertBack.emit(taskId)
+                        continue
+
+                if task.loadPath:
+                    data = ToolUtil.LoadCachePicture(task.loadPath)
+                    if data:
+                        w, h, mat = ToolUtil.GetPictureSize(data)
+                        model = ToolUtil.GetDownloadScaleModel(w, h, mat)
+                        task.model = model
+                        task.imgData = data
+                elif not task.imgData:
+                    task.status = Status.FileError
+                    self.taskObj.convertBack.emit(taskId)
+                    continue
+
                 if isFind:
                     continue
+
                 if config.CanWaifu2x:
                     from waifu2x_vulkan import waifu2x_vulkan
                     scale = task.model.get("scale", 0)
                     mat = task.model.get("format", "jpg")
                     if scale <= 0:
-                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.downloadId, task.model.get("width", 0),
+                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, task.model.get("width", 0),
                                           task.model.get("high", 0), mat)
                     else:
-                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.downloadId, scale, mat)
+                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, scale, mat)
 
-                    Log.Info("Add convert info, taskId: {}, model:{}, sts:{}".format(str(task.downloadId), task.model,
-                                                                                             str(sts)))
                 else:
                     sts = -1
                 if sts <= 0:
+                    task.status = Status.AddError
                     self.taskObj.convertBack.emit(taskId)
+                    Log.Warn("Add convert info, taskId: {}, model:{}, sts:{}".format(str(task.taskId), task.model,
+                                                                                     str(sts)))
                     continue
             except Exception as es:
                 Log.Error(es)
+                task.status = Status.PathError
+                self.taskObj.convertBack.emit(taskId)
                 continue
 
     def LoadData(self):
@@ -83,37 +130,43 @@ class TaskWaifu2x(TaskBase):
             t1 = CTime()
             data, convertId, taskId, tick = info
             info = self.tasks.get(taskId)
+            tick = round(tick, 2)
             if not info:
                 continue
             if not data:
                 lenData = 0
             else:
                 lenData = len(data)
-
-            Log.Warn("convert suc, taskId: {}, dataLen:{}, sts:{} tick:{}".format(str(taskId), lenData,
+            if lenData <= 0:
+                info.status = Status.FileFormatError
+                Log.Warn("convert error, taskId: {}, dataLen:{}, sts:{} tick:{}".format(str(taskId), lenData,
                                                                                           str(convertId),
                                                                                           str(tick)))
-            assert isinstance(info, QtDownloadTask)
+            assert isinstance(info, QConvertTask)
             info.saveData = data
             info.tick = tick
-            if info.cacheAndLoadPath and not os.path.isdir(os.path.dirname(info.cacheAndLoadPath)):
-                os.makedirs(os.path.dirname(info.cacheAndLoadPath))
-            if info.cacheAndLoadPath and data:
-                with open(info.cacheAndLoadPath, "wb+") as f:
-                    f.write(data)
-                Log.Debug("add convert cache, cachePath:{}".format(info.cacheAndLoadPath))
-            else:
-                pass
+            try:
+                for path in [info.cachePath, info.savePath]:
+                    if path and not os.path.isdir(os.path.dirname(path)):
+                        os.makedirs(os.path.dirname(path))
+
+                    if path and data:
+                        with open(path, "wb+") as f:
+                            f.write(data)
+            except Exception as es:
+                info.status = Status.SaveError
+                Log.Error(es)
+
             self.taskObj.convertBack.emit(taskId)
             t1.Refresh("RunLoad")
 
-    def AddConvertTask(self, path, imgData, model, completeCallBack, backParam=None, cleanFlag=None, filePath=""):
-        info = QtDownloadTask()
-        info.downloadCompleteBack = completeCallBack
+    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, cleanFlag=None):
+        info = QConvertTask()
+        info.callBack = callBack
         info.backParam = backParam
         self.taskId += 1
         self.tasks[self.taskId] = info
-        info.downloadId = self.taskId
+        info.taskId = self.taskId
         info.imgData = imgData
         info.model = model
         if path:
@@ -121,31 +174,47 @@ class TaskWaifu2x(TaskBase):
             if Setting.SavePath.value:
                 path2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), config.Waifu2xPath)
                 path = os.path.join(path2, path)
-                info.cacheAndLoadPath = path + "-{}".format(a)
+                info.cachePath = path + "-{}.jpg".format(a)
+
         if cleanFlag:
             info.cleanFlag = cleanFlag
             taskIds = self.flagToIds.setdefault(cleanFlag, set())
             taskIds.add(self.taskId)
-        Log.Debug("add convert info, cachePath:{}, loadPath:{}".format(info.cacheAndLoadPath, info.loadPath))
+        Log.Debug("add convert info, taskId:{}, cachePath:{}".format(info.taskId, info.cachePath))
+        self._inQueue.put(self.taskId)
+        return self.taskId
+
+    def AddConvertTaskByPath(self, loadPath, savePath, callBack, backParam=None, cleanFlag=None):
+        info = QConvertTask()
+        info.loadPath = loadPath
+        info.savePath = savePath
+        info.callBack = callBack
+        info.backParam = backParam
+        self.taskId += 1
+        self.tasks[self.taskId] = info
+        info.taskId = self.taskId
+        if cleanFlag:
+            info.cleanFlag = cleanFlag
+            taskIds = self.flagToIds.setdefault(cleanFlag, set())
+            taskIds.add(self.taskId)
+        Log.Debug("add convert info, loadPath:{}, savePath:{}".format(info.loadPath, info.savePath))
         self._inQueue.put(self.taskId)
         return self.taskId
 
     def HandlerTask(self, taskId, isCallBack=True):
-        if taskId not in self.tasks:
-            return
-        t1 = CTime()
-        info = self.tasks[taskId]
-        assert isinstance(info, QtDownloadTask)
+        try:
+            info = self.tasks.get(taskId)
+            if not info:
+                return
 
-        if info.cleanFlag:
-            taskIds = self.flagToIds.get(info.cleanFlag, set())
-            taskIds.discard(info.downloadId)
-        info.downloadCompleteBack(info.saveData, taskId, info.backParam, info.tick)
-        if info.cleanFlag:
-            taskIds = self.flagToIds.get(info.cleanFlag, set())
-            taskIds.discard(info.downloadId)
-        del self.tasks[taskId]
-        t1.Refresh("RunLoad")
+            assert isinstance(info, QConvertTask)
+            info.callBack(info.saveData, info.status, info.backParam, info.tick)
+            if info.cleanFlag:
+                taskIds = self.flagToIds.get(info.cleanFlag, set())
+                taskIds.discard(info.taskId)
+            del self.tasks[taskId]
+        except Exception as es:
+            Log.Error(es)
 
     def ClearWaitConvertIds(self, taskIds):
         if not taskIds:

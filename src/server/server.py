@@ -27,7 +27,7 @@ host_table = {}
 def _dns_resolver(host):
     if host in host_table:
         address = host_table[host]
-        Log.Info("dns parse, host:{}->{}".format(host, address))
+        # Log.Info("dns parse, host:{}->{}".format(host, address))
         return address
     else:
         return host
@@ -50,14 +50,12 @@ def handler(request):
 
 
 class Task(object):
-    def __init__(self, request, bakParam="", cacheAndLoadPath="", loadPath=""):
+    def __init__(self, request, bakParam=""):
         self.req = request
         self.res = None
         self.timeout = 5
         self.bakParam = bakParam
         self.status = Status.Ok
-        self.cacheAndLoadPath = cacheAndLoadPath
-        self.loadPath = loadPath
 
 
 class Server(Singleton):
@@ -245,9 +243,9 @@ class Server(Singleton):
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 
-    def Download(self, request, token="", backParams="", cacheAndLoadPath="", loadPath= "", isASync=True):
+    def Download(self, request, token="", backParams="", isASync=True):
         self.__DealHeaders(request, token)
-        task = Task(request, backParams, cacheAndLoadPath, loadPath)
+        task = Task(request, backParams)
         if isASync:
             self._downloadQueue.put(task)
         else:
@@ -256,7 +254,7 @@ class Server(Singleton):
     def _Download(self, task):
         try:
             if not isinstance(task.req, req.SpeedTestReq):
-                for cachePath in [task.cacheAndLoadPath, task.loadPath]:
+                for cachePath in [task.req.loadPath, task.req.cachePath]:
                     if cachePath and task.bakParam:
                         data = ToolUtil.LoadCachePicture(cachePath)
                         if data:
@@ -265,10 +263,10 @@ class Server(Singleton):
                             Log.Info("request cache -> backId:{}, {}".format(task.bakParam, task.req))
                             return
             request = task.req
-            if request.params == None:
+            if request.params is None:
                 request.params = {}
 
-            if request.headers == None:
+            if request.headers is None:
                 request.headers = {}
             Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
             r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, stream=True, timeout=task.timeout, verify=False)

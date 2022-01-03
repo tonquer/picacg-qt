@@ -6,14 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>608</width>
+    <width>609</width>
     <height>372</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>下载</string>
   </property>
-
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
@@ -35,28 +34,28 @@
        <item>
         <widget class="QPushButton" name="pushButton">
          <property name="text">
-          <string>全部开始</string>
+          <string>全部开始下载</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_3">
          <property name="text">
-          <string>全部暂停</string>
+          <string>全部暂停下载</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_2">
          <property name="text">
-          <string>开始转换</string>
+          <string>全部开始转换</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>暂停转换</string>
+          <string>全部暂停转换</string>
          </property>
         </widget>
        </item>
@@ -66,7 +65,7 @@
           <bool>true</bool>
          </property>
          <property name="text">
-          <string>下载完自动转换</string>
+          <string>下载自动进行Waifu2x转换</string>
          </property>
          <property name="checked">
           <bool>true</bool>

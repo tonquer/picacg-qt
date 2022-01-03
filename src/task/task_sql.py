@@ -1,7 +1,14 @@
 import pickle
 
-from task.qt_task import TaskBase, QtHttpTask
+from task.qt_task import TaskBase
 from tools.log import Log
+
+class QtSqlTask(object):
+    def __init__(self, taskId):
+        self.taskId = taskId
+        self.callBack = None
+        self.backParam = None
+        self.cleanFlag = ""
 
 
 class TaskSql(TaskBase):
@@ -12,7 +19,7 @@ class TaskSql(TaskBase):
 
     def AddSqlTask(self, table, data, taskType, callBack=None, backParam=None, cleanFlag=None):
         self.taskId += 1
-        info = QtHttpTask(self.taskId)
+        info = QtSqlTask(self.taskId)
         info.callBack = callBack
         info.backParam = backParam
         self.tasks[self.taskId] = info
@@ -32,7 +39,7 @@ class TaskSql(TaskBase):
             if not info:
                 Log.Warn("[Task] not find taskId:{}, {}".format(taskId, data))
                 return
-            assert isinstance(info, QtHttpTask)
+            assert isinstance(info, QtSqlTask)
             if info.cleanFlag:
                 taskIds = self.flagToIds.get(info.cleanFlag, set())
                 taskIds.discard(info.taskId)

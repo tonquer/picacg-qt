@@ -246,13 +246,15 @@ class GetComicsRecommendation(ServerReq):
 
 # 下载图片
 class DownloadBookReq(ServerReq):
-    def __init__(self, url, path="", isSaveCache=False):
+    def __init__(self, url, path="", loadPath="", cachePath="", savePath=""):
         if path:
             url = url + "/static/{}".format(path)
         method = "Download"
         self.url = url
         self.path = path
-        self.isSaveCache = isSaveCache
+        self.loadPath = loadPath
+        self.cachePath = cachePath
+        self.savePath = savePath
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
 

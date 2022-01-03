@@ -155,11 +155,11 @@ class Ui_Help(object):
 
         self.gridLayout.addWidget(self.label_11, 4, 0, 1, 1)
 
-        self.label_10 = QLabel(self.widget_2)
-        self.label_10.setObjectName(u"label_10")
-        self.label_10.setFont(font)
+        self.upTimeLabel = QLabel(self.widget_2)
+        self.upTimeLabel.setObjectName(u"upTimeLabel")
+        self.upTimeLabel.setFont(font)
 
-        self.gridLayout.addWidget(self.label_10, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.upTimeLabel, 1, 1, 1, 1)
 
         self.waifu2x = QLabel(self.widget_2)
         self.waifu2x.setObjectName(u"waifu2x")
@@ -212,7 +212,7 @@ class Ui_Help(object):
         self.version.setText(QCoreApplication.translate("Help", u"v1.2.8", None))
         self.label_6.setText(QCoreApplication.translate("Help", u"waifu2x\u7248\u672c:", None))
         self.label_11.setText(QCoreApplication.translate("Help", u"\u672c\u5730\u6570\u636e\u4e0a\u6b21\u66f4\u65b0:", None))
-        self.label_10.setText(QCoreApplication.translate("Help", u"2021-11-27", None))
+        self.upTimeLabel.setText(QCoreApplication.translate("Help", u"2021-11-27", None))
         self.waifu2x.setText(QCoreApplication.translate("Help", u"v1.0.8", None))
     # retranslateUi
 

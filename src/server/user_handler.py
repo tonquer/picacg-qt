@@ -222,18 +222,28 @@ class DownloadBookHandler(object):
                         TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, chunk)
                     getSize += len(chunk)
                     data += chunk
+                # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
+                if config.IsUseCache and len(data) > 0:
+                    try:
+                        for path in [backData.req.cachePath, backData.req.savePath]:
+                            filePath = path
+                            if not path:
+                                continue
+                            fileDir = os.path.dirname(filePath)
+                            if not os.path.isdir(fileDir):
+                                os.makedirs(fileDir)
+
+                            with open(filePath, "wb+") as f:
+                                f.write(data)
+                            Log.Debug("add download cache, cachePath:{}".format(filePath))
+                    except Exception as es:
+                        Log.Error(es)
+                        # 保存失败了
+                        if backData.bakParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, -2, b"")
+
                 if backData.bakParam:
                     TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, b"")
-                # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
-                if backData.cacheAndLoadPath and config.IsUseCache and len(data) > 0:
-                    filePath = backData.cacheAndLoadPath
-                    fileDir = os.path.dirname(filePath)
-                    if not os.path.isdir(fileDir):
-                        os.makedirs(fileDir)
-
-                    with open(filePath, "wb+") as f:
-                        f.write(data)
-                    Log.Debug("add download cache, cachePath:{}".format(filePath))
             except Exception as es:
                 Log.Error(es)
                 if backData.bakParam:

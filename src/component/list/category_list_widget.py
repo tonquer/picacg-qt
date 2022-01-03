@@ -37,6 +37,7 @@ class CategoryListWidget(BaseListWidget):
             action.triggered.connect(partial(self.OpenPicture, index))
             action = popMenu.addAction(Str.GetStr(Str.ReDownloadCover))
             action.triggered.connect(partial(self.ReDownloadPicture, index))
+            assert isinstance(widget, ComicItemWidget)
             if config.CanWaifu2x and widget.picData:
                 if not widget.isWaifu2x:
                     action = popMenu.addAction(Str.GetStr(Str.Waifu2xConvert))
@@ -52,18 +53,20 @@ class CategoryListWidget(BaseListWidget):
     def OpenPicture(self, index):
         widget = self.indexWidget(index)
         if widget:
+            assert isinstance(widget, ComicItemWidget)
             QtOwner().OpenWaifu2xTool(widget.picData)
             return
 
     def ReDownloadPicture(self, index):
         widget = self.indexWidget(index)
         if widget:
+            assert isinstance(widget, ComicItemWidget)
             if widget.url and config.IsLoadingPicture:
                 widget.SetPicture("")
                 item = self.itemFromIndex(index)
                 count = self.row(item)
                 widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
-                self.AddDownloadTask(widget.url, widget.path, None, self.LoadingPictureComplete, True, count, False)
+                self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=count)
                 pass
 
     def AddBookItem(self, _id, title, url="", path=""):
@@ -73,6 +76,7 @@ class CategoryListWidget(BaseListWidget):
         widget.id = _id
         widget.url = url
         widget.path = path
+        widget.index = index
         # widget.categoryLabel.setText(categories)
         widget.categoryLabel.hide()
         widget.starButton.hide()
@@ -85,14 +89,22 @@ class CategoryListWidget(BaseListWidget):
         item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
         self.setItemWidget(item, widget)
         widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
-        if url and config.IsLoadingPicture:
-            self.AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True)
-            pass
+        widget.PicLoad.connect(self.LoadingPicture)
+        # if url and config.IsLoadingPicture:
+        #     self.AddDownloadTask(url, path, completeCallBack=self.LoadingPictureComplete, backParam=index)
+        #     pass
+
+    def LoadingPicture(self, index):
+        item = self.item(index)
+        widget = self.itemWidget(item)
+        assert isinstance(widget, ComicItemWidget)
+        self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=index)
 
     def LoadingPictureComplete(self, data, status, index):
         if status == Status.Ok:
             item = self.item(index)
             widget = self.itemWidget(item)
+            assert isinstance(widget, ComicItemWidget)
             widget.SetPicture(data)
             if Setting.CoverIsOpenWaifu.value:
                 item = self.item(index)
@@ -103,12 +115,14 @@ class CategoryListWidget(BaseListWidget):
         else:
             item = self.item(index)
             widget = self.itemWidget(item)
+            assert isinstance(widget, ComicItemWidget)
             widget.SetPictureErr()
         return
 
     def Waifu2xPicture(self, index, isIfSize=False):
         widget = self.indexWidget(index)
         if widget and widget.picData:
+            assert isinstance(widget, ComicItemWidget)
             w, h, mat = ToolUtil.GetPictureSize(widget.picData)
             if max(w, h) <= Setting.CoverMaxNum.value or not isIfSize:
                 model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value, mat)
@@ -117,12 +131,14 @@ class CategoryListWidget(BaseListWidget):
 
     def CancleWaifu2xPicture(self, index):
         widget = self.indexWidget(index)
+        assert isinstance(widget, ComicItemWidget)
         if widget.isWaifu2x and widget.picData:
             widget.SetPicture(widget.picData)
 
     def Waifu2xPictureBack(self, data, waifuId, index, tick):
         widget = self.indexWidget(index)
         if data and widget:
+            assert isinstance(widget, ComicItemWidget)
             widget.SetWaifu2xData(data)
         return
 

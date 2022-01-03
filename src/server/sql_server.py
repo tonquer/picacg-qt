@@ -14,6 +14,7 @@ from tools.book import BookMgr
 from tools.langconv import Converter
 from tools.log import Log
 from tools.singleton import Singleton
+from tools.status import Status
 from tools.user import User
 
 
@@ -52,6 +53,7 @@ class SqlServer(Singleton):
     TaskTypeSelectUpdate = 102
     TaskTypeSelectFavorite = 103
     TaskTypeCacheBook = 104
+    TaskTypeSelectBookNum = 105    # 查询分类数量
     TaskTypeUpdateBook = 2
     TaskTypeUpdateFavorite= 3
     TaskTypeClose = 4
@@ -131,6 +133,8 @@ class SqlServer(Singleton):
                     self._SelectFavoriteIds(conn, data, backId)
                 elif taskType == self.TaskTypeCacheBook:
                     self._SelectCacheBook(conn, data, backId)
+                elif taskType == self.TaskTypeSelectBookNum:
+                    self._SelectBookNum(conn, data, backId)
                 elif taskType == self.TaskTypeUpdateFavorite:
                     self._UpdateFavorite(conn, data, backId)
                 elif taskType == self.TaskTypeUpdateBook:
@@ -170,6 +174,19 @@ class SqlServer(Singleton):
             info.totalViews = data[18]
             books.append(info)
         data = pickle.dumps(books)
+        if backId:
+            TaskSql().taskObj.sqlBack.emit(backId, data)
+
+    def _SelectBookNum(self, conn, sql, backId):
+        cur = conn.cursor()
+        from tools.category import CateGoryMgr
+        nums = {}
+        for v in CateGoryMgr().allCategorise:
+            text = Converter('zh-hans').convert(v)
+            cur.execute(sql + " and categories like '%{}%'".format(text))
+            for data in cur.fetchall():
+                nums[text] = data[0]
+        data = pickle.dumps(nums)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -218,6 +235,7 @@ class SqlServer(Singleton):
         cur = conn.cursor()
         cur.execute("select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book where id ='{}'".format(bookId))
+        v = {}
         allFavoriteIds = []
         for data in cur.fetchall():
             info = DbBook()
@@ -242,7 +260,9 @@ class SqlServer(Singleton):
             info.totalViews = data[18]
             BookMgr().AddBookByDb(info)
             allFavoriteIds.append(info)
-        data = pickle.dumps(allFavoriteIds)
+        v["bookList"] = allFavoriteIds
+        v["st"] = Status.Ok
+        data = pickle.dumps(v)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -317,8 +337,9 @@ class SqlServer(Singleton):
         return sql
 
     @staticmethod
-    def Search(wordList, isTitle, isAutor, isDes, isTag, isCategory, isCreator, page, sortKey=0, sortId=0):
+    def Search(wordList, isTitle, isAutor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
         data = ""
+        sql2Data = ""
         wordList2 = wordList.split("|")
         for words in wordList2:
             data2 = ""
@@ -343,14 +364,32 @@ class SqlServer(Singleton):
                 data3 = data3.strip("or ")
                 data2 += "({}) and ".format(data3)
             data2 = data2.strip("and ")
+
+            data4 = ""
+            if categorys:
+                for category in categorys:
+                    data4 += " categories like '%{}%' or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
+            data4 = data4.strip("or ")
+
             if data2:
-                data += " or ({})".format(data2)
+                if data4:
+                    data += " or ({} and ({}))".format(data2, data4)
+                else:
+                    data += " or ({})".format(data2)
+                sql2Data += " or ({})".format(data2)
+
         if data:
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 0 {}".format(data)
         else:
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 1 "
+
+        if sql2Data:
+            sql2Data = "SELECT count(*) FROM book WHERE 0 {}".format(sql2Data)
+        else:
+            sql2Data = "SELECT count(*) FROM book WHERE 1 "
+
         if sortKey == 0:
             sql += "ORDER BY updated_at "
         elif sortKey == 1:
@@ -369,7 +408,7 @@ class SqlServer(Singleton):
         else:
             sql += "ASC"
         sql += "  limit {},{};".format((page-1)*20, 20)
-        return sql
+        return sql, sql2Data
 
     @staticmethod
     def SaveCacheWord():

@@ -1,9 +1,10 @@
 import re
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QEvent, Qt, QSize
+from PySide6.QtCore import QEvent, Qt, QSize, Signal
 from PySide6.QtGui import QPixmap, QIcon
 
+from config import config
 from interface.ui_comment_item import Ui_CommentItem
 from qt_owner import QtOwner
 from tools.log import Log
@@ -11,6 +12,8 @@ from tools.str import Str
 
 
 class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
+    PicLoad = Signal(int)
+
     def __init__(self, parent):
         super(self.__class__, self).__init__(parent)
         Ui_CommentItem.__init__(self)
@@ -19,6 +22,8 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         self.id = ""
         self.url = ""
         self.path = ""
+        self.character = ""
+        self.index = 0
         self.isGame = False
 
         self.picIcon.setCursor(Qt.PointingHandCursor)
@@ -52,6 +57,7 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         # self.killButton.setIcon(QIcon(p.scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)))
         self.killButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.killButton.setCursor(Qt.PointingHandCursor)
+        self.isLoadPicture = False
 
     def SetLike(self, isLike=True):
         p = QPixmap()
@@ -104,3 +110,8 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         except Exception as es:
             Log.Error(es)
         return
+
+    def paintEvent(self, event) -> None:
+        if self.url and not self.isLoadPicture and config.IsLoadingPicture:
+            self.isLoadPicture = True
+            self.PicLoad.emit(self.index)

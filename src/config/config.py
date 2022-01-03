@@ -13,6 +13,7 @@ Uuid = "defaultUuid"
 
 ThreadNum = 10                 # 线程
 DownloadThreadNum = 5          # 下载线程
+ConvertThreadNum = 3           # 同时转换数量
 ChatSavePath = "chat"
 SavePathDir = "commies"        # 下载目录
 ResetCnt = 5                   # 下载重试次数
@@ -26,19 +27,21 @@ PreLook = 4                    # 预显示
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-qt/releases/latest"
-UpdateUrlBack = "https://hub.fastgit.org/tonquer/picacg-qt/releases/latest"
-UpdateUrl2 = "https://github.com/tonquer/picacg-qt/releases"
-UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-qt/releases"
+UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
+UpdateUrl2 = "https://hub.fastgit.org/tonquer/picacg-qt/releases/latest"
+UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-qt"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data/"
 
 DatabaseUpdate2 = "https://gitee.com/bika-robot/picacg-database/raw/main/version.txt"
 DatabaseDownload2 = "https://gitee.com/bika-robot/picacg-database/raw/main/data/"
-UpdateVersion = "v1.3.1"
-RealVersion = "v1.3.1"
+UpdateVersion = "v1.3.2"
+RealVersion = "v1.3.2"
+TimeVersion = "2022-1-3"
 
 Waifu2xVersion = "1.1.1"
+
 
 # waifu2x
 CanWaifu2x = True

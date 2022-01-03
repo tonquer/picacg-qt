@@ -172,7 +172,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                 url2 = creator.get("avatar", {}).get("fileServer")
                 path2 = creator.get("avatar", {}).get("path")
                 if url2:
-                    self.AddDownloadTask(url2, path2, None, self.LoadingPictureComplete)
+                    self.AddDownloadTask(url2, path2, completeCallBack=self.LoadingPictureComplete)
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
             QtOwner().ShowError(Str.GetStr(st))
@@ -315,14 +315,14 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.startRead.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
             return
 
-        if self.lastEpsId >= 0:
-            item = self.epsListWidget.item(self.lastEpsId)
-            if item:
-                downloadIds = QtOwner().downloadView.GetDownloadCompleteEpsId(self.bookId)
-                if self.lastEpsId in downloadIds:
-                    item.setBackground(QColor(18, 161, 130))
-                else:
-                    item.setBackground(QColor(0, 0, 0, 0))
+        # if self.lastEpsId >= 0:
+        #     item = self.epsListWidget.item(self.lastEpsId)
+        #     if item:
+        #         downloadIds = QtOwner().downloadView.GetDownloadCompleteEpsId(self.bookId)
+        #         if self.lastEpsId in downloadIds:
+        #             item.setBackground(QColor(18, 161, 130))
+        #         else:
+        #             item.setBackground(QColor(0, 0, 0, 0))
 
         item = self.epsListWidget.item(info.epsId)
         if not item:
@@ -341,13 +341,13 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def ClickAutorItem(self, item):
         text = item.text()
         # QtOwner().owner.searchForm.SearchAutor(text)
-        QtOwner().OpenSearch(text, None, False, False, False, False, True)
+        QtOwner().OpenSearch(text, True, False, False, False, False, True, False)
         return
 
     def ClickTagsItem(self, item):
         text = item.text()
         # QtOwner().owner.searchForm.SearchTags(text)
-        QtOwner().OpenSearch(text, None, False, False, False, True, False)
+        QtOwner().OpenSearch(text, True, False, False, False, True, False, False)
         return
 
     def eventFilter(self, obj, event):
@@ -359,8 +359,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                 elif obj == self.user_icon:
                     if self.userIconData:
                         QtOwner().OpenWaifu2xTool(self.userIconData)
-                # elif obj == self.user_name:
-                #     QtOwner().owner.searchForm.SearchCreator(self.user_name.text())
+                elif obj == self.user_name:
+                    QtOwner().OpenSearchByCreate(self.user_name.text())
                 return True
             else:
                 return False

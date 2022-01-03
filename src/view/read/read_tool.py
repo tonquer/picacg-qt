@@ -166,15 +166,15 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             self._NextPage()
 
     def _NextPage(self):
-        # epsId = self.readImg.epsId
-        # bookId = self.readImg.bookId
-        # bookInfo = BookMgr().books.get(bookId)
+        epsId = self.readImg.epsId
+        bookId = self.readImg.bookId
+        bookInfo = BookMgr().books.get(bookId)
 
-        if self.curIndex >= self.maxPic -1:
-            # if epsId + 1 < len(bookInfo.eps):
-            #     QtMsgLabel.ShowMsgEx(self.readImg, Str.GetStr(Str.AutoSkipNext))
-            #     self.OpenNextEps()
-            #     return
+        if self.curIndex >= self.maxPic - 1:
+            if epsId + 1 < len(bookInfo.eps):
+                QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
+                self.OpenNextEps()
+                return
             self.CloseScrollAndTurn()
             QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
             return
@@ -317,7 +317,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         epsInfo = bookInfo.eps[epsId]
         self.readImg.AddHistory()
         QtOwner().bookInfoView.LoadHistory()
-        self.readImg.OpenPage(bookId, epsId, epsInfo.title, True)
+        self.readImg.OpenPage(bookId, epsId, epsInfo.title)
         return
 
     def OpenNextEps(self):

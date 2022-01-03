@@ -120,8 +120,8 @@ class QtOwner(Singleton):
         self.owner.subCommentView.SetWidget(widget)
         self.owner.SwitchWidget(self.owner.subCommentView, **arg)
 
-    def OpenSearch(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor):
-        arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor}
+    def OpenSearch(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor, isUpLoad):
+        arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor, "isUpLoad": isUpLoad}
         self.owner.SwitchWidget(self.owner.searchView, **arg)
 
     def OpenSearchByText(self, text):
@@ -137,6 +137,10 @@ class QtOwner(Singleton):
 
     def OpenSearchByCategory(self, categories):
         arg = {"categories": categories}
+        self.owner.SwitchWidget(self.owner.searchView, **arg)
+
+    def OpenSearchByCreate(self, text):
+        arg = {"text": text, "isTitle": False, "isDes": False, "isCategory": False, "isTag":False, "isAuthor": False, "isUpLoad": True}
         self.owner.SwitchWidget(self.owner.searchView, **arg)
 
     def OpenBookInfo(self, bookId):

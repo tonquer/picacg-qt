@@ -262,7 +262,7 @@ QScrollArea {background-color:transparent;}</string>
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QLabel" name="label_10">
+                <widget class="QLabel" name="upTimeLabel">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>

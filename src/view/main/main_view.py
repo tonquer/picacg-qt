@@ -40,9 +40,9 @@ class MainView(Main, QtTaskBase):
             desktop = screens[Setting.ScreenIndex.value].geometry()
 
         self.adjustSize()
-        # self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-        # self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
-        # print(desktop.size(), self.size())
+        self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+        self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
+        print(desktop.size(), self.size())
         self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.loadingDialog = LoadingDialog(self)
@@ -127,6 +127,7 @@ class MainView(Main, QtTaskBase):
 
     def Init(self):
         IsCanUse = False
+        self.downloadView.Init()
         if config.CanWaifu2x:
             from waifu2x_vulkan import waifu2x_vulkan
             

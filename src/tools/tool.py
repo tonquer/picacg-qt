@@ -306,6 +306,16 @@ class ToolUtil(object):
         return None
 
     @staticmethod
+    def IsHaveFile(filePath):
+        try:
+            if os.path.isfile(filePath):
+                return True
+            return False
+        except Exception as es:
+            Log.Error(es)
+        return False
+
+    @staticmethod
     def DiffDays(d1, d2):
         return (int(d1 - time.timezone) // 86400) - (int(d2 - time.timezone) // 86400)
 

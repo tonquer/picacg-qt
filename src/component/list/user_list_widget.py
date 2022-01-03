@@ -70,6 +70,7 @@ class UserListWidget(BaseListWidget):
 
         index = self.count()
         iwidget = CommentItemWidget(self)
+        iwidget.index = index
         iwidget.setFocusPolicy(Qt.NoFocus)
         if isinstance(info.get("_comic"), dict):
             iwidget.linkId = info.get("_comic").get("_id")
@@ -110,6 +111,7 @@ class UserListWidget(BaseListWidget):
         iwidget.titleLabel.setText(" " + title + " ")
         iwidget.url = url
         iwidget.path = path
+        iwidget.character = character
         dayStr = ToolUtil.GetUpdateStr(createdTime)
         iwidget.dateLabel.setText(dayStr)
         iwidget.indexLabel.setText("{}".format(str(floor))+Str.GetStr(Str.Floor))
@@ -118,10 +120,19 @@ class UserListWidget(BaseListWidget):
         item.setSizeHint(iwidget.sizeHint())
         item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
         self.setItemWidget(item, iwidget)
-        if url and config.IsLoadingPicture:
-            self.AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True)
-        if "pica-web.wakamoment.tk" not in character and character and config.IsLoadingPicture:
-            self.AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, index, True)
+        iwidget.PicLoad.connect(self.LoadingPicture)
+        # if url and config.IsLoadingPicture:
+        #     self.AddDownloadTask(url, path, completeCallBack=self.LoadingPictureComplete, backParam=index)
+        # if "pica-web.wakamoment.tk" not in character and character and config.IsLoadingPicture:
+        #     self.AddDownloadTask(character, "", completeCallBack=self.LoadingHeadComplete, backParam=index)
+
+    def LoadingPicture(self, index):
+        item = self.item(index)
+        widget = self.itemWidget(item)
+        assert isinstance(widget, CommentItemWidget)
+        self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=index)
+        if "pica-web.wakamoment.tk" not in widget.character and widget.character and config.IsLoadingPicture:
+            self.AddDownloadTask(widget.character, "", completeCallBack=self.LoadingHeadComplete, backParam=index)
 
     def AddUserKindItem(self, info, floor):
         content = info.get("slogan", "")
@@ -149,6 +160,8 @@ class UserListWidget(BaseListWidget):
         iwidget.nameLabel.installEventFilter(iwidget)
         iwidget.setToolTip(info.get("slogan", ""))
         iwidget.id = commnetId
+        iwidget.index = index
+        iwidget.character = character
         iwidget.dateLabel.hide()
         iwidget.starButton.setCheckable(False)
         iwidget.commentButton.hide()
@@ -160,14 +173,10 @@ class UserListWidget(BaseListWidget):
         iwidget.url = url
         iwidget.path = path
         iwidget.indexLabel.setText(Str.GetStr(Str.The)+"{}".format(str(floor)))
-
+        iwidget.PicLoad.connect(self.LoadingPicture)
         item = QListWidgetItem(self)
         item.setSizeHint(iwidget.sizeHint())
         self.setItemWidget(item, iwidget)
-        if url and config.IsLoadingPicture:
-            self.AddDownloadTask(url, path, None, self.LoadingPictureComplete, True, index, True)
-        if "pica-web.wakamoment.tk" not in character and config.IsLoadingPicture:
-            self.AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, index, True)
 
     def LoadingPictureComplete(self, data, status, index):
         if status == Status.Ok:

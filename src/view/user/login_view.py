@@ -30,6 +30,7 @@ class LoginView(BaseMaskDialog, Ui_Login, QtTaskBase):
         passwd = base64.b64decode(passwd).decode("utf-8") if passwd else ""
         if passwd and isinstance(passwd, str):
             self.loginWidget.passwdEdit_2.setText(passwd)
+        self.closeButton.clicked.connect(self.close)
 
     @property
     def loginWidget(self):

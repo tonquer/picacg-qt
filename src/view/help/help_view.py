@@ -38,11 +38,13 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.verCheck.clicked.connect(self.InitUpdate)
 
         self.updateUrl = [config.UpdateUrl, config.UpdateUrl2]
+        self.updateBackUrl = [config.UpdateUrlBack, config.UpdateUrl2Back]
         self.checkUpdateIndex = 0
 
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)
         self.version.setText(config.RealVersion)
+        self.upTimeLabel.setText(config.TimeVersion)
         self.waifu2x.setText(config.Waifu2xVersion)
 
     def Init(self):
@@ -71,7 +73,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             r = QMessageBox.information(self, Str.GetStr(Str.Update), Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n" + data,
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
             if r == QMessageBox.Yes:
-                QDesktopServices.openUrl(QUrl(self.updateUrl[self.checkUpdateIndex]))
+                QDesktopServices.openUrl(QUrl(self.updateBackUrl[self.checkUpdateIndex]))
             self.UpdateText(self.verCheck, Str.HaveUpdate, "#d71345", True)
         except Exception as es:
             Log.Error(es)

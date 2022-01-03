@@ -290,12 +290,12 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         url = data.get("avatar")
         if url and config.IsLoadingPicture:
             if isinstance(url, dict):
-                self.AddDownloadTask(url.get("fileServer"), url.get("path"), None, self.LoadingPictureComplete, True, self.indexMsgId, True)
+                self.AddDownloadTask(url.get("fileServer"), url.get("path"), completeCallBack=self.LoadingPictureComplete, backParam=self.indexMsgId)
             else:
-                self.AddDownloadTask(url, "", None, self.LoadingPictureComplete, True, self.indexMsgId, True)
+                self.AddDownloadTask(url, "", completeCallBack=self.LoadingPictureComplete, backParam=self.indexMsgId)
         character = data.get("character", "")
         if "pica-web.wakamoment.tk" not in character and character and config.IsLoadingPicture:
-            self.AddDownloadTask(character, "", None, self.LoadingHeadComplete, True, self.indexMsgId, True)
+            self.AddDownloadTask(character, "", completeCallBack=self.LoadingHeadComplete, backParam=self.indexMsgId)
         self.verticalLayout_2.addWidget(info)
         self.msgInfo[self.indexMsgId] = info
         self.indexMsgId += 1

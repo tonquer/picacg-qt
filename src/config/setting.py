@@ -97,7 +97,7 @@ class Setting:
     LookScale = SettingValue("Waifu2xSetting", 2.0, False)
 
     DownloadAuto = SettingValue("Waifu2xSetting", 0, False)
-    DownloadModel = SettingValue("Waifu2xSetting", 0, False)
+    DownloadModel = SettingValue("Waifu2xSetting", 1, False)
     DownloadNoise = SettingValue("Waifu2xSetting", 3, False)
     DownloadScale = SettingValue("Waifu2xSetting", 2.0, False)
 

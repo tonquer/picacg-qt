@@ -28,6 +28,12 @@ class Str:
     SetHeadError = 1012    # "头像设置出错了, 请尽量选择500kb以下的图片，"
     UnderReviewBook = 1013  # "本子审核中"
     NotLogin = 1014         # "未登录"
+    SaveError = 1015         # "保存出错"
+    Cache = 1016         # "缓存"
+    AddError = 1017         # "Add错误"
+    PathError = 1018         # "路径错误"
+    FileError = 1019         # "未发现源文件"
+    FileFormatError = 1020   # "文件损坏"
 
     Success = 2001         # "下载完成"
     Reading = 2002         # "获取信息"
@@ -175,6 +181,9 @@ class Str:
     Change = 121                   # 更改
     SwitchSite = 122               # 表里切换
     DelFavoriteSuc = 123           # 删除收藏成功
+    AllComment = 124               # 所有评论
+    SelectAll = 125                # 全选
+    NotSelectAll = 126             # 反选
 
     @classmethod
     def Reload(cls):
@@ -194,6 +203,12 @@ class Str:
         cls.strDict[cls.SetHeadError] = QCoreApplication.translate("cls.obj",  "头像设置出错了, 请尽量选择500kb以下的图片", None)
         cls.strDict[cls.UnderReviewBook] = QCoreApplication.translate("cls.obj",  "本子审核中", None)
         cls.strDict[cls.NotLogin] = QCoreApplication.translate("cls.obj",  "未登录", None)
+        cls.strDict[cls.SaveError] = QCoreApplication.translate("cls.obj",  "保存出错", None)
+        cls.strDict[cls.Cache] = QCoreApplication.translate("cls.obj",  "缓存", None)
+        cls.strDict[cls.AddError] = QCoreApplication.translate("cls.obj",  "Add错误", None)
+        cls.strDict[cls.PathError] = QCoreApplication.translate("cls.obj",  "路径错误", None)
+        cls.strDict[cls.FileError] = QCoreApplication.translate("cls.obj",  "未发现源文件", None)
+        cls.strDict[cls.FileFormatError] = QCoreApplication.translate("cls.obj",  "文件损坏", None)
 
         cls.strDict[cls.LoadingPicture] = QCoreApplication.translate("cls.obj",  "图片加载中...", None)
         cls.strDict[cls.LoadingFail] = QCoreApplication.translate("cls.obj",  "图片加载失败", None)
@@ -338,6 +353,9 @@ class Str:
         cls.strDict[cls.Change] = QCoreApplication.translate("cls.obj",  "更改", None)
         cls.strDict[cls.SwitchSite] = QCoreApplication.translate("cls.obj",  "表里切换", None)
         cls.strDict[cls.DelFavoriteSuc] = QCoreApplication.translate("cls.obj",  "删除收藏成功", None)
+        cls.strDict[cls.AllComment] = QCoreApplication.translate("cls.obj",  "所有评论", None)
+        cls.strDict[cls.SelectAll] = QCoreApplication.translate("cls.obj",  "全选", None)
+        cls.strDict[cls.NotSelectAll] = QCoreApplication.translate("cls.obj",  "反选", None)
 
     @classmethod
     def GetStr(cls, enumType):

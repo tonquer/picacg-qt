@@ -53,6 +53,9 @@ class BookMgr(Singleton):
         from server.server import Server
         return Server()
 
+    def GetBook(self, bookId):
+        return self.books.get(bookId)
+
     def AddBookByIdBack(self, backData):
         if backData.status != Status.Ok:
             return backData.status

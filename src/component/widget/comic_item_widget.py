@@ -1,13 +1,16 @@
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtGui import QPixmap, QIcon, QFont
 from PySide6.QtWidgets import QWidget
 
+from config import config
 from config.setting import Setting
 from interface.ui_comic_item import Ui_ComicItem
 from tools.str import Str
 
 
 class ComicItemWidget(QWidget, Ui_ComicItem):
+    PicLoad = Signal(int)
+
     def __init__(self, isCategory=False):
         QWidget.__init__(self)
         Ui_ComicItem.__init__(self)
@@ -16,6 +19,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.id = ""
         self.url = ""
         self.path = ""
+        self.index = 0
         # TODO 如何自适应
         if not isCategory:
             rate = Setting.CoverSize.value
@@ -58,6 +62,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.adjustSize()
         self.isWaifu2x = False
         self.isWaifu2xLoading = False
+        self.isLoadPicture = False
 
     def GetTitle(self):
         return self.nameLable.text()
@@ -89,3 +94,8 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
 
     def SetPictureErr(self):
         self.picLabel.setText(Str.GetStr(Str.LoadingFail))
+
+    def paintEvent(self, event) -> None:
+        if self.url and not self.isLoadPicture and config.IsLoadingPicture:
+            self.isLoadPicture = True
+            self.PicLoad.emit(self.index)

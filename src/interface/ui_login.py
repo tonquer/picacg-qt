@@ -59,6 +59,12 @@ class Ui_Login(object):
 
         self.horizontalLayout_3.addWidget(self.loginButton)
 
+        self.closeButton = QPushButton(Login)
+        self.closeButton.setObjectName(u"closeButton")
+        self.closeButton.setMaximumSize(QSize(150, 30))
+
+        self.horizontalLayout_3.addWidget(self.closeButton)
+
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
 
@@ -80,5 +86,6 @@ class Ui_Login(object):
 #if QT_CONFIG(shortcut)
         self.loginButton.setShortcut(QCoreApplication.translate("Login", u"Return", None))
 #endif // QT_CONFIG(shortcut)
+        self.closeButton.setText(QCoreApplication.translate("Login", u"\u5173\u95ed", None))
     # retranslateUi
 

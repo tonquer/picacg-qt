@@ -28,7 +28,7 @@ class Ui_Search(object):
     def setupUi(self, Search):
         if not Search.objectName():
             Search.setObjectName(u"Search")
-        Search.resize(740, 369)
+        Search.resize(740, 459)
         Search.setMinimumSize(QSize(80, 0))
         self.verticalLayout = QVBoxLayout(Search)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -79,6 +79,56 @@ class Ui_Search(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_3 = QLabel(Search)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setMinimumSize(QSize(80, 40))
+
+        self.horizontalLayout_6.addWidget(self.label_3)
+
+        self.unfoldButton = QPushButton(Search)
+        self.unfoldButton.setObjectName(u"unfoldButton")
+
+        self.horizontalLayout_6.addWidget(self.unfoldButton)
+
+        self.selectAllButton = QPushButton(Search)
+        self.selectAllButton.setObjectName(u"selectAllButton")
+
+        self.horizontalLayout_6.addWidget(self.selectAllButton)
+
+        self.saveButton = QPushButton(Search)
+        self.saveButton.setObjectName(u"saveButton")
+
+        self.horizontalLayout_6.addWidget(self.saveButton)
+
+        self.categoryNum = QLabel(Search)
+        self.categoryNum.setObjectName(u"categoryNum")
+
+        self.horizontalLayout_6.addWidget(self.categoryNum)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
+
+        self.widget = QWidget(Search)
+        self.widget.setObjectName(u"widget")
+
+        self.verticalLayout_2.addWidget(self.widget)
+
+
+        self.horizontalLayout_4.addLayout(self.verticalLayout_2)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
 
         self.bookList = ComicListWidget(Search)
         self.bookList.setObjectName(u"bookList")
@@ -179,6 +229,11 @@ class Ui_Search(object):
         self.label_2.setText(QCoreApplication.translate("Search", u"\u641c\u7d22\uff1a", None))
         self.searchButton.setText(QCoreApplication.translate("Search", u"\u641c\u7d22", None))
         self.label_4.setText(QCoreApplication.translate("Search", u"\u5c4f\u853d\uff1a", None))
+        self.label_3.setText(QCoreApplication.translate("Search", u"\u5206\u7c7b\u8fc7\u6ee4\uff1a", None))
+        self.unfoldButton.setText(QCoreApplication.translate("Search", u"\u5c55\u5f00", None))
+        self.selectAllButton.setText(QCoreApplication.translate("Search", u"\u5168\u9009", None))
+        self.saveButton.setText(QCoreApplication.translate("Search", u"\u786e\u5b9a", None))
+        self.categoryNum.setText("")
         self.sortKey.setItemText(0, QCoreApplication.translate("Search", u"\u66f4\u65b0\u65f6\u95f4", None))
         self.sortKey.setItemText(1, QCoreApplication.translate("Search", u"\u521b\u5efa\u65f6\u95f4", None))
         self.sortKey.setItemText(2, QCoreApplication.translate("Search", u"\u7231\u5fc3\u6570", None))

@@ -1,8 +1,9 @@
+import os
 from functools import partial
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPixmap, QImage, QCursor, QGuiApplication
+from PySide6.QtGui import QPixmap, QImage, QCursor
 from PySide6.QtWidgets import QMenu
 
 from config import config
@@ -12,7 +13,7 @@ from server import req, Status, Log
 from task.qt_task import QtTaskBase
 from tools.book import BookMgr
 from tools.str import Str
-from tools.tool import time_me
+from tools.tool import time_me, ToolUtil
 from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_frame import ReadFrame
 
@@ -23,6 +24,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         super(self.__class__, self).__init__()
         QtTaskBase.__init__(self)
         self.bookId = ""
+        self.token = ""
         self.epsId = 0
         self.resetCnt = config.ResetCnt
         self.curIndex = 0
@@ -40,12 +42,11 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         # self.gridLayout.addWidget(self.scrollArea)
         self.gridLayout.addWidget(self.frame)
         self.setMinimumSize(300, 300)
-        self.setWindowFlags(self.windowFlags() & ~ Qt.WindowMaximizeButtonHint & ~ Qt.WindowMinimizeButtonHint)
         self.category = []
         self.isInit = False
         self.epsName = ""
 
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenu)
         self.isShowMenu = False
 
@@ -53,6 +54,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.ChangeReadMode(Setting.LookReadMode.value)
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
         self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
+        self.pageIndex = -1
 
     @property
     def scrollArea(self):
@@ -129,7 +131,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         return self.frame.qtTool
 
     def Close(self):
-        QtOwner().SetSubTitle("")
         self.ReturnPage()
         self.frame.scrollArea.ClearPixItem()
         self.Clear()
@@ -149,61 +150,41 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.curIndex = 0
         self.frame.oldValue = 0
         self.pictureData.clear()
+        QtOwner().SetSubTitle("")
         self.ClearTask()
+        self.ClearDownload()
         self.ClearQImageTask()
 
-    def OpenPage(self, bookId, epsId, name, isLastEps=False, pageIndex=-1):
+    def OpenPage(self, bookId, epsId, name, pageIndex=-1):
         if not bookId:
             return
         self.Clear()
         info = BookMgr().books.get(bookId)
         if info:
-            self.category = info.tags[:]
-            self.category.extend(info.categories)
+            self.category = info.categories[::]
 
         self.qtTool.checkBox.setChecked(Setting.IsOpenWaifu.value)
         self.qtTool.SetData(isInit=True)
-        # self.graphicsGroup.setPixmap(QPixmap())
         self.qtTool.SetData()
 
         # self.qtTool.show()
         self.bookId = bookId
         self.epsId = epsId
+        self.pageIndex = pageIndex
 
         if Setting.LookReadFull.value:
             QtOwner().owner.showFullScreen()
             self.qtTool.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
 
-        # if not self.isInit:
-        #     desktop = QGuiApplication.primaryScreen().geometry()
-        #     self.resize(desktop.width() // 4 * 3, desktop.height() - 100)
-        #     self.move(desktop.width() // 8, 0)
-        #     self.isInit = True
-        # historyInfo = QtOwner().historyView.GetHistory(bookId)
-        # if historyInfo and historyInfo.epsId == epsId:
-        #     self.curIndex = historyInfo.picIndex
-
-        # self.AddHistory()
-        # self.AddHistory()
         self.epsName = name
         QtOwner().ShowLoading()
-        self.StartLoadPicUrl(isLastEps, pageIndex)
-        QtOwner().SetSubTitle(self.epsName)
-        # self.show()
 
-        # if config.LookReadFull:
-        #     self.showFullScreen()
-        #     self.qtTool.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
-        # else:
-        #     self.showNormal()
-        #     self.qtTool.fullButton.setText(Str.GetStr(Str.FullScreen))
+        # 开始加载
+        self.InitDownload()
 
         if config.IsTips:
             config.IsTips = 0
             self.frame.InitHelp()
-
-    def StartLoadPicUrl(self, isLastEps=False, pageIndex=-1):
-        self.AddHttpTask(req.GetComicsBookOrderReq(self.bookId, self.epsId+1), self.StartLoadPicUrlBack, (isLastEps, pageIndex))
 
     def ReturnPage(self):
         self.AddHistory()
@@ -215,6 +196,9 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         newDict = {}
         needUp = False
         removeTaskIds = []
+
+        if not self.maxPic:
+            return
 
         preLoadList = list(range(self.curIndex, self.curIndex + config.PreLoading))
 
@@ -242,12 +226,9 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             if i >= self.maxPic or i < 0:
                 continue
 
-            bookInfo = BookMgr().books.get(self.bookId)
-            epsInfo = bookInfo.eps[self.epsId]
-            picInfo = epsInfo.pics[i]
             p = self.pictureData.get(i)
             if not p:
-                self.AddDownload(i, picInfo)
+                self.AddDownload(i)
                 break
             elif p.state == p.Downloading or p.state == p.DownloadReset:
                 break
@@ -261,36 +242,32 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                     break
                 if p.waifuState == p.WaifuStateCancle or p.waifuState == p.WaifuWait:
                     p.waifuState = p.WaifuStateStart
-                    bookInfo = BookMgr().books.get(self.bookId)
-                    epsInfo = bookInfo.eps[self.epsId]
-                    picInfo = epsInfo.pics[i]
-                    self.AddCovertData(picInfo, i)
+                    self.AddCovertData(i)
                     break
                 if p.waifuState == p.WaifuStateStart:
                     break
         pass
 
     def StartLoadPicUrlBack(self, raw, v):
-        isLastEps, pageIndex = v
         st = raw["st"]
-        if st != Status.Ok:
-            self.StartLoadPicUrl(isLastEps, pageIndex)
-        else:
-            bookInfo = BookMgr().books.get(self.bookId)
-            epsInfo = bookInfo.eps[self.epsId]
-            self.maxPic = len(epsInfo.pics)
+        if st == Status.Error:
+            QtOwner().ShowError(Str.GetStr(st))
+            return
+        maxPic = raw.get("maxPic")
+        if not maxPic or self.maxPic > 0:
+            return
+        self.maxPic = maxPic
+        # info = BookMgr().GetBook(self.bookId)
 
-            if isLastEps:
-                self.curIndex = self.maxPic - 1
-            elif 0 < pageIndex < self.maxPic:
-                self.curIndex = pageIndex
-                QtOwner().ShowMsg(Str.GetStr(Str.ContinueRead) + str(pageIndex + 1) + Str.GetStr(Str.Page))
+        if 0 < self.pageIndex < self.maxPic:
+            self.curIndex = self.pageIndex
+            QtOwner().ShowMsg(Str.GetStr(Str.ContinueRead) + str(self.pageIndex + 1) + Str.GetStr(Str.Page))
 
-            self.AddHistory()
-            self.scrollArea.InitAllQLabel(self.maxPic, self.curIndex)
-            self.qtTool.UpdateSlider()
-            self.CheckLoadPicture()
-            self.qtTool.InitSlider(self.maxPic)
+        self.AddHistory()
+        self.scrollArea.InitAllQLabel(self.maxPic, self.curIndex)
+        self.qtTool.UpdateSlider()
+        self.CheckLoadPicture()
+        self.qtTool.InitSlider(self.maxPic)
 
         return
 
@@ -313,25 +290,13 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if not p:
             p = QtFileData()
             self.pictureData[index] = p
-        bookInfo = BookMgr().books.get(self.bookId)
-        epsInfo = bookInfo.eps[self.epsId]
-        picInfo = epsInfo.pics[index]
         if st != Status.Ok:
             p.state = p.DownloadReset
-            self.AddDownload(index, picInfo)
+            self.AddDownload(index)
         else:
             p.SetData(data, self.category)
             self.AddQImageTask(data, self.ConvertQImageBack, index)
             self.CheckLoadPicture()
-            # if index == self.curIndex:
-            #     # self.ShowImg()
-            #     pass
-            # elif self.stripModel and self.curIndex < index <= self.curIndex + 2:
-            #     # self.ShowOtherPage()
-            #     self.CheckLoadPicture()
-            # else:
-            #     self.CheckLoadPicture()
-            # return
 
     def ConvertQImageBack(self, data, index):
         assert isinstance(data, QImage)
@@ -485,23 +450,28 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.ShowOtherPage()
         return
 
-    def AddCovertData(self, picInfo, i):
-        info = self.pictureData.get(i)
+    def AddCovertData(self, i):
+        info = self.pictureData[i]
         if not info and info.data:
             return
         assert isinstance(info, QtFileData)
-        # path = QtOwner().owner.downloadForm.GetConvertFilePath(self.bookId, self.epsId, i)
-        info.waifu2xTaskId = self.AddConvertTask(picInfo.path, info.data, info.model, self.Waifu2xBack, i)
+        path = "{}/{}/{}".format(self.bookId, self.epsId+1, i+1)
+        info.waifu2xTaskId = self.AddConvertTask(path, info.data, info.model, self.Waifu2xBack, i)
         if i == self.curIndex:
             self.qtTool.SetData(waifuState=info.waifuState)
             self.frame.waifu2xProcess.show()
 
-    def AddDownload(self, i, picInfo):
-        path = QtOwner().downloadView.GetDonwloadFilePath(self.bookId, self.epsId, i)
-        self.AddDownloadTask(picInfo.fileServer, picInfo.path,
+    def InitDownload(self):
+        self.AddDownloadBook(self.bookId, self.epsId, 0, statusBack=self.StartLoadPicUrlBack, backParam=0)
+
+    def AddDownload(self, i):
+        path = "{}/{}/{}.jpg".format(self.bookId, self.epsId+1, i+1)
+        cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.dirname(path))
+        loadPath = QtOwner().downloadView.GetDownloadFilePath(self.bookId, self.epsId, i)
+        self.AddDownloadBook(self.bookId, self.epsId, i,
                              downloadCallBack=self.UpdateProcessBar,
-                             completeCallBack=self.CompleteDownloadPic, backParam=i,
-                             isSaveCache=True, filePath=path)
+                             completeCallBack=self.CompleteDownloadPic,
+                             backParam=i, loadPath=loadPath, cachePath=cachePath)
         if i not in self.pictureData:
             data = QtFileData()
             self.pictureData[i] = data

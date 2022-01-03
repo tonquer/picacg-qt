@@ -95,6 +95,8 @@ class SearchLineEdit(QLineEdit):
         self.help.categoryWidget.setVisible(isLocal)
         self.help.authorLabel.setVisible(isLocal)
         self.help.authorWidget.setVisible(isLocal)
+        self.help.uploadLabel.setVisible(isLocal)
+        self.help.uploadWidget.setVisible(isLocal)
 
     def SetText(self, index):
         item = self.model.itemData(index)
@@ -176,7 +178,8 @@ class SearchLineEdit(QLineEdit):
         isCategory = self.help.categoryWidget.state
         isTag = self.help.tagWidget.state
         isAuthor = self.help.authorWidget.state
-        QtOwner().OpenSearch(text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor)
+        isUpLoad = self.help.uploadWidget.state
+        QtOwner().OpenSearch(text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor, isUpLoad)
         self.clearFocus()
         return
 

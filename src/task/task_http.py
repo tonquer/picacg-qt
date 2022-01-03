@@ -1,8 +1,16 @@
 import pickle
 from types import FunctionType
 
-from task.qt_task import TaskBase, QtHttpTask
+from task.qt_task import TaskBase
 from tools.log import Log
+
+
+class QtHttpTask(object):
+    def __init__(self, taskId):
+        self.taskId = taskId
+        self.callBack = None
+        self.backParam = None
+        self.cleanFlag = ""
 
 
 class TaskHttp(TaskBase):

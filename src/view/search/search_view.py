@@ -1,12 +1,15 @@
 import json
+from functools import partial
 
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QCheckBox
 
+from component.layout.flow_layout import FlowLayout
 from interface.ui_search import Ui_Search
 from qt_owner import QtOwner
 from server import req, Log, Status
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
+from tools.category import CateGoryMgr
 from tools.langconv import Converter
 from tools.str import Str
 
@@ -26,6 +29,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.isCategory = True
         self.isTag = True
         self.isAuthor = True
+        self.isUpLoad = True
         self.bookList.LoadCallBack = self.LoadNextPage
         self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
         self.InitCategoryList()
@@ -35,6 +39,63 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.sortKey.currentIndexChanged.connect(self.ChangeSort)
         self.sortId.currentIndexChanged.connect(self.ChangeSort)
         self.searchButton.clicked.connect(self.lineEdit.Search)
+
+        self.widget.hide()
+        self.selectAllButton.hide()
+        self.saveButton.hide()
+        self.unfoldButton.clicked.connect(partial(self.CheckShowWidget))
+        self.saveButton.clicked.connect(self.ClearAndSendSearch)
+        self.selectAllButton.clicked.connect(partial(self.CheckSelectAll))
+        self.flowLayout = FlowLayout(self.widget)
+        self.allBox = {}
+        self.isSelectAll = False
+        self.InitCategory()
+        self.lastText = "--1"
+
+    def InitCategory(self):
+        for categorory in CateGoryMgr().allCategorise:
+            text = Converter('zh-hans').convert(categorory)
+            box = QCheckBox(text)
+            box.setMinimumWidth(160)
+
+            self.allBox[text] = box
+            self.flowLayout.addWidget(box)
+
+    def GetSelectCategory(self):
+        if self.isSelectAll:
+            return []
+        else:
+            category = []
+            for k, box in self.allBox.items():
+                if box.isChecked():
+                    if self.isLocal:
+                        category.append(Converter('zh-hans').convert(k))
+                    else:
+                        category.append(Converter('zh-hant').convert(k))
+            return category
+
+    def CheckSelectAll(self):
+        self.isSelectAll = not self.isSelectAll
+        if self.isSelectAll:
+            self.selectAllButton.setText(Str.GetStr(Str.NotSelectAll))
+            for v in self.allBox.values():
+                v.setChecked(True)
+        else:
+            self.selectAllButton.setText(Str.GetStr(Str.SelectAll))
+            for v in self.allBox.values():
+                v.setChecked(False)
+        return
+
+    def CheckShowWidget(self):
+        if self.widget.isHidden():
+            self.widget.setVisible(True)
+            self.saveButton.setVisible(True)
+            self.selectAllButton.setVisible(True)
+        else:
+            self.widget.setVisible(False)
+            self.saveButton.setVisible(False)
+            self.selectAllButton.setVisible(False)
+        return
 
     def InitWord(self):
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectWord, self.InitWordBack)
@@ -75,6 +136,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.isCategory = kwargs.get("isCategory")
             self.isTag = kwargs.get("isTag")
             self.isAuthor = kwargs.get("isAuthor")
+            self.isUpLoad = kwargs.get("isUpLoad")
             self.lineEdit.AddCacheWord(self.text)
             self.SendSearch(1)
         pass
@@ -120,15 +182,50 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             Log.Error(es)
         pass
 
+    def ClearAndSendSearch(self):
+        self.bookList.page = 1
+        self.bookList.clear()
+        self.SendSearch(1)
+
     def SendSearch(self, page):
         QtOwner().ShowLoading()
-        if self.isLocal:
-            sql = SqlServer.Search(self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag, self.isCategory, False, page, self.sortKey.currentIndex(), self.sortId.currentIndex())
-            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
+        categorys = self.GetSelectCategory()
+        if len(categorys) > 0:
+            self.categoryNum.setText("已选择{}个分类".format(len(categorys)))
         else:
+            self.categoryNum.setText("")
+
+        if self.isLocal:
+            sql, sql2Data = SqlServer.Search(self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag, self.isCategory, self.isUpLoad, categorys, page, self.sortKey.currentIndex(), self.sortId.currentIndex())
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
+            if self.text != self.lastText:
+                self.lastText = self.text
+                self.ClearLocalNum()
+                self.AddSqlTask("book", sql2Data, SqlServer.TaskTypeSelectBookNum, callBack=self.SendLocalNumBack, backParam=self.text)
+        else:
+            self.ClearLocalNum()
+            self.lastText = "--1"
             sort = ["dd", "da", "ld", "vd"]
             sortId = sort[self.comboBox.currentIndex()]
-            self.AddHttpTask(req.AdvancedSearchReq(page, [], self.text, sortId), self.SendSearchBack)
+            self.AddHttpTask(req.AdvancedSearchReq(page, categorys, self.text, sortId), self.SendSearchBack)
+
+    def ClearLocalNum(self):
+        for k, v in self.allBox.items():
+            v.setText(k)
+        return
+
+    def SendLocalNumBack(self, nums, text):
+        if self.text != text:
+            return
+        for k, v in nums.items():
+            box = self.allBox.get(k)
+            if not k:
+                continue
+            if int(v) > 0:
+                box.setText("{}({})".format(k, v))
+            else:
+                box.setText("{}".format(k))
+        return
 
     def SendLocalBack(self, books, page):
         QtOwner().CloseLoading()

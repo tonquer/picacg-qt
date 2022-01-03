@@ -169,6 +169,27 @@ class Ui_LineEditHelp(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
 
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.uploadLabel = QLabel(LineEditHelp)
+        self.uploadLabel.setObjectName(u"uploadLabel")
+        self.uploadLabel.setMinimumSize(QSize(100, 0))
+
+        self.horizontalLayout_8.addWidget(self.uploadLabel)
+
+        self.uploadWidget = SwitchButton(LineEditHelp)
+        self.uploadWidget.setObjectName(u"uploadWidget")
+        self.uploadWidget.setMinimumSize(QSize(75, 20))
+
+        self.horizontalLayout_8.addWidget(self.uploadWidget)
+
+        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer_7)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_8)
+
 
         self.retranslateUi(LineEditHelp)
 
@@ -185,5 +206,6 @@ class Ui_LineEditHelp(object):
         self.categoryLabel.setText(QCoreApplication.translate("LineEditHelp", u"\u5206\u7c7b", None))
         self.tagLabel.setText(QCoreApplication.translate("LineEditHelp", u"TAG", None))
         self.authorLabel.setText(QCoreApplication.translate("LineEditHelp", u"\u4f5c\u8005", None))
+        self.uploadLabel.setText(QCoreApplication.translate("LineEditHelp", u"\u4e0a\u4f20\u8005", None))
     # retranslateUi
 
