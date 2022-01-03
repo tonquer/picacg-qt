@@ -577,7 +577,7 @@ QListWidget::item {
         </layout>
        </item>
        <item>
-        <widget class="BaseListWidget" name="epsListWidget">
+        <widget class="EpsListWidget" name="epsListWidget">
          <property name="styleSheet">
           <string notr="true">QListWidget {background-color:transparent;}
 QListWidget::item {
@@ -634,14 +634,14 @@ QListWidget::item {
    <header location="global">component.label.head_label.h</header>
   </customwidget>
   <customwidget>
-   <class>BaseListWidget</class>
-   <extends>QListWidget</extends>
-   <header location="global">component.list.base_list_widget.h</header>
-  </customwidget>
-  <customwidget>
    <class>IconToolButton</class>
    <extends>QToolButton</extends>
    <header location="global">component.button.icon_tool_button.h</header>
+  </customwidget>
+  <customwidget>
+   <class>EpsListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.eps_list_widget.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -154,6 +154,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
     def SendSearchCategories(self, page):
         sort = ["dd", "da", "ld", "vd"]
         QtOwner().ShowLoading()
+        self.ClearLocalNum()
         sortId = sort[self.comboBox.currentIndex()]
         self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
 
@@ -183,6 +184,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         pass
 
     def ClearAndSendSearch(self):
+        for k, box in self.allBox.items():
+            if not box.isChecked():
+                self.isSelectAll = False
+
         self.bookList.page = 1
         self.bookList.clear()
         self.SendSearch(1)

@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QFrame, QGridLay
 
 from component.button.icon_tool_button import IconToolButton
 from component.label.head_label import HeadLabel
-from component.list.base_list_widget import BaseListWidget
+from component.list.eps_list_widget import EpsListWidget
 from component.list.tag_list_widget import TagListWidget
 from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 import images_rc
@@ -362,7 +362,7 @@ class Ui_BookInfo(object):
 
         self.verticalLayout_3.addLayout(self.gridLayout_3)
 
-        self.epsListWidget = BaseListWidget(self.scrollAreaWidgetContents)
+        self.epsListWidget = EpsListWidget(self.scrollAreaWidgetContents)
         self.epsListWidget.setObjectName(u"epsListWidget")
         self.epsListWidget.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
 "QListWidget::item {\n"
