@@ -422,7 +422,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             Log.Error("Not found waifu2xId ：{}, index: {}".format(str(waifu2xId), str(index)))
             return
         p.SetWaifuData(data, round(tick, 2))
-        self.AddQImageTask(data, self.ConvertQImageWaifu2xBack, index)
+        if data:
+            self.AddQImageTask(data, self.ConvertQImageWaifu2xBack, index)
         if index == self.curIndex:
             self.qtTool.SetData(waifuState=p.waifuState)
             # self.ShowImg()
@@ -466,7 +467,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
     def AddDownload(self, i):
         path = "{}/{}/{}.jpg".format(self.bookId, self.epsId+1, i+1)
-        cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.dirname(path))
+        cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), path)
         loadPath = QtOwner().downloadView.GetDownloadFilePath(self.bookId, self.epsId, i)
         self.AddDownloadBook(self.bookId, self.epsId, i,
                              downloadCallBack=self.UpdateProcessBar,

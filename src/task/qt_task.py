@@ -58,15 +58,14 @@ class QtTaskBase:
         from task.task_download import TaskDownload
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
-        if not loadPath:
-            if not path:
-                a = hashlib.md5(url.encode("utf-8")).hexdigest() + ".jpg"
-            else:
-                a = hashlib.md5(path.encode("utf-8")).hexdigest() + ".jpg"
-            if Setting.SavePath.value:
-                filePath2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.dirname(path))
-                filePath2 = os.path.join(filePath2, a)
-                loadPath = filePath2
+        if not cachePath and not savePath:
+            # if not path:
+            #     a = hashlib.md5(url.encode("utf-8")).hexdigest() + ".jpg"
+            # else:
+            #     a = hashlib.md5(path.encode("utf-8")).hexdigest() + ".jpg"
+            if Setting.SavePath.value and path:
+                filePath2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), path)
+                cachePath = filePath2
         return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag)
 
     # downloadCallBack(data, laveFileSize, backParam)

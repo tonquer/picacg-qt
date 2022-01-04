@@ -86,7 +86,7 @@ class TaskDownload(TaskBase, QtTaskBase):
         Log.Debug("add download info, cachePath:{}, loadPath:{}, savePath:{}".format(data.cachePath, data.loadPath, data.savePath))
         from server.server import Server
         from server import req
-        Server().Download(req.DownloadBookReq(url, path, data.cachePath, data.loadPath, data.savePath), backParams=self.taskId)
+        Server().Download(req.DownloadBookReq(url, path, data.loadPath, data.cachePath, data.savePath), backParams=self.taskId)
         return self.taskId
 
     def HandlerTask(self, downloadId, laveFileSize, data, isCallBack=True):
