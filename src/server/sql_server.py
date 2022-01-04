@@ -181,11 +181,9 @@ class SqlServer(Singleton):
         cur = conn.cursor()
         from tools.category import CateGoryMgr
         nums = {}
-        for v in CateGoryMgr().allCategorise:
-            text = Converter('zh-hans').convert(v)
-            cur.execute(sql + " and categories like '%{}%'".format(text))
-            for data in cur.fetchall():
-                nums[text] = data[0]
+        cur.execute("select category, count(*) from category where bookId in ({}) group by category".format(sql))
+        for data in cur.fetchall():
+            nums[data[0]] = data[1]
         data = pickle.dumps(nums)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
@@ -288,6 +286,15 @@ class SqlServer(Singleton):
                             book.creator, book.totalLikes, book.totalViews)
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
+
+                try:
+                    for name in book.categories.split(","):
+                        sql = "replace INTO category(bookId, category) VALUES ('{0}', '{1}'); ".format(book.id, name)
+                        sql = sql.replace("\0", "")
+                        cur.execute(sql)
+                except Exception as es:
+                    Log.Error(es)
+
             except Exception as ex:
                 Log.Error(ex)
 
@@ -386,9 +393,9 @@ class SqlServer(Singleton):
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 1 "
 
         if sql2Data:
-            sql2Data = "SELECT count(*) FROM book WHERE 0 {}".format(sql2Data)
+            sql2Data = "SELECT id FROM book WHERE 0 {}".format(sql2Data)
         else:
-            sql2Data = "SELECT count(*) FROM book WHERE 1 "
+            sql2Data = "SELECT id FROM book WHERE 1 "
 
         if sortKey == 0:
             sql += "ORDER BY updated_at "

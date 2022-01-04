@@ -224,6 +224,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             return
         for k, v in nums.items():
             box = self.allBox.get(k)
+            if not box:
+                continue
             if not k:
                 continue
             if int(v) > 0:
