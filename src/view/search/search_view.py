@@ -46,6 +46,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.unfoldButton.clicked.connect(partial(self.CheckShowWidget))
         self.saveButton.clicked.connect(self.ClearAndSendSearch)
         self.selectAllButton.clicked.connect(partial(self.CheckSelectAll))
+        self.jumpPage.clicked.connect(self.JumpPage)
         self.flowLayout = FlowLayout(self.widget)
         self.allBox = {}
         self.isSelectAll = False
