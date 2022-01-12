@@ -109,7 +109,7 @@ class User(Singleton):
                 return Status.Ok
             elif backData.res.code == 400:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
-                return Status.UserError
+                return Status.Error
             else:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
                 return Status.UnKnowError

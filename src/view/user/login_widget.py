@@ -50,7 +50,7 @@ class LoginWidget(QtWidgets.QWidget, Ui_LoginWidget, QtTaskBase):
             # LoginView.CloseLogin.emit()
             # QtOwner().settingView.userId = self.userEdit_2.text()
             Setting.UserId.SetValue(self.userEdit_2.text())
-            QtOwner().settingView.passwd = self.passwdEdit_2.text()
+            # QtOwner().settingView.passwd = self.passwdEdit_2.text()
             Setting.Password.SetValue(base64.b64encode(self.passwdEdit_2.text().encode("utf-8")))
             self.parent().parent().parent().parent().close()
             # QtOwner().owner.UpdateDbInfo()
@@ -61,4 +61,5 @@ class LoginWidget(QtWidgets.QWidget, Ui_LoginWidget, QtTaskBase):
 
         else:
             # QtWidgets.QMessageBox.information(self, '登陆失败', msg, QtWidgets.QMessageBox.Yes)
-            QtOwner().ShowError(Str.GetStr(Str.LoginFail) + ", " + Str.GetStr(st))
+            msg = raw["data"]
+            QtOwner().ShowError(Str.GetStr(st) + "\n" + msg)
