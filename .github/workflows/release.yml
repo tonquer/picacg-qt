@@ -43,7 +43,7 @@ jobs:
 
   macos:
     needs: [setup, release]
-    runs-on: macos-latest
+    runs-on: macos-11
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_x64
     steps:
@@ -83,6 +83,7 @@ jobs:
         cp Icon.icns dist/
         ln -s /Applications/   dist/Applications
         cp -avf data dist/PicACG.app/Contents/MacOS
+        xattr -cr dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
             --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
         zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
