@@ -4,12 +4,11 @@ import os
 import sys
 # macOS 修复
 import time
-
-from PySide6.QtCore import Qt, QCoreApplication
-from PySide6.QtGui import QGuiApplication
+import traceback
 
 from config import config
 from config.setting import Setting
+from qt_error import showError
 from qt_owner import QtOwner
 from tools.log import Log
 from tools.str import Str
@@ -39,35 +38,39 @@ DbBook()
 
 
 if __name__ == "__main__":
-    Log.Init()
-    Setting.Init()
-    Setting.InitLoadSetting()
-    indexV = Setting.ScaleLevel.GetIndexV()
-    if indexV and indexV != "Auto":
-        # if indexV == 100:
-        #     QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
-        # else:
+    try:
+        Log.Init()
+        Setting.Init()
+        Setting.InitLoadSetting()
+        indexV = Setting.ScaleLevel.GetIndexV()
+        if indexV and indexV != "Auto":
             os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
             os.environ["QT_SCALE_FACTOR"] = str(indexV / 100)
-    # os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
-    # print(QtWidgets.QApplication.testAttribute(Qt.AA_EnableHighDpiScaling))
-    # print(QtWidgets.QApplication.testAttribute(Qt.AA_UseHighDpiPixmaps))
-    # QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    # print(QGuiApplication.highDpiScaleFactorRoundingPolicy())
-    # QGuiApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.Floor)
-    app = QtWidgets.QApplication(sys.argv)  # 建立application对象
-    Str.Reload()
 
+    except Exception as es:
+        Log.Error(es)
+        app = QtWidgets.QApplication(sys.argv)
+        showError(traceback.format_exc(), app)
+        if config.CanWaifu2x:
+            waifu2x_vulkan.stop()
+        sys.exit(-111)
+
+    app = QtWidgets.QApplication(sys.argv)  # 建立application对象
     Log.Warn("init scene ratio: {}".format(app.devicePixelRatio()))
     try:
+        Str.Reload()
         QtOwner().SetApp(app)
         from view.main.main_view import MainView
         main = MainView()
+        main.Init()
     except Exception as es:
         Log.Error(es)
+        showError(traceback.format_exc(), app)
+        if config.CanWaifu2x:
+            waifu2x_vulkan.stop()
         sys.exit(-111)
+
     main.show()  # 显示窗体
-    main.Init()
     sts = app.exec()
     main.Close()
     if config.CanWaifu2x:

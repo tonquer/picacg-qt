@@ -282,9 +282,15 @@ class CheckUpdateHandler(object):
             rawData = updateInfo[0]
         else:
             rawData = ""
+            
+        versionInfo = re.findall("<meta property=\"og:url\" content=\".*tag/([^\"]*)\"", task.res.raw.text)
+        if versionInfo:
+            verData = versionInfo[0]
+        else:
+            verData = ""
 
+        info = verData.replace("v", "").split(".")
         try:
-            info = re.findall(r"\d+\d*", os.path.basename(task.res.raw.url))
             version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
             info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
             curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1

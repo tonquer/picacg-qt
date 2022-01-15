@@ -46,7 +46,7 @@ jobs:
             --hidden-import tools \
             --hidden-import view \
             --strip --windowed -i Icon.icns \
-            start.py
+            start.py --strip
         rm -rf dist/PicACG
         cp Icon.icns dist/
         ln -s /Applications/   dist/Applications
@@ -85,9 +85,10 @@ jobs:
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -i icon.ico start.py
-        mv dist/start.exe "dist/start(debug).exe"
-        pyinstaller -F -w -i icon.ico start.py
+        Invoke-WebRequest -Uri https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip -OutFile upx-3.96-win64.zip
+        7z x -aoa .\upx-3.96-win64.zip -oupx
+
+        pyinstaller -F -w -i icon.ico start.py --upx-dir=upx\upx-3.96-win64
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         cp ..\LICENSE bika\
@@ -128,9 +129,9 @@ jobs:
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -i icon.ico start.py
-        mv dist/start.exe "dist/start(debug).exe"
-        pyinstaller -F -w -i icon.ico start.py
+        Invoke-WebRequest -Uri https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip -OutFile upx-3.96-win64.zip
+        7z x -aoa .\upx-3.96-win64.zip -oupx
+        pyinstaller -F -w -i icon.ico start.py --upx-dir=upx\upx-3.96-win64
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         cp ..\LICENSE bika\
