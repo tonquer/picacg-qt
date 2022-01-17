@@ -118,6 +118,10 @@ class User(Singleton):
             return Status.NetError
 
     def Logout(self):
+        self.server.token = ""
+        self.isLogin = False
+        self.userId = ""
+        self.passwd = ""
         return
 
     def UpdateUserInfoBack(self, backData):

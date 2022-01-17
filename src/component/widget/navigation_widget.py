@@ -3,6 +3,7 @@ from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtWidgets import QWidget
 
 from config import config
+from config.setting import Setting
 from interface.ui_navigation import Ui_Navigation
 from qt_owner import QtOwner
 from server import req
@@ -26,26 +27,31 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         f.open(QFile.ReadOnly)
         self.picLabel.SetPicture(f.readAll())
         f.close()
-        self.pushButton.clicked.connect(self.OpenLoginView)
+        self.loginButton.clicked.connect(self.OpenLoginView)
+        self.signButton.clicked.connect(self.Sign)
         self.picLabel.installEventFilter(self)
         self.picData = None
 
     def OpenLoginView(self):
+        isAutoLogin = Setting.AutoLogin.value
         if User().isLogin:
-            self.Sign()
-            return
+            self.Logout()
+            isAutoLogin = 0
 
-        loginView = LoginView(QtOwner().owner)
+        loginView = LoginView(QtOwner().owner, isAutoLogin)
         loginView.show()
         loginView.closed.connect(self.LoginSucBack)
+        return
 
+    def Logout(self):
+        User().Logout()
         return
 
     def LoginSucBack(self):
         if not User().isLogin:
             return
         QtOwner().owner.LoginSucBack()
-        self.pushButton.setText(Str.GetStr(Str.Sign))
+        self.loginButton.setText(Str.GetStr(Str.LoginOut))
         self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
 
     def UpdateUserBack(self, raw):
@@ -54,8 +60,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.titleLabel.setText(str(User().title))
         self.nameLabel.setText(str(User().name))
         if User().isPunched:
-            self.pushButton.setText(Str.GetStr(Str.AlreadySign))
-            self.pushButton.setVisible(False)
+            self.signButton.setText(Str.GetStr(Str.AlreadySign))
+            self.signButton.setVisible(False)
         if not User().avatar:
             return
         url = User().avatar.get("fileServer")
@@ -79,8 +85,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         QtOwner().CloseLoading()
         st = raw["st"]
         if st == Status.Ok:
-            self.pushButton.setVisible(False)
-            self.pushButton.setText(Str.GetStr(Str.AlreadySign))
+            self.signButton.setVisible(False)
+            self.signButton.setText(Str.GetStr(Str.AlreadySign))
             # self.signButton.setHidden(True)
             self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
         return
@@ -94,7 +100,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         if not data:
             return
         self.picLabel.setPixmap(QPixmap())
-        self.picLabel.setText(self.tr("头像上传中......"))
+        self.picLabel.setText(Str.GetStr(Str.HeadUpload))
         self.AddHttpTask(req.SetAvatarInfoReq(data), self.UpdatePictureDataBack)
         return
 

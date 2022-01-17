@@ -65,6 +65,24 @@
     </widget>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="saveBox">
+       <property name="text">
+        <string>保存密码</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="autoBox">
+       <property name="text">
+        <string>自动登录</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

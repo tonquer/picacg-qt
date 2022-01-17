@@ -112,6 +112,8 @@ class Setting:
     Password = SettingValue("Other", "", False)
     ChatSendAction = SettingValue("Other", 0, False, ["CtrlEnter", "Enter"])
     ScreenIndex = SettingValue("Other", 0, False)
+    AutoLogin = SettingValue("Other", 0, False)
+    SavePassword = SettingValue("Other", 1, False)
 
     @staticmethod
     def InitLoadSetting():

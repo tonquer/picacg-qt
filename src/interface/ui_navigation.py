@@ -46,16 +46,28 @@ class Ui_Navigation(object):
 
         self.verticalLayout.addWidget(self.picLabel, 0, Qt.AlignHCenter)
 
-        self.pushButton = QPushButton(self.widget)
-        self.pushButton.setObjectName(u"pushButton")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.loginButton = QPushButton(self.widget)
+        self.loginButton.setObjectName(u"loginButton")
         sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy)
-        self.pushButton.setFocusPolicy(Qt.NoFocus)
+        sizePolicy.setHeightForWidth(self.loginButton.sizePolicy().hasHeightForWidth())
+        self.loginButton.setSizePolicy(sizePolicy)
+        self.loginButton.setFocusPolicy(Qt.NoFocus)
 
-        self.verticalLayout.addWidget(self.pushButton, 0, Qt.AlignHCenter)
+        self.horizontalLayout_2.addWidget(self.loginButton)
+
+        self.signButton = QPushButton(self.widget)
+        self.signButton.setObjectName(u"signButton")
+        sizePolicy.setHeightForWidth(self.signButton.sizePolicy().hasHeightForWidth())
+        self.signButton.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_2.addWidget(self.signButton)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.nameLabel = QLabel(self.widget)
         self.nameLabel.setObjectName(u"nameLabel")
@@ -95,7 +107,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -460, 211, 608))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 211, 654))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -133,7 +145,10 @@ class Ui_Navigation(object):
         self.myCommentButton.setSizePolicy(sizePolicy1)
         self.myCommentButton.setMinimumSize(QSize(150, 40))
         self.myCommentButton.setFocusPolicy(Qt.NoFocus)
-        self.myCommentButton.setIcon(icon)
+        self.myCommentButton.setStyleSheet(u"")
+        icon1 = QIcon()
+        icon1.addFile(u":/icon/theme/svg/user_comment.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.myCommentButton.setIcon(icon1)
         self.myCommentButton.setIconSize(QSize(32, 32))
         self.myCommentButton.setCheckable(True)
         self.myCommentButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -368,7 +383,8 @@ class Ui_Navigation(object):
     def retranslateUi(self, Navigation):
         Navigation.setWindowTitle(QCoreApplication.translate("Navigation", u"\u5bfc\u822a", None))
         self.picLabel.setText("")
-        self.pushButton.setText(QCoreApplication.translate("Navigation", u"\u767b\u5f55", None))
+        self.loginButton.setText(QCoreApplication.translate("Navigation", u"\u767b\u5f55", None))
+        self.signButton.setText(QCoreApplication.translate("Navigation", u"\u6253\u5361", None))
         self.nameLabel.setText("")
         self.titleLabel.setText("")
         self.expLabel.setText("")

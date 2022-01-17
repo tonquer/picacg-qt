@@ -62,6 +62,7 @@ if __name__ == "__main__":
         QtOwner().SetApp(app)
         from view.main.main_view import MainView
         main = MainView()
+        main.show()  # 显示窗体
         main.Init()
     except Exception as es:
         Log.Error(es)
@@ -70,7 +71,6 @@ if __name__ == "__main__":
             waifu2x_vulkan.stop()
         sys.exit(-111)
 
-    main.show()  # 显示窗体
     sts = app.exec()
     main.Close()
     if config.CanWaifu2x:

@@ -184,6 +184,7 @@ class Str:
     AllComment = 124               # 所有评论
     SelectAll = 125                # 全选
     NotSelectAll = 126             # 反选
+    LoginOut = 127                # 登出
 
     @classmethod
     def Reload(cls):
@@ -356,6 +357,7 @@ class Str:
         cls.strDict[cls.AllComment] = QCoreApplication.translate("cls.obj",  "所有评论", None)
         cls.strDict[cls.SelectAll] = QCoreApplication.translate("cls.obj",  "全选", None)
         cls.strDict[cls.NotSelectAll] = QCoreApplication.translate("cls.obj",  "反选", None)
+        cls.strDict[cls.LoginOut] = QCoreApplication.translate("cls.obj",  "登出", None)
 
     @classmethod
     def GetStr(cls, enumType):

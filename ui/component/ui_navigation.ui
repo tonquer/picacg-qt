@@ -60,21 +60,38 @@
         </property>
        </widget>
       </item>
-      <item alignment="Qt::AlignHCenter">
-       <widget class="QPushButton" name="pushButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="text">
-         <string>登录</string>
-        </property>
-       </widget>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="loginButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string>登录</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="signButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>打卡</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QLabel" name="nameLabel">
@@ -130,9 +147,9 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-460</y>
+           <y>0</y>
            <width>211</width>
-           <height>608</height>
+           <height>654</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -216,12 +233,15 @@
             <property name="focusPolicy">
              <enum>Qt::NoFocus</enum>
             </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="text">
              <string>我的评论</string>
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
+              <normaloff>:/icon/theme/svg/user_comment.png</normaloff>:/icon/theme/svg/user_comment.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -818,15 +838,15 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>HeadLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">component.label.head_label.h</header>
+  </customwidget>
+  <customwidget>
    <class>SmoothScrollArea</class>
    <extends>QScrollArea</extends>
    <header location="global">component.scroll_area.smooth_scroll_area.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>HeadLabel</class>
-   <extends>QLabel</extends>
-   <header location="global">component.label.head_label.h</header>
   </customwidget>
  </customwidgets>
  <resources>
