@@ -15,7 +15,7 @@ class ServerReq(object):
         self.isParseRes = True
         self.useImgProxy = True
         self.isUseHttps = True
-        if Setting.IsHttpProxy.value:
+        if Setting.IsHttpProxy.value == 1:
             self.proxy = {"http": Setting.HttpProxy.value, "https": Setting.HttpProxy.value}
         else:
             self.proxy = {}

@@ -257,6 +257,7 @@ padding-right:10px;</string>
           </property>
           <property name="styleSheet">
            <string notr="true">padding-left:10px;
+padding-top:25px;
 padding-right:10px;</string>
           </property>
           <property name="text">

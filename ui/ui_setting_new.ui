@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-993</y>
+          <y>-877</y>
           <width>661</width>
-          <height>2293</height>
+          <height>2322</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -655,48 +655,105 @@
              </widget>
             </item>
             <item>
-             <widget class="QCheckBox" name="httpProxy">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;请填写你的代理软件提供的代理地址&lt;/p&gt;&lt;p&gt;如:&lt;/p&gt;&lt;p&gt;v2ray可能是 http://127.0.0.1:10809&lt;/p&gt;&lt;p&gt;shadowsocks可能是 http://127.0.0.1:1080&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
+             <widget class="QRadioButton" name="proxy0">
               <property name="text">
-               <string>启用代理</string>
+               <string>无代理</string>
               </property>
+              <attribute name="buttonGroup">
+               <string notr="true">proxyGroup</string>
+              </attribute>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
               <item>
-               <widget class="QLabel" name="label_8">
+               <widget class="QRadioButton" name="proxy1">
                 <property name="minimumSize">
                  <size>
-                  <width>60</width>
+                  <width>90</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>代理地址：</string>
+                 <string>HTTP代理</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">proxyGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line_5">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="httpEdit">
-                <property name="minimumSize">
-                 <size>
-                  <width>150</width>
-                  <height>0</height>
-                 </size>
+               <widget class="QLabel" name="label_31">
+                <property name="text">
+                 <string>代理地址</string>
                 </property>
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;请填写你的代理软件提供的代理地址&lt;/p&gt;&lt;p&gt;如:&lt;/p&gt;&lt;p&gt;v2ray可能是 http://127.0.0.1:10809&lt;/p&gt;&lt;p&gt;shadowsocks可能是 http://127.0.0.1:1080&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="placeholderText">
-                 <string/>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
                 </property>
                </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="httpEdit"/>
               </item>
               <item>
                <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_24">
+              <item>
+               <widget class="QRadioButton" name="proxy2">
+                <property name="minimumSize">
+                 <size>
+                  <width>90</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Sock5代理</string>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">proxyGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line_6">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_32">
+                <property name="text">
+                 <string>代理地址</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="sockEdit"/>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_22">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -2014,5 +2071,6 @@
   <buttongroup name="mainScaleGroup"/>
   <buttongroup name="themeGroup"/>
   <buttongroup name="logGroup"/>
+  <buttongroup name="proxyGroup"/>
  </buttongroups>
 </ui>

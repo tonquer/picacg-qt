@@ -185,6 +185,7 @@ class Str:
     SelectAll = 125                # 全选
     NotSelectAll = 126             # 反选
     LoginOut = 127                # 登出
+    Sock5Error = 128              # Sock5设置出错
 
     @classmethod
     def Reload(cls):
@@ -358,6 +359,7 @@ class Str:
         cls.strDict[cls.SelectAll] = QCoreApplication.translate("cls.obj",  "全选", None)
         cls.strDict[cls.NotSelectAll] = QCoreApplication.translate("cls.obj",  "反选", None)
         cls.strDict[cls.LoginOut] = QCoreApplication.translate("cls.obj",  "登出", None)
+        cls.strDict[cls.Sock5Error] = QCoreApplication.translate("cls.obj",  "Sock5设置出错", None)
 
     @classmethod
     def GetStr(cls, enumType):

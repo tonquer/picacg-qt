@@ -292,6 +292,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
                     break
             if not isHidden:
                 item.setHidden(False)
+        if self.hiddenNum > 0:
+            self.hideLabel.setText("已屏蔽{}个本子".format(self.hiddenNum))
+        else:
+            self.hideLabel.setText("")
 
     def JumpPage(self):
         page = int(self.spinBox.text())

@@ -29,6 +29,10 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.UpdateServer()
         self.commandLinkButton.clicked.connect(self.OpenUrl)
 
+        self.buttonGroup_2.setId(self.proxy_0, 0)
+        self.buttonGroup_2.setId(self.proxy_1, 1)
+        self.buttonGroup_2.setId(self.proxy_2, 2)
+
     def Init(self):
         self.LoadSetting()
 
@@ -37,8 +41,11 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
     def SetEnabled(self, enabled):
         self.testSpeedButton.setEnabled(enabled)
-        self.proxyBox.setEnabled(enabled)
+        self.proxy_0.setEnabled(enabled)
+        self.proxy_1.setEnabled(enabled)
+        self.proxy_2.setEnabled(enabled)
         self.httpLine.setEnabled(enabled)
+        self.sockEdit.setEnabled(enabled)
         self.cdnIp.setEnabled(enabled)
         self.radioButton_1.setEnabled(enabled)
         self.radioButton_2.setEnabled(enabled)
@@ -80,7 +87,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             return
         address, imageProxy, isHttpProxy, i = self.speedTest[self.speedPingNum]
         httpProxy = self.httpLine.text()
-        if isHttpProxy and not httpProxy:
+        if isHttpProxy and (self.buttonGroup_2.checkedId() == 0 or
+                            (self.buttonGroup_2.checkedId() == 1 and not self.httpLine.text()) or
+                            (self.buttonGroup_2.checkedId() == 2 and not self.sockEdit.text())):
             label = getattr(self, "label"+str(i))
             label.setText(Str.GetStr(Str.NoProxy))
             self.speedPingNum += 1
@@ -89,10 +98,16 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         request = req.SpeedTestPingReq()
         request.isUseHttps = self.httpsBox.isChecked()
-        if isHttpProxy:
+        if isHttpProxy and self.buttonGroup_2.checkedId() == 1:
             request.proxy = {"http": httpProxy, "https": httpProxy}
         else:
             request.proxy = ""
+
+        if isHttpProxy and self.buttonGroup_2.checkedId() == 2:
+            self.SetSock5Proxy(True)
+        else:
+            self.SetSock5Proxy(False)
+
         Server().UpdateDns(address, imageProxy)
         self.AddHttpTask(lambda x: Server().TestSpeedPing(request, x), self.SpeedTestPingBack, i)
         return
@@ -116,7 +131,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         address, imageProxy, isHttpProxy, i = self.speedTest[self.speedIndex]
         httpProxy = self.httpLine.text()
-        if isHttpProxy and not httpProxy:
+        if isHttpProxy and (self.buttonGroup_2.checkedId() == 0 or
+                            (self.buttonGroup_2.checkedId() == 1 and not self.httpLine.text()) or
+                            (self.buttonGroup_2.checkedId() == 2 and not self.sockEdit.text())):
             label = getattr(self, "label" + str(i))
             label.setText(Str.GetStr(Str.NoProxy))
             self.speedIndex += 1
@@ -125,10 +142,16 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         request = req.SpeedTestReq()
         request.isUseHttps = self.httpsBox.isChecked()
-        if isHttpProxy:
+        if isHttpProxy and self.buttonGroup_2.checkedId() == 1:
             request.proxy = {"http": httpProxy, "https": httpProxy}
         else:
             request.proxy = ""
+
+        if isHttpProxy and self.buttonGroup_2.checkedId() == 2:
+            self.SetSock5Proxy(True)
+        else:
+            self.SetSock5Proxy(False)
+
         Server().UpdateDns(address, imageProxy)
         self.AddHttpTask(lambda x: Server().TestSpeed(request, x), self.SpeedTestBack, i)
         return
@@ -152,9 +175,11 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         # httpProxy = QtOwner().settingView.GetSettingV("Proxy/Http", config.HttpProxy)
 
         self.httpsBox.setChecked(Setting.IsUseHttps.value)
-        self.proxyBox.setChecked(Setting.IsHttpProxy.value)
         self.httpLine.setText(Setting.HttpProxy.value)
+        self.sockEdit.setText(Setting.Sock5Proxy.value)
         button = getattr(self, "radioButton_{}".format(Setting.ProxySelectIndex.value))
+        button.setChecked(True)
+        button = getattr(self, "proxy_{}".format(int(Setting.IsHttpProxy.value)))
         button.setChecked(True)
         self.cdnIp.setText(Setting.PreferCDNIP.value)
 
@@ -171,12 +196,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         else:
             imageServer = Setting.PreferCDNIP.value
             address = Setting.PreferCDNIP.value
+        QtOwner().settingView.SetSock5Proxy()
         Server().UpdateDns(address, imageServer)
         Log.Info("update proxy, setId:{}, image server:{}, address:{}".format(Setting.ProxySelectIndex.value, Server().imageServer, Server().address))
 
     def SaveSetting(self):
         Setting.PreferCDNIP.SetValue(self.cdnIp.text())
-        Setting.IsHttpProxy.SetValue(int(self.proxyBox.isChecked()))
+        Setting.IsHttpProxy.SetValue(int(self.buttonGroup_2.checkedId()))
+        Setting.Sock5Proxy.SetValue(self.sockEdit.text())
         Setting.HttpProxy.SetValue(self.httpLine.text())
         Setting.ProxySelectIndex.SetValue(self.buttonGroup.checkedId())
         Setting.IsUseHttps.SetValue(int(self.httpsBox.isChecked()))
@@ -193,3 +220,18 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
     def OpenUrl(self):
         QDesktopServices.openUrl(QUrl(config.ProxyUrl))
+
+    def SetSock5Proxy(self, isProxy):
+        import socket
+        import socks
+        if isProxy:
+            data = self.sockEdit.text().replace("http://", "").replace("https://", "").replace("sock5://", "")
+            data = data.split(":")
+            if len(data) == 2:
+                host = data[0]
+                port = data[1]
+                socks.set_default_proxy(socks.SOCKS5, host, int(port))
+                socket.socket = socks.socksocket
+        else:
+            socks.set_default_proxy()
+            socket.socket = socks.socksocket

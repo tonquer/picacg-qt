@@ -121,6 +121,11 @@ class Ui_Search(object):
 
         self.horizontalLayout_6.addWidget(self.categoryNum)
 
+        self.hideLabel = QLabel(Search)
+        self.hideLabel.setObjectName(u"hideLabel")
+
+        self.horizontalLayout_6.addWidget(self.hideLabel)
+
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_6.addItem(self.horizontalSpacer)
@@ -250,6 +255,7 @@ class Ui_Search(object):
         self.selectAllButton.setText(QCoreApplication.translate("Search", u"\u5168\u9009", None))
         self.saveButton.setText(QCoreApplication.translate("Search", u"\u786e\u5b9a", None))
         self.categoryNum.setText("")
+        self.hideLabel.setText("")
         self.sortKey.setItemText(0, QCoreApplication.translate("Search", u"\u66f4\u65b0\u65f6\u95f4", None))
         self.sortKey.setItemText(1, QCoreApplication.translate("Search", u"\u521b\u5efa\u65f6\u95f4", None))
         self.sortKey.setItemText(2, QCoreApplication.translate("Search", u"\u7231\u5fc3\u6570", None))

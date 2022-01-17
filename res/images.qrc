@@ -30,18 +30,16 @@
   </qresource>
   <qresource prefix="png">
     <file>icon/audio.png</file>
-    <file>icon/bubble_r_9.9.png</file>
-    <file>icon/fold1.png</file>
-    <file>icon/fold2.png</file>
+<!--    <file>icon/bubble_r_9.9.png</file>-->
+<!--    <file>icon/fold1.png</file>-->
+<!--    <file>icon/fold2.png</file>-->
     <file>icon/ic_get_app_black_36dp.png</file>
-    <file>icon/ic_settings_black_36dp.png</file>
-    <file>icon/ico.ico</file>
-    <file>icon/icon.ico</file>
+<!--    <file>icon/ic_settings_black_36dp.png</file>-->
     <file>icon/icon_adult.png</file>
     <file>icon/icon_bookmark_off.png</file>
     <file>icon/icon_bookmark_on.png</file>
-    <file>icon/icon_comic.png</file>
-    <file>icon/icon_comicviewer_nightfilter_on.png</file>
+<!--    <file>icon/icon_comic.png</file>-->
+<!--    <file>icon/icon_comicviewer_nightfilter_on.png</file>-->
     <file>icon/icon_comment.png</file>
     <file>icon/icon_comment_like.png</file>
     <file>icon/icon_comment_liked.png</file>
@@ -51,15 +49,13 @@
     <file>icon/icon_game_recommend.png</file>
     <file>icon/icon_like.png</file>
     <file>icon/icon_like_off.png</file>
-    <file>icon/icon_picacg.png</file>
-    <file>icon/loading.gif</file>
+<!--    <file>icon/icon_picacg.png</file>-->
     <file>icon/loading_gif.gif</file>
-    <file>icon/loading2.gif</file>
     <file>icon/logo_round.png</file>
     <file>icon/placeholder_avatar.png</file>
     <file>icon/skin_aio_friend_bubble_pressed.9.png</file>
-    <file>icon/splash_title_new.png</file>
-    <file>icon/verified.png</file>
+<!--    <file>icon/splash_title_new.png</file>-->
+<!--    <file>icon/verified.png</file>-->
 	<file>icon/loading/loading_1.png</file>
 	<file>icon/loading/loading_2.png</file>
 	<file>icon/loading/loading_3.png</file>
@@ -70,13 +66,13 @@
 	<file>icon/loading/loading_8.png</file>
 	<file>icon/loading/loading_9.png</file>
 	<file>icon/loading/loading_10.png</file>
-    <file>icon/icon_unknown_error.png</file>
-    <file>icon/icon_success.png</file>
-    <file>icon/icon_question_error.png</file>
-    <file>icon/icon_no_comment.png</file>
-    <file>icon/icon_leave.png</file>
-    <file>icon/icon_exclamation_error.png</file>
-    <file>icon/icon_empty.png</file>
+<!--    <file>icon/icon_unknown_error.png</file>-->
+<!--    <file>icon/icon_success.png</file>-->
+<!--    <file>icon/icon_question_error.png</file>-->
+<!--    <file>icon/icon_no_comment.png</file>-->
+<!--    <file>icon/icon_leave.png</file>-->
+<!--    <file>icon/icon_exclamation_error.png</file>-->
+<!--    <file>icon/icon_empty.png</file>-->
     <file>icon/cat_latest.jpg</file>
     <file>icon/cat_forum.jpg</file>
     <file>icon/cat_random.jpg</file>
@@ -243,6 +239,8 @@
 	<file>theme/scrollbar/scrollbar_arrowright_down.png</file>
 	<file>theme/scrollbar/scrollbar_arrowdown_highlight.png</file>
 	<file>theme/scrollbar/scrollbar_arrowright_highlight.png</file>
+
+    <file>theme/svg/user_comment.svg</file>
   </qresource>
   <qresource prefix="file">
     <file>theme/dark_pink.qss</file>

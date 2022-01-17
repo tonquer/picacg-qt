@@ -1,3 +1,5 @@
+import weakref
+
 from PySide6 import QtWidgets
 from PySide6.QtCore import QEvent, QProcess
 from PySide6.QtGui import QPixmap, Qt, QIcon, QCursor
@@ -75,10 +77,16 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
 
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenu)
-        self.chatRoom = chatRoom
+        self.__chatRoom = weakref.ref(chatRoom)
+
+    @property
+    def chatRoom(self):
+        if not self.__chatRoom:
+            return None
+        return self.__chatRoom()
 
     def setParent(self, parent):
-        self.chatRoom = None
+        self.__chatRoom = None
         return super(self.__class__, self).setParent(parent)
 
     def SetPicture(self, data):

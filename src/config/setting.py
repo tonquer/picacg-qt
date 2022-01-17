@@ -69,8 +69,9 @@ class Setting:
     IsNotUseTitleBar = SettingValue("GeneraSetting", 0, True)
 
     # 代理设置
-    IsHttpProxy = SettingValue("ProxySetting", 0, False)
+    IsHttpProxy = SettingValue("ProxySetting", 0, False, ["", "Http", "Sock5"])
     HttpProxy = SettingValue("ProxySetting", "", False)
+    Sock5Proxy = SettingValue("ProxySetting", "", False)
     ChatProxy = SettingValue("ProxySetting", 0, False)
     PreferCDNIP = SettingValue("ProxySetting", "104.16.109.107", False)
     IsUseHttps = SettingValue("ProxySetting", 1, False)

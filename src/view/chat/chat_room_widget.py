@@ -239,7 +239,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
             else:
                 msg = "<font color=#1661ab>{}</font>".format(at.replace("嗶咔_", "@")) + "\n" + msg
         # info.commentLabel.setText("<font color=#130c0e>{}</font>".format(msg))
-        info.commentLabel.setText("{}".format(msg))
+        info.commentLabel.setText("{}".format(msg.replace("\n", "<br/>")))
         info.nameLabel.setText(name)
         info.levelLabel.setText("<font color=#130c0e>{}</font>".format(" LV"+str(level))+" ")
         info.titleLabel.setText("<font color=#130c0e>{}</font>".format(" " + title + " "))
@@ -250,10 +250,10 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         info.infoLabel.setText(data.get("platform", "")+" ")
         imageData = data.get("image")
         if not imageData:
-            replay = data.get("reply", "")
+            replay = data.get("reply", "").replace("\n", "<br/>")
             replayName = data.get("reply_name", "")
             if replay and replayName:
-                info.replayLabel.setText("<font color=#1661ab>@{}</font>{}".format(replayName, "\n" + replay))
+                info.replayLabel.setText("<font color=#1661ab>@{}</font>{}".format(replayName, "<br/>" + replay))
                 info.replayWidget.setVisible(True)
             else:
                 info.replayWidget.setVisible(False)

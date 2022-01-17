@@ -36,10 +36,10 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.languageGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.Language))
         self.logGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.LogIndex))
         self.mainScaleGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ScaleLevel))
+        self.proxyGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.IsHttpProxy))
 
         # CheckButton:
         self.checkBox_IsUpdate.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUpdate, self.checkBox_IsUpdate))
-        self.httpProxy.clicked.connect(partial(self.CheckButtonEvent, Setting.IsHttpProxy, self.httpProxy))
         self.chatProxy.clicked.connect(partial(self.CheckButtonEvent, Setting.ChatProxy, self.chatProxy))
         self.readCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenWaifu, self.readCheckBox))
         self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
@@ -48,6 +48,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
 
         # LineEdit:
         self.httpEdit.editingFinished.connect(partial(self.LineEditEvent, Setting.HttpProxy, self.httpEdit))
+        self.sockEdit.editingFinished.connect(partial(self.LineEditEvent, Setting.Sock5Proxy, self.sockEdit))
 
         # Button:
 
@@ -121,6 +122,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
                 Log.UpdateLoggingLevel()
             elif setItem == Setting.Language:
                 self.SetLanguage()
+            elif setItem == Setting.IsHttpProxy:
+                self.SetSock5Proxy()
             QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
         self.CheckMsgLabel()
         return
@@ -136,6 +139,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         assert isinstance(setItem, SettingValue)
         setItem.SetValue(value)
         QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
+        if setItem == Setting.IsHttpProxy:
+            self.SetSock5Proxy()
         self.CheckMsgLabel()
         return
 
@@ -162,6 +167,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.InitSetting()
         self.SetTheme()
         self.SetLanguage()
+        self.SetSock5Proxy()
         return
 
     def ExitSaveSetting(self, mainQsize):
@@ -172,11 +178,12 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.SetRadioGroup("themeButton", Setting.ThemeIndex.value)
         self.SetRadioGroup("languageButton", Setting.Language.value)
         self.SetRadioGroup("mainScaleButton", Setting.ScaleLevel.value)
+        self.SetRadioGroup("proxy", Setting.IsHttpProxy.value)
         self.coverSize.setValue(Setting.CoverSize.value)
         self.categorySize.setValue(Setting.CategorySize.value)
         self.SetRadioGroup("logutton", Setting.LogIndex.value)
-        self.httpProxy.setChecked(Setting.IsHttpProxy.value)
         self.httpEdit.setText(Setting.HttpProxy.value)
+        self.sockEdit.setText(Setting.Sock5Proxy.value)
         self.chatProxy.setChecked(Setting.ChatProxy.value)
         self.titleBox.setChecked(Setting.IsNotUseTitleBar.value)
         for index in range(self.encodeSelect.count()):
@@ -207,6 +214,25 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         radio = getattr(self, text+str(index))
         if radio:
             radio.setChecked(True)
+
+    def SetSock5Proxy(self):
+        try:
+            import socket
+            import socks
+            if Setting.IsHttpProxy == 2 and Setting.Sock5Proxy.value:
+                data = Setting.Sock5Proxy.value.replace("http://", "").replace("https://", "").replace("sock5://", "")
+                data = data.split(":")
+                if len(data) == 2:
+                    host = data[0]
+                    port = data[1]
+                    socks.set_default_proxy(socks.SOCKS5, host, int(port))
+                    socket.socket = socks.socksocket
+            else:
+                socks.set_default_proxy()
+                socket.socket = socks.socksocket
+        except Exception as es:
+            Log.Error(es)
+            QtOwner().ShowMsg(Str.GetStr(Str.Sock5Error))
 
     def SetLanguage(self):
         language = Setting.Language.value
