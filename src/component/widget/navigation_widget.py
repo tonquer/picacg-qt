@@ -49,6 +49,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
 
     def LoginSucBack(self):
         if not User().isLogin:
+            self.loginButton.setText(Str.GetStr(Str.Login))
             return
         QtOwner().owner.LoginSucBack()
         self.loginButton.setText(Str.GetStr(Str.LoginOut))

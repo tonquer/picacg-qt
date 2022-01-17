@@ -53,9 +53,9 @@ class SqlServer(Singleton):
     TaskTypeSelectWord = 101
     TaskTypeSelectUpdate = 102
     TaskTypeSelectFavorite = 103
-    TaskTypeCacheBook = 104
+    TaskTypeCacheBook = 104          # 缓存
     TaskTypeCategoryBookNum = 105    # 查询分类数量
-    TaskTypeSearchBookNum = 106
+    TaskTypeSearchBookNum = 106      # 查询分页数量
     TaskTypeUpdateBook = 2
     TaskTypeUpdateFavorite= 3
     TaskTypeClose = 4
@@ -508,6 +508,8 @@ class SqlServer(Singleton):
                 data2 += " categories like '%{}%' or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
         if data2:
             data += "and ({})".format(data2.strip("or "))
+
+        data = data.strip("and ").strip("or ")
 
         selectNumSql = data
         if data:

@@ -226,7 +226,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         if text != self.text:
             return
 
-        pages = (nums + 1) // 20
+        pages = max(0, (nums - 1)) // 20 + 1
         self.bookList.UpdateMaxPage(pages)
         self.spinBox.setMaximum(pages)
         self.label.setText(self.bookList.GetPageStr())
@@ -250,11 +250,13 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
     def SendLocalBack(self, books, page):
         QtOwner().CloseLoading()
         self.bookList.UpdateState()
-        pages = 100
-        self.bookList.UpdatePage(page, pages)
-        # self.jumpLine.setValidator(QtIntLimit(1, pages, self))
-        self.spinBox.setMaximum(pages)
-        self.spinBox.setValue(page)
+        if page == 1:
+            pages = 100
+            self.bookList.pages = 100
+            # self.jumpLine.setValidator(QtIntLimit(1, pages, self))
+            self.spinBox.setMaximum(pages)
+            self.spinBox.setValue(page)
+        self.bookList.UpdatePage(page, self.bookList.pages)
         self.label.setText(self.bookList.GetPageStr())
         for v in books:
             self.bookList.AddBookItemByBook(v)

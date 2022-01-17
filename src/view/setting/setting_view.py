@@ -315,7 +315,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         if sys.platform == "win32":
             return self.GetWinSysColor() + 1
         elif sys.platform == "darwin":
-            return self.GetWinSysColor()
+            return self.GetMacOsSysColor()
         return 1
 
     def GetWinSysColor(self):
