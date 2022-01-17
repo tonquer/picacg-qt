@@ -141,6 +141,7 @@ class Ui_ChatRoomMsg(object):
         self.commentLabel.setMinimumSize(QSize(0, 0))
         self.commentLabel.setFont(font)
         self.commentLabel.setStyleSheet(u"padding-left:10px;\n"
+"padding-top:25px;\n"
 "padding-right:10px;")
 
         self.verticalLayout_3.addWidget(self.commentLabel)

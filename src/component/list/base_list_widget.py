@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QListWidget, QAbstractItemView
 from component.scroll.smooth_scroll_bar import SmoothScrollBar
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
+from tools.str import Str
 
 
 class BaseListWidget(QListWidget, QtTaskBase):
@@ -66,9 +67,16 @@ class BaseListWidget(QListWidget, QtTaskBase):
     def UpdatePage(self, page, pages):
         self.page = page
         self.pages = pages
+        self.UpdateState()
+
+    def UpdateMaxPage(self, pages):
+        self.pages = pages
 
     def UpdateState(self, isLoading=False):
         self.isLoadingPage = isLoading
+
+    def GetPageStr(self):
+        return Str.GetStr(Str.Page) + ": " + str(self.page) + "/" + str(self.pages)
 
     def clear(self) -> None:
         QListWidget.clear(self)

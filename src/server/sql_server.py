@@ -15,6 +15,7 @@ from tools.langconv import Converter
 from tools.log import Log
 from tools.singleton import Singleton
 from tools.status import Status
+from tools.tool import time_me
 from tools.user import User
 
 
@@ -53,7 +54,8 @@ class SqlServer(Singleton):
     TaskTypeSelectUpdate = 102
     TaskTypeSelectFavorite = 103
     TaskTypeCacheBook = 104
-    TaskTypeSelectBookNum = 105    # 查询分类数量
+    TaskTypeCategoryBookNum = 105    # 查询分类数量
+    TaskTypeSearchBookNum = 106
     TaskTypeUpdateBook = 2
     TaskTypeUpdateFavorite= 3
     TaskTypeClose = 4
@@ -133,7 +135,9 @@ class SqlServer(Singleton):
                     self._SelectFavoriteIds(conn, data, backId)
                 elif taskType == self.TaskTypeCacheBook:
                     self._SelectCacheBook(conn, data, backId)
-                elif taskType == self.TaskTypeSelectBookNum:
+                elif taskType == self.TaskTypeCategoryBookNum:
+                    self._SelectCategoryBookNum(conn, data, backId)
+                elif taskType == self.TaskTypeSearchBookNum:
                     self._SelectBookNum(conn, data, backId)
                 elif taskType == self.TaskTypeUpdateFavorite:
                     self._UpdateFavorite(conn, data, backId)
@@ -178,6 +182,16 @@ class SqlServer(Singleton):
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
     def _SelectBookNum(self, conn, sql, backId):
+        cur = conn.cursor()
+        nums = 0
+        cur.execute(sql)
+        for data in cur.fetchall():
+            nums = data[0]
+        data = pickle.dumps(nums)
+        if backId:
+            TaskSql().taskObj.sqlBack.emit(backId, data)
+
+    def _SelectCategoryBookNum(self, conn, sql, backId):
         cur = conn.cursor()
         from tools.category import CateGoryMgr
         nums = {}
@@ -264,6 +278,7 @@ class SqlServer(Singleton):
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
+    @time_me
     def _UpdateBookInfo(self, conn, data, backId):
         cur = conn.cursor()
 
@@ -416,6 +431,121 @@ class SqlServer(Singleton):
             sql += "ASC"
         sql += "  limit {},{};".format((page-1)*20, 20)
         return sql, sql2Data
+
+    @staticmethod
+    def _GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, isLike):
+        data3 = ""
+        if isLike:
+            likeStr = "like"
+            linkStr = "or"
+        else:
+            likeStr = "not like"
+            linkStr = "and"
+
+        if isTitle:
+            data3 += " title {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " title2 {} '%{}%' {} ".format(likeStr, word, linkStr)
+        if isAuthor:
+            data3 += " author {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " chineseTeam {} '%{}%' {} ".format(likeStr, word, linkStr)
+        if isDes:
+            data3 += " description {} '%{}%' {} ".format(likeStr, word, linkStr)
+        if isTag:
+            data3 += " tags {} '%{}%' {} ".format(likeStr, word, linkStr)
+        if isCategory:
+            data3 += " categories {} '%{}%' {} ".format(likeStr, word, linkStr)
+        if isCreator:
+            data3 += " creator {} '%{}%' {} ".format(likeStr, word, linkStr)
+        data3 = data3.strip("{} ".format(linkStr))
+        return "({})".format(data3)
+
+    @staticmethod
+    def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
+
+        wordList2 = wordList.split(" ")
+        exclude = []
+        andWords = []
+        orWords = []
+
+        for words in wordList2:
+            if len(words) <= 0:
+                continue
+            words = Converter('zh-hans').convert(words)
+            if words[0] == "+":
+                andWords.append(words[1:])
+            elif words[0] == "-":
+                exclude.append(words[1:])
+            else:
+                orWords.append(words)
+
+        data = ""
+        data2 = ""
+        for word in orWords:
+            whereSql = SqlServer._GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, True)
+            data2 += "{} or ".format(whereSql)
+        if data2:
+            data += "({})".format(data2.strip("or "))
+
+        data2 = ""
+        for word in andWords:
+            whereSql = SqlServer._GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, True)
+            data2 += "{} or ".format(whereSql)
+        if data2:
+            data += "and ({})".format(data2.strip("or "))
+
+        data2 = ""
+        for word in exclude:
+            whereSql = SqlServer._GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, False)
+            data2 += "{} or ".format(whereSql)
+        if data2:
+            data += "and ({})".format(data2.strip("or "))
+
+        sql2Data = data
+
+        data2 = ""
+        if categorys:
+            for category in categorys:
+                data2 += " categories like '%{}%' or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
+        if data2:
+            data += "and ({})".format(data2.strip("or "))
+
+        selectNumSql = data
+        if data:
+            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE {}".format(data)
+        else:
+            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 1 "
+
+        if selectNumSql:
+            selectNumSql = "SELECT count(*) FROM book WHERE {}".format(selectNumSql)
+        else:
+            selectNumSql = "SELECT count(*) FROM book WHERE 1 "
+
+        if sql2Data:
+            sql2Data = "SELECT id FROM book WHERE {}".format(sql2Data)
+        else:
+            sql2Data = "SELECT id FROM book WHERE 1 "
+
+        if sortKey == 0:
+            sql += "ORDER BY updated_at "
+        elif sortKey == 1:
+            sql += "ORDER BY created_at "
+        elif sortKey == 2:
+            sql += "ORDER BY totalLikes "
+        elif sortKey == 3:
+            sql += "ORDER BY totalViews "
+        elif sortKey == 4:
+            sql += "ORDER BY epsCount "
+        elif sortKey == 5:
+            sql += "ORDER BY pages "
+
+        if sortId == 0:
+            sql += "DESC"
+        else:
+            sql += "ASC"
+        sql += "  limit {},{};".format((page-1)*20, 20)
+        return sql, sql2Data, selectNumSql
 
     @staticmethod
     def SaveCacheWord():

@@ -52,6 +52,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.isSelectAll = False
         self.InitCategory()
         self.lastText = "--1"
+        self.hiddenNum = 0
 
     def InitCategory(self):
         for categorory in CateGoryMgr().allCategorise:
@@ -110,7 +111,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def InitCategoryList(self):
         self.categoryList.clear()
-        for name in ["耽美", "伪娘", "禁书", "扶她", "重口", "生肉", "纯爱", "WEBTOON"]:
+        for name in ["耽美", "伪娘", "禁书", "扶她", "重口", "生肉", "纯爱", "SM", "NTR", "WEBTOON"]:
             self.categoryList.AddItem(name, True)
 
     def SwitchCurrent(self, **kwargs):
@@ -119,7 +120,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
         if self.categories:
             self.isLocal = False
-            self.lineEdit.setText(self.categories)
+            self.lineEdit.setPlaceholderText(self.categories)
             self.bookList.clear()
             self.SetEnable(self.isLocal)
             self.SendSearchCategories(1)
@@ -172,8 +173,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
                 self.bookList.UpdatePage(page, pages)
                 self.spinBox.setValue(page)
                 self.spinBox.setMaximum(pages)
-                pageText = Str.GetStr(Str.Page) + ": " + str(self.bookList.page) + "/" + str(self.bookList.pages)
-                self.label.setText(pageText)
+                self.label.setText(self.bookList.GetPageStr())
                 for v in info.get("docs", []):
                     self.bookList.AddBookByDict(v)
                 self.CheckCategoryShowItem()
@@ -202,12 +202,14 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.categoryNum.setText("")
 
         if self.isLocal:
-            sql, sql2Data = SqlServer.Search(self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag, self.isCategory, self.isUpLoad, categorys, page, self.sortKey.currentIndex(), self.sortId.currentIndex())
+            sql, sql2Data, selectNumSql = SqlServer.Search2(self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag, self.isCategory, self.isUpLoad, categorys, page, self.sortKey.currentIndex(), self.sortId.currentIndex())
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
+            if page == 1:
+                self.AddSqlTask("book", selectNumSql, SqlServer.TaskTypeSearchBookNum, callBack=self.SendLocalNumBack, backParam=self.text)
             if self.text != self.lastText:
                 self.lastText = self.text
                 self.ClearLocalNum()
-                self.AddSqlTask("book", sql2Data, SqlServer.TaskTypeSelectBookNum, callBack=self.SendLocalNumBack, backParam=self.text)
+                self.AddSqlTask("book", sql2Data, SqlServer.TaskTypeCategoryBookNum, callBack=self.SendLocalCategoryNumBack, backParam=self.text)
         else:
             self.ClearLocalNum()
             self.lastText = "--1"
@@ -221,6 +223,16 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def SendLocalNumBack(self, nums, text):
+        if text != self.text:
+            return
+
+        pages = (nums + 1) // 20
+        self.bookList.UpdateMaxPage(pages)
+        self.spinBox.setMaximum(pages)
+        self.label.setText(self.bookList.GetPageStr())
+        return
+
+    def SendLocalCategoryNumBack(self, nums, text):
         if self.text != text:
             return
         for k, v in nums.items():
@@ -241,10 +253,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         pages = 100
         self.bookList.UpdatePage(page, pages)
         # self.jumpLine.setValidator(QtIntLimit(1, pages, self))
-        self.spinBox.setValue(page)
         self.spinBox.setMaximum(pages)
-        pageText = Str.GetStr(Str.Page) + ": " + str(self.bookList.page) + "/" + str(self.bookList.pages)
-        self.label.setText(pageText)
+        self.spinBox.setValue(page)
+        self.label.setText(self.bookList.GetPageStr())
         for v in books:
             self.bookList.AddBookItemByBook(v)
         self.CheckCategoryShowItem()
@@ -266,6 +277,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             if item.isSelected():
                 data.append(item.text())
         # data = self.categoryList.GetAllSelectItem()
+        self.hiddenNum = 0
         for i in range(self.bookList.count()):
             item = self.bookList.item(i)
             widget = self.bookList.itemWidget(item)
@@ -274,6 +286,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             text2 = Converter('zh-hans').convert(text)
             for name in data:
                 if name in text2:
+                    self.hiddenNum += 1
                     item.setHidden(True)
                     isHidden = True
                     break
