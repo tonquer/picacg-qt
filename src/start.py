@@ -6,6 +6,7 @@ import sys
 import time
 import traceback
 
+
 from config import config
 from config.setting import Setting
 from qt_error import showError
@@ -29,6 +30,7 @@ except Exception as es:
     if hasattr(es, "msg"):
         config.ErrorMsg = es.msg
 
+from PySide6.QtGui import QFont
 from PySide6 import QtWidgets  # 导入PySide6部件
 
 # 此处不能删除
@@ -60,6 +62,10 @@ if __name__ == "__main__":
     try:
         Str.Reload()
         QtOwner().SetApp(app)
+        if sys.platform == "win32":
+            f = QFont("微软雅黑")
+            f.setBold(True)
+            app.setFont(f)
         from view.main.main_view import MainView
         main = MainView()
         main.show()  # 显示窗体
