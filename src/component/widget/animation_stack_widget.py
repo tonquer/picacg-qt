@@ -1,6 +1,6 @@
 from enum import Enum
 
-from PySide6.QtCore import QPropertyAnimation, QRectF, Property
+from PySide6.QtCore import QPropertyAnimation, QRectF, Property, Qt
 from PySide6.QtGui import QPaintEvent, QPainter, QPixmap
 from PySide6.QtWidgets import QStackedWidget
 
@@ -46,11 +46,12 @@ class AnimationStackWidget(QStackedWidget):
     def PaintPrevious(self, paint, index):
         w = self.widget(index)
         pixmap = QPixmap(w.size())
+        # pixmap.setDevicePixelRatio(self.devicePixelRatio())
         w.render(pixmap)
         r = w.geometry()
         value = self.currentValue
         r1 = QRectF(0.0, 0.0, value, r.height())
-        r2 = QRectF(r.width()-value, 0, value, r.height())
+        r2 = QRectF((r.width()-value), 0, value, r.height())
         paint.drawPixmap(r1, pixmap, r2)
 
     def SwitchWidgetByIndex(self, index, **kwargs):
@@ -83,17 +84,20 @@ class AnimationStackWidget(QStackedWidget):
         w = self.widget(index)
         r = w.geometry()
         w.resize(r.width(), r.height())
+        radio = self.devicePixelRatioF()
         pixmap = QPixmap(w.size())
+        # pixmap.setDevicePixelRatio(radio)
         w.render(pixmap)
 
         value = self.currentValue
-        r1 = QRectF(value, 0.0, r.width()-value, r.height())
-        r2 = QRectF(0.0, 0.0, r.width()-value, r.height())
+        r1 = QRectF(value, 0.0, (r.width()-value), r.height())
+        r2 = QRectF(0.0, 0.0, (r.width()-value), r.height())
         paint.drawPixmap(r1, pixmap, r2)
 
     def paintEvent(self, event: QPaintEvent) -> None:
         if self.animation.state() == QPropertyAnimation.State.Running:
             paint = QPainter(self)
+            paint.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
             if self.animationType == AnimationEnum.LeftToRight:
                 self.PaintPrevious(paint, self.currentIndex())
                 self.PaintNext(paint, self.nextIndex)

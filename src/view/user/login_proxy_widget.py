@@ -224,6 +224,8 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
     def SetSock5Proxy(self, isProxy):
         import socket
         import socks
+        if not QtOwner().backSock:
+            QtOwner().backSock = socket.socket
         if isProxy:
             data = self.sockEdit.text().replace("http://", "").replace("https://", "").replace("sock5://", "")
             data = data.split(":")
@@ -234,4 +236,4 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
                 socket.socket = socks.socksocket
         else:
             socks.set_default_proxy()
-            socket.socket = socks.socksocket
+            socket.socket = QtOwner().backSock

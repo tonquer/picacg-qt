@@ -94,6 +94,8 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
                         QtOwner().OpenGameInfo(self.linkId)
                     else:
                         QtOwner().OpenBookInfo(self.linkId)
+                elif obj == self.nameLabel:
+                    QtOwner().OpenSearchByCreate(self.nameLabel.text())
                 return True
             else:
                 return False

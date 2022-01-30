@@ -57,6 +57,8 @@ class FrameLessWidget(QWidget):
         # self.setMouseTracking(True)
 
     def paintEvent(self, event):
+        if self.window().isFullScreen():
+            return
         QWidget.paintEvent(self, event)
         painter = QPainter(self)
         painter.setPen(Qt.transparent)

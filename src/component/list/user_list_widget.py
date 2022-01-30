@@ -154,6 +154,7 @@ class UserListWidget(BaseListWidget):
 
         index = self.count()
         iwidget = CommentItemWidget(self)
+        iwidget.nameLabel.installEventFilter(iwidget)
         iwidget.setFocusPolicy(Qt.NoFocus)
         iwidget.killButton.hide()
         iwidget.nameLabel.setCursor(Qt.PointingHandCursor)

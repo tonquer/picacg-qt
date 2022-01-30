@@ -20,9 +20,9 @@ if [ ! -f ~/.picacg/data/version ];then
 	echo "mkdir version"
 fi
 
-if [ ! -f ~/.picacg/data/book.db ] || [ "`cat ~/.picacg/data/version`" != "v1.3.1" ] ; then
+if [ ! -f ~/.picacg/data/book.db ] || [ "`cat ~/.picacg/data/version`" != "v1.3.5" ] ; then
 	cp ${HERE}/data/book.db ~/.picacg/data/
-	echo "v1.3.1" > ~/.picacg/data/version
+	echo "v1.3.5" > ~/.picacg/data/version
 	echo "copy data"
 fi
 

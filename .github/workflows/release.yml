@@ -79,7 +79,7 @@ jobs:
             --hidden-import tools \
             --hidden-import view \
             --strip --windowed -i Icon.icns \
-            start.py --strip
+            start.py
         rm -rf dist/PicACG
         cp Icon.icns dist/
         ln -s /Applications/   dist/Applications
@@ -121,16 +121,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller==4.5.1
+        pip install pyinstaller==4.8
         pip install pywin32==302
         pip install -r src\requirements.txt
     - name: Build
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        Invoke-WebRequest -Uri https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip -OutFile upx-3.96-win64.zip
-        7z x -aoa .\upx-3.96-win64.zip -oupx
-        pyinstaller -F -w -i icon.ico start.py --upx-dir=upx\upx-3.96-win64
+        pyinstaller -F -w -i icon.ico start.py 
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         cp ..\LICENSE bika\
@@ -182,9 +180,7 @@ jobs:
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        Invoke-WebRequest -Uri https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip -OutFile upx-3.96-win64.zip
-        7z x -aoa .\upx-3.96-win64.zip -oupx
-        pyinstaller -F -w -i icon.ico start.py --upx-dir=upx\upx-3.96-win64
+        pyinstaller -F -w -i icon.ico start.py
         mv dist bika
         Copy-Item -Verbose -Recurse -Path data -Destination bika/
         cp ..\LICENSE bika\
@@ -206,4 +202,48 @@ jobs:
         upload_url: ${{ needs.release.outputs.Up_Url }}
         asset_path: ${{ env.PACKAGENAME }}.7z
         asset_name: ${{ env.PACKAGENAME }}.7z
+        asset_content_type: application/zip
+
+  ubuntu:
+    runs-on: ubuntu-18.04
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller==4.8
+        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.1/waifu2x_vulkan-1.1.1-cp37-cp37m-linux_x86_64.whl
+        pip install -r src/requirements.txt
+    - name: Build
+      run: |
+        cd src
+        pyinstaller -w start.py
+        cd dist
+        mkdir -p picacg.AppRun/usr/bin
+        wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x appimagetool-x86_64.AppImage
+        cp -r ../../res/appimage/* picacg.AppRun/
+        cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
+        cp -r start/* picacg.AppRun/usr/bin/
+        cp -r ../data  picacg.AppRun/
+        mv picacg.AppRun/usr/bin/start picacg.AppRun/usr/bin/PicACG
+        chmod +x picacg.AppRun/AppRun
+        chmod +x picacg.AppRun/usr/bin/PicACG
+        ./appimagetool-x86_64.AppImage picacg.AppRun
+        mv PicACG-x86_64.AppImage ../../${{ env.PACKAGENAME }}-x86_64.AppImage
+        cd ../..
+    - name: upload-linux
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.Up_Url }}
+        asset_path: ${{ env.PACKAGENAME }}-x86_64.AppImage
+        asset_name: ${{ env.PACKAGENAME }}-x86_64.AppImage
         asset_content_type: application/zip

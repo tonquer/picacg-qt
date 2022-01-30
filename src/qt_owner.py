@@ -11,6 +11,7 @@ class QtOwner(Singleton):
         Singleton.__init__(self)
         self._owner = None
         self._app = None
+        self.backSock = None
         self.isUseDb = True
 
     # db不可使用
