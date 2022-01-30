@@ -219,7 +219,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         try:
             import socket
             import socks
-            if Setting.IsHttpProxy == 2 and Setting.Sock5Proxy.value:
+            if Setting.IsHttpProxy.value == 2 and Setting.Sock5Proxy.value:
                 data = Setting.Sock5Proxy.value.replace("http://", "").replace("https://", "").replace("sock5://", "")
                 data = data.split(":")
                 if len(data) == 2:
@@ -369,28 +369,26 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         config.EncodeGpu = Setting.SelectEncodeGpu.value
 
         if not self.gpuInfos:
-            SettingView.EncodeGpu = "CPU"
+            config.EncodeGpu = "CPU"
             config.Encode = -1
             self.encodeSelect.addItem(config.EncodeGpu)
             self.encodeSelect.setCurrentIndex(0)
-            return
 
         if not config.EncodeGpu or (config.EncodeGpu != "CPU" and config.EncodeGpu not in self.gpuInfos):
             config.EncodeGpu = self.gpuInfos[0]
             config.Encode = 0
 
         index = 0
-        for info in self.gpuInfos:
-            self.encodeSelect.addItem(info)
-            if info == config.EncodeGpu:
-                self.encodeSelect.setCurrentIndex(index)
-                config.Encode = index
-            index += 1
+        if self.gpuInfos:
+            for info in self.gpuInfos:
+                self.encodeSelect.addItem(info)
+                if info == config.EncodeGpu:
+                    self.encodeSelect.setCurrentIndex(index)
+                    config.Encode = index
+                index += 1
 
         self.encodeSelect.addItem("CPU")
-
         if config.EncodeGpu == "CPU":
-
             config.Encode = -1
             self.encodeSelect.setCurrentIndex(index)
 

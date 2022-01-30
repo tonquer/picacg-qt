@@ -10,7 +10,7 @@ from component.scroll.read_scroll import ReadScroll
 from component.scroll.smooth_scroll import SmoothScroll
 from config import config
 from qt_owner import QtOwner
-from src.config.setting import Setting
+from config.setting import Setting
 from tools.str import Str
 from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_pool import QtReadImgPoolManager
@@ -101,6 +101,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.startPos = QPoint()
         self.labelWaifu2xState = {}
         # self.setSceneRect(-self.width()//2, -self.height()//2, self.width(), self.height())
+        QtOwner().owner.WindowsSizeChange.connect(self.ChangeScale)
 
     @property
     def readImg(self):
@@ -665,7 +666,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.ReloadImg()
         return
 
-    def ChangeScale(self, scale):
+    def ChangeScale(self, scale=1):
         # self.setSceneRect(-self.width()//2, -self.height()//2, self.width(), self.height())
         self.resetImg = True
         self.ReloadImg()

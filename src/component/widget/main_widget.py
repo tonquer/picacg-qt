@@ -31,6 +31,10 @@ if sys.platform == "win32" and not Setting.IsNotUseTitleBar.value:
                 self.widget.setVisible(True)
                 return FrameLessWidget.showNormal(self)
 
+            def showMaximized(self):
+                self.widget.setVisible(True)
+                return FrameLessWidget.showMaximized(self)
+
             def setSubTitle(self, text):
                 self.widget.subTitle.setText(text)
                 return

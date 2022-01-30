@@ -182,10 +182,13 @@ class Str:
     SwitchSite = 122               # 表里切换
     DelFavoriteSuc = 123           # 删除收藏成功
     AllComment = 124               # 所有评论
-    SelectAll = 125                # 全选
-    NotSelectAll = 126             # 反选
-    LoginOut = 127                # 登出
-    Sock5Error = 128              # Sock5设置出错
+    Move = 125               # 移动
+    Add = 126                # 新增
+    SelectAll = 127                # 全选
+    NotSelectAll = 128             # 反选
+    MyComment = 129          # 我的评论
+    LoginOut = 130                # 登出
+    Sock5Error = 131              # Sock5设置出错
 
     @classmethod
     def Reload(cls):
@@ -356,8 +359,11 @@ class Str:
         cls.strDict[cls.SwitchSite] = QCoreApplication.translate("cls.obj",  "表里切换", None)
         cls.strDict[cls.DelFavoriteSuc] = QCoreApplication.translate("cls.obj",  "删除收藏成功", None)
         cls.strDict[cls.AllComment] = QCoreApplication.translate("cls.obj",  "所有评论", None)
+        cls.strDict[cls.Move] = QCoreApplication.translate("cls.obj",  "移动", None)
+        cls.strDict[cls.Add] = QCoreApplication.translate("cls.obj",  "新增", None)
         cls.strDict[cls.SelectAll] = QCoreApplication.translate("cls.obj",  "全选", None)
         cls.strDict[cls.NotSelectAll] = QCoreApplication.translate("cls.obj",  "反选", None)
+        cls.strDict[cls.MyComment] = QCoreApplication.translate("cls.obj",  "我的评论", None)
         cls.strDict[cls.LoginOut] = QCoreApplication.translate("cls.obj",  "登出", None)
         cls.strDict[cls.Sock5Error] = QCoreApplication.translate("cls.obj",  "Sock5设置出错", None)
 

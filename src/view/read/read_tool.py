@@ -112,6 +112,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.timerOut = QTimer()
         self.timerOut.setInterval(1000)
         self.timerOut.timeout.connect(self.TimeOut)
+        self.isMaxFull = False
 
     @property
     def imgFrame(self):
@@ -364,17 +365,21 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         if self.readImg.epsName:
             QtOwner().SetSubTitle(self.readImg.epsName + "（{}/{}）".format(self.slider.value(), self.slider.maximum()))
 
-    def FullScreen(self):
+    def FullScreen(self, isClear=False):
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
-            QtOwner().owner.showNormal()
+
+            if self.isMaxFull:
+                QtOwner().owner.showMaximized()
+            else:
+                QtOwner().owner.showNormal()
             self.fullButton.setText(Str.GetStr(Str.FullScreen))
-            Setting.LookReadFull.SetValue(0)
+            if not isClear:
+                Setting.LookReadFull.SetValue(0)
         else:
+            self.isMaxFull = self.window().isMaximized()
             QtOwner().owner.showFullScreen()
             self.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
             Setting.LookReadFull.SetValue(1)
-        # self.readImg.raise_()
-        self.scrollArea.changeScale.emit(self.scaleCnt)
 
     def Waifu2xSave(self):
         self.SetWaifu2xCancle(True)

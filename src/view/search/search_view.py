@@ -255,7 +255,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.bookList.pages = 100
             # self.jumpLine.setValidator(QtIntLimit(1, pages, self))
             self.spinBox.setMaximum(pages)
-            self.spinBox.setValue(page)
+
+        self.spinBox.setValue(page)
         self.bookList.UpdatePage(page, self.bookList.pages)
         self.label.setText(self.bookList.GetPageStr())
         for v in books:

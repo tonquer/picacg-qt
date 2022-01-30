@@ -106,6 +106,9 @@ class SmoothScroll:
             res = 3 / 4 / m * (1 - x * x / m / m) * delta
         elif self.smoothMode == SmoothMode.COSINE:
             res = (cos(x * pi / m) + 1) / (2 * m) * delta
+        elif self.smoothMode == SmoothMode.Quintic:
+            t = delta / self.stepsTotal - 1
+            res = self.stepsTotal * (t * t * t * t * t + 1)
         return res
 
 
@@ -116,3 +119,4 @@ class SmoothMode(Enum):
     LINEAR = 2
     QUADRATI = 3
     COSINE = 4
+    Quintic = 5

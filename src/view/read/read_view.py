@@ -2,7 +2,7 @@ import os
 from functools import partial
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QEvent
 from PySide6.QtGui import QPixmap, QImage, QCursor
 from PySide6.QtWidgets import QMenu
 
@@ -135,7 +135,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.frame.scrollArea.ClearPixItem()
         self.Clear()
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
-            QtOwner().owner.showNormal()
+            self.qtTool.FullScreen(True)
         QtOwner().CloseReadView()
 
     def Clear(self):
@@ -178,6 +178,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         self.epsName = name
         QtOwner().ShowLoading()
+        self.qtTool.isMaxFull = self.window().isMaximized()
 
         # 开始加载
         self.InitDownload()

@@ -1,6 +1,6 @@
 from functools import partial
 
-from PySide6.QtCore import Qt, QEvent, QPoint
+from PySide6.QtCore import Qt, QEvent, QPoint, Signal
 from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication
 from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
 
@@ -21,6 +21,7 @@ from view.download.download_dir_view import DownloadDirView
 
 class MainView(Main, QtTaskBase):
     """ 主窗口 """
+    WindowsSizeChange = Signal()
 
     def __init__(self):
         QtOwner().SetOwner(self)
@@ -61,6 +62,11 @@ class MainView(Main, QtTaskBase):
         # self.readView.LoadSetting()
         # QApplication.instance().installEventFilter(self)
         # QtOwner().app.paletteChanged.connect(self.CheckPaletteChanged)
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.WindowStateChange:
+            self.WindowsSizeChange.emit()
+        return super(self.__class__, self).changeEvent(event)
 
     # def eventFilter(self, watched, event) -> bool:
     #     if watched == QtOwner().app:

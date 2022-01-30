@@ -31,11 +31,11 @@ class MoveEnum(Enum):
 
 
 class FrameLessWidget(QWidget):
-    BORDER_WIDTH = 5
+    BORDER_WIDTH = 10
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowSystemMenuHint |
+        self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         # self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
@@ -50,6 +50,10 @@ class FrameLessWidget(QWidget):
         self.__monitorInfo = None
         self.windowEffect = WindowEffect()
         self.windowEffect.addWindowAnimation(self.winId())
+
+        # 修复多屏不同 dpi 的显示问题
+        self.windowHandle().screenChanged.connect(self.__onScreenChanged)
+
         # self.setMouseTracking(True)
 
     def paintEvent(self, event):
@@ -166,6 +170,11 @@ class FrameLessWidget(QWidget):
         # params.rgrc[0].top = self.__monitorInfo['Work'][1]
         # params.rgrc[0].right = self.__monitorInfo['Work'][2]
         # params.rgrc[0].bottom = self.__monitorInfo['Work'][3]
+
+    def __onScreenChanged(self):
+        hWnd = int(self.windowHandle().winId())
+        win32gui.SetWindowPos(hWnd, None, 0, 0, 0, 0, win32con.SWP_NOMOVE |
+                              win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
 
     # def moveArea(self, pos: QPointF):
     #     if pos.y() < self.m_nBorder:
