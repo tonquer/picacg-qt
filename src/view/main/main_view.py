@@ -1,7 +1,7 @@
 from functools import partial
 
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal
-from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication
+from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QFont
 from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
 
 from component.dialog.loading_dialog import LoadingDialog

@@ -64,7 +64,7 @@ if __name__ == "__main__":
         QtOwner().SetApp(app)
         if sys.platform == "win32":
             f = QFont("微软雅黑")
-            f.setBold(True)
+            # f.setBold(True)
             app.setFont(f)
         from view.main.main_view import MainView
         main = MainView()

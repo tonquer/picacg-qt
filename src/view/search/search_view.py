@@ -1,6 +1,8 @@
 import json
 from functools import partial
 
+from PySide6.QtCore import Qt, QEvent, QPoint
+from PySide6.QtGui import QHelpEvent
 from PySide6.QtWidgets import QWidget, QCheckBox
 
 from component.layout.flow_layout import FlowLayout
@@ -53,6 +55,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.InitCategory()
         self.lastText = "--1"
         self.hiddenNum = 0
+        self.searchLabel.installEventFilter(self)
 
     def InitCategory(self):
         for categorory in CateGoryMgr().allCategorise:
@@ -116,16 +119,23 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def SwitchCurrent(self, **kwargs):
         text = kwargs.get("text")
-        self.categories = kwargs.get("categories", "")
+        categories = kwargs.get("categories")
+        if categories is not None:
+            self.categories = categories
 
-        if self.categories:
+        if categories is not None:
             self.isLocal = False
-            self.lineEdit.setPlaceholderText(self.categories)
+            self.text = ""
+            self.lineEdit.setText(self.categories)
             self.bookList.clear()
-            self.SetEnable(self.isLocal)
+            if self.categories in CateGoryMgr().allCategorise:
+                self.SetEnable(True)
+            else:
+                self.SetEnable(False)
             self.SendSearchCategories(1)
         elif text is not None:
             self.text = text
+            self.categories = ""
             self.lineEdit.setText(self.text)
             self.bookList.clear()
             isLocal = kwargs.get("isLocal")
@@ -156,9 +166,28 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
     def SendSearchCategories(self, page):
         sort = ["dd", "da", "ld", "vd"]
         QtOwner().ShowLoading()
-        self.ClearLocalNum()
-        sortId = sort[self.comboBox.currentIndex()]
-        self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
+        if self.categories in CateGoryMgr().allCategorise:
+            categorys = self.GetSelectCategory()
+            if len(categorys) > 0:
+                self.categoryNum.setText("已选择{}个分类".format(len(categorys)))
+            else:
+                self.categoryNum.setText("")
+            sql, sql2Data, selectNumSql = SqlServer.Search2(self.categories, False, False, False, False,
+                                                            True, False, categorys, page,
+                                                            self.sortKey.currentIndex(), self.sortId.currentIndex())
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
+            if page == 1:
+                self.AddSqlTask("book", selectNumSql, SqlServer.TaskTypeSearchBookNum, callBack=self.SendLocalNumBack,
+                                backParam=self.text)
+            if self.text != self.lastText:
+                self.lastText = self.text
+                self.ClearLocalNum()
+                self.AddSqlTask("book", sql2Data, SqlServer.TaskTypeCategoryBookNum, callBack=self.SendLocalCategoryNumBack,
+                                backParam=self.text)
+        else:
+            self.ClearLocalNum()
+            sortId = sort[self.comboBox.currentIndex()]
+            self.AddHttpTask(req.CategoriesSearchReq(page, self.categories, sortId), self.SendSearchBack)
 
     def SendSearchBack(self, raw):
         QtOwner().CloseLoading()
@@ -191,7 +220,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
         self.bookList.page = 1
         self.bookList.clear()
-        self.SendSearch(1)
+        if not self.categories:
+            self.SendSearch(1)
+        else:
+            self.SendSearchCategories(1)
 
     def SendSearch(self, page):
         QtOwner().ShowLoading()
@@ -223,7 +255,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def SendLocalNumBack(self, nums, text):
-        if text != self.text:
+        if text != self.text and text != self.categories:
             return
 
         pages = max(0, (nums - 1)) // 20 + 1
@@ -233,7 +265,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def SendLocalCategoryNumBack(self, nums, text):
-        if self.text != text:
+        if text != self.text and text != self.categories:
             return
         for k, v in nums.items():
             box = self.allBox.get(k)
@@ -326,6 +358,17 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.SendSearch(1)
         else:
             self.SendSearchCategories(1)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.LeftButton:
+                help = QHelpEvent(QEvent.Type.ToolTip, event.pos(), event.globalPos())
+                QtOwner().app.postEvent(self.searchLabel, help)
+                return True
+            else:
+                return False
+        else:
+            return super(self.__class__, self).eventFilter(obj, event)
 
     # def OpenSearchCategories(self, categories):
     #     # self.setFocus()

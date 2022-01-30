@@ -21,7 +21,7 @@ class CategoryView(QtWidgets.QWidget, Ui_Category, QtTaskBase):
     def SwitchCurrent(self, **kwargs):
         refresh = kwargs.get("refresh")
 
-        if refresh or self.bookList.count() <= 0:
+        if refresh and self.bookList.count() <= 0:
             QtOwner().ShowLoading()
             self.AddHttpTask(req.CategoryReq(), callBack=self.InitCateGoryBack)
         pass

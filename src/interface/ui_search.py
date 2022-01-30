@@ -41,14 +41,14 @@ class Ui_Search(object):
 
         self.horizontalLayout_2.addWidget(self.label_2)
 
-        self.label_5 = QLabel(Search)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setMinimumSize(QSize(20, 0))
-        self.label_5.setMaximumSize(QSize(20, 16777215))
-        self.label_5.setToolTipDuration(-1)
-        self.label_5.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.searchLabel = QLabel(Search)
+        self.searchLabel.setObjectName(u"searchLabel")
+        self.searchLabel.setMinimumSize(QSize(20, 0))
+        self.searchLabel.setMaximumSize(QSize(20, 16777215))
+        self.searchLabel.setToolTipDuration(-1)
+        self.searchLabel.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-        self.horizontalLayout_2.addWidget(self.label_5)
+        self.horizontalLayout_2.addWidget(self.searchLabel)
 
         self.lineEdit = SearchLineEdit(Search)
         self.lineEdit.setObjectName(u"lineEdit")
@@ -245,9 +245,9 @@ class Ui_Search(object):
 #endif // QT_CONFIG(tooltip)
         self.label_2.setText(QCoreApplication.translate("Search", u"\u641c\u7d22\uff1a", None))
 #if QT_CONFIG(tooltip)
-        self.label_5.setToolTip(QCoreApplication.translate("Search", u"<html><head/><body><p>\u641c\u5bfb\u7684\u6700\u4f73\u59ff\u52bf?</p><p>\u3010\u5305\u542b\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][+]\u4eba\u59bb,\u4ec5\u663e\u793a\u5168\u5f69\u4e14\u662f\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 +\u4eba\u59bb<br/></p><p>\u3010\u6392\u9664\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][]\u4eba\u59bb,\u663e\u793a\u5168\u5f69\u5e76\u6392\u9664\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 -\u4eba\u59bb<br/></p><p>\u3010\u6211\u90fd\u8981\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c]\u4eba\u59bb,\u4f1a\u663e\u793a\u6240\u6709\u5305\u542b\u5168\u5f69\u53ca\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 \u4eba\u59bb</p></body></html>", None))
+        self.searchLabel.setToolTip(QCoreApplication.translate("Search", u"<html><head/><body><p>\u641c\u5bfb\u7684\u6700\u4f73\u59ff\u52bf?</p><p>\u3010\u5305\u542b\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][+]\u4eba\u59bb,\u4ec5\u663e\u793a\u5168\u5f69\u4e14\u662f\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 +\u4eba\u59bb<br/></p><p>\u3010\u6392\u9664\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][]\u4eba\u59bb,\u663e\u793a\u5168\u5f69\u5e76\u6392\u9664\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 -\u4eba\u59bb<br/></p><p>\u3010\u6211\u90fd\u8981\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c]\u4eba\u59bb,\u4f1a\u663e\u793a\u6240\u6709\u5305\u542b\u5168\u5f69\u53ca\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 \u4eba\u59bb</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.label_5.setText(QCoreApplication.translate("Search", u"?", None))
+        self.searchLabel.setText(QCoreApplication.translate("Search", u"?", None))
         self.searchButton.setText(QCoreApplication.translate("Search", u"\u641c\u7d22", None))
         self.label_4.setText(QCoreApplication.translate("Search", u"\u5c4f\u853d\uff1a", None))
         self.label_3.setText(QCoreApplication.translate("Search", u"\u5206\u7c7b\u8fc7\u6ee4\uff1a", None))
