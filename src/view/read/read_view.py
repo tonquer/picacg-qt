@@ -172,13 +172,13 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.epsId = epsId
         self.pageIndex = pageIndex
 
+        self.qtTool.isMaxFull = self.window().isMaximized()
         if Setting.LookReadFull.value:
             QtOwner().owner.showFullScreen()
             self.qtTool.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
 
         self.epsName = name
         QtOwner().ShowLoading()
-        self.qtTool.isMaxFull = self.window().isMaximized()
 
         # 开始加载
         self.InitDownload()
