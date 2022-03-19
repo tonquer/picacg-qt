@@ -152,13 +152,17 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
                 dayStr = ToolUtil.GetUpdateStr(data.get("data").get("game").get("updated_at"))
                 self.updateTick.setText(dayStr + Str.GetStr(Str.Update))
                 if config.IsLoadingPicture:
-                    self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
+                    url = ToolUtil.GetRealUrl(fileServer, path)
+                    path = ToolUtil.GetRealPath(self.gameId, "game/{}".format(self.gameId))
+                    self.AddDownloadTask(url, path, completeCallBack=self.UpdatePicture)
                 for index, pic in enumerate(data.get("data").get("game").get("screenshots", [])):
                     item = QListWidgetItem(self.epsListWidget)
                     item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
                     self.epsListWidget.setItemWidget(item, QLabel(Str.GetStr(Str.LoadingPicture)))
                     self.epsListWidget.addItem(item)
-                    self.AddDownloadTask(pic.get("fileServer"), pic.get("path"), completeCallBack=self.UpdateListPicture, backParam=index)
+                    url = ToolUtil.GetRealUrl(pic.get("fileServer"), pic.get("path"))
+                    path = ToolUtil.GetMd5RealPath(url, "game/{}".format(self.gameId))
+                    self.AddDownloadTask(url, path, completeCallBack=self.UpdateListPicture, backParam=index)
             else:
                 QtOwner().ShowError(Str.GetStr(st))
         except Exception as es:

@@ -36,7 +36,7 @@ class Ui_Help(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 508, 586))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -20, 508, 586))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout = QHBoxLayout()
@@ -167,6 +167,11 @@ class Ui_Help(object):
 
         self.gridLayout.addWidget(self.waifu2x, 2, 1, 1, 1)
 
+        self.openCmd = QPushButton(self.widget_2)
+        self.openCmd.setObjectName(u"openCmd")
+
+        self.gridLayout.addWidget(self.openCmd, 5, 1, 1, 1)
+
 
         self.verticalLayout_2.addWidget(self.widget_2)
 
@@ -214,5 +219,6 @@ class Ui_Help(object):
         self.label_11.setText(QCoreApplication.translate("Help", u"\u672c\u5730\u6570\u636e\u4e0a\u6b21\u66f4\u65b0:", None))
         self.upTimeLabel.setText(QCoreApplication.translate("Help", u"2021-11-27", None))
         self.waifu2x.setText(QCoreApplication.translate("Help", u"v1.0.8", None))
+        self.openCmd.setText(QCoreApplication.translate("Help", u"\u6253\u5f00\u63a7\u5236\u53f0", None))
     # retranslateUi
 

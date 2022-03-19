@@ -65,11 +65,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         self.speedTest = [("", "", False, 1), ("", "", True, 2)]
         i = 3
-        for address in config.Address:
-            self.speedTest.append((address, config.ImageServer, False, i))
-            i += 1
-            self.speedTest.append((address, config.ImageServer, True, i))
-            i += 1
+        self.speedTest.append((config.Address[0], config.ImageServer2, False, i))
+        i += 1
+        self.speedTest.append((config.Address[0], config.ImageServer2, True, i))
+        i += 1
+        self.speedTest.append((config.Address[1], config.ImageServer3, False, i))
+        i += 1
+        self.speedTest.append((config.Address[1], config.ImageServer3, True, i))
+        i += 1
 
         PreferCDNIP = self.cdnIp.text()
         if PreferCDNIP:
@@ -188,10 +191,10 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             imageServer = ""
             address = ""
         elif Setting.ProxySelectIndex.value == 2:
-            imageServer = config.ImageServer
+            imageServer = config.ImageServer2
             address = config.Address[0]
         elif Setting.ProxySelectIndex.value == 3:
-            imageServer = config.ImageServer
+            imageServer = config.ImageServer3
             address = config.Address[1]
         else:
             imageServer = Setting.PreferCDNIP.value

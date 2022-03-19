@@ -6,13 +6,14 @@ from functools import partial
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import QSettings, Qt, QSize, QUrl, QFile, QTranslator, QLocale
-from PySide6.QtGui import QDesktopServices
+from PySide6.QtGui import QDesktopServices, QFont, QFontDatabase
 from PySide6.QtWidgets import QFileDialog
 
 from config import config
 from config.setting import Setting, SettingValue
 from interface.ui_setting_new import Ui_SettingNew
 from qt_owner import QtOwner
+from tools.langconv import Converter
 from tools.log import Log
 from tools.str import Str
 
@@ -30,6 +31,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.passwd = ""
         self.gpuInfos = []
         self.translate = QTranslator()
+        for name in QFontDatabase.families():
+            self.fontBox.addItem(name)
 
         # RadioButton:
         self.themeGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ThemeIndex))
@@ -62,6 +65,9 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.downNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadNoise))
         self.encodeSelect.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.SelectEncodeGpu))
         self.threadSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.Waifu2xCpuCore))
+        self.fontBox.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.FontName))
+        self.fontSize.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.FontSize))
+        self.fontStyle.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.FontStyle))
 
         # spinBox
         # self.preDownNum.valueChanged.connect(partial(self.SpinBoxEvent, "", self.preDownNum))
@@ -190,6 +196,16 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             if Setting.SelectEncodeGpu.value == self.encodeSelect.itemText(index):
                 self.encodeSelect.setCurrentIndex(index)
 
+        for index in range(self.fontSize.count()):
+            if str(Setting.FontSize.value) == self.fontSize.itemText(index):
+                self.fontSize.setCurrentIndex(index)
+
+        self.fontStyle.setCurrentIndex(int(Setting.FontStyle.value))
+
+        for index in range(self.fontBox.count()):
+            if str(Setting.FontName.value) == self.fontBox.itemText(index):
+                self.fontBox.setCurrentIndex(index)
+
         self.readCheckBox.setChecked(Setting.IsOpenWaifu.value)
         self.readNoise.setCurrentIndex(Setting.LookNoise.value)
         self.readScale.setValue(Setting.LookScale.value)
@@ -222,7 +238,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             if not QtOwner().backSock:
                 QtOwner().backSock = socket.socket
             if Setting.IsHttpProxy.value == 2 and Setting.Sock5Proxy.value:
-                data = Setting.Sock5Proxy.value.replace("http://", "").replace("https://", "").replace("sock5://", "")
+                data = Setting.Sock5Proxy.value.replace("http://", "").replace("https://", "").replace("sock5://", "").replace("socks5://", "")
                 data = data.split(":")
                 if len(data) == 2:
                     host = data[0]
@@ -378,7 +394,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             self.encodeSelect.addItem(config.EncodeGpu)
             self.encodeSelect.setCurrentIndex(0)
 
-        if not config.EncodeGpu or (config.EncodeGpu != "CPU" and config.EncodeGpu not in self.gpuInfos):
+        if not config.EncodeGpu or (self.gpuInfos and config.EncodeGpu != "CPU" and config.EncodeGpu not in self.gpuInfos):
             config.EncodeGpu = self.gpuInfos[0]
             config.Encode = 0
 
@@ -391,7 +407,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
                     config.Encode = index
                 index += 1
 
-        self.encodeSelect.addItem("CPU")
+            self.encodeSelect.addItem("CPU")
+            
         if config.EncodeGpu == "CPU":
             config.Encode = -1
             self.encodeSelect.setCurrentIndex(index)
@@ -403,7 +420,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             self.threadSelect.addItem(str(i + 1))
         self.threadSelect.setCurrentIndex(config.UseCpuNum)
 
-        Log.Info("waifu2x GPU: " + str(self.gpuInfos) + ",select: " + str(config.EncodeGpu) + ",use cpu num: " + str(config.UseCpuNum))
+        Log.Warn("waifu2x GPU: " + str(self.gpuInfos) + ",select: " + str(config.EncodeGpu) + ",use cpu num: " + str(config.UseCpuNum))
         return
 
     def GetGpuName(self):

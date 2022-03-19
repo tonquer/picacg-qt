@@ -28,17 +28,17 @@ IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-qt/releases/latest"
 UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
-UpdateUrl2 = "https://hub.fastgit.org/tonquer/picacg-qt/releases/latest"
-UpdateUrl2Back = "https://hub.fastgit.org/tonquer/picacg-qt"
+UpdateUrl2 = "https://hub.fastgit.xyz/tonquer/picacg-qt/releases/latest"
+UpdateUrl2Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data/"
 
 DatabaseUpdate2 = "https://gitee.com/bika-robot/picacg-database/raw/main/version.txt"
 DatabaseDownload2 = "https://gitee.com/bika-robot/picacg-database/raw/main/data/"
-UpdateVersion = "v1.3.5"
-RealVersion = "v1.3.5"
-TimeVersion = "2022-1-30"
+UpdateVersion = "v1.3.6"
+RealVersion = "v1.3.6"
+TimeVersion = "2022-3-19"
 
 Waifu2xVersion = "1.1.1"
 
@@ -65,18 +65,24 @@ ProxyUrl = "https://github.com/tonquer/picacg-qt/discussions/48"
 # Waifu2x相关
 Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 
-Address = ['104.20.180.50', '104.20.181.50']  # 分类2，3 Ip列表
-ImageServer = 'storage.wikawika.xyz'          # 分流2，3 使用的图片服务器
+Address = ['104.20.181.50', '104.20.180.50']  # 分类2，3 Ip列表
+
+ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
+ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器
+
+ImageServer3 = 'storage.wikawika.xyz'          # 分流3 使用的图片服务器
 
 ApiDomain = [
     "picaapi.picacomic.com",
 ]
 
 ImageDomain = [
-    "storage.wikawika.xyz",
+    "s3.picacomic.com",
     "storage1.picacomic.com",
     "img.tipatipa.xyz",
     "img.picacomic.com",
-    "pica-pica.wikawika.xyz",
-    "www.picacomic.com"
+    # "pica-pica.wikawika.xyz",
+    "www.picacomic.com",
+    "storage-b.picacomic.com",
+
 ]

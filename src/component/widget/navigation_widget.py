@@ -10,6 +10,7 @@ from server import req
 from task.qt_task import QtTaskBase
 from tools.status import Status
 from tools.str import Str
+from tools.tool import ToolUtil
 from tools.user import User
 from view.user.login_view import LoginView
 
@@ -68,6 +69,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         url = User().avatar.get("fileServer")
         path = User().avatar.get("path")
         if url and path and config.IsLoadingPicture:
+            url = ToolUtil.GetRealUrl(url, path)
+            path = ToolUtil.GetMd5RealPath(url, "user")
             self.AddDownloadTask(url, path, completeCallBack=self.ShowUserImg)
 
     def ShowUserImg(self, data, st):

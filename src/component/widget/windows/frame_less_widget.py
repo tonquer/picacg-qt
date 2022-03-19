@@ -1,14 +1,14 @@
 # coding:utf-8
 import sys
 from enum import Enum
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QRect, QPointF, QEvent
 
 from ctypes import cast
 from ctypes.wintypes import MSG
 
 from ctypes import POINTER
 
-from PySide6.QtGui import QPainter, QBrush, QColor, QPainterPath
+from PySide6.QtGui import QPainter, QBrush, QColor, QPainterPath, QMouseEvent
 from PySide6.QtWidgets import QWidget, QStyleOption, QStyle
 from win32 import win32api, win32gui
 from win32.lib import win32con
@@ -16,18 +16,7 @@ from win32.lib import win32con
 from config.setting import Setting
 from .window_effect import WindowEffect
 from .c_structures import MINMAXINFO, NCCALCSIZE_PARAMS
-
-
-class MoveEnum(Enum):
-    LEFT_TOP = 11
-    TOP = 12
-    RIGHT_TOP = 13
-    LEFT = 21
-    CENTER = 22
-    RIGHT = 23
-    LEFT_BOTTOM = 31
-    BOTTOM = 32
-    RIGHT_BOTTOM = 33
+from ..com_widget import ComWidget, MoveEnum
 
 
 class FrameLessWidget(QWidget):
@@ -40,10 +29,10 @@ class FrameLessWidget(QWidget):
         # self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.resize(500, 500)
-        self.m_nBorder = 40
+        self.m_nBorder = FrameLessWidget.BORDER_WIDTH
         # self.setMouseTracking(True)
-        self.setAttribute(Qt.WA_Hover, True)
         self.m_bPress = False
+        self.setAttribute(Qt.WA_Hover, True)
         self.m_area = 0
         self.m_currentPos = 0
         self.isWin = False
@@ -53,8 +42,16 @@ class FrameLessWidget(QWidget):
 
         # 修复多屏不同 dpi 的显示问题
         self.windowHandle().screenChanged.connect(self.__onScreenChanged)
-
         # self.setMouseTracking(True)
+        self.setAttribute(Qt.WA_Hover, True)
+        self.installEventFilter(self)
+        # self.setMouseTracking(True)
+
+    def eventFilter(self, obj, e):
+        if not self.m_bPress:
+            if e.type() == QEvent.HoverEnter or e.type() == QEvent.HoverLeave or e.type() == QEvent.HoverMove:
+                self.mouseMoveEvent(e)
+        return QWidget.eventFilter(self, obj, e)
 
     def paintEvent(self, event):
         if self.window().isFullScreen():
@@ -89,38 +86,44 @@ class FrameLessWidget(QWidget):
             """ 处理windows消息 """
             msg = MSG.from_address(message.__int__())
             # print(msg.message)
-            if msg.message == win32con.WM_NCHITTEST:
-                # 解决多屏下会出现鼠标一直为拖动状态的问题
-                x = win32api.LOWORD(msg.lParam)
-                y = win32api.HIWORD(msg.lParam)
-
-                radio = self.devicePixelRatio()
-                xPos = (x-
-                        self.frameGeometry().x()*radio) % 65536
-                yPos = y - self.frameGeometry().y()*radio
-                # print(self.frameGeometry().x(), self.frameGeometry().y(), x, y, xPos, yPos)
-                w, h = self.width()*radio, self.height()*radio
-                lx = xPos < self.BORDER_WIDTH
-                rx = xPos + 9 > w - self.BORDER_WIDTH
-                ty = yPos < self.BORDER_WIDTH
-                by = yPos > h - self.BORDER_WIDTH
-                if lx and ty:
-                    return True, win32con.HTTOPLEFT
-                elif rx and by:
-                    return True, win32con.HTBOTTOMRIGHT
-                elif rx and ty:
-                    return True, win32con.HTTOPRIGHT
-                elif lx and by:
-                    return True, win32con.HTBOTTOMLEFT
-                elif ty:
-                    return True, win32con.HTTOP
-                elif by:
-                    return True, win32con.HTBOTTOM
-                elif lx:
-                    return True, win32con.HTLEFT
-                elif rx:
-                    return True, win32con.HTRIGHT
-            elif msg.message == win32con.WM_NCCALCSIZE:
+            # if msg.message == win32con.WM_NCHITTEST:
+            #     # 解决多屏下会出现鼠标一直为拖动状态的问题
+            #     x = win32api.LOWORD(msg.lParam)
+            #     y = win32api.HIWORD(msg.lParam)
+            #
+            #     radio = self.devicePixelRatioF()
+            #
+            #     seekX = self.screen().geometry().left()
+            #     if self.frameGeometry().x() > seekX:
+            #         seekX = seekX + (self.frameGeometry().x() - seekX)*radio
+            #     else:
+            #         seekX = self.frameGeometry().x() * radio
+            #
+            #     xPos = (x - seekX) % 65536
+            #     yPos = y - self.frameGeometry().y()*radio
+            #     # print(self.frameGeometry().x(), self.frameGeometry().width(), seekX, x, xPos)
+            #     w, h = self.width()*radio, self.height()*radio
+            #     lx = xPos < self.BORDER_WIDTH
+            #     rx = xPos + 9 > w - self.BORDER_WIDTH
+            #     ty = yPos < self.BORDER_WIDTH
+            #     by = yPos > h - self.BORDER_WIDTH
+                # if lx and ty:
+                #     return True, win32con.HTTOPLEFT
+                # elif rx and by:
+                #     return True, win32con.HTBOTTOMRIGHT
+                # elif rx and ty:
+                #     return True, win32con.HTTOPRIGHT
+                # elif lx and by:
+                #     return True, win32con.HTBOTTOMLEFT
+                # elif ty:
+                #     return True, win32con.HTTOP
+                # elif by:
+                #     return True, win32con.HTBOTTOM
+                # elif lx:
+                #     return True, win32con.HTLEFT
+                # elif rx:
+                #     return True, win32con.HTRIGHT
+            if msg.message == win32con.WM_NCCALCSIZE:
                 if self._isWindowMaximized(msg.hWnd):
                     self.__monitorNCCALCSIZE(msg)
                 return True, 0
@@ -178,106 +181,108 @@ class FrameLessWidget(QWidget):
         win32gui.SetWindowPos(hWnd, None, 0, 0, 0, 0, win32con.SWP_NOMOVE |
                               win32con.SWP_NOSIZE | win32con.SWP_FRAMECHANGED)
 
-    # def moveArea(self, pos: QPointF):
-    #     if pos.y() < self.m_nBorder:
-    #         k = 10
-    #     elif pos.y() > self.height() - self.m_nBorder:
-    #         k = 30
-    #     else:
-    #         k = 20
-    #
-    #     if pos.x() < self.m_nBorder:
-    #         v = 1
-    #     elif pos.x() > self.width() - self.m_nBorder:
-    #         v = 3
-    #     else:
-    #         v = 2
-    #
-    #     return k + v
-    #
-    # def setMouseStyle(self, moveArea):
-    #     if moveArea == MoveEnum.LEFT_TOP.value:
-    #         self.setCursor(Qt.SizeFDiagCursor)
-    #     elif moveArea == MoveEnum.TOP.value:
-    #         self.setCursor(Qt.ArrowCursor)
-    #     elif moveArea == MoveEnum.RIGHT_TOP.value:
-    #         self.setCursor(Qt.SizeBDiagCursor)
-    #     elif moveArea == MoveEnum.LEFT.value:
-    #         self.setCursor(Qt.SizeHorCursor)
-    #     elif moveArea == MoveEnum.CENTER.value:
-    #         self.setCursor(Qt.ArrowCursor)
-    #     elif moveArea == MoveEnum.RIGHT.value:
-    #         self.setCursor(Qt.SizeHorCursor)
-    #     elif moveArea == MoveEnum.LEFT_BOTTOM.value:
-    #         self.setCursor(Qt.SizeBDiagCursor)
-    #     elif moveArea == MoveEnum.BOTTOM.value:
-    #         self.setCursor(Qt.SizeVerCursor)
-    #     elif moveArea == MoveEnum.RIGHT_BOTTOM.value:
-    #         self.setCursor(Qt.SizeFDiagCursor)
-    #     else:
-    #         self.setCursor(Qt.ArrowCursor)
-    #
-    # def mouseMoveEvent(self, event):
-    #     # print(event.globalPos())
-    #     if self.isWin:
-    #         return QWidget.mousePressEvent(self, event)
-    #     area = self.moveArea(event.pos())
-    #     self.setMouseStyle(area)
-    #     if self.m_bPress:
-    #         tempPos = event.globalPos() - self.m_currentPos
-    #
-    #         if self.m_area == MoveEnum.TOP.value:
-    #             self.move(self.pos() + tempPos)
-    #             self.m_currentPos = event.globalPos()
-    #         else:
-    #             tl = self.mapToGlobal(self.rect().topLeft())
-    #             rb = self.mapToGlobal(self.rect().bottomRight())
-    #             gloPoint = event.globalPos()
-    #             rMove = QRect(tl, rb)
-    #             if self.m_area == MoveEnum.LEFT_TOP.value:
-    #                 if rb.x() - gloPoint.x() <= self.minimumWidth():
-    #                     rMove.setX(tl.x())
-    #                 else:
-    #                     rMove.setX(gloPoint.x())
-    #                 if rb.y() - gloPoint.y() <= self.minimumHeight():
-    #                     rMove.setY(tl.y())
-    #                 else:
-    #                     rMove.setY(gloPoint.y())
-    #             elif self.m_area == MoveEnum.RIGHT_TOP.value:
-    #                 rMove.setWidth(gloPoint.x()-tl.x())
-    #                 rMove.setY(gloPoint.y())
-    #             elif self.m_area == MoveEnum.LEFT.value:
-    #                 if rb.x() - gloPoint.x() <= self.minimumWidth():
-    #                     rMove.setX(tl.x())
-    #                 else:
-    #                     rMove.setX(gloPoint.x())
-    #             elif self.m_area == MoveEnum.RIGHT.value:
-    #                 rMove.setWidth(gloPoint.x()-tl.x())
-    #             elif self.m_area == MoveEnum.LEFT_BOTTOM.value:
-    #                 rMove.setX(gloPoint.x())
-    #                 rMove.setHeight(gloPoint.y()-tl.y())
-    #             elif self.m_area == MoveEnum.BOTTOM.value:
-    #                 rMove.setHeight(gloPoint.y()-tl.y())
-    #             elif self.m_area == MoveEnum.RIGHT_BOTTOM.value:
-    #                 rMove.setWidth(gloPoint.x()-tl.x())
-    #                 rMove.setHeight(gloPoint.y()-tl.y())
-    #             self.setGeometry(rMove)
-    #         event.accept()
-    #
-    # def mousePressEvent(self, event):
-    #     if self.isWin:
-    #         return QWidget.mousePressEvent(self, event)
-    #     area = self.moveArea(event.pos())
-    #     self.setMouseStyle(area)
-    #     if event.buttons() == Qt.LeftButton:
-    #         self.m_bPress = True
-    #         self.m_area = area
-    #         self.m_currentPos = event.globalPos()
-    #         event.accept()
-    #
-    # def mouseReleaseEvent(self, event: QtGui.QMouseEvent) -> None:
-    #     if self.isWin:
-    #         return QWidget.mouseReleaseEvent(self, event)
-    #     self.m_bPress = False
-    #     self.setCursor(Qt.ArrowCursor)
+    def moveArea(self, pos: QPointF):
+        if pos.y() < self.m_nBorder:
+            k = 10
+        elif pos.y() > self.height() - self.m_nBorder:
+            k = 30
+        else:
+            k = 20
+
+        if pos.x() < self.m_nBorder:
+            v = 1
+        elif pos.x() > self.width() - self.m_nBorder:
+            v = 3
+        else:
+            v = 2
+
+        return k + v
+
+    def setMouseStyle(self, moveArea):
+        if moveArea == MoveEnum.LEFT_TOP.value:
+            self.setCursor(Qt.SizeFDiagCursor)
+        elif moveArea == MoveEnum.TOP.value:
+            self.setCursor(Qt.ArrowCursor)
+        elif moveArea == MoveEnum.RIGHT_TOP.value:
+            self.setCursor(Qt.SizeBDiagCursor)
+        elif moveArea == MoveEnum.LEFT.value:
+            self.setCursor(Qt.SizeHorCursor)
+        elif moveArea == MoveEnum.CENTER.value:
+            self.setCursor(Qt.ArrowCursor)
+        elif moveArea == MoveEnum.RIGHT.value:
+            self.setCursor(Qt.SizeHorCursor)
+        elif moveArea == MoveEnum.LEFT_BOTTOM.value:
+            self.setCursor(Qt.SizeBDiagCursor)
+        elif moveArea == MoveEnum.BOTTOM.value:
+            self.setCursor(Qt.SizeVerCursor)
+        elif moveArea == MoveEnum.RIGHT_BOTTOM.value:
+            self.setCursor(Qt.SizeFDiagCursor)
+        else:
+            self.setCursor(Qt.ArrowCursor)
+
+    def mouseMoveEvent(self, event):
+        # print(event.globalPos())
+        if self.isWin:
+            return QWidget.mousePressEvent(self, event)
+        area = ComWidget.moveArea(self.width(), self.height(), event.pos())
+        self.setMouseStyle(area)
+        if self.m_bPress:
+            # tempPos = event.globalPos() - self.m_currentPos
+
+            if self.m_area == MoveEnum.TOP.value:
+                return
+                # self.move(self.pos() + tempPos)
+                # self.m_currentPos = event.globalPos()
+            else:
+                tl = self.mapToGlobal(self.rect().topLeft())
+                rb = self.mapToGlobal(self.rect().bottomRight())
+                gloPoint = event.globalPos()
+                rMove = QRect(tl, rb)
+                if self.m_area == MoveEnum.LEFT_TOP.value:
+                    if rb.x() - gloPoint.x() <= self.minimumWidth():
+                        rMove.setX(tl.x())
+                    else:
+                        rMove.setX(gloPoint.x())
+                    if rb.y() - gloPoint.y() <= self.minimumHeight():
+                        rMove.setY(tl.y())
+                    else:
+                        rMove.setY(gloPoint.y())
+                elif self.m_area == MoveEnum.RIGHT_TOP.value:
+                    rMove.setWidth(gloPoint.x()-tl.x())
+                    rMove.setY(gloPoint.y())
+                elif self.m_area == MoveEnum.LEFT.value:
+                    if rb.x() - gloPoint.x() <= self.minimumWidth():
+                        rMove.setX(tl.x())
+                    else:
+                        rMove.setX(gloPoint.x())
+                elif self.m_area == MoveEnum.RIGHT.value:
+                    rMove.setWidth(gloPoint.x()-tl.x())
+                elif self.m_area == MoveEnum.LEFT_BOTTOM.value:
+                    rMove.setX(gloPoint.x())
+                    rMove.setHeight(gloPoint.y()-tl.y())
+                elif self.m_area == MoveEnum.BOTTOM.value:
+                    rMove.setHeight(gloPoint.y()-tl.y())
+                elif self.m_area == MoveEnum.RIGHT_BOTTOM.value:
+                    rMove.setWidth(gloPoint.x()-tl.x())
+                    rMove.setHeight(gloPoint.y()-tl.y())
+                # print(rMove)
+                self.setGeometry(rMove)
+            # event.accept()
+
+    def mousePressEvent(self, event):
+        if self.isWin:
+            return QWidget.mousePressEvent(self, event)
+        area = self.moveArea(event.pos())
+        self.setMouseStyle(area)
+        if event.buttons() == Qt.LeftButton:
+            self.m_bPress = True
+            self.m_area = area
+            self.m_currentPos = event.globalPos()
+            # event.accept()
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        if self.isWin:
+            return QWidget.mouseReleaseEvent(self, event)
+        self.m_bPress = False
+        self.setCursor(Qt.ArrowCursor)
 

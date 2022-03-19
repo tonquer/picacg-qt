@@ -74,8 +74,8 @@ class CategoryListWidget(BaseListWidget):
         widget = ComicItemWidget(isCategory=True)
         widget.setFocusPolicy(Qt.NoFocus)
         widget.id = _id
-        widget.url = url
-        widget.path = path
+        widget.url = ToolUtil.GetRealUrl(url, path)
+        widget.path = ToolUtil.GetRealPath(path, "category")
         widget.index = index
         # widget.categoryLabel.setText(categories)
         widget.categoryLabel.hide()

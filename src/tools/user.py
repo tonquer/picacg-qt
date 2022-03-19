@@ -94,28 +94,31 @@ class User(Singleton):
         self.passwd = passwd
         return
 
+    def SetToken(self, token):
+        self.token = token
+        self.server.token = token
+
     def LoginBack(self, backData):
         try:
             if backData.status != Status.Ok:
-                return backData.status
+                return backData.status, ""
 
             if backData.res.code == 200 and backData.res.data.get("token"):
                 self.isLogin = True
-                self.token = backData.res.data.get("token")
-                self.server.token = self.token
+                token = backData.res.data.get("token")
                 Log.Info("登陆成功，userId: {}".format(self.userId))
                 # if self.server.address:
                     # self.server.Send(req.InitAndroidReq())
-                return Status.Ok
+                return Status.Ok, token
             elif backData.res.code == 400:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
-                return Status.Error
+                return Status.Error, ""
             else:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
-                return Status.UnKnowError
+                return Status.UnKnowError, ""
         except Exception as es:
             Log.Error(es)
-            return Status.NetError
+            return Status.NetError, ""
 
     def Logout(self):
         self.server.token = ""

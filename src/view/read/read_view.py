@@ -272,7 +272,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         return
 
-    def UpdateProcessBar(self, data, laveFileSize, backParam):
+    def UpdateProcessBar(self, downloadSize, laveFileSize, backParam):
         info = self.pictureData.get(backParam)
         if not info:
             return
@@ -280,7 +280,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             info.downloadSize = 0
         if info.size <= 0:
             info.size = laveFileSize
-        info.downloadSize += len(data)
+        info.downloadSize += downloadSize
         if self.curIndex != backParam:
             return
         self.frame.UpdateProcessBar(info)
@@ -427,6 +427,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.AddQImageTask(data, self.ConvertQImageWaifu2xBack, index)
         if index == self.curIndex:
             self.qtTool.SetData(waifuState=p.waifuState)
+            self.frame.waifu2xProcess.hide()
             # self.ShowImg()
         elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll,
                                  ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading - 1:
@@ -457,23 +458,21 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if not info and info.data:
             return
         assert isinstance(info, QtFileData)
-        path = "{}/{}/{}".format(self.bookId, self.epsId+1, i+1)
+        path = ToolUtil.GetRealPath(i + 1, "book/{}/{}".format(self.bookId, self.epsId + 1))
         info.waifu2xTaskId = self.AddConvertTask(path, info.data, info.model, self.Waifu2xBack, i)
         if i == self.curIndex:
             self.qtTool.SetData(waifuState=info.waifuState)
             self.frame.waifu2xProcess.show()
 
     def InitDownload(self):
-        self.AddDownloadBook(self.bookId, self.epsId, 0, statusBack=self.StartLoadPicUrlBack, backParam=0)
+        self.AddDownloadBook(self.bookId, self.epsId, 0, statusBack=self.StartLoadPicUrlBack, backParam=0, isInit=True)
 
     def AddDownload(self, i):
-        path = "{}/{}/{}.jpg".format(self.bookId, self.epsId+1, i+1)
-        cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), path)
         loadPath = QtOwner().downloadView.GetDownloadFilePath(self.bookId, self.epsId, i)
         self.AddDownloadBook(self.bookId, self.epsId, i,
                              downloadCallBack=self.UpdateProcessBar,
                              completeCallBack=self.CompleteDownloadPic,
-                             backParam=i, loadPath=loadPath, cachePath=cachePath)
+                             backParam=i, loadPath=loadPath)
         if i not in self.pictureData:
             data = QtFileData()
             self.pictureData[i] = data

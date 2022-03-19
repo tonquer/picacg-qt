@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -877, 661, 2322))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -78, 661, 2448))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -196,6 +196,100 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_4.addWidget(self.frame_3)
+
+        self.frame_7 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_7.setObjectName(u"frame_7")
+        self.frame_7.setFrameShape(QFrame.StyledPanel)
+        self.frame_7.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_18 = QVBoxLayout(self.frame_7)
+        self.verticalLayout_18.setObjectName(u"verticalLayout_18")
+        self.label_8 = QLabel(self.frame_7)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setFont(font1)
+
+        self.verticalLayout_18.addWidget(self.label_8)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label_33 = QLabel(self.frame_7)
+        self.label_33.setObjectName(u"label_33")
+
+        self.horizontalLayout_3.addWidget(self.label_33)
+
+        self.fontBox = WheelComboBox(self.frame_7)
+        self.fontBox.addItem("")
+        self.fontBox.setObjectName(u"fontBox")
+        self.fontBox.setMinimumSize(QSize(150, 0))
+
+        self.horizontalLayout_3.addWidget(self.fontBox)
+
+        self.horizontalSpacer_23 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_23)
+
+
+        self.verticalLayout_18.addLayout(self.horizontalLayout_3)
+
+        self.horizontalLayout_25 = QHBoxLayout()
+        self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
+        self.label_34 = QLabel(self.frame_7)
+        self.label_34.setObjectName(u"label_34")
+
+        self.horizontalLayout_25.addWidget(self.label_34)
+
+        self.fontSize = WheelComboBox(self.frame_7)
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.addItem("")
+        self.fontSize.setObjectName(u"fontSize")
+        self.fontSize.setMinimumSize(QSize(150, 0))
+
+        self.horizontalLayout_25.addWidget(self.fontSize)
+
+        self.horizontalSpacer_24 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_25.addItem(self.horizontalSpacer_24)
+
+
+        self.verticalLayout_18.addLayout(self.horizontalLayout_25)
+
+        self.horizontalLayout_26 = QHBoxLayout()
+        self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
+        self.label_35 = QLabel(self.frame_7)
+        self.label_35.setObjectName(u"label_35")
+
+        self.horizontalLayout_26.addWidget(self.label_35)
+
+        self.fontStyle = WheelComboBox(self.frame_7)
+        self.fontStyle.addItem("")
+        self.fontStyle.addItem("")
+        self.fontStyle.addItem("")
+        self.fontStyle.addItem("")
+        self.fontStyle.addItem("")
+        self.fontStyle.addItem("")
+        self.fontStyle.setObjectName(u"fontStyle")
+        self.fontStyle.setMinimumSize(QSize(150, 0))
+
+        self.horizontalLayout_26.addWidget(self.fontStyle)
+
+        self.horizontalSpacer_25 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_26.addItem(self.horizontalSpacer_25)
+
+
+        self.verticalLayout_18.addLayout(self.horizontalLayout_26)
+
+
+        self.verticalLayout_4.addWidget(self.frame_7)
 
         self.frame_13 = QFrame(self.scrollAreaWidgetContents)
         self.frame_13.setObjectName(u"frame_13")
@@ -1103,6 +1197,32 @@ class Ui_SettingNew(object):
         self.languageButton1.setText(QCoreApplication.translate("SettingNew", u"\u7b80\u4f53\u4e2d\u6587", None))
         self.languageButton2.setText(QCoreApplication.translate("SettingNew", u"\u7e41\u9ad4\u4e2d\u6587", None))
         self.languageButton3.setText(QCoreApplication.translate("SettingNew", u"English", None))
+        self.label_8.setText(QCoreApplication.translate("SettingNew", u"\u5b57\u4f53\uff08\u91cd\u542f\u751f\u6548\uff09\uff1a", None))
+        self.label_33.setText(QCoreApplication.translate("SettingNew", u"\u5b57\u4f53\u9009\u62e9\uff1a", None))
+        self.fontBox.setItemText(0, QCoreApplication.translate("SettingNew", u"\u9ed8\u8ba4", None))
+
+        self.label_34.setText(QCoreApplication.translate("SettingNew", u"\u5b57\u4f53\u5927\u5c0f\uff1a", None))
+        self.fontSize.setItemText(0, QCoreApplication.translate("SettingNew", u"\u9ed8\u8ba4", None))
+        self.fontSize.setItemText(1, QCoreApplication.translate("SettingNew", u"9", None))
+        self.fontSize.setItemText(2, QCoreApplication.translate("SettingNew", u"12", None))
+        self.fontSize.setItemText(3, QCoreApplication.translate("SettingNew", u"14", None))
+        self.fontSize.setItemText(4, QCoreApplication.translate("SettingNew", u"16", None))
+        self.fontSize.setItemText(5, QCoreApplication.translate("SettingNew", u"18", None))
+        self.fontSize.setItemText(6, QCoreApplication.translate("SettingNew", u"20", None))
+        self.fontSize.setItemText(7, QCoreApplication.translate("SettingNew", u"22", None))
+        self.fontSize.setItemText(8, QCoreApplication.translate("SettingNew", u"24", None))
+        self.fontSize.setItemText(9, QCoreApplication.translate("SettingNew", u"26", None))
+        self.fontSize.setItemText(10, QCoreApplication.translate("SettingNew", u"28", None))
+        self.fontSize.setItemText(11, QCoreApplication.translate("SettingNew", u"30", None))
+
+        self.label_35.setText(QCoreApplication.translate("SettingNew", u"\u5b57\u4f53\u7c97\u7ec6\uff1a", None))
+        self.fontStyle.setItemText(0, QCoreApplication.translate("SettingNew", u"\u9ed8\u8ba4", None))
+        self.fontStyle.setItemText(1, QCoreApplication.translate("SettingNew", u"\u9ad8\u4eae", None))
+        self.fontStyle.setItemText(2, QCoreApplication.translate("SettingNew", u"\u6b63\u5e38", None))
+        self.fontStyle.setItemText(3, QCoreApplication.translate("SettingNew", u"\u534a\u7c97\u4f53", None))
+        self.fontStyle.setItemText(4, QCoreApplication.translate("SettingNew", u"\u7c97\u4f53", None))
+        self.fontStyle.setItemText(5, QCoreApplication.translate("SettingNew", u"\u9ed1\u4f53", None))
+
         self.label.setText(QCoreApplication.translate("SettingNew", u"\u754c\u9762\u7f29\u653e\u663e\u793a\uff08\u9700\u91cd\u542f\u751f\u6548\uff09\uff1a", None))
         self.mainScaleButton0.setText(QCoreApplication.translate("SettingNew", u"\u6839\u636e\u7cfb\u7edf\u7f29\u653e", None))
         self.mainScaleButton1.setText(QCoreApplication.translate("SettingNew", u"100%\uff08\u4e0d\u7f29\u653e\uff09", None))

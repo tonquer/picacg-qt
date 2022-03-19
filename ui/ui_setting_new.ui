@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-877</y>
+          <y>-78</y>
           <width>661</width>
-          <height>2322</height>
+          <height>2448</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -285,6 +285,227 @@
                <string notr="true">languageGroup</string>
               </attribute>
              </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_7">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_18">
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>字体（重启生效）：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_33">
+                <property name="text">
+                 <string>字体选择：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="WheelComboBox" name="fontBox">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>默认</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_23">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_25">
+              <item>
+               <widget class="QLabel" name="label_34">
+                <property name="text">
+                 <string>字体大小：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="WheelComboBox" name="fontSize">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>默认</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>9</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>12</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>14</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>16</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>18</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>20</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>22</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>24</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>26</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>28</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>30</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_24">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_26">
+              <item>
+               <widget class="QLabel" name="label_35">
+                <property name="text">
+                 <string>字体粗细：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="WheelComboBox" name="fontStyle">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>默认</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>高亮</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>正常</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>半粗体</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>粗体</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>黑体</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_25">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -2067,10 +2288,10 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="logGroup"/>
   <buttongroup name="languageGroup"/>
   <buttongroup name="mainScaleGroup"/>
-  <buttongroup name="themeGroup"/>
-  <buttongroup name="logGroup"/>
   <buttongroup name="proxyGroup"/>
+  <buttongroup name="themeGroup"/>
  </buttongroups>
 </ui>

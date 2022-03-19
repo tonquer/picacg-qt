@@ -27,7 +27,7 @@ host_table = {}
 def _dns_resolver(host):
     if host in host_table:
         address = host_table[host]
-        # Log.Info("dns parse, host:{}->{}".format(host, address))
+        Log.Info("dns parse, host:{}->{}".format(host, address))
         return address
     else:
         return host
@@ -118,7 +118,11 @@ class Server(Singleton):
     def UpdateDns(self, address, imageAddress):
         self.imageServer = imageAddress
         self.address = address
-        for domain in config.ApiDomain:
+
+        AllDomain = config.ApiDomain[:]
+        AllDomain.append(config.ImageServer2)
+        AllDomain.append(config.ImageServer2Jump)
+        for domain in AllDomain:
             if is_ipaddress(address):
                 host_table[domain] = address
             elif not address and domain in host_table:
@@ -169,8 +173,8 @@ class Server(Singleton):
         #
         #     request.url = request.url.replace(host, self.imageServer)
 
-    def Send(self, request, token="", backParam="", isASync=True):
-        self.__DealHeaders(request, token)
+    def Send(self, request, backParam="", isASync=True):
+        self.__DealHeaders(request, request.token)
         if isASync:
             return self._inQueue.put(Task(request, backParam))
         else:
@@ -258,8 +262,8 @@ class Server(Singleton):
                     if cachePath and task.bakParam:
                         data = ToolUtil.LoadCachePicture(cachePath)
                         if data:
-                            TaskBase.taskObj.downloadBack.emit(task.bakParam, len(data), data)
-                            TaskBase.taskObj.downloadBack.emit(task.bakParam, 0, b"")
+                            TaskBase.taskObj.downloadBack.emit(task.bakParam, len(data), b"")
+                            TaskBase.taskObj.downloadBack.emit(task.bakParam, 0, data)
                             Log.Info("request cache -> backId:{}, {}".format(task.bakParam, task.req))
                             return
             request = task.req

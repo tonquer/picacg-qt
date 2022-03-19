@@ -158,11 +158,12 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             path = info.thumb.get("path")
             name = info.thumb.get("originalName")
             self.url = fileServer
-            self.path = path
             dayStr = ToolUtil.GetUpdateStr(info.updated_at)
             self.updateTick.setText(str(dayStr) + Str.GetStr(Str.Updated))
             if config.IsLoadingPicture:
-                self.AddDownloadTask(fileServer, path, completeCallBack=self.UpdatePicture)
+                url = ToolUtil.GetRealUrl(fileServer, path)
+                self.path = ToolUtil.GetRealPath(self.bookId, "cover")
+                self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture)
 
             self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)
@@ -172,6 +173,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                 url2 = creator.get("avatar", {}).get("fileServer")
                 path2 = creator.get("avatar", {}).get("path")
                 if url2:
+                    url2 = ToolUtil.GetRealUrl(url2, path2)
+                    path2 = ToolUtil.GetMd5RealPath(url2, "user")
                     self.AddDownloadTask(url2, path2, completeCallBack=self.LoadingPictureComplete)
         else:
             # QtWidgets.QMessageBox.information(self, '加载失败', msg, QtWidgets.QMessageBox.Yes)
@@ -335,19 +338,19 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def ClickCategoriesItem(self, item):
         text = item.text()
         # QtOwner().owner.searchForm.SearchCategories(text)
-        QtOwner().OpenSearchByCategory(text)
+        QtOwner().OpenSearchByCategory2(text)
         return
 
     def ClickAutorItem(self, item):
         text = item.text()
         # QtOwner().owner.searchForm.SearchAutor(text)
-        QtOwner().OpenSearch(text, True, False, False, False, False, True, False)
+        QtOwner().OpenSearch2(text, True, False, False, False, False, True, False)
         return
 
     def ClickTagsItem(self, item):
         text = item.text()
         # QtOwner().owner.searchForm.SearchTags(text)
-        QtOwner().OpenSearch(text, True, False, False, False, True, False, False)
+        QtOwner().OpenSearch2(text, True, False, False, False, True, False, False)
         return
 
     def eventFilter(self, obj, event):

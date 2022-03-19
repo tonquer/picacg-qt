@@ -32,38 +32,46 @@ class Ui_Search(object):
         Search.setMinimumSize(QSize(80, 0))
         self.verticalLayout = QVBoxLayout(Search)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label_2 = QLabel(Search)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setMinimumSize(QSize(60, 0))
-        self.label_2.setMaximumSize(QSize(60, 40))
+        self.searchWidget = QWidget(Search)
+        self.searchWidget.setObjectName(u"searchWidget")
+        self.verticalLayout_3 = QVBoxLayout(self.searchWidget)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.searchLayout = QHBoxLayout()
+        self.searchLayout.setObjectName(u"searchLayout")
+        self.searchLabel1 = QLabel(self.searchWidget)
+        self.searchLabel1.setObjectName(u"searchLabel1")
+        self.searchLabel1.setMinimumSize(QSize(60, 0))
+        self.searchLabel1.setMaximumSize(QSize(60, 40))
 
-        self.horizontalLayout_2.addWidget(self.label_2)
+        self.searchLayout.addWidget(self.searchLabel1)
 
-        self.searchLabel = QLabel(Search)
+        self.searchLabel = QLabel(self.searchWidget)
         self.searchLabel.setObjectName(u"searchLabel")
         self.searchLabel.setMinimumSize(QSize(20, 0))
         self.searchLabel.setMaximumSize(QSize(20, 16777215))
         self.searchLabel.setToolTipDuration(-1)
         self.searchLabel.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-        self.horizontalLayout_2.addWidget(self.searchLabel)
+        self.searchLayout.addWidget(self.searchLabel)
 
-        self.lineEdit = SearchLineEdit(Search)
+        self.lineEdit = SearchLineEdit(self.searchWidget)
         self.lineEdit.setObjectName(u"lineEdit")
         self.lineEdit.setMinimumSize(QSize(40, 40))
         self.lineEdit.setClearButtonEnabled(True)
 
-        self.horizontalLayout_2.addWidget(self.lineEdit)
+        self.searchLayout.addWidget(self.lineEdit)
 
-        self.searchButton = QPushButton(Search)
+        self.searchButton = QPushButton(self.searchWidget)
         self.searchButton.setObjectName(u"searchButton")
 
-        self.horizontalLayout_2.addWidget(self.searchButton)
+        self.searchLayout.addWidget(self.searchButton)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_3.addLayout(self.searchLayout)
+
+
+        self.verticalLayout.addWidget(self.searchWidget)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -241,9 +249,9 @@ class Ui_Search(object):
     def retranslateUi(self, Search):
         Search.setWindowTitle(QCoreApplication.translate("Search", u"\u641c\u7d22", None))
 #if QT_CONFIG(tooltip)
-        self.label_2.setToolTip(QCoreApplication.translate("Search", u"<html><head/><body><p>\u641c\u5bfb\u7684\u6700\u4f73\u59ff\u52bf?</p><p>\u3010\u5305\u542b\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][+]\u4eba\u59bb,\u4ec5\u663e\u793a\u5168\u5f69\u4e14\u662f\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 +\u4eba\u59bb<br/></p><p>\u3010\u6392\u9664\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][]\u4eba\u59bb,\u663e\u793a\u5168\u5f69\u5e76\u6392\u9664\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 -\u4eba\u59bb<br/></p><p>\u3010\u6211\u90fd\u8981\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c]\u4eba\u59bb,\u4f1a\u663e\u793a\u6240\u6709\u5305\u542b\u5168\u5f69\u53ca\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 \u4eba\u59bb</p></body></html>", None))
+        self.searchLabel1.setToolTip(QCoreApplication.translate("Search", u"<html><head/><body><p>\u641c\u5bfb\u7684\u6700\u4f73\u59ff\u52bf?</p><p>\u3010\u5305\u542b\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][+]\u4eba\u59bb,\u4ec5\u663e\u793a\u5168\u5f69\u4e14\u662f\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 +\u4eba\u59bb<br/></p><p>\u3010\u6392\u9664\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][]\u4eba\u59bb,\u663e\u793a\u5168\u5f69\u5e76\u6392\u9664\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 -\u4eba\u59bb<br/></p><p>\u3010\u6211\u90fd\u8981\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c]\u4eba\u59bb,\u4f1a\u663e\u793a\u6240\u6709\u5305\u542b\u5168\u5f69\u53ca\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 \u4eba\u59bb</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
-        self.label_2.setText(QCoreApplication.translate("Search", u"\u641c\u7d22\uff1a", None))
+        self.searchLabel1.setText(QCoreApplication.translate("Search", u"\u641c\u7d22\uff1a", None))
 #if QT_CONFIG(tooltip)
         self.searchLabel.setToolTip(QCoreApplication.translate("Search", u"<html><head/><body><p>\u641c\u5bfb\u7684\u6700\u4f73\u59ff\u52bf?</p><p>\u3010\u5305\u542b\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][+]\u4eba\u59bb,\u4ec5\u663e\u793a\u5168\u5f69\u4e14\u662f\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 +\u4eba\u59bb<br/></p><p>\u3010\u6392\u9664\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][]\u4eba\u59bb,\u663e\u793a\u5168\u5f69\u5e76\u6392\u9664\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 -\u4eba\u59bb<br/></p><p>\u3010\u6211\u90fd\u8981\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c]\u4eba\u59bb,\u4f1a\u663e\u793a\u6240\u6709\u5305\u542b\u5168\u5f69\u53ca\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 \u4eba\u59bb</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

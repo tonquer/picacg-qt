@@ -23,7 +23,7 @@ class UserListWidget(BaseListWidget):
         # self.setContextMenuPolicy(Qt.CustomContextMenu)
         # self.customContextMenuRequested.connect(self.SelectMenuBook)
         # self.doubleClicked.connect(self.OpenBookInfo)
-        # self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwa ysOff)
         self.setFrameShape(self.NoFrame)  # 无边框
         self.setFocusPolicy(Qt.NoFocus)
 
@@ -41,8 +41,10 @@ class UserListWidget(BaseListWidget):
             level = ""
             title = ""
             character = ""
+            uid = ""
         else:
             user = info.get("_user", {})
+            uid = user.get("_id")
             name = user.get("name", "")
             avatar = user.get("avatar", {})
             title = user.get("title", "")
@@ -109,8 +111,9 @@ class UserListWidget(BaseListWidget):
         iwidget.starButton.setText("({})".format(likesCount))
         iwidget.levelLabel.setText(" LV" + str(level) + " ")
         iwidget.titleLabel.setText(" " + title + " ")
-        iwidget.url = url
-        iwidget.path = path
+        iwidget.url = ToolUtil.GetRealUrl(url, path)
+        iwidget.path = ToolUtil.GetRealPath(uid, "user")
+
         iwidget.character = character
         dayStr = ToolUtil.GetUpdateStr(createdTime)
         iwidget.dateLabel.setText(dayStr)
@@ -171,8 +174,9 @@ class UserListWidget(BaseListWidget):
         iwidget.starButton.setText("({})".format(info.get('comicsUploaded')))
         iwidget.levelLabel.setText(" LV" + str(level) + " ")
         iwidget.titleLabel.setText(" " + title + " ")
-        iwidget.url = url
-        iwidget.path = path
+        iwidget.url = ToolUtil.GetRealUrl(url, path)
+        iwidget.path = ToolUtil.GetRealPath(commnetId, "user")
+
         iwidget.indexLabel.setText(Str.GetStr(Str.The)+"{}".format(str(floor)))
         iwidget.PicLoad.connect(self.LoadingPicture)
         item = QListWidgetItem(self)

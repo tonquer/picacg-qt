@@ -1,3 +1,4 @@
+import hashlib
 import hmac
 import json
 import os
@@ -158,7 +159,7 @@ class ToolUtil(object):
             for k, v in src.items():
                 setattr(desc, k, v)
         except Exception as es:
-            Log.Error(es)
+            Log.Error(src)
 
     @staticmethod
     def GetUrlHost(url):
@@ -335,3 +336,77 @@ class ToolUtil(object):
         timeArray = time.strptime(strDatetime, "%Y-%m-%d %H:%M:%S")
         tick = int(time.mktime(timeArray))
         return tick
+
+    @staticmethod
+    def Escape(s):
+        s = s.replace("&", "&amp;")
+        s = s.replace("<", "&lt;")
+        s = s.replace(">", "&gt;")
+        s = s.replace('"', "&quot;")
+        s = s.replace('\'', "&#x27;")
+        s = s.replace('\n', '<br/>')
+        s = s.replace('  ', '&nbsp;')
+        s = s.replace(' ', '&emsp;')
+        return s
+
+    @staticmethod
+    def GetPictureFormat(data):
+        import imghdr
+        mat = imghdr.what(None, data)
+        if mat:
+            return mat
+        return "jpg"
+
+    @staticmethod
+    def GetStrMaxLen(str, maxLen=6):
+        if len(str) > maxLen:
+            return str[:maxLen] + "..."
+        else:
+            return str
+
+    @staticmethod
+    def GetRealUrl(url, path):
+        if path:
+            return url + "/static/" + path
+        else:
+            return url
+
+    @staticmethod
+    def GetRealPath(path, direction):
+        if path:
+            data = "{}/{}".format(direction, path)
+            if ".jpg" not in data:
+                return data + ".jpg"
+            else:
+                return data
+        else:
+            return path
+
+    @staticmethod
+    def GetMd5RealPath(path, direction):
+        if path:
+            a = hashlib.md5(path.encode("utf-8")).hexdigest()
+            return "{}/{}.jpg".format(direction, a)
+        else:
+            return path
+
+    @staticmethod
+    def SaveFile(data, filePath):
+        if not data:
+            return
+        if not filePath:
+            return
+
+        try:
+            fileDir = os.path.dirname(filePath)
+
+            if not os.path.isdir(fileDir):
+                os.makedirs(fileDir)
+
+            with open(filePath, "wb+") as f:
+                f.write(data)
+
+            Log.Debug("add chat cache, cachePath:{}".format(filePath))
+
+        except Exception as es:
+            Log.Error(es)

@@ -35,11 +35,12 @@ class RegisterWidget(QtWidgets.QWidget, Ui_RegisterWidget, QtTaskBase):
             # QtWidgets.QMessageBox.information(self, '错误', "密码太短", QtWidgets.QMessageBox.Yes)
             MsgLabel.ShowErrorEx(self, Str.GetStr(Str.PasswordShort))
             return
+        birthday = self.birthdayEdit.date()
         data = {
             "email": self.userEdit.text(),
             "password": self.passwdEdit.text(),
             "name": self.nameEdit.text(),
-            "birthday": self.birthdayEdit.text().replace("/", "-"),
+            "birthday": birthday.toString("yyyy-MM-dd"),
             "gender": self.buttonGroup.checkedButton().objectName().replace("gender_", ""),  # m, f, bot
             "answer1": self.answer1Edit.text(),
             "answer2": self.answer2Edit.text(),

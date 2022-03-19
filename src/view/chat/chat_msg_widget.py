@@ -2,7 +2,7 @@ import weakref
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import QEvent, QProcess
-from PySide6.QtGui import QPixmap, Qt, QIcon, QCursor
+from PySide6.QtGui import QPixmap, Qt, QIcon, QCursor, QFont
 from PySide6.QtWidgets import QMenu, QApplication
 
 from interface.ui_chat_room_msg import Ui_ChatRoomMsg
@@ -49,6 +49,9 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
         #     }
         #     """)
         self.replayLabel.setWordWrap(True)
+        font = QFont("MicrosoftYaHei", 14, 100)
+        self.replayLabel.setFont(font)
+        self.commentLabel.setFont(font)
         # self.replayLabel.setStyleSheet("""
         #     border-image:url(:png/icon/skin_aio_friend_bubble_pressed.9.png) 50;
         #     border-top-width: 25px;

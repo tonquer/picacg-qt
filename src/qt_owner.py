@@ -1,9 +1,11 @@
+import sys
 import weakref
 
 from PySide6.QtCore import QFile
 
 from component.label.msg_label import MsgLabel
 from tools.singleton import Singleton
+from tools.tool import ToolUtil
 
 
 class QtOwner(Singleton):
@@ -125,6 +127,14 @@ class QtOwner(Singleton):
         arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor, "isUpLoad": isUpLoad}
         self.owner.SwitchWidget(self.owner.searchView, **arg)
 
+    def OpenSearch2(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor, isUpLoad):
+        arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor, "isUpLoad": isUpLoad}
+        if isAuthor:
+            self.owner.searchView2.setWindowTitle("作者: {}".format(ToolUtil.GetStrMaxLen(text)))
+        elif isTag:
+            self.owner.searchView2.setWindowTitle("TAG: {}".format(ToolUtil.GetStrMaxLen(text)))
+        self.owner.SwitchWidget(self.owner.searchView2, **arg)
+
     def OpenSearchByText(self, text):
         self.owner.searchView.lineEdit.setText(text)
         self.owner.searchView.lineEdit.Search()
@@ -140,9 +150,15 @@ class QtOwner(Singleton):
         arg = {"categories": categories}
         self.owner.SwitchWidget(self.owner.searchView, **arg)
 
+    def OpenSearchByCategory2(self, categories):
+        arg = {"categories": categories}
+        self.owner.searchView2.setWindowTitle("分类: {}".format(ToolUtil.GetStrMaxLen(categories)))
+        self.owner.SwitchWidget(self.owner.searchView2, **arg)
+
     def OpenSearchByCreate(self, text):
         arg = {"text": text, "isTitle": False, "isDes": False, "isCategory": False, "isTag":False, "isAuthor": False, "isUpLoad": True}
-        self.owner.SwitchWidget(self.owner.searchView, **arg)
+        self.owner.searchView2.setWindowTitle("上传者: {}".format(ToolUtil.GetStrMaxLen(text)))
+        self.owner.SwitchWidget(self.owner.searchView2, **arg)
 
     def OpenBookInfo(self, bookId):
         # self.owner.subCommentView.SetOpenEvent(commentId, widget)
@@ -180,7 +196,45 @@ class QtOwner(Singleton):
 
     def SetDirty(self):
         pass
-    
+
+    @staticmethod
+    def SetFont():
+        try:
+            from tools.log import Log
+            from config.setting import Setting
+            from PySide6.QtGui import QFont
+            f = QFont()
+            from tools.langconv import Converter
+            if Converter('zh-hans').convert(Setting.FontName.value) == "默认":
+                Setting.FontName.InitValue("", "FontName")
+
+            if not Setting.FontName.value and sys.platform == "win32":
+                Setting.FontName.InitValue("微软雅黑", "FontName")
+
+            if Converter('zh-hans').convert(str(Setting.FontSize.value)) == "默认":
+                Setting.FontSize.InitValue("", "FontSize")
+
+            if Converter('zh-hans').convert(str(Setting.FontStyle.value)) == "默认":
+                Setting.FontStyle.InitValue(0, "FontStyle")
+
+            if not Setting.FontName.value and not Setting.FontSize.value and not Setting.FontStyle.value:
+                return
+
+            if Setting.FontName.value:
+                f = QFont(Setting.FontName.value)
+
+            if Setting.FontSize.value:
+                f.setPointSize(int(Setting.FontSize.value))
+
+            if Setting.FontStyle.value:
+                fontStyleList = [QFont.Light, QFont.Normal, QFont.DemiBold, QFont.Bold, QFont.Black]
+                f.setWeight(fontStyleList[Setting.FontStyle.value - 1])
+
+            QtOwner().app.setFont(f)
+
+        except Exception as es:
+            Log.Error(es)
+
     # def ShowMsg(self, data):
     #     return self.owner.msgForm.ShowMsg(data)
     #

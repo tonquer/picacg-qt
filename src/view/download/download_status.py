@@ -170,8 +170,9 @@ class DownloadStatus(QtTaskBase):
         self.SetNewStatus(task, newStatus)
         if newStatus != task.Downloading:
             return
-        epsId, index, savePath = task.GetDownloadPath()
-        self.AddDownloadBook(task.bookId, epsId, index, self.DownloadStCallBack, self.DownloadCallBack, self.DownloadCompleteCallBack, task.bookId, savePath=savePath, cleanFlag=task.cleanFlag)
+        epsId, index, savePath, isInit = task.GetDownloadPath()
+
+        self.AddDownloadBook(task.bookId, epsId, index, self.DownloadStCallBack, self.DownloadCallBack, self.DownloadCompleteCallBack, task.bookId, savePath=savePath, cleanFlag=task.cleanFlag, isInit=isInit)
         self.UpdateTaskDB(task)
         return
 
@@ -197,8 +198,8 @@ class DownloadStatus(QtTaskBase):
             newStatus = task.DownloadSucCallBack()
             self.SetNewStatus(task, newStatus)
             if newStatus == task.Downloading:
-                epsId, index, savePath = task.GetDownloadPath()
-                self.AddDownloadBook(task.bookId, epsId, index, self.DownloadStCallBack, self.DownloadCallBack, self.DownloadCompleteCallBack, task.bookId, savePath=savePath, cleanFlag=task.cleanFlag)
+                epsId, index, savePath, isInit = task.GetDownloadPath()
+                self.AddDownloadBook(task.bookId, epsId, index, self.DownloadStCallBack, self.DownloadCallBack, self.DownloadCompleteCallBack, task.bookId, savePath=savePath, cleanFlag=task.cleanFlag, isInit=isInit)
             return
         elif st in [Str.Reading, Str.ReadingEps, Str.ReadingPicture, Str.Downloading]:
             task.statusMsg = st
@@ -207,15 +208,15 @@ class DownloadStatus(QtTaskBase):
             self.SetNewStatus(task, task.Error)
         return
 
-    def DownloadCallBack(self, data, laveFileSize, taskId):
+    def DownloadCallBack(self, downloadSize, laveFileSize, taskId):
         task = self.downloadDict.get(taskId)
         if not task:
             return
         if task.status != task.Downloading:
             return
 
-        task.downloadLen += len(data)
-        task.speedDownloadLen += len(data)
+        task.downloadLen += downloadSize
+        task.speedDownloadLen += downloadSize
         return
 
     def DownloadCompleteCallBack(self, data, msg, taskId):
@@ -228,8 +229,8 @@ class DownloadStatus(QtTaskBase):
             newStatus = task.DownloadSucCallBack()
             self.SetNewStatus(task, newStatus)
             if newStatus == task.Downloading:
-                epsId, index, savePath = task.GetDownloadPath()
-                self.AddDownloadBook(task.bookId, epsId, index, self.DownloadStCallBack, self.DownloadCallBack, self.DownloadCompleteCallBack, task.bookId, savePath=savePath, cleanFlag=task.cleanFlag)
+                epsId, index, savePath, isInit = task.GetDownloadPath()
+                self.AddDownloadBook(task.bookId, epsId, index, self.DownloadStCallBack, self.DownloadCallBack, self.DownloadCompleteCallBack, task.bookId, savePath=savePath, cleanFlag=task.cleanFlag, isInit=isInit)
             self.UpdateTableItem(task)
             self.UpdateTaskDB(task)
         else:

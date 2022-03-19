@@ -1,4 +1,5 @@
 import json
+import re
 from functools import partial
 
 from PySide6.QtCore import Qt, QEvent, QPoint
@@ -120,6 +121,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
     def SwitchCurrent(self, **kwargs):
         text = kwargs.get("text")
         categories = kwargs.get("categories")
+        if text and re.match('^[0-9a-zA-Z]+$',text) and len(text) == len("5d5d760774184679c1e63f4c"):
+            QtOwner().OpenBookInfo(text)
+            return
+
         if categories is not None:
             self.categories = categories
 

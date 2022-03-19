@@ -14,6 +14,7 @@ from task.qt_task import QtTaskBase
 from tools.log import Log
 from tools.str import Str
 from tools.tool import ToolUtil
+from view.help.help_log_widget import HelpLogWidget
 
 
 class HelpView(QWidget, Ui_Help, QtTaskBase):
@@ -40,6 +41,12 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.updateUrl = [config.UpdateUrl, config.UpdateUrl2]
         self.updateBackUrl = [config.UpdateUrlBack, config.UpdateUrl2Back]
         self.checkUpdateIndex = 0
+        self.helpLogWidget = HelpLogWidget()
+        if Setting.IsShowCmd.value:
+            self.helpLogWidget.show()
+        else:
+            self.helpLogWidget.hide()
+        self.openCmd.clicked.connect(self.helpLogWidget.show)
 
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)

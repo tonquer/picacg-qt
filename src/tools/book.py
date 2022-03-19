@@ -217,5 +217,3 @@ class BookMgr(Singleton):
         open(savePath, "wb").write(r.data.content)
         pass
 
-    def DownloadPicture(self, url, path, backParam=""):
-        self.server.Download(req.DownloadBookReq(url, path), backParams=backParam)

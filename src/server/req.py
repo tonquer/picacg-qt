@@ -9,6 +9,7 @@ from tools.tool import ToolUtil
 class ServerReq(object):
     def __init__(self, url, header=None, params=None, method="POST") -> None:
         self.url = url
+        self.token = ""
         self.headers = header
         self.params = params
         self.method = method
@@ -21,19 +22,19 @@ class ServerReq(object):
             self.proxy = {}
 
     def __str__(self):
-        if Setting.LogIndex.value == 0:
-            return self.__class__.__name__
-        elif Setting.LogIndex.value == 1:
-            return "{}, url:{}".format(self.__class__.__name__, self.url)
-        headers = dict()
-        headers.update(self.headers)
-        if Setting.LogIndex.value == 1 and "authorization" in headers:
-            headers["authorization"] = "**********"
+        # if Setting.LogIndex.value == 0:
+        #     return self.__class__.__name__
+        # elif Setting.LogIndex.value == 1:
+        #     return "{}, url:{}".format(self.__class__.__name__, self.url)
+        # headers = dict()
+        # headers.update(self.headers)
+        # if Setting.LogIndex.value == 1 and "authorization" in headers:
+        #     headers["authorization"] = "**********"
         params = dict()
         params.update(self.params)
         if Setting.LogIndex.value == 1 and "password" in params:
             params["password"] = "******"
-        return "{}, url:{}, proxy:{}, method:{}, headers:{}, params:{}".format(self.__class__.__name__, self.url, self.proxy, self.method, headers, params)
+        return "{}, url:{}, method:{}, params:{}".format(self.__class__.__name__, self.url, self.method, params)
 
 
 # 获得分流Ip
@@ -81,6 +82,46 @@ class RegisterReq(ServerReq):
         method = "POST"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              data, method)
+
+
+# 忘记密码
+class ForgotPasswordReq(ServerReq):
+    def __init__(self, email):
+        data = {
+            "email": email
+        }
+        url = config.Url + "auth/forgot-password"
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             data, method)
+
+
+# 重置密码
+class ResetPasswordReq(ServerReq):
+    def __init__(self, email, questionNo, answer):
+        data = {
+            "email": email,
+            "questionNo": questionNo,
+            "answer": answer,
+        }
+        url = config.Url + "auth/reset-password"
+        method = "POST"
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             data, method)
+
+
+# 修改密码
+class ChangePasswordReq(ServerReq):
+    def __init__(self, token, oldPassword, newPassword):
+        data = {
+            "new_password": newPassword,
+            "old_password": oldPassword
+        }
+        url = config.Url + "user/password"
+        method = "POST"
+        hearder = ToolUtil.GetHeader(url, method)
+        super(self.__class__, self).__init__(url, hearder, data, method)
+        self.token = token
 
 
 # 获得用户信息
@@ -246,12 +287,9 @@ class GetComicsRecommendation(ServerReq):
 
 # 下载图片
 class DownloadBookReq(ServerReq):
-    def __init__(self, url, path="", loadPath="", cachePath="", savePath=""):
-        if path:
-            url = url + "/static/{}".format(path)
+    def __init__(self, url, loadPath="", cachePath="", savePath=""):
         method = "Download"
         self.url = url
-        self.path = path
         self.loadPath = loadPath
         self.cachePath = cachePath
         self.savePath = savePath

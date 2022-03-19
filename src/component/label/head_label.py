@@ -43,7 +43,7 @@ class HeadLabel(QLabel):
             p.loadFromData(titleData)
             p.setDevicePixelRatio(self.devicePixelRatio())
             titleP = p.scaled(  # 加载图片并缩放和控件一样大
-                self.height(), self.width(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+                (self.height())*radio, self.width()*radio, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
             painter = QPainter()
             painter.begin(titleP)
             painter.setCompositionMode(QPainter.CompositionMode_DestinationOver)

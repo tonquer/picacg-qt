@@ -52,8 +52,9 @@ class LoginHandler(object):
         try:
             if task.status != Status.Ok:
                 return
-            st = User().LoginBack(task)
+            st, token = User().LoginBack(task)
             data["st"] = st
+            data["token"] = token
         except Exception as es:
             Log.Error(es)
         finally:
@@ -214,14 +215,25 @@ class DownloadBookHandler(object):
                     if backData.bakParam:
                         TaskBase.taskObj.downloadBack.emit(backData.bakParam, -1, b"")
                     return
+                
                 fileSize = int(r.headers.get('Content-Length', 0))
                 getSize = 0
                 data = b""
-                for chunk in r.iter_content(chunk_size=1024):
-                    if backData.bakParam:
-                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, chunk)
+                
+                now = time.time()
+
+                # 网速快，太卡了，优化成最多100ms一次
+                for chunk in r.iter_content(chunk_size=4096):
+                    cur = time.time()
+                    tick = cur - now
+                    if tick >= 0.1:
+                        if backData.bakParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, b"")
+                        now = cur
+
                     getSize += len(chunk)
                     data += chunk
+
                 # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
                 if config.IsUseCache and len(data) > 0:
                     try:
@@ -243,7 +255,8 @@ class DownloadBookHandler(object):
                             TaskBase.taskObj.downloadBack.emit(backData.bakParam, -2, b"")
 
                 if backData.bakParam:
-                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, b"")
+                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, data)
+                    
             except Exception as es:
                 Log.Error(es)
                 if backData.bakParam:
@@ -369,6 +382,9 @@ class SpeedTestHandler(object):
 @handler(req.GetGameCommentsReq)
 @handler(req.SendGameCommentsReq)
 @handler(req.GameCommentsLikeReq)
+@handler(req.ForgotPasswordReq)
+@handler(req.ResetPasswordReq)
+@handler(req.ChangePasswordReq)
 class MsgHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": task.res.GetText()}

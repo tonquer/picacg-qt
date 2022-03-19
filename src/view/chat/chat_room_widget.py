@@ -18,7 +18,7 @@ from task.qt_task import QtTaskBase
 from tools.log import Log
 from tools.status import Status
 from tools.str import Str
-from tools.tool import time_me
+from tools.tool import time_me, ToolUtil
 from tools.user import User
 from view.chat.chat_msg_widget import ChatMsgWidget
 from view.chat.chat_websocket import ChatWebSocket
@@ -95,7 +95,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         self.toolMenu.addAction(self.action1)
         self.toolMenu.addAction(self.action2)
         self.toolButton.setMenu(self.toolMenu)
-        if Setting.ChatSendAction == 2:
+        if Setting.ChatSendAction.value == 2:
             self.action2.setChecked(True)
         else:
             self.action1.setChecked(True)
@@ -262,6 +262,10 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
             imageData = imageData.split(",", 1)
             if len(imageData) >= 2:
                 byte = base64.b64decode(imageData[1])
+                date = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
+                if Setting.SavePath.value:
+                    path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), "chat/picture/{}_{}.jpg".format(date, random.randint(1, 999)))
+                    ToolUtil.SaveFile(byte, path)
                 info.SetPictureComment(byte)
 
         audio = data.get("audio")
@@ -290,9 +294,12 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         url = data.get("avatar")
         if url and config.IsLoadingPicture:
             if isinstance(url, dict):
-                self.AddDownloadTask(url.get("fileServer"), url.get("path"), completeCallBack=self.LoadingPictureComplete, backParam=self.indexMsgId)
+                url = ToolUtil.GetRealUrl(url.get("fileServer"), url.get("path"))
+                path = ToolUtil.GetMd5RealPath(url, "chat/user")
+                self.AddDownloadTask(url, path, completeCallBack=self.LoadingPictureComplete, backParam=self.indexMsgId)
             else:
-                self.AddDownloadTask(url, "", completeCallBack=self.LoadingPictureComplete, backParam=self.indexMsgId)
+                path = ToolUtil.GetMd5RealPath(url, "chat/user")
+                self.AddDownloadTask(url, path, completeCallBack=self.LoadingPictureComplete, backParam=self.indexMsgId)
         character = data.get("character", "")
         if "pica-web.wakamoment.tk" not in character and character and config.IsLoadingPicture:
             self.AddDownloadTask(character, "", completeCallBack=self.LoadingHeadComplete, backParam=self.indexMsgId)

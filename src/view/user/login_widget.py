@@ -65,6 +65,8 @@ class LoginWidget(QtWidgets.QWidget, Ui_LoginWidget, QtTaskBase):
                 Setting.Password.SetValue(base64.b64encode(self.passwdEdit_2.text().encode("utf-8")))
             else:
                 Setting.Password.SetValue("")
+            token = raw["token"]
+            User().SetToken(token)
             self.parent().parent().parent().parent().close()
             # QtOwner().owner.UpdateDbInfo()
             # QtOwner().owner.userForm.toolButton0.click()

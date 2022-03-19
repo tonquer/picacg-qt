@@ -59,6 +59,8 @@ class MainView(Main, QtTaskBase):
 
         self.subStackWidget.setCurrentIndex(0)
         self.settingView.LoadSetting()
+
+        self.searchView2.searchWidget.hide()
         # self.readView.LoadSetting()
         # QApplication.instance().installEventFilter(self)
         # QtOwner().app.paletteChanged.connect(self.CheckPaletteChanged)
@@ -269,6 +271,7 @@ class MainView(Main, QtTaskBase):
         for button in self.toolButtons:
             if self.toolButtonGroup.id(button) == index:
                 button.setChecked(True)
+                button.setText(self.subStackWidget.widget(index).windowTitle())
         return
 
     def SwitchWidgetAndClear(self, index):

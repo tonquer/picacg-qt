@@ -27,7 +27,7 @@ QScrollArea {background-color:transparent;}</string>
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-20</y>
         <width>508</width>
         <height>586</height>
        </rect>
@@ -282,6 +282,13 @@ QScrollArea {background-color:transparent;}</string>
                  </property>
                  <property name="text">
                   <string>v1.0.8</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QPushButton" name="openCmd">
+                 <property name="text">
+                  <string>打开控制台</string>
                  </property>
                 </widget>
                </item>

@@ -2,6 +2,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget
 
+from component.widget.com_widget import ComWidget, MoveEnum
 from interface.ui_title_bar import Ui_TitleBar
 
 
@@ -17,6 +18,7 @@ class TitleBarWidget(QWidget, Ui_TitleBar):
         self.maxBt.clicked.connect(self._ShowRestoreWindow)
         self.closeButton.clicked.connect(self._Close)
         self.minButton.clicked.connect(self._ShowMinimized)
+        # self.setMouseTracking(True)
 
     def _ShowRestoreWindow(self):
         self.__showRestoreWindow()
@@ -46,6 +48,10 @@ class TitleBarWidget(QWidget, Ui_TitleBar):
     def mousePressEvent(self, event):
         """ 移动窗口 """
         # 判断鼠标点击位置是否允许拖动
+        area = ComWidget.moveArea(self.width(), self.height(), event.pos())
+        if area in [MoveEnum.LEFT_TOP.value, MoveEnum.LEFT.value]:
+            event.ignore()
+            return
         from win32.win32gui import ReleaseCapture
         from win32.win32api import SendMessage
         from win32.lib import win32con

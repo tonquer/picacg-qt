@@ -30,7 +30,7 @@ except Exception as es:
     if hasattr(es, "msg"):
         config.ErrorMsg = es.msg
 
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QFontDatabase
 from PySide6 import QtWidgets  # 导入PySide6部件
 
 # 此处不能删除
@@ -41,8 +41,8 @@ DbBook()
 
 if __name__ == "__main__":
     try:
-        Log.Init()
         Setting.Init()
+        Log.Init()
         Setting.InitLoadSetting()
         indexV = Setting.ScaleLevel.GetIndexV()
         if indexV and indexV != "Auto":
@@ -62,10 +62,7 @@ if __name__ == "__main__":
     try:
         Str.Reload()
         QtOwner().SetApp(app)
-        if sys.platform == "win32":
-            f = QFont("微软雅黑")
-            # f.setBold(True)
-            app.setFont(f)
+        QtOwner().SetFont()
         from view.main.main_view import MainView
         main = MainView()
         main.show()  # 显示窗体

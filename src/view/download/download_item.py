@@ -189,7 +189,7 @@ class DownloadItem(QtTaskBase):
     def GetDownloadPath(self):
         # 如果没有初始化，先初始化
         if not self.curDownloadEpsInfo.epsTitle or self.curDownloadEpsInfo.picCnt <= 0:
-            return self.curDownloadEpsInfo.epsId, 0, ""
+            return self.curDownloadEpsInfo.epsId, 0, "", True
 
         if not self.savePath and Setting.SavePath.value:
             path = os.path.join(Setting.SavePath.value, config.SavePathDir)
@@ -198,7 +198,7 @@ class DownloadItem(QtTaskBase):
 
         convertPath = os.path.join(self.savePath, ToolUtil.GetCanSaveName(self.curDownloadEpsInfo.epsTitle))
         savePath = os.path.join(convertPath, "{:04}.{}".format(self.curDownloadEpsInfo.curPreDownloadIndex + 1, "jpg"))
-        return self.curDownloadEpsInfo.epsId, self.curDownloadEpsInfo.curPreDownloadIndex, savePath
+        return self.curDownloadEpsInfo.epsId, self.curDownloadEpsInfo.curPreDownloadIndex, savePath, False
 
     def ConvertInit(self):
         if not self.epsIds:

@@ -111,8 +111,12 @@ class ComicListWidget(BaseListWidget):
         widget = ComicItemWidget()
         widget.setFocusPolicy(Qt.NoFocus)
         widget.id = _id
-        widget.url = url
-        widget.path = path
+        widget.url = ToolUtil.GetRealUrl(url, path)
+        if self.isGame:
+            widget.path = ToolUtil.GetRealPath(_id, "game/cover")
+        else:
+            widget.path = ToolUtil.GetRealPath(_id, "cover")
+
         widget.index = index
         widget.categoryLabel.setText(categoryStr)
         widget.nameLable.setText(title)

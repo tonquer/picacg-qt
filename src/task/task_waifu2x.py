@@ -170,12 +170,8 @@ class TaskWaifu2x(TaskBase):
         info.taskId = self.taskId
         info.imgData = imgData
         info.model = model
-        if path:
-            a = crc32(json.dumps(model).encode("utf-8"))
-            if Setting.SavePath.value:
-                path2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), config.Waifu2xPath)
-                path = os.path.join(path2, path)
-                info.cachePath = path + "-{}.jpg".format(a)
+        if path and Setting.SavePath.value:
+            info.cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.join("waifu2x", path))
 
         if cleanFlag:
             info.cleanFlag = cleanFlag

@@ -5,7 +5,7 @@ import shutil
 class SettingValue:
     def __init__(self, tag, defaultV, isNeedReset, des=None):
         self.tag = tag                 # 分类
-        self.value = defaultV          # 生效值
+        self._value = defaultV          # 生效值
         self.setV = defaultV           # 设置的值
         self.defaultV = defaultV       # 默认值
         self.isNeedReset = isNeedReset       # 是否重启生效
@@ -13,9 +13,24 @@ class SettingValue:
         self.autoValue = 0      # 选自动时，自动生效的值
         self.name = ""
 
+    def __lt__(self, other):
+        raise OverflowError
+
+    def __gt__(self, other):
+        raise OverflowError
+
+    def __eq__(self, other):
+        if isinstance(other, SettingValue):
+            return id(self) == id(other)
+        raise OverflowError
+
+    @property
+    def value(self):
+        return self._value
+
     def InitValue(self, value, name):
         value = self.GetSettingV(value, self.defaultV)
-        self.value = value
+        self._value = value
         self.setV = value
         self.name = name
         return
@@ -43,19 +58,20 @@ class SettingValue:
     def GetIndexV(self):
         if not isinstance(self.des, list):
             return ""
-        if self.value >= len(self.des):
+        if self._value >= len(self.des):
             return ""
-        return self.des[self.value]
+        return self.des[self._value]
 
     def SetValue(self, value):
-        if self.setV == value and self.value == value:
+        if self.setV == value and self._value == value:
             return
 
         self.setV = value
         if not self.isNeedReset:
-            self.value = value
+            self._value = value
             self.autoValue = 0
         Setting.SaveSettingV(self)
+
 
 class Setting:
     # 通用设置
@@ -67,6 +83,10 @@ class Setting:
     CategorySize = SettingValue("GeneraSetting", 80, False)  #
     ScaleLevel = SettingValue("GeneraSetting", 0, True, ["Auto", 100, 125, 150, 175, 200])
     IsNotUseTitleBar = SettingValue("GeneraSetting", 0, True)
+
+    FontName = SettingValue("GeneraSetting", "", True)
+    FontSize = SettingValue("GeneraSetting", "", True)
+    FontStyle = SettingValue("GeneraSetting", 0, True)
 
     # 代理设置
     IsHttpProxy = SettingValue("ProxySetting", 0, False, ["", "Http", "Sock5"])
@@ -115,6 +135,7 @@ class Setting:
     ScreenIndex = SettingValue("Other", 0, False)
     AutoLogin = SettingValue("Other", 0, False)
     SavePassword = SettingValue("Other", 1, False)
+    IsShowCmd = SettingValue("Other", 0, False)
 
     @staticmethod
     def InitLoadSetting():
@@ -159,25 +180,43 @@ class Setting:
 
     @staticmethod
     def GetConfigPath():
-        from PySide6.QtCore import QDir
-        homePath = QDir.homePath()
-        projectName = ".picacg"
-        return os.path.join(homePath, projectName)
+        import sys
+        if sys.platform == "win32":
+            return "data"
+        else:
+            from PySide6.QtCore import QDir
+            homePath = QDir.homePath()
+            projectName = ".picacg"
+            return os.path.join(homePath, projectName)
 
     @staticmethod
     def GetLogPath():
-        return os.path.join(Setting.GetConfigPath(), "logs")
+        import sys
+        if sys.platform == "win32":
+            return "logs"
+        else:
+            return os.path.join(Setting.GetConfigPath(), "logs")
 
     @staticmethod
     def CheckRepair():
+        import sys
+        if not sys.platform == "win32":
+            return
         try:
-            fileList = ["download.db", "config.ini", "history.db"]
+            from PySide6.QtCore import QDir
+            homePath = QDir.homePath()
+            projectName = ".picacg"
+            oldPath = os.path.join(homePath, projectName)
+            fileList = ["download.db", "config.ini", "history.db", "cache_word"]
             for file in fileList:
-                path = os.path.join(Setting.GetConfigPath(), file)
-                if not os.path.isfile(path):
-                    if os.path.isfile(file):
-                        shutil.copyfile(file, path)
-        except Exception as es:
+                filePath = os.path.join("data", file)
+                if not os.path.isfile(filePath):
+                    oldFilePath = os.path.join(oldPath, file)
+                    if os.path.isfile(oldFilePath):
+                        shutil.move(oldFilePath, filePath)
+                    elif os.path.isfile(file):
+                        shutil.move(file, filePath)
 
+        except Exception as es:
             from tools.log import Log
             Log.Error(es)
