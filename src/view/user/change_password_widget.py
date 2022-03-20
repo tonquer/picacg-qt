@@ -4,17 +4,17 @@ from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator
 
 from component.label.msg_label import MsgLabel
-from interface.ui_register_widget import Ui_RegisterWidget
+from interface.ui_change_password_widget import Ui_ChangePasswordWidget
 from qt_owner import QtOwner
 from server import req, Status
 from task.qt_task import QtTaskBase
 from tools.str import Str
 
 
-class ChangePasswordWidget(QtWidgets.QWidget, Ui_RegisterWidget, QtTaskBase):
+class ChangePasswordWidget(QtWidgets.QWidget, Ui_ChangePasswordWidget, QtTaskBase):
     def __init__(self):
         super(self.__class__, self).__init__()
-        Ui_RegisterWidget.__init__(self)
+        Ui_ChangePasswordWidget.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
         self.token = ""
@@ -24,21 +24,21 @@ class ChangePasswordWidget(QtWidgets.QWidget, Ui_RegisterWidget, QtTaskBase):
         return
 
     def ClickButton(self):
-        if self.token and self.userId:
-            self.ChangePassword()
+        userId = self.userEdit.text()
+        old = self.passwordEdit.text()
+        new = self.passwordEdit.text()
+        if self.token and self.userId and self.userId == userId:
+            self.ChangePassword(old, new)
         else:
             self.Login()
 
     def Login(self):
-        if not self.buttonGroup.checkedButton():
-            MsgLabel.ShowErrorEx(self, Str.GetStr(Str.NotSpace))
+        userId = self.userEdit.text()
+        oldPassword = self.passwordEdit.text()
+        newPassword = self.newPasswordEdit.text()
+        if not userId or not oldPassword or not newPassword:
+            QtOwner().ShowMsg(Str.GetStr(Str.NotSpace))
             return
-        if len(self.passwdEdit.text()) < 8:
-            MsgLabel.ShowErrorEx(self, Str.GetStr(Str.PasswordShort))
-            return
-        userId = ""
-        oldPassword = ""
-        newPassword = ""
         QtOwner().ShowLoading()
         self.AddHttpTask(req.LoginReq(userId, oldPassword), self.LoginBack, (userId, oldPassword, newPassword))
         return
@@ -47,13 +47,12 @@ class ChangePasswordWidget(QtWidgets.QWidget, Ui_RegisterWidget, QtTaskBase):
         QtOwner().CloseLoading()
         st = raw["st"]
         if st == Status.Ok:
-            QtOwner().ShowMsg(Str.GetStr(Str.RegisterSuc))
+            # QtOwner().ShowMsg(Str.GetStr(Str.RegisterSuc))
             token = raw["token"]
             self.token = token
             userId, oldPassword, newPassword = v
             self.userId = userId
-            self.ChangePassword()
-            self.AddHttpTask(req.ChangePasswordReq(oldPassword, newPassword), self.ChangePasswordBack)
+            self.ChangePassword(oldPassword, newPassword)
         else:
             msg = raw["data"]
             QtOwner().ShowError(Str.GetStr(st) + "\n" + msg)
@@ -66,8 +65,8 @@ class ChangePasswordWidget(QtWidgets.QWidget, Ui_RegisterWidget, QtTaskBase):
     def ChangePasswordBack(self, raw):
         QtOwner().CloseLoading()
         st = raw["st"]
-        if st == Status.OK:
-            QtOwner().ShowMsg(Str.GetStr(Str.Success))
+        if st == Status.Ok:
+            QtOwner().ShowMsg(Str.GetStr(Str.Ok))
             return
         else:
             msg = raw["data"]

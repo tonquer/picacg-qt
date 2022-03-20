@@ -67,6 +67,11 @@
        <string>注册</string>
       </attribute>
      </widget>
+     <widget class="ChangePasswordWidget" name="tab_4">
+      <attribute name="title">
+       <string>修改密码</string>
+      </attribute>
+     </widget>
      <widget class="LoginProxyWidget" name="tab_3">
       <attribute name="title">
        <string>分流</string>
@@ -129,6 +134,12 @@
    <class>LoginProxyWidget</class>
    <extends>QWidget</extends>
    <header location="global">view.user.login_proxy_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChangePasswordWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">view.user.change_password_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

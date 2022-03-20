@@ -117,8 +117,8 @@ class ChangePasswordReq(ServerReq):
             "new_password": newPassword,
             "old_password": oldPassword
         }
-        url = config.Url + "user/password"
-        method = "POST"
+        url = config.Url + "users/password"
+        method = "PUT"
         hearder = ToolUtil.GetHeader(url, method)
         super(self.__class__, self).__init__(url, hearder, data, method)
         self.token = token

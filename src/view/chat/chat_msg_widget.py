@@ -49,9 +49,9 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
         #     }
         #     """)
         self.replayLabel.setWordWrap(True)
-        font = QFont("MicrosoftYaHei", 14, 100)
-        self.replayLabel.setFont(font)
-        self.commentLabel.setFont(font)
+        # font = QFont("MicrosoftYaHei", 14, 100)
+        # self.replayLabel.setFont(font)
+        # self.commentLabel.setFont(font)
         # self.replayLabel.setStyleSheet("""
         #     border-image:url(:png/icon/skin_aio_friend_bubble_pressed.9.png) 50;
         #     border-top-width: 25px;

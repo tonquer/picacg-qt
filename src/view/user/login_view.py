@@ -47,8 +47,12 @@ class LoginView(BaseMaskDialog, Ui_Login, QtTaskBase):
         return self.tabWidget.widget(1)
 
     @property
-    def loginProxyWidget(self):
+    def changePasswordWidget(self):
         return self.tabWidget.widget(2)
+
+    @property
+    def loginProxyWidget(self):
+        return self.tabWidget.widget(3)
 
     def closeEvent(self, arg__1) -> None:
         self.timer.stop()
@@ -68,6 +72,9 @@ class LoginView(BaseMaskDialog, Ui_Login, QtTaskBase):
         elif self.tabWidget.widget(index) == self.registerWidget:
             self.loginButton.setText(Str.GetStr(Str.Register))
         elif self.tabWidget.widget(index) == self.loginProxyWidget:
+            self.loginButton.setText(Str.GetStr(Str.Save))
+
+        elif self.tabWidget.widget(index) == self.changePasswordWidget:
             self.loginButton.setText(Str.GetStr(Str.Save))
         self.tabWidget.widget(index).Init()
 

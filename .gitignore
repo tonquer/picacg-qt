@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+src/data/chat
 .idea/
 build/
 develop-eggs/
@@ -137,3 +138,4 @@ history.db
 # Downloaded Commies for PicACG
 commies/
 test/
+src/data/cache_word
