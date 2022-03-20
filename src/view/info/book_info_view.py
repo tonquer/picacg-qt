@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from PySide6.QtCore import Qt, QSize, QEvent
+from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
 from PySide6.QtWidgets import QListWidgetItem, QLabel
 
@@ -14,6 +14,8 @@ from tools.str import Str
 
 
 class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
+    ReloadHistory = Signal()
+
     def __init__(self):
         super(self.__class__, self).__init__()
         Ui_BookInfo.__init__(self)
@@ -73,6 +75,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.commentButton.clicked.connect(self.OpenComment)
         # self.epsListWidget.verticalScrollBar().rangeChanged.connect(self.ChageMaxNum)
         self.epsListWidget.setMinimumHeight(300)
+        self.ReloadHistory.connect(self.LoadHistory)
 
     def UpdateFavoriteIcon(self):
         p = QPixmap()
@@ -96,6 +99,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         bookId = kwargs.get("bookId")
         if bookId:
             self.OpenBook(bookId)
+
         pass
 
     def OpenBook(self, bookId):
