@@ -2,10 +2,11 @@
 
 ## 简体中文 | [English](README_EN.md)
 
-[![GitHub](https://img.shields.io/github/license/tonquer/picacg-windows)](https://raw.githubusercontent.com/tonquer/picacg-windows/master/LICENSE.txt)
-[![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-windows/CI?label=CI)](https://github.com/tonquer/picacg-windows/actions)
+[![GitHub](https://img.shields.io/github/license/tonquer/picacg-qt)](https://raw.githubusercontent.com/tonquer/picacg-qt/master/LICENSE.txt)
+[![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-qt/CI?label=CI)](https://github.com/tonquer/picacg-qt/actions)
 ![Relese](https://img.shields.io/badge/Python-3.7.9%2B-brightgreen)
-[![Relese](https://img.shields.io/github/v/release/tonquer/picacg-windows)](https://github.com/tonquer/picacg-windows/releases)
+[![Relese](https://img.shields.io/github/v/release/tonquer/picacg-qt)](https://github.com/tonquer/picacg-qt/releases)
+![Relese](https://img.shields.io/github/downloads/tonquer/picacg-qt/total)
 
 - 哔咔漫画PC客户端（支持window、Linux和macOS），界面使用QT
 - 该项目仅供技术研究使用，请勿用于其他用途
