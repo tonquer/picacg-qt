@@ -65,13 +65,14 @@ class TaskDownload(TaskBase, QtTaskBase):
                 break
             self.HandlerDownload({"st": Status.Ok}, (v, QtDownloadTask.Waiting))
 
-    def DownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag=""):
+    def DownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isReload=False):
         self.taskId += 1
         data = QtDownloadTask(self.taskId)
         data.downloadCallBack = downloadCallBack
         data.downloadCompleteBack = completeCallBack
         data.backParam = backParam
         data.statusBack = downloadStCallBack
+        data.isReload = isReload
         data.url = url
         data.path = path
         data.loadPath = loadPath
@@ -86,7 +87,7 @@ class TaskDownload(TaskBase, QtTaskBase):
         Log.Debug("add download info, cachePath:{}, loadPath:{}, savePath:{}".format(data.cachePath, data.loadPath, data.savePath))
         from server.server import Server
         from server import req
-        Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath), backParams=self.taskId)
+        Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath, data.isReload), backParams=self.taskId)
         return self.taskId
 
     def HandlerTask(self, downloadId, laveFileSize, data, isCallBack=True):

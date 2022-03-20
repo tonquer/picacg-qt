@@ -257,15 +257,16 @@ class Server(Singleton):
 
     def _Download(self, task):
         try:
-            if not isinstance(task.req, req.SpeedTestReq) and not task.req.savePath:
-                for cachePath in [task.req.loadPath, task.req.cachePath]:
-                    if cachePath and task.bakParam:
-                        data = ToolUtil.LoadCachePicture(cachePath)
-                        if data:
-                            TaskBase.taskObj.downloadBack.emit(task.bakParam, len(data), b"")
-                            TaskBase.taskObj.downloadBack.emit(task.bakParam, 0, data)
-                            Log.Info("request cache -> backId:{}, {}".format(task.bakParam, task.req))
-                            return
+            if not task.req.isReload:
+                if not isinstance(task.req, req.SpeedTestReq) and not task.req.savePath:
+                    for cachePath in [task.req.loadPath, task.req.cachePath]:
+                        if cachePath and task.bakParam:
+                            data = ToolUtil.LoadCachePicture(cachePath)
+                            if data:
+                                TaskBase.taskObj.downloadBack.emit(task.bakParam, len(data), b"")
+                                TaskBase.taskObj.downloadBack.emit(task.bakParam, 0, data)
+                                Log.Info("request cache -> backId:{}, {}".format(task.bakParam, task.req))
+                                return
             request = task.req
             if request.params is None:
                 request.params = {}

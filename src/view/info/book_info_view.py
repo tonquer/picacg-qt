@@ -163,7 +163,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             if config.IsLoadingPicture:
                 url = ToolUtil.GetRealUrl(fileServer, path)
                 self.path = ToolUtil.GetRealPath(self.bookId, "cover")
-                self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture)
+                self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture, isReload=True)
 
             self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)

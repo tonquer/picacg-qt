@@ -210,7 +210,7 @@ class ComicListWidget(BaseListWidget):
                 item = self.itemFromIndex(index)
                 count = self.row(item)
                 widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
-                self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=count)
+                self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=count, isReload=True)
                 pass
 
     def Waifu2xPicture(self, index, isIfSize=False):

@@ -227,7 +227,7 @@ class DownloadBookHandler(object):
                     cur = time.time()
                     tick = cur - now
                     if tick >= 0.1:
-                        if backData.bakParam:
+                        if backData.bakParam and fileSize-getSize > 0:
                             TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, b"")
                         now = cur
 
