@@ -1,4 +1,3 @@
-from tkinter import E
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QRegularExpression
 from PySide6.QtGui import QRegularExpressionValidator

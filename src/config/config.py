@@ -38,7 +38,7 @@ DatabaseUpdate2 = "https://gitee.com/bika-robot/picacg-database/raw/main/version
 DatabaseDownload2 = "https://gitee.com/bika-robot/picacg-database/raw/main/data/"
 UpdateVersion = "v1.3.6"
 RealVersion = "v1.3.6"
-TimeVersion = "2022-3-19"
+TimeVersion = "2022-3-20"
 
 Waifu2xVersion = "1.1.1"
 

@@ -423,6 +423,7 @@ class SpeedTestReq(ServerReq):
         header['cache-control'] = 'no-cache'
         header['expires'] = '0'
         header['pragma'] = 'no-cache'
+        self.isReload = False
         super(self.__class__, self).__init__(url, header,
                                              {}, method)
 
