@@ -119,7 +119,6 @@ class ComicListWidget(BaseListWidget):
 
         widget.index = index
         widget.categoryLabel.setText(categoryStr)
-        widget.nameLable.setText(title)
         if updated_at:
             dayStr = ToolUtil.GetUpdateStr(updated_at)
             updateStr = dayStr + Str.GetStr(Str.Update)
@@ -139,6 +138,7 @@ class ComicListWidget(BaseListWidget):
         if finished:
             title += "<font color=#d5577c>{}</font>".format("({})".format(Str.GetStr(Str.ComicFinished)))
 
+        widget.nameLable.setText(title)
         item = QListWidgetItem(self)
         item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
         item.setSizeHint(widget.sizeHint())
