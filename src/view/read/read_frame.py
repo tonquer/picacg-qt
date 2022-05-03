@@ -55,7 +55,7 @@ class ReadFrame(QFrame):
         label = self.helpLabel
         font = QFont()
         font.setPointSize(64)
-        fm = QFontMetrics(font)
+        # fm = QFontMetrics(font)
         label.resize(self.width(), self.height())
         p = QPixmap(self.width(), self.height())
         p.fill(Qt.transparent)

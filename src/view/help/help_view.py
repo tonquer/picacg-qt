@@ -177,7 +177,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             if not data:
                 return
             Log.Info("db: check update, {}->{}->{}".format(self.curUpdateTick, updateTick, newTick))
-            if len(data) <= 130:
+            if len(data) <= 200:
                 Log.Info("Update code: {}".format(data))
                 return
             elif data:
