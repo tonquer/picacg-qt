@@ -1,4 +1,5 @@
 # 目录管理
+from tools.langconv import Converter
 from tools.log import Log
 from tools.singleton import Singleton
 from tools.tool import ToolUtil
@@ -59,6 +60,12 @@ class CateGoryMgr(Singleton):
                     "Cosplay",
                     "重口地帶",
         ]
+        self.categoriseIndex = {}
+        self.indexCategories = {}
+        for index, v in enumerate(self.allCategorise):
+            name = Converter('zh-hans').convert(v)
+            self.categoriseIndex[name] = index+1
+            self.indexCategories[index+1] = name
 
     @property
     def server(self):

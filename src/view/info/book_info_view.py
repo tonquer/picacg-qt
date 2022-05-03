@@ -34,7 +34,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.picture.installEventFilter(self)
         self.title.setWordWrap(True)
         self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.autorList.itemClicked.connect(self.ClickAutorItem)
+        self.autorList.clicked.connect(self.ClickAutorItem)
         self.autorList.setContextMenuPolicy(Qt.CustomContextMenu)
         self.autorList.customContextMenuRequested.connect(self.CopyClickAutorItem)
 
@@ -52,11 +52,11 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.description.adjustSize()
         self.title.adjustSize()
 
-        self.categoriesList.itemClicked.connect(self.ClickCategoriesItem)
+        self.categoriesList.clicked.connect(self.ClickCategoriesItem)
         self.categoriesList.setContextMenuPolicy(Qt.CustomContextMenu)
         self.categoriesList.customContextMenuRequested.connect(self.CopyClickCategoriesItem)
 
-        self.tagsList.itemClicked.connect(self.ClickTagsItem)
+        self.tagsList.clicked.connect(self.ClickTagsItem)
         self.tagsList.setContextMenuPolicy(Qt.CustomContextMenu)
         self.tagsList.customContextMenuRequested.connect(self.CopyClickTagsItem)
 
@@ -398,20 +398,35 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.lastIndex = info.picIndex
         self.startRead.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
 
-    def ClickCategoriesItem(self, item):
-        text = item.text()
+    def ClickCategoriesItem(self, modelIndex):
+        index = modelIndex.row()
+        item = self.categoriesList.item(index)
+        if not item:
+            return
+        widget = self.categoriesList.itemWidget(item)
+        text = widget.text()
         # QtOwner().owner.searchForm.SearchCategories(text)
         QtOwner().OpenSearchByCategory2(text)
         return
 
-    def ClickAutorItem(self, item):
-        text = item.text()
+    def ClickAutorItem(self, modelIndex):
+        index = modelIndex.row()
+        item = self.autorList.item(index)
+        if not item:
+            return
+        widget = self.autorList.itemWidget(item)
+        text = widget.text()
         # QtOwner().owner.searchForm.SearchAutor(text)
         QtOwner().OpenSearch2(text, True, False, False, False, False, True, False)
         return
 
-    def ClickTagsItem(self, item):
-        text = item.text()
+    def ClickTagsItem(self, modelIndex):
+        index = modelIndex.row()
+        item = self.tagsList.item(index)
+        if not item:
+            return
+        widget = self.tagsList.itemWidget(item)
+        text = widget.text()
         # QtOwner().owner.searchForm.SearchTags(text)
         QtOwner().OpenSearch2(text, True, False, False, False, True, False, False)
         return

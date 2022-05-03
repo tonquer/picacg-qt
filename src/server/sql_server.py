@@ -201,7 +201,7 @@ class SqlServer(Singleton):
         nums = {}
         cur.execute("select category, count(*) from category where bookId in ({}) group by category".format(sql))
         for data in cur.fetchall():
-            nums[data[0]] = data[1]
+            nums[CateGoryMgr().indexCategories.get(data[0])] = data[1]
         data = pickle.dumps(nums)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
@@ -308,7 +308,11 @@ class SqlServer(Singleton):
 
                 try:
                     for name in book.categories.split(","):
-                        sql = "replace INTO category(bookId, category) VALUES ('{0}', '{1}'); ".format(book.id, name)
+                        from tools.category import CateGoryMgr
+                        index = CateGoryMgr().categoriseIndex.get(name)
+                        if not index:
+                            continue
+                        sql = "replace INTO category(bookId, category) VALUES ('{0}', {1}); ".format(book.id, index)
                         sql = sql.replace("\0", "")
                         cur.execute(sql)
                 except Exception as es:

@@ -315,7 +315,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         for i in range(self.categoryList.count()):
             item = self.categoryList.item(i)
             if item.isSelected():
-                data.append(item.text())
+                widget = self.categoryList.itemWidget(item)
+                data.append(widget.text())
         # data = self.categoryList.GetAllSelectItem()
         self.hiddenNum = 0
         for i in range(self.bookList.count()):

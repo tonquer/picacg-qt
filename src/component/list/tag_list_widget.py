@@ -35,20 +35,22 @@ class TagListWidget(BaseListWidget):
     def AddItem(self, name, isSelectable=False):
         label = QLabel(name)
         label.setAlignment(Qt.AlignCenter)
-        font = QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        label.setFont(font)
+        label.setStyleSheet("color:#d5577c")
+        # font = QFont()
+        # font.setPointSize(12)
+        # font.setBold(True)
+        # label.setFont(font)
 
-        item = QListWidgetItem(name)
+        item = QListWidgetItem(self)
         item.setTextAlignment(Qt.AlignCenter)
         # item.setBackground(QColor(87, 195, 194))
         # item.setBackground(QColor(0, 0, 0, 0))
-        fm = QFontMetrics(font)
-        width = fm.boundingRect(name).width()
-        height = QFontMetrics(font).height()
+        fm = QFontMetrics(item.font())
 
-        item.setSizeHint(QSize(width, height) + QSize(20, 10))
+        width = fm.boundingRect(name).width()
+        height = fm.height()
+        self.setItemWidget(item, label)
+        item.setSizeHint(QSize(width, height) + QSize(20, 0))
         if not isSelectable:
             item.setFlags(item.flags() & (~Qt.ItemIsSelectable))
 
