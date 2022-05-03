@@ -32,6 +32,13 @@ class Ui_Search(object):
         Search.setMinimumSize(QSize(80, 0))
         self.verticalLayout = QVBoxLayout(Search)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.searchTab = QLabel(Search)
+        self.searchTab.setObjectName(u"searchTab")
+        self.searchTab.setEnabled(True)
+        self.searchTab.setTextInteractionFlags(Qt.TextBrowserInteraction)
+
+        self.verticalLayout.addWidget(self.searchTab)
+
         self.searchWidget = QWidget(Search)
         self.searchWidget.setObjectName(u"searchWidget")
         self.verticalLayout_3 = QVBoxLayout(self.searchWidget)
@@ -248,6 +255,7 @@ class Ui_Search(object):
 
     def retranslateUi(self, Search):
         Search.setWindowTitle(QCoreApplication.translate("Search", u"\u641c\u7d22", None))
+        self.searchTab.setText("")
 #if QT_CONFIG(tooltip)
         self.searchLabel1.setToolTip(QCoreApplication.translate("Search", u"<html><head/><body><p>\u641c\u5bfb\u7684\u6700\u4f73\u59ff\u52bf?</p><p>\u3010\u5305\u542b\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][+]\u4eba\u59bb,\u4ec5\u663e\u793a\u5168\u5f69\u4e14\u662f\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 +\u4eba\u59bb<br/></p><p>\u3010\u6392\u9664\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c][]\u4eba\u59bb,\u663e\u793a\u5168\u5f69\u5e76\u6392\u9664\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 -\u4eba\u59bb<br/></p><p>\u3010\u6211\u90fd\u8981\u641c\u5bfb\u3011</p><p>\u641c\u5bfb\u5168\u5f69[\u7a7a\u683c]\u4eba\u59bb,\u4f1a\u663e\u793a\u6240\u6709\u5305\u542b\u5168\u5f69\u53ca\u4eba\u59bb\u7684\u672c\u672c</p><p>\u8303\u4f8b:\u5168\u5f69 \u4eba\u59bb</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)

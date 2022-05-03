@@ -7,6 +7,12 @@ from tools.str import Str
 from tools.tool import ToolUtil
 
 
+class SaveNameType:
+    Default = 0
+    AuthorAndTitle = 1
+    AuthorDir = 2
+
+
 class DownloadItem(QtTaskBase):
     Success = Str.Success
     Downloading = Str.Downloading
@@ -21,6 +27,7 @@ class DownloadItem(QtTaskBase):
         QtTaskBase.__init__(self)
         self.bookId = ""             # 书籍id
         self.title = ""              # 标题
+        self.author = ""              # 作者名
         self.savePath = ""           # 保存路径
         self.convertPath = ""        # Waifu2x路径
         self.status = self.Pause       # 状态
@@ -160,10 +167,13 @@ class DownloadItem(QtTaskBase):
         return self.Downloading
 
     # 初始化成功回调
-    def DownloadInitCallBack(self, bookName, title, maxPic):
+    def DownloadInitCallBack(self, bookName, author, title, maxPic):
         if not self.title:
             self.title = bookName
             self.dirty = True
+        if not self.author and author.strip() not in [" ", "无", "無", ]:
+            self.author = author
+
         self.curDownloadEpsInfo.dirty = True
         self.curDownloadEpsInfo.picCnt = maxPic
         self.curDownloadEpsInfo.epsTitle = title
@@ -195,6 +205,16 @@ class DownloadItem(QtTaskBase):
             path = os.path.join(Setting.SavePath.value, config.SavePathDir)
             path2 = os.path.join(path, ToolUtil.GetCanSaveName(self.title))
             self.savePath = os.path.join(path2, "original")
+            if Setting.SaveNameType.value == SaveNameType.AuthorAndTitle:
+                if self.author:
+                    path2 = os.path.join(path, ToolUtil.GetCanSaveName("[{}]".format(self.author)+self.title))
+                    self.savePath = os.path.join(path2, "original")
+            elif Setting.SaveNameType.value == SaveNameType.AuthorDir:
+                if self.author:
+                    path2 = os.path.join(path, os.path.join(ToolUtil.GetCanSaveName(self.author), ToolUtil.GetCanSaveName(self.title)))
+                else:
+                    path2 = os.path.join(path, os.path.join("default", ToolUtil.GetCanSaveName(self.title)))
+                self.savePath = os.path.join(path2, "original")
 
         convertPath = os.path.join(self.savePath, ToolUtil.GetCanSaveName(self.curDownloadEpsInfo.epsTitle))
         savePath = os.path.join(convertPath, "{:04}.{}".format(self.curDownloadEpsInfo.curPreDownloadIndex + 1, "jpg"))

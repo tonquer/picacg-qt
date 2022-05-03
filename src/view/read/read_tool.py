@@ -173,7 +173,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
 
         if self.curIndex >= self.maxPic - 1:
-            if epsId + 1 < len(bookInfo.eps):
+            if epsId + 1 < bookInfo.epsCount:
                 QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
                 self.OpenNextEps()
                 return
@@ -313,13 +313,12 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastChapter))
             return
 
-        if epsId >= len(bookInfo.eps):
+        if epsId >= bookInfo.epsCount:
             return
 
-        epsInfo = bookInfo.eps[epsId]
         self.readImg.AddHistory()
         QtOwner().bookInfoView.LoadHistory()
-        self.readImg.OpenPage(bookId, epsId, epsInfo.title)
+        self.readImg.OpenPage(bookId, epsId)
         return
 
     def OpenNextEps(self):
@@ -328,17 +327,17 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
 
         epsId += 1
-        if epsId >= len(bookInfo.eps):
+        if epsId >= bookInfo.epsCount:
             QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextChapter))
             return
 
-        if epsId >= len(bookInfo.eps):
+        if epsId >= bookInfo.epsCount:
             return
 
-        epsInfo = bookInfo.eps[epsId]
+        title = bookInfo.GetEpsTitle(epsId)
         self.readImg.AddHistory()
         QtOwner().bookInfoView.LoadHistory()
-        self.readImg.OpenPage(bookId, epsId, epsInfo.title)
+        self.readImg.OpenPage(bookId, epsId)
         return
 
     def SkipPicture(self, index=0):

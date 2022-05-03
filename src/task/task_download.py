@@ -200,29 +200,42 @@ class TaskDownload(TaskBase, QtTaskBase):
                 task.status = task.Reading
             if task.status == task.Reading:
                 isReset or self.SetTaskStatus(taskId, backData, task.ReadingEps)
-                if not info.eps:
-                    self.AddHttpTask(req.GetComicsBookEpsReq(task.bookId), self.HandlerDownload, (taskId, task.ReadingEps), task.cleanFlag)
+                if info.maxLoadEps <= 0:
+                    self.AddHttpTask(req.GetComicsBookEpsReq(task.bookId), self.HandlerDownload, (taskId, task.Reading), task.cleanFlag)
+                    return
+
+                if task.epsId >= info.epsCount:
+                    self.SetTaskStatus(taskId, backData, task.Error)
+                    return
+
+                if task.epsId not in info.epsDict:
+                    loadPage = (info.epsCount - task.epsId - 1) // info.epsLimit
+                    self.AddHttpTask(req.GetComicsBookEpsReq(task.bookId, loadPage+1), self.HandlerDownload, (taskId, task.Reading), task.cleanFlag)
                     return
 
                 task.status = task.ReadingEps
             if task.status == task.ReadingEps:
                 isReset or self.SetTaskStatus(taskId, backData, task.ReadingPicture)
-                if task.epsId >= len(info.eps):
-                    self.SetTaskStatus(taskId, backData, task.Error)
-                    return
-                epsInfo = info.eps[task.epsId]
+
+                epsInfo = info.epsDict[task.epsId]
                 assert isinstance(epsInfo, BookEps)
-                if not epsInfo.pics:
-                    self.AddHttpTask(req.GetComicsBookOrderReq(task.bookId, task.epsId+1), self.HandlerDownload, (taskId, task.ReadingPicture), task.cleanFlag)
+                if epsInfo.maxPicPages <= 0:
+                    self.AddHttpTask(req.GetComicsBookOrderReq(task.bookId, task.epsId+1), self.HandlerDownload, (taskId, task.ReadingEps), task.cleanFlag)
                     return
+                if task.index not in epsInfo.pics:
+                    loadPage = task.index // epsInfo.picLimit + 1
+                    self.AddHttpTask(req.GetComicsBookOrderReq(task.bookId, task.epsId+1, loadPage), self.HandlerDownload, (taskId, task.ReadingPicture), task.cleanFlag)
+                    return
+
                 task.status = task.ReadingPicture
             if task.status == task.ReadingPicture:
-                epsInfo = info.eps[task.epsId]
+                epsInfo = info.epsDict[task.epsId]
                 assert isinstance(epsInfo, BookEps)
-                backData["maxPic"] = len(epsInfo.pics)
+                backData["maxPic"] = epsInfo.maxPics
                 backData["title"] = epsInfo.title
-                backData["maxEps"] = len(info.eps)
+                backData["maxEps"] = info.epsCount
                 backData["bookName"] = info.title
+                backData["author"] = info.author
                 isReset or self.SetTaskStatus(taskId, backData, task.Downloading)
 
                 if task.isInit:
@@ -250,7 +263,7 @@ class TaskDownload(TaskBase, QtTaskBase):
                                 TaskBase.taskObj.downloadBack.emit(taskId, 0, imgData)
                                 return
 
-                if task.index >= len(epsInfo.pics):
+                if task.index not in epsInfo.pics:
                     self.SetTaskStatus(taskId, backData, task.Error)
                     return
 

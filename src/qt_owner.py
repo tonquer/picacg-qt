@@ -45,6 +45,13 @@ class QtOwner(Singleton):
         self.owner.loadingDialog.close()
         return
 
+    def CopyText(self, text):
+        from PySide6.QtWidgets import QApplication
+        clipboard = QApplication.clipboard()
+        clipboard.setText(text)
+        from tools.str import Str
+        QtOwner().ShowMsg(Str.GetStr(Str.CopySuc))
+
     @property
     def owner(self):
         from view.main.main_view import MainView
@@ -129,22 +136,29 @@ class QtOwner(Singleton):
 
     def OpenSearch2(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor, isUpLoad):
         arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor, "isUpLoad": isUpLoad}
+
         if isAuthor:
-            self.owner.searchView2.setWindowTitle("作者: {}".format(ToolUtil.GetStrMaxLen(text)))
+            title = "作者: {}".format(ToolUtil.GetStrMaxLen(text))
+            self.owner.searchView2.setWindowTitle(title)
+            self.owner.searchView2.searchTab.setText("作者: {}".format(text))
         elif isTag:
-            self.owner.searchView2.setWindowTitle("TAG: {}".format(ToolUtil.GetStrMaxLen(text)))
+            title = "TAG: {}".format(ToolUtil.GetStrMaxLen(text))
+            self.owner.searchView2.setWindowTitle(title)
+            self.owner.searchView2.searchTab.setText("TAG: {}".format(text))
         self.owner.SwitchWidget(self.owner.searchView2, **arg)
 
     def OpenSearchByText(self, text):
         self.owner.searchView.lineEdit.setText(text)
         self.owner.searchView.lineEdit.Search()
 
-    def OpenReadView(self, bookId, index, name, pageIndex):
+    def OpenReadView(self, bookId, index, pageIndex):
         self.owner.totalStackWidget.setCurrentIndex(1)
-        self.owner.readView.OpenPage(bookId, index, name, pageIndex=pageIndex)
+        self.owner.readView.OpenPage(bookId, index, pageIndex=pageIndex)
 
     def CloseReadView(self):
         self.owner.totalStackWidget.setCurrentIndex(0)
+        QtOwner().SetSubTitle("")
+        QtOwner().bookInfoView.ReloadHistory.emit()
 
     def OpenSearchByCategory(self, categories):
         arg = {"categories": categories}
@@ -152,12 +166,16 @@ class QtOwner(Singleton):
 
     def OpenSearchByCategory2(self, categories):
         arg = {"categories": categories}
-        self.owner.searchView2.setWindowTitle("分类: {}".format(ToolUtil.GetStrMaxLen(categories)))
+        title = "分类: {}".format(ToolUtil.GetStrMaxLen(categories))
+        self.owner.searchView2.setWindowTitle(title)
+        self.owner.searchView2.searchTab.setText("分类: {}".format(categories))
         self.owner.SwitchWidget(self.owner.searchView2, **arg)
 
     def OpenSearchByCreate(self, text):
         arg = {"text": text, "isTitle": False, "isDes": False, "isCategory": False, "isTag":False, "isAuthor": False, "isUpLoad": True}
-        self.owner.searchView2.setWindowTitle("上传者: {}".format(ToolUtil.GetStrMaxLen(text)))
+        title = "上传者: {}".format(ToolUtil.GetStrMaxLen(text))
+        self.owner.searchView2.setWindowTitle(title)
+        self.owner.searchView2.searchTab.setText("上传者: {}".format(text))
         self.owner.SwitchWidget(self.owner.searchView2, **arg)
 
     def OpenBookInfo(self, bookId):

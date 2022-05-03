@@ -60,6 +60,7 @@ class MainView(Main, QtTaskBase):
         self.subStackWidget.setCurrentIndex(0)
         self.settingView.LoadSetting()
 
+        self.searchView.searchTab.hide()
         self.searchView2.searchWidget.hide()
         # self.readView.LoadSetting()
         # QApplication.instance().installEventFilter(self)
@@ -288,7 +289,7 @@ class MainView(Main, QtTaskBase):
 
     def closeEvent(self, a0) -> None:
         if self.totalStackWidget.currentIndex() == 1:
-            self.totalStackWidget.setCurrentIndex(0)
+            self.readView.Close()
             a0.ignore()
             return
         super().closeEvent(a0)

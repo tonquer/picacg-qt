@@ -1,5 +1,7 @@
 import base64
+import json
 import pickle
+from functools import partial
 
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices, Qt
@@ -8,8 +10,9 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from config import config
 from config.setting import Setting
 from interface.ui_help import Ui_Help
+from qt_owner import QtOwner
 from server import req
-from server.sql_server import SqlServer
+from server.sql_server import SqlServer, DbBook
 from task.qt_task import QtTaskBase
 from tools.log import Log
 from tools.str import Str
@@ -47,6 +50,9 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         else:
             self.helpLogWidget.hide()
         self.openCmd.clicked.connect(self.helpLogWidget.show)
+        self.updateWidget.setVisible(False)
+        self.selectUrl = ""
+        self.updateButton.clicked.connect(self.OpenUpdateUrl)
 
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)
@@ -75,12 +81,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             if not data:
                 self.checkUpdateIndex += 1
                 self.StartUpdate()
-
                 return
-            r = QMessageBox.information(self, Str.GetStr(Str.Update), Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n" + data,
-                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-            if r == QMessageBox.Yes:
-                QDesktopServices.openUrl(QUrl(self.updateBackUrl[self.checkUpdateIndex]))
+            self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex], Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n" + data)
             self.UpdateText(self.verCheck, Str.HaveUpdate, "#d71345", True)
         except Exception as es:
             Log.Error(es)
@@ -175,7 +177,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             if not data:
                 return
             Log.Info("db: check update, {}->{}->{}".format(self.curUpdateTick, updateTick, newTick))
-            if len(data) <= 100:
+            if len(data) <= 130:
                 Log.Info("Update code: {}".format(data))
                 return
             elif data:
@@ -203,7 +205,9 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 if not raw:
                     continue
                 data = base64.b64decode(raw.encode('utf-8'))
-                book = pickle.loads(data)
+                # book = pickle.loads(data)
+                book = DbBook()
+                book.CopyFromJson(json.loads(data))
                 infos.append(book)
         except Exception as es:
             Log.Error(es)
@@ -216,4 +220,15 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
     def OpenLogDir(self):
         path = Setting.GetLogPath()
         QDesktopServices.openUrl(QUrl.fromLocalFile(path))
+        return
+
+    def SetNewUpdate(self, updateUrl, updateLog):
+        self.updateWidget.setVisible(True)
+        self.selectUrl = updateUrl
+        self.updateLabel.setText(updateLog)
+        QtOwner().owner.navigationWidget.SetNewUpdate()
+        return
+
+    def OpenUpdateUrl(self):
+        QDesktopServices.openUrl(QUrl(self.selectUrl))
         return

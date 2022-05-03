@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QLabel
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication
 
 from config.setting import Setting
 from interface.ui_book_info import Ui_BookInfo
@@ -9,7 +9,7 @@ from qt_owner import QtOwner
 from server import req, ToolUtil, config, Status
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
-from tools.book import BookMgr
+from tools.book import BookMgr, Book
 from tools.str import Str
 
 
@@ -35,6 +35,9 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.title.setWordWrap(True)
         self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.autorList.itemClicked.connect(self.ClickAutorItem)
+        self.autorList.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.autorList.customContextMenuRequested.connect(self.CopyClickAutorItem)
+
         self.idLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
 
@@ -50,8 +53,12 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.title.adjustSize()
 
         self.categoriesList.itemClicked.connect(self.ClickCategoriesItem)
+        self.categoriesList.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.categoriesList.customContextMenuRequested.connect(self.CopyClickCategoriesItem)
 
         self.tagsList.itemClicked.connect(self.ClickTagsItem)
+        self.tagsList.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tagsList.customContextMenuRequested.connect(self.CopyClickTagsItem)
 
         self.epsListWidget.setFlow(self.epsListWidget.LeftToRight)
         self.epsListWidget.setWrapping(True)
@@ -76,6 +83,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         # self.epsListWidget.verticalScrollBar().rangeChanged.connect(self.ChageMaxNum)
         self.epsListWidget.setMinimumHeight(300)
         self.ReloadHistory.connect(self.LoadHistory)
+
+        self.pageBox.currentIndexChanged.connect(self.UpdateEpsPageData)
 
     def UpdateFavoriteIcon(self):
         p = QPixmap()
@@ -239,27 +248,75 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         info = BookMgr().books.get(self.bookId)
         if not info:
             return
-        self.startRead.setEnabled(True)
-        # downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
-        for index, epsInfo in enumerate(info.eps):
-            label = QLabel(str(index + 1) + "-" + epsInfo.title)
-            label.setAlignment(Qt.AlignCenter)
-            label.setStyleSheet("color: rgb(196, 95, 125);")
-            font = QFont()
-            font.setPointSize(12)
-            font.setBold(True)
-            label.setFont(font)
-            # label.setWordWrap(True)
-            # label.setContentsMargins(20, 10, 20, 10)
-            item = QListWidgetItem(self.epsListWidget)
-            # if index in downloadIds:
-            #     item.setBackground(QColor(18, 161, 130))
-            # else:
-            #     item.setBackground(QColor(0, 0, 0, 0))
-            item.setSizeHint(label.sizeHint() + QSize(20, 20))
-            item.setToolTip(epsInfo.title)
-            self.epsListWidget.setItemWidget(item, label)
+        assert isinstance(info, Book)
+        self.pageBox.clear()
 
+        texts = []
+        for i in range(0, info.maxLoadEps):
+            start = info.epsCount - i*info.epsLimit*1
+            end = max(1, info.epsCount - (i+1)*info.epsLimit + 1)
+            texts.append("{}-{}".format(start, end))
+
+        self.pageBox.addItems(texts)
+
+        if info.epsCount == 1:
+            self.pageLabel.setVisible(False)
+            self.pageBox.setVisible(False)
+        else:
+            self.pageLabel.setVisible(False)
+            self.pageBox.setVisible(True)
+
+    def UpdateEpsPageData(self, index):
+        info = BookMgr().books.get(self.bookId)
+        if not info:
+            return
+        if index < 0:
+            return
+        assert isinstance(info, Book)
+        if index + 1 in info.curLoadEps:
+            self.UpdateEpsPageDataBack({"st": Status.Ok}, index)
+        else:
+            QtOwner().ShowLoading()
+            self.startRead.setEnabled(False)
+            self.AddHttpTask(req.GetComicsBookEpsReq(info.id, index+1), self.UpdateEpsPageDataBack, index)
+
+    def UpdateEpsPageDataBack(self, raw, index):
+        QtOwner().CloseLoading()
+        self.epsListWidget.clear()
+        self.startRead.setEnabled(True)
+        st = raw["st"]
+        if st == Status.Ok:
+            # downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
+            info = BookMgr().books.get(self.bookId)
+            if not info:
+                return
+            assert isinstance(info, Book)
+
+            for i in range(0, info.epsLimit):
+
+                epsId = (info.epsCount - index*info.epsLimit) - 1-i
+                epsInfo = info.epsDict.get(epsId)
+                if not epsInfo:
+                    return
+                label = QLabel(str(epsId + 1) + "-" + epsInfo.title)
+                label.setAlignment(Qt.AlignCenter)
+                label.setStyleSheet("color: rgb(196, 95, 125);")
+                font = QFont()
+                font.setPointSize(12)
+                font.setBold(True)
+                label.setFont(font)
+                # label.setWordWrap(True)
+                # label.setContentsMargins(20, 10, 20, 10)
+                item = QListWidgetItem(self.epsListWidget)
+                # if index in downloadIds:
+                #     item.setBackground(QColor(18, 161, 130))
+                # else:
+                #     item.setBackground(QColor(0, 0, 0, 0))
+                item.setSizeHint(label.sizeHint() + QSize(20, 20))
+                item.setToolTip(epsInfo.title)
+                self.epsListWidget.setItemWidget(item, label)
+        else:
+            QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
         return
 
     # def ChageMaxNum(self):
@@ -292,17 +349,19 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
     def OpenReadImg(self, modelIndex):
         index = modelIndex.row()
-        self.OpenReadIndex(index)
-
-    def OpenReadIndex(self, index, pageIndex=-1):
         item = self.epsListWidget.item(index)
         if not item:
             return
-        widget = self.epsListWidget.itemWidget(item)
-        if not widget:
+        book = BookMgr().GetBook(self.bookId)
+        if not book:
             return
-        name = widget.text()
-        QtOwner().OpenReadView(self.bookId, index, name, pageIndex=pageIndex)
+        assert isinstance(book, Book)
+        loadIndex = self.pageBox.currentIndex()
+        epsId = (book.epsCount - loadIndex*book.epsLimit) - index - 1
+        self.OpenReadIndex(epsId)
+
+    def OpenReadIndex(self, epsId, pageIndex=-1):
+        QtOwner().OpenReadView(self.bookId, epsId, pageIndex=pageIndex)
         # self.stackedWidget.setCurrentIndex(1)
 
     def StartRead(self):
@@ -331,10 +390,10 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         #         else:
         #             item.setBackground(QColor(0, 0, 0, 0))
 
-        item = self.epsListWidget.item(info.epsId)
-        if not item:
-            return
-        item.setBackground(QColor(238, 162, 164))
+        # item = self.epsListWidget.item(info.epsId)
+        # if not item:
+        #     return
+        # item.setBackground(QColor(238, 162, 164))
         self.lastEpsId = info.epsId
         self.lastIndex = info.picIndex
         self.startRead.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
@@ -356,6 +415,27 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         # QtOwner().owner.searchForm.SearchTags(text)
         QtOwner().OpenSearch2(text, True, False, False, False, True, False, False)
         return
+
+    def CopyClickTagsItem(self, pos):
+        index = self.tagsList.indexAt(pos)
+        item = self.tagsList.itemFromIndex(index)
+        if index.isValid() and item:
+            text = item.text()
+            QtOwner().CopyText(text)
+
+    def CopyClickCategoriesItem(self, pos):
+        index = self.categoriesList.indexAt(pos)
+        item = self.categoriesList.itemFromIndex(index)
+        if index.isValid() and item:
+            text = item.text()
+            QtOwner().CopyText(text)
+
+    def CopyClickAutorItem(self, pos):
+        index = self.autorList.indexAt(pos)
+        item = self.autorList.itemFromIndex(index)
+        if index.isValid() and item:
+            text = item.text()
+            QtOwner().CopyText(text)
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:

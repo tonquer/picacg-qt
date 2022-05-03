@@ -26,7 +26,7 @@ class Ui_Help(object):
     def setupUi(self, Help):
         if not Help.objectName():
             Help.setObjectName(u"Help")
-        Help.resize(545, 586)
+        Help.resize(773, 738)
         Help.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
 "QScrollArea {background-color:transparent;}")
         self.verticalLayout = QVBoxLayout(Help)
@@ -36,7 +36,7 @@ class Ui_Help(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -20, 508, 586))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 753, 718))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout = QHBoxLayout()
@@ -175,6 +175,34 @@ class Ui_Help(object):
 
         self.verticalLayout_2.addWidget(self.widget_2)
 
+        self.updateWidget = QWidget(self.widget)
+        self.updateWidget.setObjectName(u"updateWidget")
+        self.verticalLayout_4 = QVBoxLayout(self.updateWidget)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.label_8 = QLabel(self.updateWidget)
+        self.label_8.setObjectName(u"label_8")
+        font1 = QFont()
+        font1.setPointSize(16)
+        self.label_8.setFont(font1)
+
+        self.verticalLayout_4.addWidget(self.label_8)
+
+        self.updateLabel = QLabel(self.updateWidget)
+        self.updateLabel.setObjectName(u"updateLabel")
+
+        self.verticalLayout_4.addWidget(self.updateLabel)
+
+        self.updateButton = QPushButton(self.updateWidget)
+        self.updateButton.setObjectName(u"updateButton")
+        icon = QIcon()
+        icon.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.updateButton.setIcon(icon)
+
+        self.verticalLayout_4.addWidget(self.updateButton)
+
+
+        self.verticalLayout_2.addWidget(self.updateWidget)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout_2.addItem(self.verticalSpacer)
@@ -220,5 +248,8 @@ class Ui_Help(object):
         self.upTimeLabel.setText(QCoreApplication.translate("Help", u"2021-11-27", None))
         self.waifu2x.setText(QCoreApplication.translate("Help", u"v1.0.8", None))
         self.openCmd.setText(QCoreApplication.translate("Help", u"\u6253\u5f00\u63a7\u5236\u53f0", None))
+        self.label_8.setText(QCoreApplication.translate("Help", u"\u65b0\u7248\u672c\uff1a", None))
+        self.updateLabel.setText("")
+        self.updateButton.setText(QCoreApplication.translate("Help", u"\u524d\u5f80\u66f4\u65b0", None))
     # retranslateUi
 

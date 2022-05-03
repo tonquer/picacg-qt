@@ -195,7 +195,10 @@ class SpeedTestPingHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": task.res.GetText()}
         if hasattr(task.res.raw, "elapsed"):
-            data["data"] = str(task.res.raw.elapsed.total_seconds())
+            if task.res.raw.status_code == 401 or task.res.raw.status_code == 200:
+                data["data"] = str(task.res.raw.elapsed.total_seconds())
+            else:
+                data["data"] = "0"
             TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
         else:
             data["data"] = "0"

@@ -42,6 +42,10 @@ class DbBook(object):
         self.totalLikes = 0        #
         self.totalViews = 0        #
 
+    def CopyFromJson(self, data):
+        for k, v in data.items():
+            setattr(self, k, v)
+
 
 class SqlServer(Singleton):
     DbInfos = dict()

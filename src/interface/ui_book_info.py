@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QLayout, QListView,
-    QListWidgetItem, QPlainTextEdit, QPushButton, QSizePolicy,
-    QSpacerItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QFrame,
+    QGridLayout, QHBoxLayout, QLabel, QLayout,
+    QListView, QListWidgetItem, QPlainTextEdit, QPushButton,
+    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
 
 from component.button.icon_tool_button import IconToolButton
 from component.label.head_label import HeadLabel
@@ -167,6 +167,17 @@ class Ui_BookInfo(object):
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
+
+        self.pageLabel = QLabel(self.scrollAreaWidgetContents)
+        self.pageLabel.setObjectName(u"pageLabel")
+
+        self.horizontalLayout_2.addWidget(self.pageLabel)
+
+        self.pageBox = QComboBox(self.scrollAreaWidgetContents)
+        self.pageBox.setObjectName(u"pageBox")
+        self.pageBox.setMinimumSize(QSize(120, 0))
+
+        self.horizontalLayout_2.addWidget(self.pageBox)
 
 
         self.horizontalLayout_10.addLayout(self.horizontalLayout_2)
@@ -411,6 +422,7 @@ class Ui_BookInfo(object):
         self.commentButton.setText("")
         self.downloadButton.setText("")
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))
+        self.pageLabel.setText(QCoreApplication.translate("BookInfo", u"\u5206\u9875\uff1a", None))
         self.picture.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("BookInfo", u"\u6807\u9898\uff1a", None))
         self.title.setText(QCoreApplication.translate("BookInfo", u"\u6807\u9898", None))

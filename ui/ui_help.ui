@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>545</width>
-    <height>586</height>
+    <width>773</width>
+    <height>738</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,9 +27,9 @@ QScrollArea {background-color:transparent;}</string>
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-20</y>
-        <width>508</width>
-        <height>586</height>
+        <y>0</y>
+        <width>753</width>
+        <height>718</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -289,6 +289,42 @@ QScrollArea {background-color:transparent;}</string>
                 <widget class="QPushButton" name="openCmd">
                  <property name="text">
                   <string>打开控制台</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="updateWidget" native="true">
+              <layout class="QVBoxLayout" name="verticalLayout_4">
+               <item>
+                <widget class="QLabel" name="label_8">
+                 <property name="font">
+                  <font>
+                   <pointsize>16</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>新版本：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="updateLabel">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="updateButton">
+                 <property name="text">
+                  <string>前往更新</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../res/images.qrc">
+                   <normaloff>:/png/icon/new.svg</normaloff>:/png/icon/new.svg</iconset>
                  </property>
                 </widget>
                </item>

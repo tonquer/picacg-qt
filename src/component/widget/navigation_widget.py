@@ -1,5 +1,5 @@
-from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent
-from PySide6.QtGui import QPixmap, Qt
+from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent, QSize
+from PySide6.QtGui import QPixmap, Qt, QIcon
 from PySide6.QtWidgets import QWidget
 
 from config import config
@@ -152,3 +152,9 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
                 return False
         else:
             return super(self.__class__, self).eventFilter(obj, event)
+
+    def SetNewUpdate(self):
+        icon2 = QIcon()
+        icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.helpButton.setIcon(icon2)
+        return

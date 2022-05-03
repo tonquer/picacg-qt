@@ -65,13 +65,15 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
     def SelectMenu(self):
         popMenu = QMenu(self)
-        action = popMenu.addAction(Str.GetStr(Str.Menu))
+        action = popMenu.addAction(Str.GetStr(Str.Menu)+"(F12)")
         action.triggered.connect(self.ShowAndCloseTool)
 
-        action = popMenu.addAction(Str.GetStr(Str.FullSwitch))
+        action = popMenu.addAction(Str.GetStr(Str.FullSwitch)+"(F11)")
         action.triggered.connect(self.qtTool.FullScreen)
 
         menu2 = popMenu.addMenu(Str.GetStr(Str.ReadMode))
+        action = menu2.addAction("切换双页对齐(F10)")
+        action.triggered.connect(self.ChangeDoublePage)
 
         def AddReadMode(name, value):
             action = menu2.addAction(name)
@@ -79,6 +81,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             if self.stripModel.value == value:
                 action.setCheckable(True)
                 action.setChecked(True)
+
         AddReadMode(Str.GetStr(Str.UpDownScroll), 0)
         AddReadMode(Str.GetStr(Str.Default), 1)
         AddReadMode(Str.GetStr(Str.LeftRightDouble), 2)
@@ -86,7 +89,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         AddReadMode(Str.GetStr(Str.LeftRightScroll), 4)
         AddReadMode(Str.GetStr(Str.RightLeftScroll), 5)
 
-        menu3 = popMenu.addMenu(Str.GetStr(Str.Scale))
+        menu3 = popMenu.addMenu(Str.GetStr(Str.Scale)+ "(- +)")
 
         def AddScaleMode(name, value):
             action = menu3.addAction(name)
@@ -107,16 +110,16 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         AddScaleMode("180%", 180)
         AddScaleMode("200%", 200)
 
-        menu3 = popMenu.addMenu(Str.GetStr(Str.SwitchPage))
+        menu3 = popMenu.addMenu(Str.GetStr(Str.SwitchPage)+"(← →)")
         action = menu3.addAction(Str.GetStr(Str.LastChapter))
         action.triggered.connect(self.qtTool.OpenLastEps)
         action = menu3.addAction(Str.GetStr(Str.NextChapter))
         action.triggered.connect(self.qtTool.OpenNextEps)
 
-        action = popMenu.addAction(Str.GetStr(Str.AutoScroll))
+        action = popMenu.addAction(Str.GetStr(Str.AutoScroll)+"(F5)")
         action.triggered.connect(self.qtTool.SwitchScrollAndTurn)
 
-        action = popMenu.addAction(Str.GetStr(Str.Exit))
+        action = popMenu.addAction(Str.GetStr(Str.Exit) + "(Esc)")
         action.triggered.connect(self.Close)
 
         if self.qtTool.IsStartScrollAndTurn():
@@ -137,8 +140,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
             self.qtTool.FullScreen(True)
         QtOwner().CloseReadView()
-        QtOwner().bookInfoView.ReloadHistory.emit()
-        QtOwner().SetSubTitle("")
 
     def Clear(self):
         Setting.TurnSpeed.SetValue(int(self.qtTool.turnSpeed.value() * 1000))
@@ -157,7 +158,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.ClearDownload()
         self.ClearQImageTask()
 
-    def OpenPage(self, bookId, epsId, name, pageIndex=-1):
+    def OpenPage(self, bookId, epsId, pageIndex=-1):
         if not bookId:
             return
         self.Clear()
@@ -179,7 +180,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             QtOwner().owner.showFullScreen()
             self.qtTool.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
 
-        self.epsName = name
         QtOwner().ShowLoading()
 
         # 开始加载
@@ -260,6 +260,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if not maxPic or self.maxPic > 0:
             return
         self.maxPic = maxPic
+        title = raw.get("title", "")
+        self.epsName = title
         # info = BookMgr().GetBook(self.bookId)
 
         if 0 < self.pageIndex < self.maxPic:
@@ -482,3 +484,13 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
     def ChangeReadMode(self, index):
         self.qtTool.comboBox.setCurrentIndex(index)
+
+    def ChangeDoublePage(self):
+        if self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+            return
+        if self.curIndex < self.maxPic:
+            self.curIndex += 1
+        self.frame.oldValue = 0
+        self.qtTool.SetData(isInit=True)
+        self.scrollArea.ResetScrollValue(self.curIndex)
+        self.scrollArea.changeNextPage.emit(self.curIndex)

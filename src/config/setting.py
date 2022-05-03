@@ -99,6 +99,7 @@ class Setting:
 
     # 下载与缓存
     SavePath = SettingValue("DownloadSetting", "", False)
+    SaveNameType = SettingValue("DownloadSetting", 0, False)
 
     # Waifu2x设置
     SelectEncodeGpu = SettingValue("Waifu2xSetting", "", True)

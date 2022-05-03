@@ -278,6 +278,23 @@ QScrollArea {background-color:transparent;}</string>
                </property>
               </spacer>
              </item>
+             <item>
+              <widget class="QLabel" name="pageLabel">
+               <property name="text">
+                <string>分页：</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="pageBox">
+               <property name="minimumSize">
+                <size>
+                 <width>120</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>

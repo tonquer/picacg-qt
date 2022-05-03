@@ -8,7 +8,7 @@ from qt_owner import QtOwner
 from server import req
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
-from tools.book import BookMgr
+from tools.book import BookMgr, Book
 from tools.status import Status
 from tools.str import Str
 
@@ -43,7 +43,7 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
         if bookId not in BookMgr().books:
             self.OpenLocalBack()
         else:
-            self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.OpenEpsInfoBack)
+            self.LoadEpsData()
 
     def OpenLocalBack(self):
         self.AddSqlTask("book", self.bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack)
@@ -51,19 +51,49 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
     def SendLocalBack(self, books):
         self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookInfoBack)
 
-    def OpenBookInfoBack(self, msg):
-        info = BookMgr().books.get(self.bookId)
-        if info:
-            self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.OpenEpsInfoBack)
-        else:
-            QtOwner().CloseLoading()
+    def OpenBookInfoBack(self, raw):
+        st = raw["st"]
 
-    def OpenEpsInfoBack(self, raw):
         QtOwner().CloseLoading()
-        self.listWidget.clear()
+        if st == Status.Ok:
+            QtOwner().ShowLoading()
+            self.LoadEpsData(1)
+        else:
+            QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
+
+    def LoadEpsData(self, page=1):
+        info = BookMgr().books.get(self.bookId)
+        if not info:
+            return
+        assert isinstance(info, Book)
+        if info.maxLoadEps <= 0:
+            self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.LoadEpsDataBack, 0)
+            return
+
+        if page > info.maxLoadEps:
+            QtOwner().CloseLoading()
+            self.UpdateEpsInfo()
+            return
+        if page not in info.curLoadEps:
+
+            self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId, page), self.LoadEpsDataBack, page)
+        else:
+            self.LoadEpsData(page + 1)
+
+    def InitEpsInfoBack(self, raw):
         st = raw["st"]
         if st == Status.Ok:
-            self.UpdateEpsInfo()
+            self.LoadEpsData(1)
+        else:
+            QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
+        return
+
+    def LoadEpsDataBack(self, raw, loadPage):
+        st = raw["st"]
+        if st == Status.Ok:
+            self.LoadEpsData(loadPage+1)
+        else:
+            QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
         return
 
     def UpdateEpsInfo(self):
@@ -72,7 +102,8 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
         if not info:
             return
         downloadEpsId = QtOwner().downloadView.GetDownloadEpsId(self.bookId)
-        for index, epsInfo in enumerate(info.eps):
+        for index in range(0, info.epsCount):
+            epsInfo = info.epsDict.get(index)
             label = QLabel(str(index + 1) + "-" + epsInfo.title)
             label.setAlignment(Qt.AlignCenter)
             # label.setStyleSheet("color: rgb(196, 95, 125);")

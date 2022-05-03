@@ -191,7 +191,8 @@ class DownloadStatus(QtTaskBase):
             maxPic = data.get("maxPic")
             title = data.get("title")
             bookName = data.get("bookName")
-            task.DownloadInitCallBack(bookName, title, maxPic)
+            author = data.get("author")
+            task.DownloadInitCallBack(bookName, author, title, maxPic)
             self.StartItemDownload(task)
         elif st == Str.Cache:
             # 进行下一个图片

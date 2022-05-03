@@ -19,8 +19,12 @@ class BookEps(object):
         self.title = ""    # 章节名
         self.order = 0     # 排序
         self.id = ""       # id
-        self.pages = 1     # 总页数
-        self.pics = []     # 图片
+        self.maxPics = 1   # 总页数
+        self.pics = {}     # 图片
+
+        self.curLoadPicPages = set()
+        self.maxPicPages = 0
+        self.picLimit = 0
 
 
 # 一本书
@@ -35,11 +39,19 @@ class Book(object):
         self.categories = []      # 分类
         self.tags = []            # tag
         self.eps = []             # 章节列表BookEps
+        self.curLoadEps = set()
+        self.maxLoadEps = 0
+        self.epsLimit = 0
         self.epsDict = {}
 
     @property
     def id(self):
         return self._id
+
+    def GetEpsTitle(self, epsId):
+        if epsId in self.epsDict:
+            return self.epsDict[epsId].title
+        return ""
 
 
 # 书的管理器
@@ -85,7 +97,7 @@ class BookMgr(Singleton):
         info.title = dbBook.title
         info.author = dbBook.author
         info.description = dbBook.description
-        info.epsCount = dbBook.epsCount
+        # info.epsCount = dbBook.epsCount
         info.finished = dbBook.finished
         info.pagesCount = dbBook.pages
         info.categories = dbBook.categories
@@ -121,31 +133,40 @@ class BookMgr(Singleton):
             # 重新初始化
             pages = r.data['eps']["pages"]
             limit = r.data['eps']["limit"]
+            assert isinstance(info, Book)
+
+            info.curLoadEps.add(page)
+            if info.maxLoadEps <= 0:
+                info.maxLoadEps = pages
+            if info.epsLimit <= 0:
+                info.epsLimit = limit
+
             # 优化，如果分页已经加载好了，只需要重新加载更新最后一页即可
 
             for i, data2 in enumerate(r.data['eps']['docs']):
                 # index = (page -1) * limit + i
-                epsId = data2.get('id')
-                if epsId in info.epsDict:
-                    epsInfo = info.epsDict[epsId]
+                index = data2.get("order")-1
+                if index in info.epsDict:
+                    epsInfo = info.epsDict[index]
                 else:
                     epsInfo = BookEps()
-                    info.epsDict[epsId] = epsInfo
+                    info.epsDict[index] = epsInfo
                     # info.eps.append(epsInfo)
                 ToolUtil.ParseFromData(epsInfo, data2)
 
-            loadPage = int((len(info.epsDict)-1) / limit + 1)
-            nextPage = page + 1
+            # loadPage = int((len(info.epsDict)-1) / limit + 1)
+            # nextPage = page + 1
             # 如果已经有了，则从最后那一页加载起就可以了
-            if loadPage > nextPage:
-                nextPage = loadPage
+            # if loadPage > nextPage:
+            #     nextPage = loadPage
 
-            info.eps = list(info.epsDict.values())
-            info.eps.sort(key=lambda a: a.order)
+            # info.eps = list(info.epsDict.values())
+            # info.eps.sort(key=lambda a: a.order)
 
-            if nextPage <= pages:
-                self.server.Send(req.GetComicsBookEpsReq(bookId, nextPage), backParam=backData.bakParam, isASync=False)
-                return Status.WaitLoad
+            # 加载最后一页，为了确定章节数量
+            # if info.maxLoadEps not in info.curLoadEps:
+            #     self.server.Send(req.GetComicsBookEpsReq(bookId, info.maxLoadEps), backParam=backData.bakParam, isASync=False)
+            #     return Status.WaitLoad
             return Status.Ok
         except Exception as es:
             Log.Error(es)
@@ -160,7 +181,8 @@ class BookMgr(Singleton):
 
             bookInfo = self.books.get(bookId)
 
-            epsInfo = bookInfo.eps[epsId-1]
+            epsInfo = bookInfo.epsDict[epsId-1]
+            epsInfo.maxPics = r.data['pages']["total"]
             page = r.data['pages']["page"]
             pages = r.data['pages']["pages"]
             limit = r.data['pages']["limit"]
@@ -169,47 +191,64 @@ class BookMgr(Singleton):
             # if page == 1:
             #     del epsInfo.pics[:]
 
+            assert isinstance(epsInfo, BookEps)
+
+            epsInfo.curLoadPicPages.add(page)
+            if epsInfo.maxPicPages <= 0:
+                epsInfo.maxPicPages = pages
+            if epsInfo.picLimit <= 0:
+                epsInfo.picLimit = limit
+
             for i, data in enumerate(r.data['pages']['docs']):
                 index = (page -1) * limit + i
-                if len(epsInfo.pics) > index:
+
+                if index in epsInfo.pics:
                     picInfo = epsInfo.pics[index]
                 else:
                     picInfo = Picture()
-                    epsInfo.pics.append(picInfo)
+                    epsInfo.pics[index] = picInfo
                 ToolUtil.ParseFromData(picInfo, data['media'])
 
-            loadPage = int((len(epsInfo.pics) - 1) / limit + 1)
-            nextPage = page + 1
+            # loadPage = int((len(epsInfo.pics) - 1) / limit + 1)
+            # nextPage = page + 1
             # 如果已经有了，则从最后那一页加载起就可以了
-            if loadPage > nextPage:
-                nextPage = loadPage
+            # if loadPage > nextPage:
+            #     nextPage = loadPage
+            #
+            # if nextPage <= pages:
+            #     self.server.Send(req.GetComicsBookOrderReq(bookId, epsId, nextPage), backParam=backData.bakParam, isASync=False)
+            #     return Status.WaitLoad
+            # if page == pages:
+            #     epsInfo.maxPics = (pages-1) * limit + len(r.data['pages']['docs'])
 
-            if nextPage <= pages:
-                self.server.Send(req.GetComicsBookOrderReq(bookId, epsId, nextPage), backParam=backData.bakParam, isASync=False)
-                return Status.WaitLoad
+                # 加载最后一页，为了确定图片数量
+            # if epsInfo.maxPicPages not in epsInfo.curLoadPicPages:
+            #     self.server.Send(req.GetComicsBookOrderReq(bookId, epsId, epsInfo.maxPicPages), backParam=backData.bakParam,
+            #                      isASync=False)
+            #     return Status.WaitLoad
             return Status.Ok
         except Exception as es:
             Log.Error(es)
             return Status.Error
-
-    def _DownloadBoos(self, bookId):
-        bookInfo = self.books.get(bookId)
-        if not bookInfo:
-            return
-        for index, eps in enumerate(bookInfo.eps):
-            if eps.pics:
-                continue
-            page = 0
-            pages = 1
-            while page < pages:
-                r = self.server.Send(req.GetComicsBookOrderReq(bookId, index+1, page+1))
-                page = r.data['pages']["page"]
-                pages = r.data['pages']["pages"]
-                for data in r.data['pages']['docs']:
-                    epsInfo = Picture()
-                    ToolUtil.ParseFromData(epsInfo, data['media'])
-                    eps.pics.append(epsInfo)
-        pass
+    #
+    # def _DownloadBoos(self, bookId):
+    #     bookInfo = self.books.get(bookId)
+    #     if not bookInfo:
+    #         return
+    #     for index, eps in enumerate(bookInfo.eps):
+    #         if eps.pics:
+    #             continue
+    #         page = 0
+    #         pages = 1
+    #         while page < pages:
+    #             r = self.server.Send(req.GetComicsBookOrderReq(bookId, index+1, page+1))
+    #             page = r.data['pages']["page"]
+    #             pages = r.data['pages']["pages"]
+    #             for data in r.data['pages']['docs']:
+    #                 epsInfo = Picture()
+    #                 ToolUtil.ParseFromData(epsInfo, data['media'])
+    #                 eps.pics.append(epsInfo)
+    #     pass
 
     def SavePicture(self, r, savePath):
         if not os.path.exists(os.path.dirname(savePath)):

@@ -40,6 +40,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.logGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.LogIndex))
         self.mainScaleGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ScaleLevel))
         self.proxyGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.IsHttpProxy))
+        self.saveNameGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.SaveNameType))
 
         # CheckButton:
         self.checkBox_IsUpdate.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUpdate, self.checkBox_IsUpdate))
@@ -185,6 +186,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.SetRadioGroup("languageButton", Setting.Language.value)
         self.SetRadioGroup("mainScaleButton", Setting.ScaleLevel.value)
         self.SetRadioGroup("proxy", Setting.IsHttpProxy.value)
+        self.SetRadioGroup("saveNameButton", Setting.SaveNameType.value)
         self.coverSize.setValue(Setting.CoverSize.value)
         self.categorySize.setValue(Setting.CategorySize.value)
         self.SetRadioGroup("logutton", Setting.LogIndex.value)

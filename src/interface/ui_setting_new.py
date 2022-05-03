@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -78, 661, 2448))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -1830, 661, 2575))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -1031,6 +1031,43 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_4.addWidget(self.downloadLabel)
 
+        self.frame_15 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_15.setObjectName(u"frame_15")
+        self.frame_15.setFrameShape(QFrame.StyledPanel)
+        self.frame_15.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_19 = QVBoxLayout(self.frame_15)
+        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
+        self.label_36 = QLabel(self.frame_15)
+        self.label_36.setObjectName(u"label_36")
+        self.label_36.setMaximumSize(QSize(16777215, 32))
+        self.label_36.setFont(font1)
+
+        self.verticalLayout_19.addWidget(self.label_36)
+
+        self.saveNameButton0 = QRadioButton(self.frame_15)
+        self.saveNameGroup = QButtonGroup(SettingNew)
+        self.saveNameGroup.setObjectName(u"saveNameGroup")
+        self.saveNameGroup.addButton(self.saveNameButton0)
+        self.saveNameButton0.setObjectName(u"saveNameButton0")
+        self.saveNameButton0.setChecked(True)
+
+        self.verticalLayout_19.addWidget(self.saveNameButton0)
+
+        self.saveNameButton1 = QRadioButton(self.frame_15)
+        self.saveNameGroup.addButton(self.saveNameButton1)
+        self.saveNameButton1.setObjectName(u"saveNameButton1")
+
+        self.verticalLayout_19.addWidget(self.saveNameButton1)
+
+        self.saveNameButton2 = QRadioButton(self.frame_15)
+        self.saveNameGroup.addButton(self.saveNameButton2)
+        self.saveNameButton2.setObjectName(u"saveNameButton2")
+
+        self.verticalLayout_19.addWidget(self.saveNameButton2)
+
+
+        self.verticalLayout_4.addWidget(self.frame_15)
+
         self.frame_11 = QFrame(self.scrollAreaWidgetContents)
         self.frame_11.setObjectName(u"frame_11")
         self.frame_11.setFont(font1)
@@ -1300,6 +1337,10 @@ class Ui_SettingNew(object):
 
         self.label_19.setText(QCoreApplication.translate("SettingNew", u"\u653e\u5927\u500d\u6570", None))
         self.downloadLabel.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u4e0e\u7f13\u5b58", None))
+        self.label_36.setText(QCoreApplication.translate("SettingNew", u"\u4fdd\u5b58\u8def\u5f84\u683c\u5f0f\u8bbe\u7f6e\uff08\u65b0\u4e0b\u8f7d\u7684\u6587\u4ef6\u624d\u80fd\u751f\u6548\uff09", None))
+        self.saveNameButton0.setText(QCoreApplication.translate("SettingNew", u"\u4f5c\u54c1\u540d\uff08\u9ed8\u8ba4\uff09", None))
+        self.saveNameButton1.setText(QCoreApplication.translate("SettingNew", u"[\u4f5c\u8005\u540d]\u4f5c\u54c1\u540d", None))
+        self.saveNameButton2.setText(QCoreApplication.translate("SettingNew", u"\u4f5c\u8005\u540d\u5355\u72ec\u76ee\u5f55\uff08\u5982\u65e0\u4f5c\u8005\u540d\u5c06\u653e\u5165default\u76ee\u5f55\uff09", None))
         self.label_21.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84\uff08\u7f13\u5b58\u6587\u4ef6\u9700\u81ea\u5df1\u624b\u52a8\u6e05\u9664\uff09", None))
         self.setDirButton.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u76ee\u5f55", None))
         self.label_3.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d", None))

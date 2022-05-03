@@ -142,10 +142,14 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         from view.read.read_view import ReadMode
         if self.parent().qtTool.stripModel not in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             if e.angleDelta().y() < 0:
-                self.parent().qtTool.NextPage()
+                if abs(self.verticalScrollBar().value() - self.verticalScrollBar().maximum()) <= 5:
+                    self.parent().qtTool.NextPage()
+                    return
             else:
-                self.parent().qtTool.LastPage()
-            return
+                if self.verticalScrollBar().value() <= 5:
+                    self.parent().qtTool.LastPage()
+                    return
+
         return SmoothScroll.wheelEvent(self, e)
 
     def SetLabel(self, label, i):
@@ -167,13 +171,21 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         return
 
     def ScrollValue(self, value):
-        if self.initReadMode == ReadMode.LeftRight:
-            return
+        if self.parent().qtTool.stripModel not in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
+            if value > 0:
+                if abs(self.verticalScrollBar().value() - self.verticalScrollBar().maximum()) <= 5:
+                    self.parent().qtTool.NextPage()
+                    return
+            else:
+                if self.verticalScrollBar().value() <= 5:
+                    self.parent().qtTool.LastPage()
+                    return
+
         if self.initReadMode in [ReadMode.UpDown, ReadMode.LeftRight]:
-            self.vScrollBar.Scroll(value, 500)
+            self.vScrollBar.Scroll(value, 100)
             # QScroller.scroller(self).scrollTo(QPoint(0, self.verticalScrollBar().value() + value), 500)
         else:
-            self.hScrollBar.Scroll(value, 500)
+            self.hScrollBar.Scroll(value, 100)
             # QScroller.scroller(self).scrollTo(QPoint(self.horizontalScrollBar().value() + value, 0), 500)
         return
 
@@ -196,6 +208,16 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                     self.ScrollNextPage()
                 elif ev.key() == Qt.Key_Escape:
                     self.qtTool.ReturnPage()
+                elif ev.key() == Qt.Key_F5:
+                    self.qtTool.SwitchScrollAndTurn()
+                elif ev.key() == Qt.Key_F10:
+                    self.readImg.ChangeDoublePage()
+                elif ev.key() == Qt.Key_F11:
+                    self.qtTool.FullScreen()
+                elif ev.key() == Qt.Key_F12:
+                    self.readImg.ShowAndCloseTool()
+                elif ev.key() == Qt.Key_Space:
+                    self.ScrollValue(self.height())
                 elif ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Left:
                     self.qtTool.OpenLastEps()
                 elif ev.modifiers() == Qt.ShiftModifier and ev.key() == Qt.Key_Right:
@@ -674,6 +696,9 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         return
 
     def ReloadImg(self):
+        if self.initReadMode in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble, ReadMode.LeftRight]:
+            self.verticalScrollBar().setValue(0)
+
         self.readImg.ShowImg()
         self.readImg.ShowOtherPage()
         self.readImg.CheckLoadPicture()

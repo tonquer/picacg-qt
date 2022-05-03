@@ -21,6 +21,19 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QLabel" name="searchTab">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::TextBrowserInteraction</set>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QWidget" name="searchWidget" native="true">
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <property name="leftMargin">
