@@ -1,6 +1,6 @@
 from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent, QSize
 from PySide6.QtGui import QPixmap, Qt, QIcon
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QScroller
 
 from config import config
 from config.setting import Setting
@@ -28,6 +28,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         f.open(QFile.ReadOnly)
         self.picLabel.SetPicture(f.readAll())
         f.close()
+        # if Setting.IsGrabGesture.value:
+        #     QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
         self.loginButton.clicked.connect(self.OpenLoginView)
         self.signButton.clicked.connect(self.Sign)
         self.picLabel.installEventFilter(self)

@@ -1,8 +1,9 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QListWidget, QAbstractItemView
+from PySide6.QtWidgets import QListWidget, QAbstractItemView, QScroller
 
 from component.scroll.smooth_scroll_bar import SmoothScrollBar
+from config.setting import Setting
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
 from tools.str import Str
@@ -27,8 +28,9 @@ class BaseListWidget(QListWidget, QtTaskBase):
         self.setVerticalScrollBar(self.vScrollBar)
 
         self.vScrollBar.MoveEvent.connect(self.OnActionTriggered)
+        if Setting.IsGrabGesture.value:
+            QScroller.grabGesture(self.viewport(), QScroller.LeftMouseButtonGesture)
 
-        # QScroller.grabGesture(self.viewport(), QScroller.LeftMouseButtonGesture)
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.verticalScrollBar().setSingleStep(30)
 
@@ -40,6 +42,10 @@ class BaseListWidget(QListWidget, QtTaskBase):
         self.lastClick = 0
         self.lastIndex = -1
         self.doubleClickType = 0
+
+    # def event(self, e) -> bool:
+    #     print(e)
+    #     return QListWidget.event(self, e)
 
     def ClearWheelEvent(self):
         pass

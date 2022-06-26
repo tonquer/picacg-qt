@@ -270,6 +270,16 @@ class DownloadItem(QtTaskBase):
             path = os.path.join(Setting.SavePath.value, config.SavePathDir)
             path2 = os.path.join(path, ToolUtil.GetCanSaveName(self.title))
             self.convertPath = os.path.join(path2, "waifu2x")
+            if Setting.SaveNameType.value == SaveNameType.AuthorAndTitle:
+                if self.author:
+                    path2 = os.path.join(path, ToolUtil.GetCanSaveName("[{}]".format(self.author)+self.title))
+                    self.convertPath = os.path.join(path2, "waifu2x")
+            elif Setting.SaveNameType.value == SaveNameType.AuthorDir:
+                if self.author:
+                    path2 = os.path.join(path, os.path.join(ToolUtil.GetCanSaveName(self.author), ToolUtil.GetCanSaveName(self.title)))
+                else:
+                    path2 = os.path.join(path, os.path.join("default", ToolUtil.GetCanSaveName(self.title)))
+                self.convertPath = os.path.join(path2, "waifu2x")
 
         downloadPath = os.path.join(self.savePath, ToolUtil.GetCanSaveName(self.curConvertEpsInfo.epsTitle))
         loadPath = os.path.join(downloadPath, "{:04}.{}".format(self.curConvertEpsInfo.curPreConvertId + 1, "jpg"))

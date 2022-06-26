@@ -137,6 +137,7 @@ class Setting:
     AutoLogin = SettingValue("Other", 0, False)
     SavePassword = SettingValue("Other", 1, False)
     IsShowCmd = SettingValue("Other", 0, False)
+    IsGrabGesture: SettingValue = SettingValue("Other", 0, True)
 
     @staticmethod
     def InitLoadSetting():

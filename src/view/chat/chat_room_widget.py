@@ -6,7 +6,7 @@ import time
 
 from PySide6.QtCore import Signal, QTimer, Qt, QEvent, QSize
 from PySide6.QtGui import QFont, QTextCursor, QAction, QGuiApplication, QIcon
-from PySide6.QtWidgets import QMenu, QWidget, QLabel, QListWidgetItem
+from PySide6.QtWidgets import QMenu, QWidget, QLabel, QListWidgetItem, QScroller
 
 from component.dialog.loading_dialog import LoadingDialog
 from component.label.msg_label import MsgLabel
@@ -105,6 +105,8 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         desktop = QGuiApplication.primaryScreen().geometry()
         self.resize(desktop.width() // 4 * 1, desktop.height() // 4 * 3)
         self.move(desktop.width() // 2, desktop.height() // 8)
+        if Setting.IsGrabGesture.value:
+            QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
 
     def Stop(self):
         self.socket.Stop()

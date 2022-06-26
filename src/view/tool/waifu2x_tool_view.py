@@ -304,8 +304,8 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         else:
             model['width'] = int(self.widthEdit.text())
             model['high'] = int(self.heighEdit.text())
-        _, _, mat = ToolUtil.GetPictureSize(self.data)
-        model["format"] = mat
+        # _, _, mat = ToolUtil.GetPictureSize(self.data)
+        # model["format"] = mat
         self.backStatus = self.GetStatus()
         self.AddConvertTask("", self.data, model, self.AddConvertBack)
         self.changeButton.setText(Str.GetStr(Str.Converting))
@@ -334,6 +334,8 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
             filepath = QFileDialog.getSaveFileName(self, Str.GetStr(Str.Save), "{}.jpg".format(today))
             if filepath and len(filepath) >= 1:
                 name = filepath[0]
+                if not name:
+                    return
                 f = open(name, "wb")
                 f.write(data)
                 f.close()

@@ -127,7 +127,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
         if categories is not None:
             self.categories = categories
-
+        self.bookList.setFocus()
         if categories is not None:
             self.isLocal = False
             self.text = ""

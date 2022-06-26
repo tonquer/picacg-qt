@@ -327,6 +327,8 @@ class MainView(Main, QtTaskBase):
             self.SwitchWidgetLast()
         self.searchView.lineEdit.CheckClick(event.pos())
         return super(self.__class__, self).mousePressEvent(event)
+
+
     #
     # def changeEvent(self, ev):
     #     if sys.platform == 'darwin':

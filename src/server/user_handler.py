@@ -285,12 +285,8 @@ class CheckUpdateHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": ""}
         if not task.res.GetText() or task.status == Status.NetError:
-            if task.bakParam:
-                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
             return
         if task.res.raw.status_code != 200:
-            if task.bakParam:
-                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
             return
 
         updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", task.res.raw.text)
@@ -313,12 +309,15 @@ class CheckUpdateHandler(object):
 
             rawData = "\n\nv" + ".".join(info) + "\n" + rawData
 
-            data["data"] = rawData
             if version > curversion:
-                if task.bakParam:
-                    TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
+                data["data"] = rawData
+            else:
+                data["data"] = "no"
         except Exception as es:
-            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
+            pass
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
 @handler(req.SpeedTestReq)

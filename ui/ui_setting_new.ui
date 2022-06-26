@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-1830</y>
+          <y>0</y>
           <width>661</width>
-          <height>2575</height>
+          <height>2648</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -156,6 +156,43 @@
           </widget>
          </item>
          <item>
+          <widget class="QFrame" name="frame_16">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_20">
+            <item>
+             <widget class="QLabel" name="label_37">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>19</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>触控（重启生效）：</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="grabGestureBox">
+              <property name="text">
+               <string>启用触控优化</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
           <widget class="QFrame" name="frame_2">
            <property name="font">
             <font>
@@ -198,9 +235,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="themeButton1">
+             <widget class="QRadioButton" name="themeButton2">
               <property name="text">
-               <string>黑</string>
+               <string>白</string>
               </property>
               <attribute name="buttonGroup">
                <string notr="true">themeGroup</string>
@@ -208,9 +245,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="themeButton2">
+             <widget class="QRadioButton" name="themeButton1">
               <property name="text">
-               <string>白</string>
+               <string>黑</string>
               </property>
               <attribute name="buttonGroup">
                <string notr="true">themeGroup</string>
@@ -2351,11 +2388,11 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="logGroup"/>
-  <buttongroup name="themeGroup"/>
-  <buttongroup name="mainScaleGroup"/>
-  <buttongroup name="proxyGroup"/>
   <buttongroup name="languageGroup"/>
   <buttongroup name="saveNameGroup"/>
+  <buttongroup name="logGroup"/>
+  <buttongroup name="mainScaleGroup"/>
+  <buttongroup name="themeGroup"/>
+  <buttongroup name="proxyGroup"/>
  </buttongroups>
 </ui>

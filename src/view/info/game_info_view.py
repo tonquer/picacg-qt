@@ -4,8 +4,9 @@ import json
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller
 
+from config.setting import Setting
 from interface.ui_game_info import Ui_GameInfo
 from qt_owner import QtOwner
 from server import req, Status, Log, ToolUtil, config
@@ -38,7 +39,8 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
         self.epsListWidget.setFrameShape(self.epsListWidget.NoFrame)
         self.epsListWidget.setResizeMode(self.epsListWidget.Adjust)
         # self.epsListWidget.doubleClicked.connect(self.OpenListPicture)
-        # QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
+        if Setting.IsGrabGesture.value:
+            QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
         # self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         # self.epsListWidget.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
         # self.epsListWidget.verticalScrollBar().setSingleStep(30)

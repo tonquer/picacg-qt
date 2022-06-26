@@ -34,13 +34,17 @@ UpdateUrl2Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
 
-DatabaseUpdate2 = "https://gitee.com/bika-robot/picacg-database/raw/main/version3.txt"
-DatabaseDownload2 = "https://gitee.com/bika-robot/picacg-database/raw/main/data3/"
-UpdateVersion = "v1.3.7"
-RealVersion = "v1.3.7"
-TimeVersion = "2022-5-3"
+DatabaseUpdate2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/data3/"
 
-Waifu2xVersion = "1.1.1"
+DatabaseUpdate3 = "https://raw.staticdn.net/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload3 = "https://raw.staticdn.net/bika-robot/picacg-database/main/data3/"
+
+UpdateVersion = "v1.3.8"
+RealVersion = "v1.3.8"
+TimeVersion = "2022-6-25"
+
+Waifu2xVersion = "1.1.2"
 
 
 # waifu2x

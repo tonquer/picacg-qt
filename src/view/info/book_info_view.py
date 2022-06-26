@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller
 
 from config.setting import Setting
 from interface.ui_book_info import Ui_BookInfo
@@ -9,7 +9,7 @@ from qt_owner import QtOwner
 from server import req, ToolUtil, config, Status
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
-from tools.book import BookMgr, Book
+from tools.book import BookMgr, Book, BookEps
 from tools.str import Str
 
 
@@ -66,8 +66,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.epsListWidget.setResizeMode(self.epsListWidget.Adjust)
 
         self.epsListWidget.clicked.connect(self.OpenReadImg)
-
-        # QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
+        if Setting.IsGrabGesture.value:
+            QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
         # self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         # self.epsListWidget.verticalScrollBar().setStyleSheet(QssDataMgr().GetData('qt_list_scrollbar'))
         # self.epsListWidget.verticalScrollBar().setSingleStep(30)
@@ -241,6 +241,19 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             return
         else:
             QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
+            # # 从下载中导入章节
+            # info = QtOwner().downloadView.downloadDict.get(self.bookId)
+            # if info:
+            #     from view.download.download_item import DownloadItem, DownloadEpsItem
+            #     from tools.book import BookEps
+            #     assert isinstance(info, DownloadItem)
+            #     for v in info.epsInfo:
+            #         assert isinstance(v, DownloadEpsItem)
+            #         epsInfo = BookEps()
+            #         epsInfo.maxPics = v.picCnt
+            #         epsInfo.title = v.epsTitle
+            #         epsInfo.id = v.epsId
+            #         info.epsDict[epsInfo.id] = epsInfo
         return
 
     def UpdateEpsData(self):

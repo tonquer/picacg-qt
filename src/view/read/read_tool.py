@@ -114,6 +114,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.timerOut.timeout.connect(self.TimeOut)
         self.isMaxFull = False
         self.gpuLabel.setMaximumWidth(250)
+        self.curWaifu2x.clicked.connect(self.OpenCurWaifu)
 
     @property
     def imgFrame(self):
@@ -166,6 +167,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             self._LastPage()
         else:
             self._NextPage()
+        self.curWaifu2x.setChecked(bool(self.readImg.GetIsWaifu2x()))
 
     def _NextPage(self):
         epsId = self.readImg.epsId
@@ -182,7 +184,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             return
         t = CTime()
 
-        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+        if ReadMode.isDouble(self.stripModel):
             self.curIndex += 2
             self.curIndex = min(self.curIndex, self.maxPic-1)
         else:
@@ -203,6 +205,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             self._NextPage()
         else:
             self._LastPage()
+        self.curWaifu2x.setChecked(bool(self.readImg.GetIsWaifu2x()))
 
     def _LastPage(self):
         epsId = self.readImg.epsId
@@ -217,7 +220,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastPage))
             return
 
-        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+        if ReadMode.isDouble(self.stripModel):
             self.curIndex -= 2
             self.curIndex = max(self.curIndex, 0)
         else:
@@ -284,6 +287,14 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             return
         # TODO
         # QtOwner().OpenWaifu2xTool(p.data)
+        return
+
+    def OpenCurWaifu(self):
+        if self.curWaifu2x.isChecked():
+            self.readImg.SetIsWaifu2x(1)
+        else:
+            self.readImg.SetIsWaifu2x(0)
+        self.scrollArea.changeScale.emit(self.scaleCnt)
         return
 
     def OpenWaifu(self):
@@ -401,7 +412,10 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             if max(w, h) <= Setting.LookMaxNum.value:
                data.waifuState = data.WaifuWait
             else:
-                data.waifuState = data.OverResolution
+                if data._isWaifu2x == -1:
+                    data.waifuState = data.OverResolution
+                else:
+                    data.waifuState = data.WaifuWait
             data.waifuDataSize = 0
             data.scaleW, data.scaleH = 0, 0
             data.waifuTick = 0
@@ -447,7 +461,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             # properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 2)
             # properties.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, 2)
             # QScroller.scroller(self.readImg.scrollArea).setScrollerProperties(properties)
-        elif self.stripModel in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+        elif ReadMode.isDouble(self.stripModel):
             self.zoomSlider.setValue(100)
             self.scaleCnt = 0
             # properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()

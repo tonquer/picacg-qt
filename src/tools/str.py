@@ -189,6 +189,11 @@ class Str:
     MyComment = 129          # 我的评论
     LoginOut = 130                # 登出
     Sock5Error = 131              # Sock5设置出错
+    OpenAutoWaifu2x = 132        # 开启自动waifu2x
+    OpenCurWaifu2x = 133          # 开启本张图waifu2x
+    CloseAutoWaifu2x = 134        # 关闭自动waifu2x
+    CloseCurWaifu2x = 135          # 关闭本张图waifu2x
+    RightLeftDouble2 = 136         # 右左双页(滚轮正序)
 
     @classmethod
     def Reload(cls):
@@ -366,6 +371,11 @@ class Str:
         cls.strDict[cls.MyComment] = QCoreApplication.translate("cls.obj",  "我的评论", None)
         cls.strDict[cls.LoginOut] = QCoreApplication.translate("cls.obj",  "登出", None)
         cls.strDict[cls.Sock5Error] = QCoreApplication.translate("cls.obj",  "Sock5设置出错", None)
+        cls.strDict[cls.OpenAutoWaifu2x] = QCoreApplication.translate("cls.obj", "开启自动waifu2x", None)
+        cls.strDict[cls.CloseAutoWaifu2x] = QCoreApplication.translate("cls.obj", "关闭自动waifu2x", None)
+        cls.strDict[cls.OpenCurWaifu2x] = QCoreApplication.translate("cls.obj", "开启本张图waifu2x", None)
+        cls.strDict[cls.CloseCurWaifu2x] = QCoreApplication.translate("cls.obj", "关闭本张图waifu2x", None)
+        cls.strDict[cls.RightLeftDouble2] = QCoreApplication.translate("cls.obj", "右左双页(滚轮正序)", None)
 
     @classmethod
     def GetStr(cls, enumType):

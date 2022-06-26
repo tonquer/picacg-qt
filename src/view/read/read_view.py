@@ -71,6 +71,20 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         action = popMenu.addAction(Str.GetStr(Str.FullSwitch)+"(F11)")
         action.triggered.connect(self.qtTool.FullScreen)
 
+        if Setting.IsOpenWaifu.value:
+            action = popMenu.addAction(Str.GetStr(Str.CloseAutoWaifu2x))
+        else:
+            action = popMenu.addAction(Str.GetStr(Str.OpenAutoWaifu2x))
+        action.triggered.connect(self.qtTool.checkBox.click)
+
+        p = self.pictureData.get(self.curIndex)
+        if p:
+            if p.isWaifu2x:
+                action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x)+"(F2)")
+            else:
+                action = popMenu.addAction(Str.GetStr(Str.OpenCurWaifu2x)+"(F2)")
+            action.triggered.connect(self.qtTool.curWaifu2x.click)
+
         menu2 = popMenu.addMenu(Str.GetStr(Str.ReadMode))
         action = menu2.addAction("切换双页对齐(F10)")
         action.triggered.connect(self.ChangeDoublePage)
@@ -88,6 +102,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         AddReadMode(Str.GetStr(Str.RightLeftDouble), 3)
         AddReadMode(Str.GetStr(Str.LeftRightScroll), 4)
         AddReadMode(Str.GetStr(Str.RightLeftScroll), 5)
+        AddReadMode(Str.GetStr(Str.RightLeftDouble2), 6)
 
         menu3 = popMenu.addMenu(Str.GetStr(Str.Scale)+ "(- +)")
 
@@ -167,6 +182,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.category = info.categories[::]
 
         self.qtTool.checkBox.setChecked(Setting.IsOpenWaifu.value)
+        self.qtTool.curWaifu2x.setChecked(Setting.IsOpenWaifu.value)
         self.qtTool.SetData(isInit=True)
         self.qtTool.SetData()
 
@@ -193,6 +209,23 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.AddHistory()
         # QtOwner().owner.bookInfoForm.LoadHistory()
         return
+
+    def GetIsWaifu2x(self):
+        p = self.pictureData.get(self.curIndex)
+        if not p:
+            return Setting.IsOpenWaifu.value
+        return p.isWaifu2x
+
+    def SetIsWaifu2x(self, isWaifu2x):
+        p = self.pictureData.get(self.curIndex)
+        if not p:
+            return
+        p.isWaifu2x = isWaifu2x
+        if ReadMode.isDouble(self.stripModel):
+            p = self.pictureData.get(self.curIndex+1)
+            if not p:
+                return
+            p.isWaifu2x = isWaifu2x
 
     def CheckLoadPicture(self):
         # i = 0
@@ -239,16 +272,17 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         for i in preLoadList:
             if i >= self.maxPic or i < 0:
                 continue
-            if Setting.IsOpenWaifu.value:
-                p = self.pictureData.get(i)
-                if not p or not p.data:
-                    break
-                if p.waifuState == p.WaifuStateCancle or p.waifuState == p.WaifuWait:
-                    p.waifuState = p.WaifuStateStart
-                    self.AddCovertData(i)
-                    break
-                if p.waifuState == p.WaifuStateStart:
-                    break
+            p = self.pictureData.get(i)
+            if not p or not p.data:
+                break
+            if not p.isWaifu2x:
+                continue
+            if p.waifuState == p.WaifuStateCancle or p.waifuState == p.WaifuWait:
+                p.waifuState = p.WaifuStateStart
+                self.AddCovertData(i)
+                break
+            if p.waifuState == p.WaifuStateStart:
+                break
         pass
 
     def StartLoadPicUrlBack(self, raw, v):
@@ -315,8 +349,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll,
                                  ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading - 1:
             self.ShowOtherPage()
-        elif self.stripModel in [ReadMode.RightLeftDouble,
-                                 ReadMode.LeftRightDouble] and self.curIndex < index <= self.curIndex + 1:
+        elif ReadMode.isDouble(self.stripModel) and self.curIndex < index <= self.curIndex + 1:
             self.ShowOtherPage()
         return
 
@@ -331,7 +364,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         waifu2x = False
         assert isinstance(p, QtFileData)
-        if not Setting.IsOpenWaifu.value:
+
+        if not p.isWaifu2x:
             p2 = p.cacheImage
 
         elif p.cacheWaifu2xImage:
@@ -347,7 +381,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
     def ShowOtherPage(self):
         if self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             size = config.PreLook
-        elif self.stripModel in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
+        elif ReadMode.isDouble(self.stripModel):
             size = 2
         else:
             size = 0
@@ -379,7 +413,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.qtTool.modelBox.setEnabled(True)
         assert isinstance(p, QtFileData)
         waifu2x = False
-        if not Setting.IsOpenWaifu.value:
+        if not p.isWaifu2x:
             self.frame.waifu2xProcess.hide()
             self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
             p2 = p.cacheImage
@@ -393,7 +427,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         else:
             p2 = p.cacheImage
-            if Setting.IsOpenWaifu.value:
+            if p.isWaifu2x:
                 self.frame.waifu2xProcess.show()
             else:
                 self.frame.waifu2xProcess.hide()
@@ -452,8 +486,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll,
                                  ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading - 1:
             self.ShowOtherPage()
-        elif self.stripModel in [ReadMode.RightLeftDouble,
-                                 ReadMode.LeftRightDouble] and self.curIndex < index <= self.curIndex + 1:
+        elif ReadMode.isDouble(self.stripModel) and self.curIndex < index <= self.curIndex + 1:
             self.ShowOtherPage()
         return
 
@@ -486,7 +519,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.comboBox.setCurrentIndex(index)
 
     def ChangeDoublePage(self):
-        if self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.LeftRightDouble]:
+        if not ReadMode.isDouble(self.stripModel):
             return
         if self.curIndex < self.maxPic:
             self.curIndex += 1

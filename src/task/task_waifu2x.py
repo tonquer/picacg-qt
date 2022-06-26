@@ -92,23 +92,27 @@ class TaskWaifu2x(TaskBase):
                 if isFind:
                     continue
 
+                err = ""
                 if config.CanWaifu2x:
                     from waifu2x_vulkan import waifu2x_vulkan
                     scale = task.model.get("scale", 0)
-                    mat = task.model.get("format", "jpg")
+                    # mat = task.model.get("format", "jpg")
                     if scale <= 0:
                         sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, task.model.get("width", 0),
-                                          task.model.get("high", 0), mat)
+                                          task.model.get("high", 0))
                     else:
-                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, scale, mat)
+                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, scale)
+
+                    if sts <= 0:
+                        err = waifu2x_vulkan.getLastError()
 
                 else:
                     sts = -1
                 if sts <= 0:
                     task.status = Status.AddError
                     self.taskObj.convertBack.emit(taskId)
-                    Log.Warn("Add convert info, taskId: {}, model:{}, sts:{}".format(str(task.taskId), task.model,
-                                                                                     str(sts)))
+                    Log.Warn("Waifu2x convert error, taskId: {}, model:{}, err:{}".format(str(task.taskId), task.model,
+                                                                                     str(err)))
                     continue
             except Exception as es:
                 Log.Error(es)

@@ -88,11 +88,6 @@
        </column>
        <column>
         <property name="text">
-         <string>下载状态</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
          <string>下载进度</string>
         </property>
        </column>
@@ -104,6 +99,11 @@
        <column>
         <property name="text">
          <string>下载速度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载状态</string>
         </property>
        </column>
        <column>

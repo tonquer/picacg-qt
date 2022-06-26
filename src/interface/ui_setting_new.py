@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -1830, 661, 2575))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 661, 2648))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -118,6 +118,27 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_4.addWidget(self.frame_1)
 
+        self.frame_16 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_16.setObjectName(u"frame_16")
+        self.frame_16.setFrameShape(QFrame.StyledPanel)
+        self.frame_16.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_20 = QVBoxLayout(self.frame_16)
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.label_37 = QLabel(self.frame_16)
+        self.label_37.setObjectName(u"label_37")
+        self.label_37.setMaximumSize(QSize(16777215, 19))
+        self.label_37.setFont(font1)
+
+        self.verticalLayout_20.addWidget(self.label_37)
+
+        self.grabGestureBox = QCheckBox(self.frame_16)
+        self.grabGestureBox.setObjectName(u"grabGestureBox")
+
+        self.verticalLayout_20.addWidget(self.grabGestureBox)
+
+
+        self.verticalLayout_4.addWidget(self.frame_16)
+
         self.frame_2 = QFrame(self.scrollAreaWidgetContents)
         self.frame_2.setObjectName(u"frame_2")
         self.frame_2.setFont(font1)
@@ -140,17 +161,17 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_5.addWidget(self.themeButton0)
 
-        self.themeButton1 = QRadioButton(self.frame_2)
-        self.themeGroup.addButton(self.themeButton1)
-        self.themeButton1.setObjectName(u"themeButton1")
-
-        self.verticalLayout_5.addWidget(self.themeButton1)
-
         self.themeButton2 = QRadioButton(self.frame_2)
         self.themeGroup.addButton(self.themeButton2)
         self.themeButton2.setObjectName(u"themeButton2")
 
         self.verticalLayout_5.addWidget(self.themeButton2)
+
+        self.themeButton1 = QRadioButton(self.frame_2)
+        self.themeGroup.addButton(self.themeButton1)
+        self.themeButton1.setObjectName(u"themeButton1")
+
+        self.verticalLayout_5.addWidget(self.themeButton1)
 
 
         self.verticalLayout_4.addWidget(self.frame_2)
@@ -1225,10 +1246,12 @@ class Ui_SettingNew(object):
         self.generalLabel.setText(QCoreApplication.translate("SettingNew", u"\u901a\u7528", None))
         self.label_update.setText(QCoreApplication.translate("SettingNew", u"\u66f4\u65b0\uff1a", None))
         self.checkBox_IsUpdate.setText(QCoreApplication.translate("SettingNew", u"\u542f\u52a8\u65f6\u68c0\u67e5\u66f4\u65b0", None))
+        self.label_37.setText(QCoreApplication.translate("SettingNew", u"\u89e6\u63a7\uff08\u91cd\u542f\u751f\u6548\uff09\uff1a", None))
+        self.grabGestureBox.setText(QCoreApplication.translate("SettingNew", u"\u542f\u7528\u89e6\u63a7\u4f18\u5316", None))
         self.label_6.setText(QCoreApplication.translate("SettingNew", u"\u4e3b\u9898\uff1a", None))
         self.themeButton0.setText(QCoreApplication.translate("SettingNew", u"\u8ddf\u968f\u7cfb\u7edf", None))
-        self.themeButton1.setText(QCoreApplication.translate("SettingNew", u"\u9ed1", None))
         self.themeButton2.setText(QCoreApplication.translate("SettingNew", u"\u767d", None))
+        self.themeButton1.setText(QCoreApplication.translate("SettingNew", u"\u9ed1", None))
         self.label_lang.setText(QCoreApplication.translate("SettingNew", u"\u8bed\u8a00\uff1a", None))
         self.languageButton0.setText(QCoreApplication.translate("SettingNew", u"\u6839\u636e\u7cfb\u7edf", None))
         self.languageButton1.setText(QCoreApplication.translate("SettingNew", u"\u7b80\u4f53\u4e2d\u6587", None))

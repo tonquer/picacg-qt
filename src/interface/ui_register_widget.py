@@ -17,7 +17,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QDateEdit, QGridLayout,
     QHBoxLayout, QLabel, QLineEdit, QRadioButton,
-    QSizePolicy, QWidget)
+    QSizePolicy, QVBoxLayout, QWidget)
+
+from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 
 class Ui_RegisterWidget(object):
     def setupUi(self, RegisterWidget):
@@ -26,11 +28,20 @@ class Ui_RegisterWidget(object):
         RegisterWidget.resize(388, 412)
         self.gridLayout_2 = QGridLayout(RegisterWidget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.scrollArea = SmoothScrollArea(RegisterWidget)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents = QWidget()
+        self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 368, 392))
+        self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.horizontalLayout_12 = QHBoxLayout()
         self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
-        self.question3 = QLabel(RegisterWidget)
+        self.question3 = QLabel(self.scrollAreaWidgetContents)
         self.question3.setObjectName(u"question3")
         self.question3.setMinimumSize(QSize(80, 0))
         self.question3.setMaximumSize(QSize(60, 16777215))
@@ -38,7 +49,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_12.addWidget(self.question3)
 
-        self.question3Edit = QLineEdit(RegisterWidget)
+        self.question3Edit = QLineEdit(self.scrollAreaWidgetContents)
         self.question3Edit.setObjectName(u"question3Edit")
 
         self.horizontalLayout_12.addWidget(self.question3Edit)
@@ -48,7 +59,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.name = QLabel(RegisterWidget)
+        self.name = QLabel(self.scrollAreaWidgetContents)
         self.name.setObjectName(u"name")
         self.name.setMinimumSize(QSize(80, 0))
         self.name.setMaximumSize(QSize(60, 16777215))
@@ -56,7 +67,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout.addWidget(self.name)
 
-        self.nameEdit = QLineEdit(RegisterWidget)
+        self.nameEdit = QLineEdit(self.scrollAreaWidgetContents)
         self.nameEdit.setObjectName(u"nameEdit")
 
         self.horizontalLayout.addWidget(self.nameEdit)
@@ -66,7 +77,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_17 = QHBoxLayout()
         self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.question1 = QLabel(RegisterWidget)
+        self.question1 = QLabel(self.scrollAreaWidgetContents)
         self.question1.setObjectName(u"question1")
         self.question1.setMinimumSize(QSize(80, 0))
         self.question1.setMaximumSize(QSize(60, 16777215))
@@ -74,7 +85,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_17.addWidget(self.question1)
 
-        self.question1Edit = QLineEdit(RegisterWidget)
+        self.question1Edit = QLineEdit(self.scrollAreaWidgetContents)
         self.question1Edit.setObjectName(u"question1Edit")
 
         self.horizontalLayout_17.addWidget(self.question1Edit)
@@ -84,7 +95,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_14 = QHBoxLayout()
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
-        self.question2 = QLabel(RegisterWidget)
+        self.question2 = QLabel(self.scrollAreaWidgetContents)
         self.question2.setObjectName(u"question2")
         self.question2.setMinimumSize(QSize(80, 0))
         self.question2.setMaximumSize(QSize(60, 16777215))
@@ -92,7 +103,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_14.addWidget(self.question2)
 
-        self.question2Edit = QLineEdit(RegisterWidget)
+        self.question2Edit = QLineEdit(self.scrollAreaWidgetContents)
         self.question2Edit.setObjectName(u"question2Edit")
 
         self.horizontalLayout_14.addWidget(self.question2Edit)
@@ -102,7 +113,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_19 = QHBoxLayout()
         self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
-        self.passwd = QLabel(RegisterWidget)
+        self.passwd = QLabel(self.scrollAreaWidgetContents)
         self.passwd.setObjectName(u"passwd")
         self.passwd.setMinimumSize(QSize(80, 0))
         self.passwd.setMaximumSize(QSize(60, 16777215))
@@ -110,7 +121,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_19.addWidget(self.passwd)
 
-        self.passwdEdit = QLineEdit(RegisterWidget)
+        self.passwdEdit = QLineEdit(self.scrollAreaWidgetContents)
         self.passwdEdit.setObjectName(u"passwdEdit")
 
         self.horizontalLayout_19.addWidget(self.passwdEdit)
@@ -120,7 +131,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_11 = QHBoxLayout()
         self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
-        self.answer3 = QLabel(RegisterWidget)
+        self.answer3 = QLabel(self.scrollAreaWidgetContents)
         self.answer3.setObjectName(u"answer3")
         self.answer3.setMinimumSize(QSize(80, 0))
         self.answer3.setMaximumSize(QSize(60, 16777215))
@@ -128,7 +139,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_11.addWidget(self.answer3)
 
-        self.answer3Edit = QLineEdit(RegisterWidget)
+        self.answer3Edit = QLineEdit(self.scrollAreaWidgetContents)
         self.answer3Edit.setObjectName(u"answer3Edit")
 
         self.horizontalLayout_11.addWidget(self.answer3Edit)
@@ -138,7 +149,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_13 = QHBoxLayout()
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
-        self.answer2 = QLabel(RegisterWidget)
+        self.answer2 = QLabel(self.scrollAreaWidgetContents)
         self.answer2.setObjectName(u"answer2")
         self.answer2.setMinimumSize(QSize(80, 0))
         self.answer2.setMaximumSize(QSize(60, 16777215))
@@ -146,7 +157,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_13.addWidget(self.answer2)
 
-        self.answer2Edit = QLineEdit(RegisterWidget)
+        self.answer2Edit = QLineEdit(self.scrollAreaWidgetContents)
         self.answer2Edit.setObjectName(u"answer2Edit")
 
         self.horizontalLayout_13.addWidget(self.answer2Edit)
@@ -156,7 +167,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.user = QLabel(RegisterWidget)
+        self.user = QLabel(self.scrollAreaWidgetContents)
         self.user.setObjectName(u"user")
         self.user.setMinimumSize(QSize(80, 0))
         self.user.setMaximumSize(QSize(60, 16777215))
@@ -165,7 +176,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_3.addWidget(self.user)
 
-        self.userEdit = QLineEdit(RegisterWidget)
+        self.userEdit = QLineEdit(self.scrollAreaWidgetContents)
         self.userEdit.setObjectName(u"userEdit")
         self.userEdit.setMinimumSize(QSize(200, 0))
 
@@ -176,7 +187,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_15 = QHBoxLayout()
         self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
-        self.answer1 = QLabel(RegisterWidget)
+        self.answer1 = QLabel(self.scrollAreaWidgetContents)
         self.answer1.setObjectName(u"answer1")
         self.answer1.setMinimumSize(QSize(80, 0))
         self.answer1.setMaximumSize(QSize(60, 16777215))
@@ -184,7 +195,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_15.addWidget(self.answer1)
 
-        self.answer1Edit = QLineEdit(RegisterWidget)
+        self.answer1Edit = QLineEdit(self.scrollAreaWidgetContents)
         self.answer1Edit.setObjectName(u"answer1Edit")
 
         self.horizontalLayout_15.addWidget(self.answer1Edit)
@@ -194,7 +205,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.gender_m = QRadioButton(RegisterWidget)
+        self.gender_m = QRadioButton(self.scrollAreaWidgetContents)
         self.buttonGroup = QButtonGroup(RegisterWidget)
         self.buttonGroup.setObjectName(u"buttonGroup")
         self.buttonGroup.addButton(self.gender_m)
@@ -202,13 +213,13 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_10.addWidget(self.gender_m)
 
-        self.gender_f = QRadioButton(RegisterWidget)
+        self.gender_f = QRadioButton(self.scrollAreaWidgetContents)
         self.buttonGroup.addButton(self.gender_f)
         self.gender_f.setObjectName(u"gender_f")
 
         self.horizontalLayout_10.addWidget(self.gender_f)
 
-        self.gender_bot = QRadioButton(RegisterWidget)
+        self.gender_bot = QRadioButton(self.scrollAreaWidgetContents)
         self.buttonGroup.addButton(self.gender_bot)
         self.gender_bot.setObjectName(u"gender_bot")
         self.gender_bot.setChecked(True)
@@ -220,7 +231,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_18 = QHBoxLayout()
         self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
-        self.birthday = QLabel(RegisterWidget)
+        self.birthday = QLabel(self.scrollAreaWidgetContents)
         self.birthday.setObjectName(u"birthday")
         self.birthday.setMinimumSize(QSize(80, 0))
         self.birthday.setMaximumSize(QSize(60, 16777215))
@@ -228,7 +239,7 @@ class Ui_RegisterWidget(object):
 
         self.horizontalLayout_18.addWidget(self.birthday)
 
-        self.birthdayEdit = QDateEdit(RegisterWidget)
+        self.birthdayEdit = QDateEdit(self.scrollAreaWidgetContents)
         self.birthdayEdit.setObjectName(u"birthdayEdit")
 
         self.horizontalLayout_18.addWidget(self.birthdayEdit)
@@ -237,7 +248,11 @@ class Ui_RegisterWidget(object):
         self.gridLayout.addLayout(self.horizontalLayout_18, 13, 1, 1, 1)
 
 
-        self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+        self.gridLayout_2.addWidget(self.scrollArea, 0, 0, 1, 1)
 
         QWidget.setTabOrder(self.userEdit, self.nameEdit)
         QWidget.setTabOrder(self.nameEdit, self.passwdEdit)

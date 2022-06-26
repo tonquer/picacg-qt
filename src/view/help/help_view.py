@@ -27,8 +27,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.dbUpdateUrl = [config.DatabaseUpdate2, config.DatabaseUpdate]
-        self.dbUpdateDbUrl = [config.DatabaseDownload2, config.DatabaseDownload]
+        self.dbUpdateUrl = [config.DatabaseUpdate2, config.DatabaseUpdate3, config.DatabaseUpdate]
+        self.dbUpdateDbUrl = [config.DatabaseDownload2, config.DatabaseDownload3, config.DatabaseDownload]
         self.curIndex = 0
         self.curSubVersion = 0
         self.curUpdateTick = 0
@@ -38,7 +38,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.logButton.clicked.connect(self.OpenLogDir)
 
         self.isHaveDb = False
-        self.dbCheck.clicked.connect(self.InitUpdateDatabase)
+        self.dbCheck.clicked.connect(self.ReUpdateDatabase)
         self.verCheck.clicked.connect(self.InitUpdate)
 
         self.updateUrl = [config.UpdateUrl, config.UpdateUrl2]
@@ -82,6 +82,9 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 self.checkUpdateIndex += 1
                 self.StartUpdate()
                 return
+            if data == "no":
+                self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
+                return
             self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex], Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n" + data)
             self.UpdateText(self.verCheck, Str.HaveUpdate, "#d71345", True)
         except Exception as es:
@@ -117,8 +120,12 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.localTime.setText(timeStr)
         if not self.isCheckUp:
             self.isCheckUp = True
-            self.InitUpdateDatabase()
+            self.ReUpdateDatabase()
         return
+
+    def ReUpdateDatabase(self):
+        self.curIndex = 0
+        self.InitUpdateDatabase()
 
     def InitUpdateDatabase(self):
         if self.curUpdateTick <= 0:
