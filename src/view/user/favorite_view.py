@@ -2,6 +2,7 @@ import json
 
 from PySide6 import QtWidgets
 
+from config.setting import Setting
 from interface.ui_favorite import Ui_Favorite
 from qt_owner import QtOwner
 from server import req, User, Log
@@ -107,7 +108,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
             if info:
                 info.isFavourite = False
             if self.isLocal:
-                sql = "delete from favorite where id='{}' and user='{}';".format(bookId, User().userId)
+                sql = "delete from favorite where id='{}' and user='{}';".format(bookId, Setting.UserId.value)
                 self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)
             if bookId in self.allFavoriteIds:
                 self.allFavoriteIds.pop(bookId)
@@ -126,6 +127,8 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.RefreshData()
 
     def LoadPage(self, page):
+        if not User().userId:
+            return
         Log.Info("load favorite page:{}".format(page))
         self.AddHttpTask(req.FavoritesReq(page, "da"), self.UpdatePagesBack, page)
         # QtOwner().ShowLoading()
@@ -142,7 +145,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         QtOwner().ShowLoading()
         sortId = self.sortIdCombox.currentIndex()
         sortKey = self.sortKeyCombox.currentIndex()
-        if self.isLocal:
+        if self.isLocal or QtOwner().isOfflineModel:
             sql = SqlServer.SearchFavorite(self.bookList.page, sortKey, sortId)
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.SearchLocalBack)
         else:
@@ -229,5 +232,5 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
             delBookIds = set(self.allFavoriteIds.keys()) - self.reupdateBookIds
             for bookId in delBookIds:
                 self.allFavoriteIds.pop(bookId)
-                sql = "delete from favorite where id='{}' and user='{}';".format(bookId, User().userId)
+                sql = "delete from favorite where id='{}' and user='{}';".format(bookId, Setting.UserId.value)
                 self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)

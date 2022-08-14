@@ -1,19 +1,21 @@
 import os
+import time
 from functools import partial
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import Qt, QSize, QEvent
+from PySide6.QtCore import Qt, QSize, QEvent, QMimeData
 from PySide6.QtGui import QPixmap, QImage, QCursor
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMenu, QApplication, QFileDialog
 
 from config import config
 from config.setting import Setting
 from qt_owner import QtOwner
 from server import req, Status, Log
 from task.qt_task import QtTaskBase
-from tools.book import BookMgr
+from tools.book import BookMgr, Book
 from tools.str import Str
 from tools.tool import time_me, ToolUtil
+from view.download.download_item import DownloadItem, DownloadEpsItem
 from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_frame import ReadFrame
 
@@ -55,6 +57,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
         self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
         self.pageIndex = -1
+        self.isOffline = False
 
     @property
     def scrollArea(self):
@@ -131,6 +134,12 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         action = menu3.addAction(Str.GetStr(Str.NextChapter))
         action.triggered.connect(self.qtTool.OpenNextEps)
 
+        menu4 = popMenu.addMenu(Str.GetStr(Str.Copy))
+        action = menu4.addAction(Str.GetStr(Str.CopyPicture))
+        action.triggered.connect(self.CopyPicture)
+        action = menu4.addAction(Str.GetStr(Str.CopyFile))
+        action.triggered.connect(self.CopyFile)
+
         action = popMenu.addAction(Str.GetStr(Str.AutoScroll)+"(F5)")
         action.triggered.connect(self.qtTool.SwitchScrollAndTurn)
 
@@ -173,15 +182,17 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.ClearDownload()
         self.ClearQImageTask()
 
-    def OpenPage(self, bookId, epsId, pageIndex=-1):
+    def OpenPage(self, bookId, epsId, pageIndex=-1, isOffline=False):
         if not bookId:
             return
+        self.isOffline = isOffline
         self.Clear()
         info = BookMgr().books.get(bookId)
         if info:
             self.category = info.categories[::]
 
         self.qtTool.checkBox.setChecked(Setting.IsOpenWaifu.value)
+        self.qtTool.preDownWaifu2x.setChecked(Setting.PreDownWaifu2x.value)
         self.qtTool.curWaifu2x.setChecked(Setting.IsOpenWaifu.value)
         self.qtTool.SetData(isInit=True)
         self.qtTool.SetData()
@@ -329,7 +340,9 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if not p:
             p = QtFileData()
             self.pictureData[index] = p
-        if st != Status.Ok:
+        if st == Status.FileError:
+            QtOwner().ShowError(Str.GetStr(st))
+        elif st != Status.Ok:
             p.state = p.DownloadReset
             self.AddDownload(index)
         else:
@@ -496,20 +509,38 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             return
         assert isinstance(info, QtFileData)
         path = ToolUtil.GetRealPath(i + 1, "book/{}/{}".format(self.bookId, self.epsId + 1))
-        info.waifu2xTaskId = self.AddConvertTask(path, info.data, info.model, self.Waifu2xBack, i)
+        if Setting.PreDownWaifu2x.value:
+            filePath = QtOwner().downloadView.GetDownloadWaifu2xFilePath(self.bookId, self.epsId, i)
+        else:
+            filePath = ""
+        info.waifu2xTaskId = self.AddConvertTask(path, info.data, info.model, self.Waifu2xBack, i, preDownPath=filePath)
         if i == self.curIndex:
             self.qtTool.SetData(waifuState=info.waifuState)
             self.frame.waifu2xProcess.show()
 
     def InitDownload(self):
-        self.AddDownloadBook(self.bookId, self.epsId, 0, statusBack=self.StartLoadPicUrlBack, backParam=0, isInit=True)
+        if not self.isOffline:
+            self.AddDownloadBook(self.bookId, self.epsId, 0, statusBack=self.StartLoadPicUrlBack, backParam=0, isInit=True)
+        else:
+            bookInfo = BookMgr().GetBook(self.bookId)
+            downInfo = QtOwner().downloadView.GetDownloadEpsInfo(self.bookId, self.epsId)
+            if not bookInfo or not downInfo:
+                QtOwner().ShowError(Str.GetStr(Str.FileError))
+            else:
+                assert isinstance(bookInfo, Book)
+                assert isinstance(downInfo, DownloadEpsItem)
+                raw = {"st": Status.Ok, "maxPic": downInfo.picCnt, "title": downInfo.epsTitle}
+                self.StartLoadPicUrlBack(raw, "")
 
     def AddDownload(self, i):
         loadPath = QtOwner().downloadView.GetDownloadFilePath(self.bookId, self.epsId, i)
-        self.AddDownloadBook(self.bookId, self.epsId, i,
-                             downloadCallBack=self.UpdateProcessBar,
-                             completeCallBack=self.CompleteDownloadPic,
-                             backParam=i, loadPath=loadPath)
+        if not self.isOffline:
+            self.AddDownloadBook(self.bookId, self.epsId, i,
+                                 downloadCallBack=self.UpdateProcessBar,
+                                 completeCallBack=self.CompleteDownloadPic,
+                                 backParam=i, loadPath=loadPath)
+        else:
+            self.AddDownloadBookCache(loadPath, completeCallBack=self.CompleteDownloadPic, backParam=i)
         if i not in self.pictureData:
             data = QtFileData()
             self.pictureData[i] = data
@@ -527,3 +558,52 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.SetData(isInit=True)
         self.scrollArea.ResetScrollValue(self.curIndex)
         self.scrollArea.changeNextPage.emit(self.curIndex)
+
+    def CopyFile(self):
+        info = self.pictureData.get(self.curIndex)
+        if not info:
+            return
+        assert isinstance(info, QtFileData)
+        if not info.data and not info.waifuData:
+            return
+
+        today = time.strftime("%Y%m%d%H%M%S", time.localtime(time.time()))
+        if info.waifuData:
+            path = "{}_waifu2x.jpg".format(today)
+            data = info.waifuData
+        else:
+            path = "{}.jpg".format(today)
+            data = info.data
+        if not data:
+            return
+        try:
+            filepath = QFileDialog.getSaveFileName(self, Str.GetStr(Str.Save), path, "Image Files(*.jpg *.png)")
+            if filepath and len(filepath) >= 1:
+                name = filepath[0]
+                if not name:
+                    return
+                f = open(name, "wb")
+                f.write(data)
+                f.close()
+                QtOwner().ShowMsg(Str.GetStr(Str.CopySuc))
+        except Exception as es:
+            Log.Error(es)
+
+    def CopyPicture(self):
+        info = self.pictureData.get(self.curIndex)
+        if not info:
+            return
+        assert isinstance(info, QtFileData)
+        if not info.data and not info.waifuData:
+            return
+        if info.waifuData:
+            data = info.waifuData
+        else:
+            data = info.data
+        p = QImage()
+        p.loadFromData(data)
+
+        clipboard = QApplication.clipboard()
+        clipboard.setImage(p)
+        QtOwner().ShowMsg(Str.GetStr(Str.CopySuc))
+        return

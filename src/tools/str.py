@@ -34,6 +34,14 @@ class Str:
     PathError = 1018         # "路径错误"
     FileError = 1019         # "未发现源文件"
     FileFormatError = 1020   # "文件损坏"
+    TimeOut = 1021           # "连接超时"
+    ConnectErr = 1022        # "无法连接"
+    SSLErr = 1023            # "证书错误"
+    ResetErr = 1024          # "连接被重置"
+    ProxyError = 1025        # "无法连接代理"
+    DownloadFail = 1026      # "下载失败"
+    OfflineModel = 1027      # "离线模式中"
+    NotDownload = 1028       # "未下载"
 
     Success = 2001         # "下载完成"
     Reading = 2002         # "获取信息"
@@ -194,6 +202,9 @@ class Str:
     CloseAutoWaifu2x = 134        # 关闭自动waifu2x
     CloseCurWaifu2x = 135          # 关闭本张图waifu2x
     RightLeftDouble2 = 136         # 右左双页(滚轮正序)
+    Copy = 137  # 复制
+    CopyPicture = 138  # 复制图片到剪贴板
+    CopyFile = 139     # 保存文件
 
     @classmethod
     def Reload(cls):
@@ -219,6 +230,14 @@ class Str:
         cls.strDict[cls.PathError] = QCoreApplication.translate("cls.obj",  "路径错误", None)
         cls.strDict[cls.FileError] = QCoreApplication.translate("cls.obj",  "未发现源文件", None)
         cls.strDict[cls.FileFormatError] = QCoreApplication.translate("cls.obj",  "文件损坏", None)
+        cls.strDict[cls.TimeOut] = QCoreApplication.translate("cls.obj", "连接超时", None)
+        cls.strDict[cls.ConnectErr] = QCoreApplication.translate("cls.obj", "无法连接", None)
+        cls.strDict[cls.SSLErr] = QCoreApplication.translate("cls.obj", "证书错误", None)
+        cls.strDict[cls.ResetErr] = QCoreApplication.translate("cls.obj", "连接被重置", None)
+        cls.strDict[cls.ProxyError] = QCoreApplication.translate("cls.obj", "无法连接代理", None)
+        cls.strDict[cls.DownloadFail] = QCoreApplication.translate("cls.obj", "下载失败", None)
+        cls.strDict[cls.OfflineModel] = QCoreApplication.translate("cls.obj", "离线模式中", None)
+        cls.strDict[cls.NotDownload] = QCoreApplication.translate("cls.obj", "未下载", None)
 
         cls.strDict[cls.LoadingPicture] = QCoreApplication.translate("cls.obj",  "图片加载中...", None)
         cls.strDict[cls.LoadingFail] = QCoreApplication.translate("cls.obj",  "图片加载失败", None)
@@ -376,6 +395,9 @@ class Str:
         cls.strDict[cls.OpenCurWaifu2x] = QCoreApplication.translate("cls.obj", "开启本张图waifu2x", None)
         cls.strDict[cls.CloseCurWaifu2x] = QCoreApplication.translate("cls.obj", "关闭本张图waifu2x", None)
         cls.strDict[cls.RightLeftDouble2] = QCoreApplication.translate("cls.obj", "右左双页(滚轮正序)", None)
+        cls.strDict[cls.Copy] = QCoreApplication.translate("cls.obj", "复制", None)
+        cls.strDict[cls.CopyPicture] = QCoreApplication.translate("cls.obj", "复制图片到剪贴板", None)
+        cls.strDict[cls.CopyFile] = QCoreApplication.translate("cls.obj", "保存文件", None)
 
     @classmethod
     def GetStr(cls, enumType):

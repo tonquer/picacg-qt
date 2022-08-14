@@ -162,6 +162,58 @@ class ToolUtil(object):
             Log.Error(src)
 
     @staticmethod
+    def GetCodeErrMsg(code):
+        msg = ""
+        if code == "1029":
+            msg = "你所在的時間線與我們有所不同請你調整一下再嘗試吧！"
+        if code == "1026":
+            msg = "嗶咔娘認定你的是假冒電郵！！"
+        elif code == "1025":
+            msg = "嗶咔是註冊商標，不能用的。"
+        elif code == "1024":
+            msg = "我們不支授此郵箱...QQ和163電郵君不想跟我們做朋友，所以請你用其他電郵服務商吧。例如：Gmail, Yahoo 和 Outlook"
+        elif code == "1023":
+            msg = "吼！你的要求太多了！有問題你直接找團長吧！"
+        elif code == "1019":
+            msg = """小紳紳的等級不夠或者沒有認證帳戶！
+
+認證了的帳戶等級2才能留言唷～
+
+你可以打嗶卡和更換頭像升等級的～"""
+        elif code == "1014":
+            msg = "這個本子好像正在審核過程當中..？請待會再來吧！"
+        elif code == "1010":
+            msg = "你輸入的帳戶資料並不正確哦，請重新輸入！"
+        elif code == "1009":
+            msg = """這個匿稱已經屬於一位紳士
+請使用別的匿稱！"""
+        elif code == "1008":
+            msg = """這個嗶咔帳號已經被註冊！
+
+如果你忘記了密碼，請回上一頁按忘記密碼！"""
+        elif code == "1007":
+            msg = """欸...!?
+
+404 找不到"""
+        elif code == "1006":
+            msg = """這個帳戶還沒有被激活！
+
+請前往你註冊的郵箱並找尋【嗶咔邀請函】（有機會在垃圾郵件中）！
+
+如找不到邀請函郵件，請按下方的重新發送邀請函！"""
+        elif code == "1005":
+            msg = ""
+        elif code == "1004":
+            msg = "你輸入的帳戶資料並不正確哦，請重新輸入！"
+        elif code == "1002":
+            msg = """欸...!?
+為什麼呢？
+認證好像有點問題...
+
+再試試看吧"""
+        return msg
+
+    @staticmethod
     def GetUrlHost(url):
         host = url.replace("https://", "")
         host = host.replace("http://", "")
@@ -228,19 +280,44 @@ class ToolUtil(object):
         return ToolUtil.GetModelByIndex(Setting.DownloadNoise.value, Setting.DownloadScale.value, Setting.DownloadModel.value, mat)
 
     @staticmethod
+    def GetAnimationFormat(data):
+        try:
+            from PIL import Image
+            from io import BytesIO
+            a = BytesIO(data)
+            img = Image.open(a)
+
+            format = ""
+            if getattr(img, "is_animated", ""):
+                format = img.format
+            a.close()
+            return format
+        except Exception as es:
+            Log.Error(es)
+        return ""
+
+    @staticmethod
     def GetPictureSize(data):
         if not data:
             return 0, 0, "jpg"
-        from PIL import Image
-        from io import BytesIO
-        a = BytesIO(data)
-        img = Image.open(a)
-        a.close()
-        if img.format == "PNG":
-            mat = "png"
-        else:
-            mat = "jpg"
-        return img.width, img.height, mat
+        try:
+            from PIL import Image
+            from io import BytesIO
+            a = BytesIO(data)
+            img = Image.open(a)
+            a.close()
+            if img.format == "PNG":
+                mat = "png"
+            elif img.format == "GIF":
+                mat = "gif"
+            elif img.format == "WEBP":
+                mat = "webp"
+            else:
+                mat = "jpg"
+            return img.width, img.height, mat
+        except Exception as es:
+            Log.Error(es)
+        return 0, 0, "jpg"
 
     @staticmethod
     def GetLookModel(category):

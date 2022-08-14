@@ -18,8 +18,10 @@ class ServerReq(object):
         self.isUseHttps = True
         if Setting.IsHttpProxy.value == 1:
             self.proxy = {"http": Setting.HttpProxy.value, "https": Setting.HttpProxy.value}
-        else:
+        elif Setting.IsHttpProxy.value == 3:
             self.proxy = {}
+        else:
+            self.proxy = {"http": None, "https": None}
 
     def __str__(self):
         # if Setting.LogIndex.value == 0:
@@ -501,16 +503,57 @@ class AppInfoReq(ServerReq):
 
 # 锅贴评论列表
 class AppCommentInfoReq(ServerReq):
-    def __init__(self, id, token, page=0):
+    def __init__(self, id, token="", page=0):
         url = "https://post-api.wikawika.xyz"
         url = url + "/posts/{}/comments?offset={}".format(id, str(page))
         method = "GET"
+        if not token:
+            from server.server import Server
+            token = Server().token
         header = {
             "Referer": url + "/?token=" + token,
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36",
             "token": token,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
+
+
+# 锅贴发送评论列表
+class AppSendCommentInfoReq(ServerReq):
+    def __init__(self, id, data="", token=""):
+        url = "https://post-api.wikawika.xyz"
+        url = url + "/comments"
+        method = "POST"
+        if not token:
+            from server.server import Server
+            token = Server().token
+        header = {
+            "Referer": url + "/?token=" + token,
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36",
+            "token": token,
+            "Content-Type": "application/json",
+        }
+        data = {"content": data, "postId": id}
+        super(self.__class__, self).__init__(url, header, data, method)
+
+
+# 锅贴发送评论列表
+class AppCommentLikeReq(ServerReq):
+    def __init__(self, id, subID, token=""):
+        url = "https://post-api.wikawika.xyz"
+        url = url + "/comments/{}/like".format(subID)
+        method = "PUT"
+        if not token:
+            from server.server import Server
+            token = Server().token
+        header = {
+            "Referer": url + "/?token=" + token,
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36",
+            "token": token,
+            "Content-Type": "application/json",
+        }
+        data = {"postId": id}
+        super(self.__class__, self).__init__(url, header, data, method)
 
 
 # 游戏区列表

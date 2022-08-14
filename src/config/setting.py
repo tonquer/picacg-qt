@@ -89,7 +89,7 @@ class Setting:
     FontStyle = SettingValue("GeneraSetting", 0, True)
 
     # 代理设置
-    IsHttpProxy = SettingValue("ProxySetting", 0, False, ["", "Http", "Sock5"])
+    IsHttpProxy = SettingValue("ProxySetting", 0, False, ["", "Http", "Sock5", "system"])
     HttpProxy = SettingValue("ProxySetting", "", False)
     Sock5Proxy = SettingValue("ProxySetting", "", False)
     ChatProxy = SettingValue("ProxySetting", 0, False)
@@ -128,6 +128,7 @@ class Setting:
     LookReadFull = SettingValue("ReadSetting", 0, False)
     TurnSpeed = SettingValue("ReadSetting", 5000, False)
     ScrollSpeed = SettingValue("ReadSetting", 400, False)
+    PreDownWaifu2x = SettingValue("ReadSetting", 1, False)
 
     # Other
     UserId = SettingValue("Other", "", False)

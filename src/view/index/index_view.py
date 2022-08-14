@@ -49,11 +49,14 @@ class IndexView(QWidget, Ui_Index, QtTaskBase):
             st = raw["st"]
             if st == Status.Ok:
                 data = json.loads(raw["data"])
-                for categroys in data.get("data").get("collections"):
-                    if categroys.get("title") == "本子神推薦":
+                allData = [data.get("data").get("collections", [])]
+                for i, categroys in enumerate(data.get("data").get("collections")):
+                    if i == 0:
                         bookList = self.godList
                     else:
                         bookList = self.magicList
+                    if i < 2:
+                        self.tabWidget.setTabText(i+1, categroys.get("title"))
                     for v in categroys.get('comics'):
                         bookList.AddBookByDict(v)
             else:

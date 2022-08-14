@@ -115,6 +115,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.isMaxFull = False
         self.gpuLabel.setMaximumWidth(250)
         self.curWaifu2x.clicked.connect(self.OpenCurWaifu)
+        self.preDownWaifu2x.clicked.connect(self.OpenPreDownloadWaifu2x)
+
 
     @property
     def imgFrame(self):
@@ -175,9 +177,15 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
 
         if self.curIndex >= self.maxPic - 1:
-            if epsId + 1 < bookInfo.epsCount:
-                QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
+            if self.readImg.isOffline:
+                if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId + 1):
+                    QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
+                    return
                 self.OpenNextEps()
+            else:
+                if epsId + 1 < bookInfo.epsCount:
+                    QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
+                    self.OpenNextEps()
                 return
             self.CloseScrollAndTurn()
             QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
@@ -213,6 +221,10 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
 
         if self.curIndex <= 0:
+            if self.readImg.isOffline:
+                if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId - 1):
+                    QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
+                    return
             if epsId - 1 >= 0:
                 QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipLast))
                 self.OpenLastEps()
@@ -297,6 +309,10 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.scrollArea.changeScale.emit(self.scaleCnt)
         return
 
+    def OpenPreDownloadWaifu2x(self):
+        Setting.PreDownWaifu2x.SetValue(int(self.preDownWaifu2x.isChecked()))
+        return
+
     def OpenWaifu(self):
         if self.checkBox.isChecked():
             Setting.IsOpenWaifu.SetValue(1)
@@ -320,11 +336,17 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
 
         epsId -= 1
+
+        if self.readImg.isOffline:
+            if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId - 1):
+                QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
+                return
+        else:
+            if epsId >= bookInfo.epsCount:
+                return
+
         if epsId < 0:
             QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastChapter))
-            return
-
-        if epsId >= bookInfo.epsCount:
             return
 
         self.readImg.AddHistory()
@@ -336,16 +358,21 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
         bookInfo = BookMgr().books.get(bookId)
-
         epsId += 1
-        if epsId >= bookInfo.epsCount:
-            QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextChapter))
-            return
 
-        if epsId >= bookInfo.epsCount:
-            return
+        if self.readImg.isOffline:
+            if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId + 1):
+                QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
+                return
+        else:
+            if epsId >= bookInfo.epsCount:
+                QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextChapter))
+                return
 
-        title = bookInfo.GetEpsTitle(epsId)
+            if epsId >= bookInfo.epsCount:
+                return
+
+        # title = bookInfo.GetEpsTitle(epsId)
         self.readImg.AddHistory()
         QtOwner().bookInfoView.LoadHistory()
         self.readImg.OpenPage(bookId, epsId)

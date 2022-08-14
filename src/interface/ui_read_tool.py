@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_read_tool.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.2
+## Created by: Qt User Interface Compiler version 6.2.4
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -40,7 +40,7 @@ class Ui_ReadImg(object):
         self.scrollArea22.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 318, 815))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 310, 825))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
@@ -101,10 +101,70 @@ class Ui_ReadImg(object):
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.modelLabel = QLabel(self.scrollAreaWidgetContents)
+        self.modelLabel.setObjectName(u"modelLabel")
+
+        self.horizontalLayout_8.addWidget(self.modelLabel)
+
+        self.modelBox = WheelComboBox(self.scrollAreaWidgetContents)
+        self.modelBox.addItem("")
+        self.modelBox.addItem("")
+        self.modelBox.addItem("")
+        self.modelBox.addItem("")
+        self.modelBox.setObjectName(u"modelBox")
+
+        self.horizontalLayout_8.addWidget(self.modelBox)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_8, 6, 1, 1, 1)
+
+        self.label_8 = QLabel(self.scrollAreaWidgetContents)
+        self.label_8.setObjectName(u"label_8")
+        self.label_8.setMaximumSize(QSize(35, 16777215))
+
+        self.gridLayout.addWidget(self.label_8, 6, 0, 1, 1)
+
+        self.label_3 = QLabel(self.scrollAreaWidgetContents)
+        self.label_3.setObjectName(u"label_3")
+
+        self.gridLayout.addWidget(self.label_3, 5, 0, 1, 1)
+
+        self.label_9 = QLabel(self.scrollAreaWidgetContents)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout.addWidget(self.label_9, 7, 0, 1, 1)
+
+        self.tickLabel = QLabel(self.scrollAreaWidgetContents)
+        self.tickLabel.setObjectName(u"tickLabel")
+
+        self.gridLayout.addWidget(self.tickLabel, 10, 0, 1, 1)
+
+        self.waifu2xTick = QLabel(self.scrollAreaWidgetContents)
+        self.waifu2xTick.setObjectName(u"waifu2xTick")
+
+        self.gridLayout.addWidget(self.waifu2xTick, 10, 1, 1, 1)
+
+        self.gpuLabel = QLabel(self.scrollAreaWidgetContents)
+        self.gpuLabel.setObjectName(u"gpuLabel")
+
+        self.gridLayout.addWidget(self.gpuLabel, 7, 1, 1, 1)
+
+        self.waifu2xRes = QLabel(self.scrollAreaWidgetContents)
+        self.waifu2xRes.setObjectName(u"waifu2xRes")
+
+        self.gridLayout.addWidget(self.waifu2xRes, 8, 1, 1, 1)
+
         self.waifu2xStatus = QLabel(self.scrollAreaWidgetContents)
         self.waifu2xStatus.setObjectName(u"waifu2xStatus")
 
-        self.gridLayout.addWidget(self.waifu2xStatus, 10, 1, 1, 1)
+        self.gridLayout.addWidget(self.waifu2xStatus, 11, 1, 1, 1)
+
+        self.waifu2xSave = QPushButton(self.scrollAreaWidgetContents)
+        self.waifu2xSave.setObjectName(u"waifu2xSave")
+
+        self.gridLayout.addWidget(self.waifu2xSave, 3, 0, 1, 1)
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
@@ -114,7 +174,39 @@ class Ui_ReadImg(object):
         self.horizontalLayout_9.addWidget(self.waifu2xCancle)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_9, 2, 1, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout_9, 3, 1, 1, 1)
+
+        self.waifu2xSize = QLabel(self.scrollAreaWidgetContents)
+        self.waifu2xSize.setObjectName(u"waifu2xSize")
+
+        self.gridLayout.addWidget(self.waifu2xSize, 9, 1, 1, 1)
+
+        self.label_2 = QLabel(self.scrollAreaWidgetContents)
+        self.label_2.setObjectName(u"label_2")
+
+        self.gridLayout.addWidget(self.label_2, 4, 0, 1, 1)
+
+        self.checkBox = QCheckBox(self.scrollAreaWidgetContents)
+        self.checkBox.setObjectName(u"checkBox")
+        self.checkBox.setStyleSheet(u"")
+        self.checkBox.setChecked(True)
+
+        self.gridLayout.addWidget(self.checkBox, 1, 0, 1, 1)
+
+        self.curWaifu2x = QCheckBox(self.scrollAreaWidgetContents)
+        self.curWaifu2x.setObjectName(u"curWaifu2x")
+
+        self.gridLayout.addWidget(self.curWaifu2x, 1, 1, 1, 1)
+
+        self.stateWaifu = QLabel(self.scrollAreaWidgetContents)
+        self.stateWaifu.setObjectName(u"stateWaifu")
+
+        self.gridLayout.addWidget(self.stateWaifu, 11, 0, 1, 1)
+
+        self.resolutionWaifu = QLabel(self.scrollAreaWidgetContents)
+        self.resolutionWaifu.setObjectName(u"resolutionWaifu")
+
+        self.gridLayout.addWidget(self.resolutionWaifu, 8, 0, 1, 1)
 
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
@@ -133,82 +225,12 @@ class Ui_ReadImg(object):
         self.horizontalLayout_6.addWidget(self.scaleBox)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_6, 4, 1, 1, 1)
-
-        self.label_9 = QLabel(self.scrollAreaWidgetContents)
-        self.label_9.setObjectName(u"label_9")
-
-        self.gridLayout.addWidget(self.label_9, 6, 0, 1, 1)
-
-        self.waifu2xSize = QLabel(self.scrollAreaWidgetContents)
-        self.waifu2xSize.setObjectName(u"waifu2xSize")
-
-        self.gridLayout.addWidget(self.waifu2xSize, 8, 1, 1, 1)
-
-        self.label_2 = QLabel(self.scrollAreaWidgetContents)
-        self.label_2.setObjectName(u"label_2")
-
-        self.gridLayout.addWidget(self.label_2, 3, 0, 1, 1)
-
-        self.gpuLabel = QLabel(self.scrollAreaWidgetContents)
-        self.gpuLabel.setObjectName(u"gpuLabel")
-
-        self.gridLayout.addWidget(self.gpuLabel, 6, 1, 1, 1)
-
-        self.tickLabel = QLabel(self.scrollAreaWidgetContents)
-        self.tickLabel.setObjectName(u"tickLabel")
-
-        self.gridLayout.addWidget(self.tickLabel, 9, 0, 1, 1)
-
-        self.waifu2xTick = QLabel(self.scrollAreaWidgetContents)
-        self.waifu2xTick.setObjectName(u"waifu2xTick")
-
-        self.gridLayout.addWidget(self.waifu2xTick, 9, 1, 1, 1)
-
-        self.stateWaifu = QLabel(self.scrollAreaWidgetContents)
-        self.stateWaifu.setObjectName(u"stateWaifu")
-
-        self.gridLayout.addWidget(self.stateWaifu, 10, 0, 1, 1)
-
-        self.label_3 = QLabel(self.scrollAreaWidgetContents)
-        self.label_3.setObjectName(u"label_3")
-
-        self.gridLayout.addWidget(self.label_3, 4, 0, 1, 1)
-
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.modelLabel = QLabel(self.scrollAreaWidgetContents)
-        self.modelLabel.setObjectName(u"modelLabel")
-
-        self.horizontalLayout_8.addWidget(self.modelLabel)
-
-        self.modelBox = WheelComboBox(self.scrollAreaWidgetContents)
-        self.modelBox.addItem("")
-        self.modelBox.addItem("")
-        self.modelBox.addItem("")
-        self.modelBox.addItem("")
-        self.modelBox.setObjectName(u"modelBox")
-
-        self.horizontalLayout_8.addWidget(self.modelBox)
-
-
-        self.gridLayout.addLayout(self.horizontalLayout_8, 5, 1, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout_6, 5, 1, 1, 1)
 
         self.sizeWaifu = QLabel(self.scrollAreaWidgetContents)
         self.sizeWaifu.setObjectName(u"sizeWaifu")
 
-        self.gridLayout.addWidget(self.sizeWaifu, 8, 0, 1, 1)
-
-        self.label_8 = QLabel(self.scrollAreaWidgetContents)
-        self.label_8.setObjectName(u"label_8")
-        self.label_8.setMaximumSize(QSize(35, 16777215))
-
-        self.gridLayout.addWidget(self.label_8, 5, 0, 1, 1)
-
-        self.resolutionWaifu = QLabel(self.scrollAreaWidgetContents)
-        self.resolutionWaifu.setObjectName(u"resolutionWaifu")
-
-        self.gridLayout.addWidget(self.resolutionWaifu, 7, 0, 1, 1)
+        self.gridLayout.addWidget(self.sizeWaifu, 9, 0, 1, 1)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -228,29 +250,12 @@ class Ui_ReadImg(object):
         self.horizontalLayout_3.addWidget(self.noiseBox)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout_3, 3, 1, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout_3, 4, 1, 1, 1)
 
-        self.waifu2xRes = QLabel(self.scrollAreaWidgetContents)
-        self.waifu2xRes.setObjectName(u"waifu2xRes")
+        self.preDownWaifu2x = QCheckBox(self.scrollAreaWidgetContents)
+        self.preDownWaifu2x.setObjectName(u"preDownWaifu2x")
 
-        self.gridLayout.addWidget(self.waifu2xRes, 7, 1, 1, 1)
-
-        self.waifu2xSave = QPushButton(self.scrollAreaWidgetContents)
-        self.waifu2xSave.setObjectName(u"waifu2xSave")
-
-        self.gridLayout.addWidget(self.waifu2xSave, 2, 0, 1, 1)
-
-        self.curWaifu2x = QCheckBox(self.scrollAreaWidgetContents)
-        self.curWaifu2x.setObjectName(u"curWaifu2x")
-
-        self.gridLayout.addWidget(self.curWaifu2x, 1, 1, 1, 1)
-
-        self.checkBox = QCheckBox(self.scrollAreaWidgetContents)
-        self.checkBox.setObjectName(u"checkBox")
-        self.checkBox.setStyleSheet(u"")
-        self.checkBox.setChecked(True)
-
-        self.gridLayout.addWidget(self.checkBox, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.preDownWaifu2x, 2, 1, 1, 1)
 
 
         self.verticalLayout.addLayout(self.gridLayout)
@@ -488,26 +493,30 @@ class Ui_ReadImg(object):
         self.stateLable.setText(QCoreApplication.translate("ReadImg", u"\u72b6\u6001\uff1a", None))
         self.epsLabel.setText(QCoreApplication.translate("ReadImg", u"\u4f4d\u7f6e\uff1a", None))
         self.label.setText(QCoreApplication.translate("ReadImg", u"Waifu2x\u53c2\u6570", None))
-        self.waifu2xStatus.setText("")
-        self.waifu2xCancle.setText(QCoreApplication.translate("ReadImg", u"\u4fdd\u5b58", None))
-        self.scaleLabel.setText(QCoreApplication.translate("ReadImg", u"2", None))
-        self.label_9.setText(QCoreApplication.translate("ReadImg", u"\u8f6c\u6362\u6a21\u5f0f\uff1a", None))
-        self.waifu2xSize.setText("")
-        self.label_2.setText(QCoreApplication.translate("ReadImg", u"\u53bb\u566a\u7b49\u7ea7\uff1a", None))
-        self.gpuLabel.setText(QCoreApplication.translate("ReadImg", u"GPU", None))
-        self.tickLabel.setText(QCoreApplication.translate("ReadImg", u"\u8017\u65f6\uff1a", None))
-        self.waifu2xTick.setText("")
-        self.stateWaifu.setText(QCoreApplication.translate("ReadImg", u"\u72b6\u6001\uff1a", None))
-        self.label_3.setText(QCoreApplication.translate("ReadImg", u"\u653e\u5927\u500d\u6570\uff1a", None))
         self.modelLabel.setText(QCoreApplication.translate("ReadImg", u"CUNET", None))
         self.modelBox.setItemText(0, QCoreApplication.translate("ReadImg", u"\u81ea\u52a8", None))
         self.modelBox.setItemText(1, QCoreApplication.translate("ReadImg", u"cunet", None))
         self.modelBox.setItemText(2, QCoreApplication.translate("ReadImg", u"photo", None))
         self.modelBox.setItemText(3, QCoreApplication.translate("ReadImg", u"anime_style_art_rgb", None))
 
-        self.sizeWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
         self.label_8.setText(QCoreApplication.translate("ReadImg", u"\u6a21\u578b\uff1a", None))
+        self.label_3.setText(QCoreApplication.translate("ReadImg", u"\u653e\u5927\u500d\u6570\uff1a", None))
+        self.label_9.setText(QCoreApplication.translate("ReadImg", u"\u8f6c\u6362\u6a21\u5f0f\uff1a", None))
+        self.tickLabel.setText(QCoreApplication.translate("ReadImg", u"\u8017\u65f6\uff1a", None))
+        self.waifu2xTick.setText("")
+        self.gpuLabel.setText(QCoreApplication.translate("ReadImg", u"GPU", None))
+        self.waifu2xRes.setText("")
+        self.waifu2xStatus.setText("")
+        self.waifu2xSave.setText(QCoreApplication.translate("ReadImg", u"\u4fee\u6539\u53c2\u6570", None))
+        self.waifu2xCancle.setText(QCoreApplication.translate("ReadImg", u"\u4fdd\u5b58", None))
+        self.waifu2xSize.setText("")
+        self.label_2.setText(QCoreApplication.translate("ReadImg", u"\u53bb\u566a\u7b49\u7ea7\uff1a", None))
+        self.checkBox.setText(QCoreApplication.translate("ReadImg", u"\u81ea\u52a8Waifu2x", None))
+        self.curWaifu2x.setText(QCoreApplication.translate("ReadImg", u"\u672c\u5f20\u56fe\u5f00\u542fWaifu2x (F2)", None))
+        self.stateWaifu.setText(QCoreApplication.translate("ReadImg", u"\u72b6\u6001\uff1a", None))
         self.resolutionWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
+        self.scaleLabel.setText(QCoreApplication.translate("ReadImg", u"2", None))
+        self.sizeWaifu.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
         self.noiseLabel.setText(QCoreApplication.translate("ReadImg", u"3", None))
         self.noiseBox.setItemText(0, QCoreApplication.translate("ReadImg", u"\u81ea\u52a8", None))
         self.noiseBox.setItemText(1, QCoreApplication.translate("ReadImg", u"0", None))
@@ -515,10 +524,7 @@ class Ui_ReadImg(object):
         self.noiseBox.setItemText(3, QCoreApplication.translate("ReadImg", u"2", None))
         self.noiseBox.setItemText(4, QCoreApplication.translate("ReadImg", u"3", None))
 
-        self.waifu2xRes.setText("")
-        self.waifu2xSave.setText(QCoreApplication.translate("ReadImg", u"\u4fee\u6539\u53c2\u6570", None))
-        self.curWaifu2x.setText(QCoreApplication.translate("ReadImg", u"\u672c\u5f20\u56fe\u5f00\u542fWaifu2x (F2)", None))
-        self.checkBox.setText(QCoreApplication.translate("ReadImg", u"\u81ea\u52a8Waifu2x", None))
+        self.preDownWaifu2x.setText(QCoreApplication.translate("ReadImg", u"\u4f18\u5148\u4f7f\u7528\u4e0b\u8f7d\u8f6c\u6362\u597d\u7684", None))
         self.label_6.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u8bbe\u7f6e", None))
         self.label_5.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u6a21\u5f0f\uff1a", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("ReadImg", u"\u4e0a\u4e0b\u6eda\u52a8", None))

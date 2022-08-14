@@ -34,6 +34,12 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.signButton.clicked.connect(self.Sign)
         self.picLabel.installEventFilter(self)
         self.picData = None
+        self.offlineButton.SetState(False)
+        self.offlineButton.Switch.connect(self.SwitchOffline)
+
+    def SwitchOffline(self, state):
+        QtOwner().isOfflineModel = state
+        return
 
     def OpenLoginView(self):
         isAutoLogin = Setting.AutoLogin.value
@@ -51,12 +57,20 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         return
 
     def LoginSucBack(self):
+        self.UpdateProxyName()
         if not User().isLogin:
             self.loginButton.setText(Str.GetStr(Str.Login))
+            QtOwner().owner.favorityView.InitFavorite()
             return
         QtOwner().owner.LoginSucBack()
         self.loginButton.setText(Str.GetStr(Str.LoginOut))
         self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
+
+    def UpdateProxyName(self):
+        if Setting.ProxySelectIndex.value == 4:
+            self.proxyName.setText("CDN_{}".format(Setting.PreferCDNIP.value))
+        else:
+            self.proxyName.setText("分流{}".format(str(Setting.ProxySelectIndex.value)))
 
     def UpdateUserBack(self, raw):
         self.levelLabel.setText("LV" + str(User().level))

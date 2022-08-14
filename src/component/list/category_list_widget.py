@@ -116,7 +116,7 @@ class CategoryListWidget(BaseListWidget):
             item = self.item(index)
             widget = self.itemWidget(item)
             assert isinstance(widget, ComicItemWidget)
-            widget.SetPictureErr()
+            widget.SetPictureErr(status)
         return
 
     def Waifu2xPicture(self, index, isIfSize=False):

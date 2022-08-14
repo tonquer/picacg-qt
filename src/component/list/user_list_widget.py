@@ -192,7 +192,7 @@ class UserListWidget(BaseListWidget):
         else:
             item = self.item(index)
             widget = self.itemWidget(item)
-            widget.SetPictureErr()
+            widget.SetPictureErr(status)
         return
 
     def LoadingHeadComplete(self, data, status, index):

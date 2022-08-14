@@ -41,8 +41,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.dbCheck.clicked.connect(self.ReUpdateDatabase)
         self.verCheck.clicked.connect(self.InitUpdate)
 
-        self.updateUrl = [config.UpdateUrl, config.UpdateUrl2]
-        self.updateBackUrl = [config.UpdateUrlBack, config.UpdateUrl2Back]
+        self.updateUrl = [config.UpdateUrl, config.UpdateUrl2, config.UpdateUrl3]
+        self.updateBackUrl = [config.UpdateUrlBack, config.UpdateUrl2Back, config.UpdateUrl3Back]
         self.checkUpdateIndex = 0
         self.helpLogWidget = HelpLogWidget()
         if Setting.IsShowCmd.value:
@@ -77,7 +77,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
 
     def InitUpdateBack(self, raw):
         try:
-            data = raw["data"]
+            data = raw.get("data")
             if not data:
                 self.checkUpdateIndex += 1
                 self.StartUpdate()
@@ -98,6 +98,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             Log.Error("Not found book.db !!!!!!!!!!!!!!!")
             from qt_owner import QtOwner
             QtOwner().SetDbError()
+            QtOwner().ShowErrOne("无法加载本地数据库data/book.db")
             return
         self.isHaveDb = True
         self.UpdateDbInfo()
@@ -128,6 +129,9 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.InitUpdateDatabase()
 
     def InitUpdateDatabase(self):
+        if QtOwner().isOfflineModel:
+            return
+
         if self.curUpdateTick <= 0:
             return
         if self.curIndex >= len(self.dbUpdateUrl):

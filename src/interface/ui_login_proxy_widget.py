@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_login_proxy_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.2
+## Created by: Qt User Interface Compiler version 6.2.4
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -111,6 +111,24 @@ class Ui_LoginProxyWidget(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_10)
 
+        self.horizontalLayout_12 = QHBoxLayout()
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.proxy_3 = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup_2.addButton(self.proxy_3)
+        self.proxy_3.setObjectName(u"proxy_3")
+
+        self.horizontalLayout_12.addWidget(self.proxy_3)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_12)
+
+        self.line_3 = QFrame(self.scrollAreaWidgetContents)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_3)
+
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.httpsBox = QCheckBox(self.scrollAreaWidgetContents)
@@ -121,6 +139,13 @@ class Ui_LoginProxyWidget(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_9)
+
+        self.line_4 = QFrame(self.scrollAreaWidgetContents)
+        self.line_4.setObjectName(u"line_4")
+        self.line_4.setFrameShape(QFrame.HLine)
+        self.line_4.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout.addWidget(self.line_4)
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
@@ -216,37 +241,6 @@ class Ui_LoginProxyWidget(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.label_3 = QLabel(self.scrollAreaWidgetContents)
-        self.label_3.setObjectName(u"label_3")
-
-        self.horizontalLayout_8.addWidget(self.label_3)
-
-        self.commandLinkButton = QCommandLinkButton(self.scrollAreaWidgetContents)
-        self.commandLinkButton.setObjectName(u"commandLinkButton")
-
-        self.horizontalLayout_8.addWidget(self.commandLinkButton)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_8)
-
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.label_11 = QLabel(self.scrollAreaWidgetContents)
-        self.label_11.setObjectName(u"label_11")
-        self.label_11.setAlignment(Qt.AlignCenter)
-
-        self.horizontalLayout_6.addWidget(self.label_11)
-
-        self.cdnIp = QLineEdit(self.scrollAreaWidgetContents)
-        self.cdnIp.setObjectName(u"cdnIp")
-
-        self.horizontalLayout_6.addWidget(self.cdnIp)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_6)
-
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.radioButton_4 = QRadioButton(self.scrollAreaWidgetContents)
@@ -269,6 +263,37 @@ class Ui_LoginProxyWidget(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_7)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_11 = QLabel(self.scrollAreaWidgetContents)
+        self.label_11.setObjectName(u"label_11")
+        self.label_11.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_6.addWidget(self.label_11)
+
+        self.cdnIp = QLineEdit(self.scrollAreaWidgetContents)
+        self.cdnIp.setObjectName(u"cdnIp")
+
+        self.horizontalLayout_6.addWidget(self.cdnIp)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_6)
+
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.label_3 = QLabel(self.scrollAreaWidgetContents)
+        self.label_3.setObjectName(u"label_3")
+
+        self.horizontalLayout_8.addWidget(self.label_3)
+
+        self.commandLinkButton = QCommandLinkButton(self.scrollAreaWidgetContents)
+        self.commandLinkButton.setObjectName(u"commandLinkButton")
+
+        self.horizontalLayout_8.addWidget(self.commandLinkButton)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_8)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
@@ -296,7 +321,8 @@ class Ui_LoginProxyWidget(object):
         self.sockEdit.setToolTip(QCoreApplication.translate("LoginProxyWidget", u"127.0.0.1:10808", None))
 #endif // QT_CONFIG(tooltip)
         self.sockEdit.setPlaceholderText("")
-        self.httpsBox.setText(QCoreApplication.translate("LoginProxyWidget", u"\u542f\u7528HTTPS", None))
+        self.proxy_3.setText(QCoreApplication.translate("LoginProxyWidget", u"\u4f7f\u7528\u7cfb\u7edf\u4ee3\u7406", None))
+        self.httpsBox.setText(QCoreApplication.translate("LoginProxyWidget", u"\u542f\u7528Https\uff08\u5982\u679c\u51fa\u73b0\u8fde\u63a5\u88ab\u91cd\u7f6e\uff0c\u5efa\u8bae\u5173\u95ed\u8bd5\u8bd5\uff09", None))
         self.testSpeedButton.setText(QCoreApplication.translate("LoginProxyWidget", u"\u6d4b\u901f", None))
         self.label_2.setText(QCoreApplication.translate("LoginProxyWidget", u"\u76f4\u8fde", None))
         self.label_4.setText(QCoreApplication.translate("LoginProxyWidget", u"\u4ee3\u7406", None))
@@ -309,11 +335,11 @@ class Ui_LoginProxyWidget(object):
         self.radioButton_3.setText(QCoreApplication.translate("LoginProxyWidget", u"\u5206\u6d413", None))
         self.label5.setText("")
         self.label6.setText("")
-        self.label_3.setText(QCoreApplication.translate("LoginProxyWidget", u"CDN\u8bbe\u7f6e\u8bf7\u770b\u8bf4\u660e\u83b7\u53d6", None))
-        self.commandLinkButton.setText(QCoreApplication.translate("LoginProxyWidget", u"\u8bf4\u660e", None))
-        self.label_11.setText(QCoreApplication.translate("LoginProxyWidget", u" CDN\u7684IP\u5730\u5740 ", None))
         self.radioButton_4.setText(QCoreApplication.translate("LoginProxyWidget", u"CDN\u5206\u6d41", None))
         self.label7.setText("")
         self.label8.setText("")
+        self.label_11.setText(QCoreApplication.translate("LoginProxyWidget", u" CDN\u7684IP\u5730\u5740 ", None))
+        self.label_3.setText(QCoreApplication.translate("LoginProxyWidget", u"CDN\u8bbe\u7f6e\u8bf7\u770b\u8bf4\u660e\u83b7\u53d6", None))
+        self.commandLinkButton.setText(QCoreApplication.translate("LoginProxyWidget", u"\u8bf4\u660e", None))
     # retranslateUi
 

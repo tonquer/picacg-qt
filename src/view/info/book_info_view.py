@@ -1,3 +1,5 @@
+import json
+
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
@@ -6,7 +8,7 @@ from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller
 from config.setting import Setting
 from interface.ui_book_info import Ui_BookInfo
 from qt_owner import QtOwner
-from server import req, ToolUtil, config, Status
+from server import req, ToolUtil, config, Status, Log
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from tools.book import BookMgr, Book, BookEps
@@ -66,6 +68,14 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.epsListWidget.setResizeMode(self.epsListWidget.Adjust)
 
         self.epsListWidget.clicked.connect(self.OpenReadImg)
+
+        self.listWidget.setFlow(self.listWidget.LeftToRight)
+        self.listWidget.setWrapping(True)
+        self.listWidget.setFrameShape(self.listWidget.NoFrame)
+        self.listWidget.setResizeMode(self.listWidget.Adjust)
+
+        self.listWidget.clicked.connect(self.OpenReadImg2)
+
         if Setting.IsGrabGesture.value:
             QScroller.grabGesture(self.epsListWidget, QScroller.LeftMouseButtonGesture)
         # self.epsListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
@@ -85,6 +95,9 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.ReloadHistory.connect(self.LoadHistory)
 
         self.pageBox.currentIndexChanged.connect(self.UpdateEpsPageData)
+        self.tabWidget.currentChanged.connect(self.SwitchPage)
+        self.commandLinkButton.clicked.connect(self.OpenRecommend)
+        self.readOffline.clicked.connect(self.StartRead2)
 
     def UpdateFavoriteIcon(self):
         p = QPixmap()
@@ -113,11 +126,21 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
     def OpenBook(self, bookId):
         self.bookId = bookId
+        if QtOwner().isOfflineModel:
+            self.tabWidget.setCurrentIndex(1)
+        else:
+            self.tabWidget.setCurrentIndex(0)
         self.setFocus()
         self.Clear()
         self.show()
         QtOwner().ShowLoading()
         self.OpenLocalBack()
+
+    def OpenRecommend(self):
+        QtOwner().OpenRecomment(self.bookId)
+
+    def SwitchPage(self, page):
+        pass
 
     def OpenComment(self):
         if self.bookId:
@@ -127,7 +150,49 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.AddSqlTask("book", self.bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack)
 
     def SendLocalBack(self, books):
-        self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookBack)
+        if not QtOwner().isOfflineModel:
+            self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookBack)
+        else:
+            self.OpenBookBack({"st": Status.Ok})
+        self.UpdateDownloadEps()
+        self.LoadHistory()
+
+    def UpdateDownloadEps(self):
+        info = QtOwner().downloadView.GetDownloadInfo(self.bookId)
+        self.listWidget.clear()
+        if info:
+            from view.download.download_item import DownloadItem
+            from view.download.download_item import DownloadEpsItem
+            assert isinstance(info, DownloadItem)
+            # downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
+            maxEpsId = max(info.epsIds)
+            for i in range(0, maxEpsId+1):
+                epsInfo = info.epsInfo.get(i)
+
+                item = QListWidgetItem(self.listWidget)
+                if not epsInfo:
+                    label = QLabel(str(i + 1) + "-" + "未下载")
+                    item.setToolTip("未下载")
+                else:
+                    assert isinstance(epsInfo, DownloadEpsItem)
+                    label = QLabel(str(i + 1) + "-" + epsInfo.epsTitle)
+                    item.setToolTip(epsInfo.epsTitle)
+
+                label.setAlignment(Qt.AlignCenter)
+                label.setStyleSheet("color: rgb(196, 95, 125);")
+                font = QFont()
+                font.setPointSize(12)
+                font.setBold(True)
+                label.setFont(font)
+                # label.setWordWrap(True)
+                # label.setContentsMargins(20, 10, 20, 10)
+                # if index in downloadIds:
+                #     item.setBackground(QColor(18, 161, 130))
+                # else:
+                #     item.setBackground(QColor(0, 0, 0, 0))
+                item.setSizeHint(label.sizeHint() + QSize(20, 20))
+                self.listWidget.setItemWidget(item, label)
+        return
 
     def OpenBookBack(self, raw):
         QtOwner().CloseLoading()
@@ -176,9 +241,12 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             if config.IsLoadingPicture:
                 url = ToolUtil.GetRealUrl(fileServer, path)
                 self.path = ToolUtil.GetRealPath(self.bookId, "cover")
-                self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture, isReload=True)
-
-            self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
+                if QtOwner().isOfflineModel:
+                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture)
+                else:
+                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture, isReload=True)
+            if not QtOwner().isOfflineModel:
+                self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)
             if hasattr(info, "_creator"):
                 creator = info._creator
@@ -219,7 +287,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                     model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value, mat)
                     self.AddConvertTask(self.path, self.pictureData, model, self.Waifu2xPictureBack)
         else:
-            self.picture.setText(Str.GetStr(Str.LoadingFail))
+            self.picture.setText(Str.GetStr(status))
         return
 
     def Waifu2xPictureBack(self, data, waifuId, index, tick):
@@ -237,7 +305,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         if st == Status.Ok:
             self.UpdateEpsData()
             self.lastEpsId = -1
-            self.LoadHistory()
+            # self.LoadHistory()
             return
         else:
             QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
@@ -373,8 +441,22 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         epsId = (book.epsCount - loadIndex*book.epsLimit) - index - 1
         self.OpenReadIndex(epsId)
 
-    def OpenReadIndex(self, epsId, pageIndex=-1):
-        QtOwner().OpenReadView(self.bookId, epsId, pageIndex=pageIndex)
+    def OpenReadImg2(self, modelIndex):
+        index = modelIndex.row()
+        item = self.listWidget.item(index)
+        if not item:
+            return
+        book = BookMgr().GetBook(self.bookId)
+        if not book:
+            return
+        assert isinstance(book, Book)
+        if not QtOwner().downloadView.IsDownloadEpsId(self.bookId, index):
+            QtOwner().ShowError(Str.GetStr(Str.NotDownload))
+            return
+        self.OpenReadIndex(index, isOffline=True)
+
+    def OpenReadIndex(self, epsId, pageIndex=-1, isOffline=False):
+        QtOwner().OpenReadView(self.bookId, epsId, pageIndex=pageIndex, isOffline=isOffline)
         # self.stackedWidget.setCurrentIndex(1)
 
     def StartRead(self):
@@ -382,6 +464,19 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.OpenReadIndex(self.lastEpsId, self.lastIndex)
         else:
             self.OpenReadIndex(0)
+        return
+
+    def StartRead2(self):
+        if self.lastEpsId >= 0:
+            if not QtOwner().downloadView.IsDownloadEpsId(self.bookId, self.lastEpsId):
+                QtOwner().ShowError(Str.GetStr(Str.NotDownload))
+                return
+            self.OpenReadIndex(self.lastEpsId, self.lastIndex, isOffline=True)
+        else:
+            if not QtOwner().downloadView.IsDownloadEpsId(self.bookId, 0):
+                QtOwner().ShowError(Str.GetStr(Str.NotDownload))
+                return
+            self.OpenReadIndex(0, isOffline=True)
         return
 
     def LoadHistory(self):
@@ -392,6 +487,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         if self.lastEpsId == info.epsId:
             self.lastIndex = info.picIndex
             self.startRead.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
+            self.readOffline.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
             return
 
         # if self.lastEpsId >= 0:
@@ -410,6 +506,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.lastEpsId = info.epsId
         self.lastIndex = info.picIndex
         self.startRead.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
+        self.readOffline.setText(Str.GetStr(Str.LastLook) + str(self.lastEpsId + 1) + Str.GetStr(Str.Chapter) + str(info.picIndex + 1) + Str.GetStr(Str.Page))
 
     def ClickCategoriesItem(self, modelIndex):
         index = modelIndex.row()
@@ -448,21 +545,24 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         index = self.tagsList.indexAt(pos)
         item = self.tagsList.itemFromIndex(index)
         if index.isValid() and item:
-            text = item.text()
+            widget = self.tagsList.itemWidget(item)
+            text = widget.text()
             QtOwner().CopyText(text)
 
     def CopyClickCategoriesItem(self, pos):
         index = self.categoriesList.indexAt(pos)
         item = self.categoriesList.itemFromIndex(index)
-        if index.isValid() and item:
-            text = item.text()
+        if item:
+            widget = self.categoriesList.itemWidget(item)
+            text = widget.text()
             QtOwner().CopyText(text)
 
     def CopyClickAutorItem(self, pos):
         index = self.autorList.indexAt(pos)
         item = self.autorList.itemFromIndex(index)
         if index.isValid() and item:
-            text = item.text()
+            widget = self.autorList.itemWidget(item)
+            text = widget.text()
             QtOwner().CopyText(text)
 
     def eventFilter(self, obj, event):

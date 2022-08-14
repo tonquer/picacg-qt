@@ -182,7 +182,7 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
             self.picture.setPixmap(newPic)
             # self.picture.setScaledContents(True)
         else:
-            self.picture.setText(Str.GetStr(Str.LoadingFail))
+            self.picture.setText(Str.GetStr(status))
         return
 
     def UpdateListPicture(self, data, status, backId):
@@ -204,7 +204,7 @@ class GameInfoView(QtWidgets.QWidget, Ui_GameInfo, QtTaskBase):
 
             item.setSizeHint(widget.sizeHint())
         else:
-            widget.setText(Str.GetStr(Str.LoadingFail))
+            widget.setText(Str.GetStr(status))
         return
 
     def eventFilter(self, obj, event):

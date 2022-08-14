@@ -174,7 +174,7 @@ class ComicListWidget(BaseListWidget):
             if not widget:
                 return
             assert isinstance(widget, ComicItemWidget)
-            widget.SetPictureErr()
+            widget.SetPictureErr(status)
         return
 
     def SelectItem(self, item):

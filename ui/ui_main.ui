@@ -106,6 +106,7 @@
             <widget class="GameView" name="gameView"/>
             <widget class="Waifu2xToolView" name="waifu2xToolView"/>
             <widget class="BookEpsView" name="bookEpsView"/>
+            <widget class="FriedView" name="friedView"/>
            </widget>
           </item>
          </layout>
@@ -249,6 +250,12 @@
    <class>HelpView</class>
    <extends>QWidget</extends>
    <header location="global">view.help.help_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FriedView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.fried.fried_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -76,8 +76,8 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         self.pictureData = data
         self.picIcon.SetPicture(self.pictureData, self.headData)
 
-    def SetPictureErr(self):
-        self.picIcon.setText(Str.GetStr(Str.LoadingFail))
+    def SetPictureErr(self, status):
+        self.picIcon.setText(Str.GetStr(status))
 
     def SetHeadData(self, data):
         self.headData = data

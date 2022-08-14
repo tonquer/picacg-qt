@@ -5,6 +5,7 @@ from PySide6.QtCore import QFile
 
 from component.label.msg_label import MsgLabel
 from tools.singleton import Singleton
+from tools.str import Str
 from tools.tool import ToolUtil
 
 
@@ -15,10 +16,12 @@ class QtOwner(Singleton):
         self._app = None
         self.backSock = None
         self.isUseDb = True
+        self.isOfflineModel = False
 
     # db不可使用
     def SetDbError(self):
         self.owner.searchView.SetDbError()
+        self.isUseDb = False
         return
 
     def ShowError(self, msg):
@@ -26,6 +29,27 @@ class QtOwner(Singleton):
 
     def ShowMsg(self, msg):
         return MsgLabel.ShowMsgEx(self.owner, msg)
+
+    def CheckShowMsg(self, raw):
+        msg = raw.get("st")
+        code = raw.get("code")
+        if code:
+            errorMsg = ToolUtil.GetCodeErrMsg(code)
+            if errorMsg:
+                return self.ShowError(errorMsg)
+
+        errorMsg = raw.get("errorMsg")
+        if errorMsg:
+            return self.ShowError(errorMsg)
+
+        message = raw.get("message")
+        if message:
+            return self.ShowMsg(message)
+
+        elif isinstance(msg, int):
+            return self.ShowError(Str.GetStr(msg))
+        else:
+            return self.ShowError(msg)
 
     def ShowMsgOne(self, msg):
         if not hasattr(self.owner, "msgLabel"):
@@ -147,13 +171,20 @@ class QtOwner(Singleton):
             self.owner.searchView2.searchTab.setText("TAG: {}".format(text))
         self.owner.SwitchWidget(self.owner.searchView2, **arg)
 
+    def OpenRecomment(self, bookId):
+        Title = "看了这边本子的人也在看"
+        arg = {"recoment": 1, "bookId": bookId}
+        self.owner.searchView2.setWindowTitle(Title)
+        self.owner.searchView2.searchTab.setText(Title)
+        self.owner.SwitchWidget(self.owner.searchView2, **arg)
+
     def OpenSearchByText(self, text):
         self.owner.searchView.lineEdit.setText(text)
         self.owner.searchView.lineEdit.Search()
 
-    def OpenReadView(self, bookId, index, pageIndex):
+    def OpenReadView(self, bookId, index, pageIndex, isOffline=False):
         self.owner.totalStackWidget.setCurrentIndex(1)
-        self.owner.readView.OpenPage(bookId, index, pageIndex=pageIndex)
+        self.owner.readView.OpenPage(bookId, index, pageIndex=pageIndex, isOffline=isOffline)
 
     def CloseReadView(self):
         self.owner.totalStackWidget.setCurrentIndex(0)

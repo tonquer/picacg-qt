@@ -114,6 +114,8 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.gameButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.gameView)))
         self.navigationWidget.helpButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.helpView)))
         self.navigationWidget.waifu2xButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.waifu2xToolView)))
+        self.navigationWidget.friedButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.friedView)))
+        self.navigationWidget.friedButton.hide()
 
     def RetranslateUi(self):
         Main.retranslateUi(self, self)

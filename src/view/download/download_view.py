@@ -100,6 +100,21 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
     def Init(self):
         self.timer.start()
 
+    def GetDownloadEpsInfo(self, bookId, epsId):
+        info = self.GetDownloadInfo(bookId)
+        if not info:
+            return False
+        return info.epsInfo.get(epsId)
+
+    def GetDownloadInfo(self, bookId):
+        return self.downloadDict.get(bookId)
+
+    def IsDownloadEpsId(self, bookId, epsId):
+        info = self.GetDownloadInfo(bookId)
+        if not info:
+            return False
+        return epsId in info.epsIds
+
     def GetDownloadEpsId(self, bookId):
         if bookId not in self.downloadDict:
             return []
@@ -109,6 +124,16 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
     #     if bookId not in self.downloadDict:
     #         return []
     #     return self.downloadDict[bookId].GetDownloadCompleteEpsId()
+
+    def GetDownloadWaifu2xFilePath(self, bookId, epsId, index):
+        if bookId not in self.downloadDict:
+            return ""
+        task = self.downloadDict[bookId]
+        if epsId not in task.epsInfo:
+            return ""
+        epsTitle = task.epsInfo[epsId].epsTitle
+        convertPath = os.path.join(task.convertPath, ToolUtil.GetCanSaveName(epsTitle))
+        return os.path.join(convertPath, "{:04}.{}".format(index + 1, "jpg"))
 
     def GetDownloadFilePath(self, bookId, epsId, index):
         if bookId not in self.downloadDict:

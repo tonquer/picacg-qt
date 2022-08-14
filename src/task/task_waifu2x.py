@@ -22,6 +22,7 @@ class QConvertTask(object):
         self.status = Status.Ok
         self.tick = 0
         self.loadPath = ""  #
+        self.preDownPath = ""  #
         self.cachePath = ""  #
         self.savePath = ""  #
         self.imgData = b""
@@ -66,6 +67,13 @@ class TaskWaifu2x(TaskBase):
 
                 if task.cachePath:
                     data = ToolUtil.LoadCachePicture(task.cachePath)
+                    if data:
+                        task.saveData = data
+                        self.taskObj.convertBack.emit(taskId)
+                        continue
+
+                if task.preDownPath:
+                    data = ToolUtil.LoadCachePicture(task.preDownPath)
                     if data:
                         task.saveData = data
                         self.taskObj.convertBack.emit(taskId)
@@ -165,7 +173,7 @@ class TaskWaifu2x(TaskBase):
             self.taskObj.convertBack.emit(taskId)
             t1.Refresh("RunLoad")
 
-    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, cleanFlag=None):
+    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, preDownPath=None, cleanFlag=None):
         info = QConvertTask()
         info.callBack = callBack
         info.backParam = backParam
@@ -174,6 +182,7 @@ class TaskWaifu2x(TaskBase):
         info.taskId = self.taskId
         info.imgData = imgData
         info.model = model
+        info.preDownPath = preDownPath
         if path and Setting.SavePath.value:
             info.cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.join("waifu2x", path))
 

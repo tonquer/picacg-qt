@@ -1,4 +1,5 @@
 import json
+import pickle
 import threading
 from queue import Queue
 
@@ -9,6 +10,7 @@ from urllib3.util.ssl_ import is_ipaddress
 import server.req as req
 import server.res as res
 from config import config
+from qt_owner import QtOwner
 from task.qt_task import TaskBase
 from tools.log import Log
 from tools.singleton import Singleton
@@ -22,6 +24,9 @@ from urllib3.util import connection
 _orig_create_connection = connection.create_connection
 
 host_table = {}
+# import urllib3.contrib.pyopenssl
+# urllib3.contrib.pyopenssl.HAS_SNI = False
+# urllib3.contrib.pyopenssl.inject_into_urllib3()
 
 
 def _dns_resolver(host):
@@ -183,6 +188,12 @@ class Server(Singleton):
     def _Send(self, task):
         try:
             Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
+            if QtOwner().isOfflineModel:
+                task.status = Status.OfflineModel
+                data = {"st": Status.OfflineModel, "data": ""}
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
+                return
+
             if task.req.method.lower() == "post":
                 self.Post(task)
             elif task.req.method.lower() == "get":
@@ -192,7 +203,21 @@ class Server(Singleton):
             else:
                 return
         except Exception as es:
-            task.status = Status.NetError
+            if isinstance(es, requests.exceptions.ConnectTimeout):
+                task.status = Status.ConnectErr
+            elif isinstance(es, requests.exceptions.ReadTimeout):
+                task.status = Status.TimeOut
+            elif isinstance(es, requests.exceptions.SSLError):
+                if "WSAECONNRESET" in es.__repr__():
+                    task.status = Status.ResetErr
+                else:
+                    task.status = Status.SSLErr
+            elif isinstance(es, requests.exceptions.ProxyError):
+                task.status = Status.ProxyError
+            elif isinstance(es, ConnectionResetError):
+                task.status = Status.ResetErr
+            else:
+                task.status = Status.NetError
             # Log.Error(es)
             Log.Warn(task.req.url + " " + es.__repr__())
             Log.Debug(es)
@@ -267,6 +292,11 @@ class Server(Singleton):
                                 TaskBase.taskObj.downloadBack.emit(task.bakParam, 0, data)
                                 Log.Info("request cache -> backId:{}, {}".format(task.bakParam, task.req))
                                 return
+            if QtOwner().isOfflineModel:
+                task.status = Status.OfflineModel
+                self.handler.get(task.req.__class__.__name__)(task)
+                return
+
             request = task.req
             if request.params is None:
                 request.params = {}
@@ -279,8 +309,22 @@ class Server(Singleton):
             # print(r.elapsed.total_seconds())
             task.res = r
         except Exception as es:
+            if isinstance(es, requests.exceptions.ConnectTimeout):
+                task.status = Status.ConnectErr
+            elif isinstance(es, requests.exceptions.ReadTimeout):
+                task.status = Status.TimeOut
+            elif isinstance(es, requests.exceptions.SSLError):
+                if "WSAECONNRESET" in es.__repr__():
+                    task.status = Status.ResetErr
+                else:
+                    task.status = Status.SSLErr
+            elif isinstance(es, requests.exceptions.ProxyError):
+                task.status = Status.ProxyError
+            elif isinstance(es, ConnectionResetError):
+                task.status = Status.ResetErr
+            else:
+                task.status = Status.NetError
             Log.Warn(task.req.url + " " + es.__repr__())
-            task.status = Status.NetError
         self.handler.get(task.req.__class__.__name__)(task)
         if task.res:
             task.res.close()

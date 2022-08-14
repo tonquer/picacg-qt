@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_waifu2x_tool.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.2
+## Created by: Qt User Interface Compiler version 6.2.4
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -237,11 +237,28 @@ class Ui_Waifu2xTool(object):
 
         self.gpuLabel = QLabel(Waifu2xTool)
         self.gpuLabel.setObjectName(u"gpuLabel")
+        self.gpuLabel.setWordWrap(True)
 
         self.horizontalLayout_11.addWidget(self.gpuLabel)
 
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_11)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label = QLabel(Waifu2xTool)
+        self.label.setObjectName(u"label")
+        self.label.setMaximumSize(QSize(60, 16777215))
+
+        self.horizontalLayout.addWidget(self.label)
+
+        self.format = QLabel(Waifu2xTool)
+        self.format.setObjectName(u"format")
+
+        self.horizontalLayout.addWidget(self.format)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout)
 
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
@@ -370,6 +387,8 @@ class Ui_Waifu2xTool(object):
         self.sizeLabel.setText(QCoreApplication.translate("Waifu2xTool", u"\u65e0\u4fe1\u606f", None))
         self.label_9.setText(QCoreApplication.translate("Waifu2xTool", u"\u8f6c\u6362\u6a21\u5f0f\uff1a", None))
         self.gpuLabel.setText(QCoreApplication.translate("Waifu2xTool", u"GPU", None))
+        self.label.setText(QCoreApplication.translate("Waifu2xTool", u"\u683c\u5f0f", None))
+        self.format.setText("")
         self.label_6.setText(QCoreApplication.translate("Waifu2xTool", u"\u8017\u65f6\uff1a", None))
         self.tickLabel.setText("")
         self.oepnButton.setText(QCoreApplication.translate("Waifu2xTool", u"\u6253\u5f00\u56fe\u7247", None))

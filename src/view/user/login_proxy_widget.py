@@ -32,6 +32,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.buttonGroup_2.setId(self.proxy_0, 0)
         self.buttonGroup_2.setId(self.proxy_1, 1)
         self.buttonGroup_2.setId(self.proxy_2, 2)
+        self.buttonGroup_2.setId(self.proxy_3, 3)
 
     def Init(self):
         self.LoadSetting()
@@ -44,6 +45,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.proxy_0.setEnabled(enabled)
         self.proxy_1.setEnabled(enabled)
         self.proxy_2.setEnabled(enabled)
+        self.proxy_3.setEnabled(enabled)
         self.httpLine.setEnabled(enabled)
         self.sockEdit.setEnabled(enabled)
         self.cdnIp.setEnabled(enabled)
@@ -101,10 +103,13 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         request = req.SpeedTestPingReq()
         request.isUseHttps = self.httpsBox.isChecked()
+
         if isHttpProxy and self.buttonGroup_2.checkedId() == 1:
             request.proxy = {"http": httpProxy, "https": httpProxy}
-        else:
+        elif isHttpProxy and self.buttonGroup_2.checkedId() == 3:
             request.proxy = ""
+        else:
+            request.proxy = {"http": None, "https": None}
 
         if isHttpProxy and self.buttonGroup_2.checkedId() == 2:
             self.SetSock5Proxy(True)
@@ -117,11 +122,12 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
     def SpeedTestPingBack(self, raw, i):
         data = raw["data"]
+        st = raw["st"]
         label = getattr(self, "label" + str(i))
         if float(data) > 0.0:
             label.setText("<font color=#7fb80e>{}</font>".format(str(int(float(data)*500)) + "ms") + "/")
         else:
-            label.setText("<font color=#d71345>{}</font>".format("fail") + "/")
+            label.setText("<font color=#d71345>{}</font>".format(Str.GetStr(st)) + "/")
         self.speedPingNum += 1
         self.StartSpeedPing()
         return
@@ -161,8 +167,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
     def SpeedTestBack(self, raw, i):
         data = raw["data"]
+        st = raw["st"]
         if not data:
-            data = "<font color=#d71345>fail</font>"
+            data = "<font color=#d71345>{}</font>".format(Str.GetStr(st))
         else:
             data = "<font color=#7fb80e>{}</font>".format(data)
         label = getattr(self, "label" + str(i))

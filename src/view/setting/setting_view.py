@@ -16,6 +16,7 @@ from qt_owner import QtOwner
 from tools.langconv import Converter
 from tools.log import Log
 from tools.str import Str
+from view.user.login_view import LoginView
 
 
 class SettingView(QtWidgets.QWidget, Ui_SettingNew):
@@ -46,6 +47,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.checkBox_IsUpdate.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUpdate, self.checkBox_IsUpdate))
         self.chatProxy.clicked.connect(partial(self.CheckButtonEvent, Setting.ChatProxy, self.chatProxy))
         self.readCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenWaifu, self.readCheckBox))
+        self.preDownWaifu2x.clicked.connect(partial(self.CheckButtonEvent, Setting.PreDownWaifu2x, self.preDownWaifu2x))
         self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
         self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
         self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotUseTitleBar, self.titleBox))
@@ -93,6 +95,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.openCacheDir.clicked.connect(partial(self.OpenDir, self.cacheDir))
         self.openWaifu2xDir.clicked.connect(partial(self.OpenDir, self.waifu2xDir))
 
+        self.openProxy.clicked.connect(self.OpenProxy)
         # TODO
         self.languageButton3.setVisible(False)
 
@@ -214,6 +217,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
                 self.fontBox.setCurrentIndex(index)
 
         self.readCheckBox.setChecked(Setting.IsOpenWaifu.value)
+        self.preDownWaifu2x.setChecked(Setting.PreDownWaifu2x.value)
         self.readNoise.setCurrentIndex(Setting.LookNoise.value)
         self.readScale.setValue(Setting.LookScale.value)
         self.readModel.setCurrentIndex(Setting.LookModel.value)
@@ -228,6 +232,17 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.downScale.setValue(Setting.DownloadScale.value)
         self.downModel.setCurrentIndex(Setting.DownloadModel.value)
         self.SetDownloadLabel()
+
+    def OpenProxy(self):
+        loginView = LoginView(QtOwner().owner, False)
+        loginView.tabWidget.setCurrentIndex(3)
+        loginView.tabWidget.removeTab(0)
+        loginView.tabWidget.removeTab(0)
+        loginView.tabWidget.removeTab(0)
+        loginView.show()
+
+        loginView.closed.connect(QtOwner().owner.navigationWidget.UpdateProxyName)
+        return
 
     def retranslateUi(self, SettingNew):
         Ui_SettingNew.retranslateUi(self, SettingNew)

@@ -42,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>318</width>
-        <height>815</height>
+        <width>310</width>
+        <height>825</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -152,108 +152,7 @@
          </item>
          <item>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="10" column="1">
-            <widget class="QLabel" name="waifu2xStatus">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
-             <item>
-              <widget class="QPushButton" name="waifu2xCancle">
-               <property name="text">
-                <string>保存</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="4" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <widget class="QLabel" name="scaleLabel">
-               <property name="text">
-                <string>2</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="WheelDoubleSpinBox" name="scaleBox">
-               <property name="decimals">
-                <number>1</number>
-               </property>
-               <property name="maximum">
-                <double>32.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>0.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>2.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>转换模式：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QLabel" name="waifu2xSize">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>去噪等级：</string>
-             </property>
-            </widget>
-           </item>
            <item row="6" column="1">
-            <widget class="QLabel" name="gpuLabel">
-             <property name="text">
-              <string>GPU</string>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="0">
-            <widget class="QLabel" name="tickLabel">
-             <property name="text">
-              <string>耗时：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="1">
-            <widget class="QLabel" name="waifu2xTick">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="stateWaifu">
-             <property name="text">
-              <string>状态：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>放大倍数：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
               <widget class="QLabel" name="modelLabel">
@@ -288,14 +187,7 @@
              </item>
             </layout>
            </item>
-           <item row="8" column="0">
-            <widget class="QLabel" name="sizeWaifu">
-             <property name="text">
-              <string>大小：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
+           <item row="6" column="0">
             <widget class="QLabel" name="label_8">
              <property name="maximumSize">
               <size>
@@ -308,14 +200,156 @@
              </property>
             </widget>
            </item>
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>放大倍数：</string>
+             </property>
+            </widget>
+           </item>
            <item row="7" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>转换模式：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <widget class="QLabel" name="tickLabel">
+             <property name="text">
+              <string>耗时：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="10" column="1">
+            <widget class="QLabel" name="waifu2xTick">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="1">
+            <widget class="QLabel" name="gpuLabel">
+             <property name="text">
+              <string>GPU</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="1">
+            <widget class="QLabel" name="waifu2xRes">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="1">
+            <widget class="QLabel" name="waifu2xStatus">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="waifu2xSave">
+             <property name="text">
+              <string>修改参数</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QPushButton" name="waifu2xCancle">
+               <property name="text">
+                <string>保存</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="9" column="1">
+            <widget class="QLabel" name="waifu2xSize">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>去噪等级：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="checkBox">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>自动Waifu2x</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QCheckBox" name="curWaifu2x">
+             <property name="text">
+              <string>本张图开启Waifu2x (F2)</string>
+             </property>
+            </widget>
+           </item>
+           <item row="11" column="0">
+            <widget class="QLabel" name="stateWaifu">
+             <property name="text">
+              <string>状态：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
             <widget class="QLabel" name="resolutionWaifu">
              <property name="text">
               <string>分辨率：</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="5" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QLabel" name="scaleLabel">
+               <property name="text">
+                <string>2</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="WheelDoubleSpinBox" name="scaleBox">
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <double>32.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>2.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="9" column="0">
+            <widget class="QLabel" name="sizeWaifu">
+             <property name="text">
+              <string>大小：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLabel" name="noiseLabel">
@@ -355,37 +389,10 @@
              </item>
             </layout>
            </item>
-           <item row="7" column="1">
-            <widget class="QLabel" name="waifu2xRes">
+           <item row="2" column="1">
+            <widget class="QCheckBox" name="preDownWaifu2x">
              <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="waifu2xSave">
-             <property name="text">
-              <string>修改参数</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QCheckBox" name="curWaifu2x">
-             <property name="text">
-              <string>本张图开启Waifu2x (F2)</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="checkBox">
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>自动Waifu2x</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
+              <string>优先使用下载转换好的</string>
              </property>
             </widget>
            </item>

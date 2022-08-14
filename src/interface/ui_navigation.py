@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_navigation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.2
+## Created by: Qt User Interface Compiler version 6.2.4
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QFrame, QHBoxLayout,
     QLabel, QPushButton, QSizePolicy, QSpacerItem,
     QToolButton, QVBoxLayout, QWidget)
 
+from component.button.switch_button import SwitchButton
 from component.label.head_label import HeadLabel
 from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 import images_rc
@@ -95,6 +96,36 @@ class Ui_Navigation(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label_4 = QLabel(self.widget)
+        self.label_4.setObjectName(u"label_4")
+
+        self.horizontalLayout_3.addWidget(self.label_4)
+
+        self.proxyName = QLabel(self.widget)
+        self.proxyName.setObjectName(u"proxyName")
+
+        self.horizontalLayout_3.addWidget(self.proxyName)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.label_5 = QLabel(self.widget)
+        self.label_5.setObjectName(u"label_5")
+
+        self.horizontalLayout_4.addWidget(self.label_5)
+
+        self.offlineButton = SwitchButton(self.widget)
+        self.offlineButton.setObjectName(u"offlineButton")
+
+        self.horizontalLayout_4.addWidget(self.offlineButton)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_4)
+
         self.line_4 = QFrame(self.widget)
         self.line_4.setObjectName(u"line_4")
         self.line_4.setFrameShape(QFrame.HLine)
@@ -107,7 +138,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 211, 654))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 211, 700))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -286,6 +317,20 @@ class Ui_Navigation(object):
 
         self.verticalLayout_3.addWidget(self.gameButton)
 
+        self.friedButton = QToolButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.friedButton)
+        self.friedButton.setObjectName(u"friedButton")
+        sizePolicy1.setHeightForWidth(self.friedButton.sizePolicy().hasHeightForWidth())
+        self.friedButton.setSizePolicy(sizePolicy1)
+        self.friedButton.setMinimumSize(QSize(150, 40))
+        self.friedButton.setFocusPolicy(Qt.NoFocus)
+        self.friedButton.setIcon(icon)
+        self.friedButton.setIconSize(QSize(32, 32))
+        self.friedButton.setCheckable(True)
+        self.friedButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.verticalLayout_3.addWidget(self.friedButton)
+
         self.line_2 = QFrame(self.scrollAreaWidgetContents)
         self.line_2.setObjectName(u"line_2")
         self.line_2.setFrameShape(QFrame.HLine)
@@ -389,6 +434,9 @@ class Ui_Navigation(object):
         self.titleLabel.setText("")
         self.expLabel.setText("")
         self.levelLabel.setText("")
+        self.label_4.setText(QCoreApplication.translate("Navigation", u"\u5206\u6d41\uff1a", None))
+        self.proxyName.setText("")
+        self.label_5.setText(QCoreApplication.translate("Navigation", u"\u79bb\u7ebf\u6a21\u5f0f\uff1a", None))
         self.label.setText(QCoreApplication.translate("Navigation", u"\u7528\u6237", None))
         self.collectButton.setText(QCoreApplication.translate("Navigation", u"\u6211\u7684\u6536\u85cf", None))
         self.myCommentButton.setText(QCoreApplication.translate("Navigation", u"\u6211\u7684\u8bc4\u8bba", None))
@@ -401,6 +449,7 @@ class Ui_Navigation(object):
         self.rankButton.setText(QCoreApplication.translate("Navigation", u"\u6392\u884c\u699c", None))
         self.chatButton.setText(QCoreApplication.translate("Navigation", u"\u804a\u5929\u5ba4", None))
         self.gameButton.setText(QCoreApplication.translate("Navigation", u"\u6e38\u620f\u533a", None))
+        self.friedButton.setText(QCoreApplication.translate("Navigation", u"\u9505\u8d34", None))
         self.label_3.setText(QCoreApplication.translate("Navigation", u"\u5176\u4ed6", None))
         self.downloadButton.setText(QCoreApplication.translate("Navigation", u"\u4e0b\u8f7d", None))
         self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"Waifu2x", None))

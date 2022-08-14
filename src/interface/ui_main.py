@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.2
+## Created by: Qt User Interface Compiler version 6.2.4
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -29,6 +29,7 @@ from view.comment.game_comment_view import GameCommentView
 from view.comment.my_comment_view import MyCommentView
 from view.comment.sub_comment_view import SubCommentView
 from view.download.download_view import DownloadView
+from view.fried.fried_view import FriedView
 from view.game.game_view import GameView
 from view.help.help_view import HelpView
 from view.index.index_view import IndexView
@@ -153,6 +154,9 @@ class Ui_Main(object):
         self.bookEpsView = BookEpsView()
         self.bookEpsView.setObjectName(u"bookEpsView")
         self.subStackWidget.addWidget(self.bookEpsView)
+        self.friedView = FriedView()
+        self.friedView.setObjectName(u"friedView")
+        self.subStackWidget.addWidget(self.friedView)
 
         self.verticalLayout.addWidget(self.subStackWidget)
 

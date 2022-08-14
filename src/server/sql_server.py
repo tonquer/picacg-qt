@@ -120,7 +120,13 @@ class SqlServer(Singleton):
                     TaskSql().taskObj.sqlBack.emit(backId, pickle.dumps(""))
                     continue
                 if taskType == self.TaskCheck:
-                    data2 = pickle.dumps(str(int(isInit)))
+                    try:
+                        cur = conn.cursor()
+                        cur.execute("select * from words")
+                        data2 = pickle.dumps(str(int(isInit)))
+                    except Exception as es:
+                        Log.Error(es)
+                        data2 = pickle.dumps("")
                     TaskSql().taskObj.sqlBack.emit(backId, data2)
                 elif taskType == self.TaskTypeSql:
                     cur = conn.cursor()
@@ -238,7 +244,7 @@ class SqlServer(Singleton):
 
     def _SelectFavoriteIds(self, conn, sql, backId):
         cur = conn.cursor()
-        sql = "select id,sortId from favorite where user ='{}'".format(User().userId)
+        sql = "select id,sortId from favorite where user ='{}'".format(Setting.UserId.value)
         cur.execute(sql)
         allFavoriteIds = []
         for data in cur.fetchall():
@@ -248,36 +254,41 @@ class SqlServer(Singleton):
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
     def _SelectCacheBook(self, conn, bookId, backId):
-        cur = conn.cursor()
-        cur.execute("select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book where id ='{}'".format(bookId))
         v = {}
-        allFavoriteIds = []
-        for data in cur.fetchall():
-            info = DbBook()
-            info.id = data[0]
-            info.title = data[1]
-            info.title2 = data[2]
-            info.author = data[3]
-            info.chineseTeam = data[4]
-            info.description = data[5]
-            info.epsCount = data[6]
-            info.pages = data[7]
-            info.finished = data[8]
-            info.likesCount = data[9]
-            info.categories = data[10]
-            info.tags = data[11]
-            info.created_at = data[12]
-            info.updated_at = data[13]
-            info.path = data[14]
-            info.fileServer = data[15]
-            info.creator = data[16]
-            info.totalLikes = data[17]
-            info.totalViews = data[18]
-            BookMgr().AddBookByDb(info)
-            allFavoriteIds.append(info)
-        v["bookList"] = allFavoriteIds
-        v["st"] = Status.Ok
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                "select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+                "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book where id ='{}'".format(
+                    bookId))
+            allFavoriteIds = []
+            for data in cur.fetchall():
+                info = DbBook()
+                info.id = data[0]
+                info.title = data[1]
+                info.title2 = data[2]
+                info.author = data[3]
+                info.chineseTeam = data[4]
+                info.description = data[5]
+                info.epsCount = data[6]
+                info.pages = data[7]
+                info.finished = data[8]
+                info.likesCount = data[9]
+                info.categories = data[10]
+                info.tags = data[11]
+                info.created_at = data[12]
+                info.updated_at = data[13]
+                info.path = data[14]
+                info.fileServer = data[15]
+                info.creator = data[16]
+                info.totalLikes = data[17]
+                info.totalViews = data[18]
+                BookMgr().AddBookByDb(info)
+                allFavoriteIds.append(info)
+            v["bookList"] = allFavoriteIds
+            v["st"] = Status.Ok
+        except Exception as es:
+            Log.Error(es)
         data = pickle.dumps(v)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
@@ -330,7 +341,7 @@ class SqlServer(Singleton):
             try:
                 if not bookId:
                     continue
-                sql = "replace INTO favorite(id, user, sortId) VALUES ('{0}', '{1}', {2});".format(bookId, User().userId, sortId)
+                sql = "replace INTO favorite(id, user, sortId) VALUES ('{0}', '{1}', {2});".format(bookId, Setting.UserId.value, sortId)
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
             except Exception as ex:
@@ -342,7 +353,7 @@ class SqlServer(Singleton):
     def SearchFavorite(page, sortKey=0, sortId=0):
         sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
-            User().userId)
+            Setting.UserId.value)
         if sortKey == 0:
             sql += "ORDER BY book.updated_at "
 

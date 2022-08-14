@@ -14,6 +14,13 @@ class Status(object):
     ParseError = Str.ParseError
     NeedGoogle = Str.NeedGoogle
     SetHeadError = Str.SetHeadError
+    TimeOut = Str.TimeOut
+    SSLErr = Str.SSLErr
+    ResetErr = Str.ResetErr
+    ConnectErr = Str.ConnectErr
+    ProxyError = Str.ProxyError
+    DownloadFail = Str.DownloadFail
+    OfflineModel = Str.OfflineModel
 
     UnderReviewBook = Str.UnderReviewBook
     SaveError = Str.SaveError

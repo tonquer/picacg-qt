@@ -198,6 +198,7 @@ class SpeedTestPingHandler(object):
             if task.res.raw.status_code == 401 or task.res.raw.status_code == 200:
                 data["data"] = str(task.res.raw.elapsed.total_seconds())
             else:
+                data["st"] = Status.Error
                 data["data"] = "0"
             TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
         else:
@@ -210,13 +211,13 @@ class DownloadBookHandler(object):
     def __call__(self, backData):
         if backData.status != Status.Ok:
             if backData.bakParam:
-                TaskBase.taskObj.downloadBack.emit(backData.bakParam, -1, b"")
+                TaskBase.taskObj.downloadBack.emit(backData.bakParam, -backData.status, b"")
         else:
             r = backData.res
             try:
                 if r.status_code != 200:
                     if backData.bakParam:
-                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, -1, b"")
+                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, -Status.Error, b"")
                     return
                 
                 fileSize = int(r.headers.get('Content-Length', 0))
@@ -261,9 +262,10 @@ class DownloadBookHandler(object):
                     TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, data)
                     
             except Exception as es:
+                backData.status = Status.DownloadFail
                 Log.Error(es)
                 if backData.bakParam:
-                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, -1, b"")
+                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, -backData.status, b"")
 
 
 @handler(req.CheckUpdateDatabaseReq)
@@ -284,25 +286,25 @@ class DownloadDatabaseReqHandler(object):
 class CheckUpdateHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": ""}
-        if not task.res.GetText() or task.status == Status.NetError:
-            return
-        if task.res.raw.status_code != 200:
-            return
-
-        updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", task.res.raw.text)
-        if updateInfo:
-            rawData = updateInfo[0]
-        else:
-            rawData = ""
-            
-        versionInfo = re.findall("<meta property=\"og:url\" content=\".*tag/([^\"]*)\"", task.res.raw.text)
-        if versionInfo:
-            verData = versionInfo[0]
-        else:
-            verData = ""
-
-        info = verData.replace("v", "").split(".")
         try:
+            if not task.res.GetText() or task.status == Status.NetError:
+                return
+            if task.res.raw.status_code != 200:
+                return
+
+            updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", task.res.raw.text)
+            if updateInfo:
+                rawData = updateInfo[0]
+            else:
+                rawData = ""
+
+            versionInfo = re.findall("<meta property=\"og:url\" content=\".*tag/([^\"]*)\"", task.res.raw.text)
+            if versionInfo:
+                verData = versionInfo[0]
+            else:
+                verData = ""
+
+            info = verData.replace("v", "").split(".")
             version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
             info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
             curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
@@ -331,7 +333,9 @@ class SpeedTestHandler(object):
             r = backData.res
             try:
                 if r.status_code != 200:
+                    data["st"] = Status.Error
                     if backData.bakParam:
+                        data["st"] = Status.Error
                         TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
                     return
 
@@ -352,6 +356,7 @@ class SpeedTestHandler(object):
 
             except Exception as es:
                 Log.Error(es)
+                data["st"] = Status.DownloadFail
                 if backData.bakParam:
                     TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
 

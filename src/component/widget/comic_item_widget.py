@@ -92,8 +92,8 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         newPic = pic.scaled(self.picLabel.width()*radio, self.picLabel.height()*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.picLabel.setPixmap(newPic)
 
-    def SetPictureErr(self):
-        self.picLabel.setText(Str.GetStr(Str.LoadingFail))
+    def SetPictureErr(self, st):
+        self.picLabel.setText(Str.GetStr(st))
 
     def paintEvent(self, event) -> None:
         if self.url and not self.isLoadPicture and config.IsLoadingPicture:

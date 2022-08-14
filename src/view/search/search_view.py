@@ -124,6 +124,17 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         if text and re.match('^[0-9a-zA-Z]+$',text) and len(text) == len("5d5d760774184679c1e63f4c"):
             QtOwner().OpenBookInfo(text)
             return
+        isRecomend = not not kwargs.get("recoment")
+        if isRecomend:
+            self.bookList.clear()
+            bookId = kwargs.get("bookId")
+            self.bookList.UpdatePage(1, 1)
+            self.spinBox.setValue(1)
+            self.spinBox.setMaximum(1)
+            self.label.setText(self.bookList.GetPageStr())
+            QtOwner().ShowLoading()
+            self.AddHttpTask(req.GetComicsRecommendation(bookId), self.OpenRecommendationBack)
+            return
 
         if categories is not None:
             self.categories = categories
@@ -167,6 +178,16 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.sortId.setVisible(isLocal)
         self.sortKey.setVisible(isLocal)
         self.comboBox.setVisible(not isLocal)
+
+    def OpenRecommendationBack(self, raw):
+        QtOwner().CloseLoading()
+        data = raw.get("data")
+        try:
+            commentsData = json.loads(data)
+            for v in commentsData.get("data").get("comics"):
+                self.bookList.AddBookByDict(v)
+        except Exception as es:
+            Log.Error(es)
 
     def SendSearchCategories(self, page):
         sort = ["dd", "da", "ld", "vd"]

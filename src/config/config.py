@@ -31,20 +31,23 @@ UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
 UpdateUrl2 = "https://hub.fastgit.xyz/tonquer/picacg-qt/releases/latest"
 UpdateUrl2Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
+UpdateUrl3 = "https://raw.bika.life/tonquer/picacg-qt/releases/latest"
+UpdateUrl3Back = "https://raw.bika.life/tonquer/picacg-qt"
+
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
 
 DatabaseUpdate2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/data3/"
 
-DatabaseUpdate3 = "https://raw.staticdn.net/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload3 = "https://raw.staticdn.net/bika-robot/picacg-database/main/data3/"
+DatabaseUpdate3 = "https://raw.bika.life/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload3 = "https://raw.bika.life/bika-robot/picacg-database/main/data3/"
 
-UpdateVersion = "v1.3.8"
-RealVersion = "v1.3.8"
-TimeVersion = "2022-6-25"
+UpdateVersion = "v1.3.9"
+RealVersion = "v1.3.9"
+TimeVersion = "2022-8-14"
 
-Waifu2xVersion = "1.1.2"
+Waifu2xVersion = "1.1.4"
 
 
 # waifu2x
@@ -78,6 +81,7 @@ ImageServer3 = 'storage.wikawika.xyz'          # 分流3 使用的图片服务�
 
 ApiDomain = [
     "picaapi.picacomic.com",
+    "post-api.wikawika.xyz"
 ]
 
 ImageDomain = [
@@ -85,6 +89,7 @@ ImageDomain = [
     "storage1.picacomic.com",
     "img.tipatipa.xyz",
     "img.picacomic.com",
+    "storage.tipatipa.xyz",
     # "pica-pica.wikawika.xyz",
     "www.picacomic.com",
     "storage-b.picacomic.com",

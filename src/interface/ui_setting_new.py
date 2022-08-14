@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_setting_new.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.2
+## Created by: Qt User Interface Compiler version 6.2.4
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 661, 2648))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -980, 661, 2734))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -587,6 +587,31 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_8.addLayout(self.horizontalLayout_24)
 
+        self.horizontalLayout_27 = QHBoxLayout()
+        self.horizontalLayout_27.setObjectName(u"horizontalLayout_27")
+        self.proxy3 = QRadioButton(self.frame_5)
+        self.proxyGroup.addButton(self.proxy3)
+        self.proxy3.setObjectName(u"proxy3")
+
+        self.horizontalLayout_27.addWidget(self.proxy3)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_27)
+
+        self.horizontalLayout_28 = QHBoxLayout()
+        self.horizontalLayout_28.setObjectName(u"horizontalLayout_28")
+        self.openProxy = QPushButton(self.frame_5)
+        self.openProxy.setObjectName(u"openProxy")
+
+        self.horizontalLayout_28.addWidget(self.openProxy)
+
+        self.horizontalSpacer_26 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_28.addItem(self.horizontalSpacer_26)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_28)
+
 
         self.verticalLayout_4.addWidget(self.frame_5)
 
@@ -708,6 +733,11 @@ class Ui_SettingNew(object):
         self.readCheckBox.setObjectName(u"readCheckBox")
 
         self.verticalLayout_10.addWidget(self.readCheckBox)
+
+        self.preDownWaifu2x = QCheckBox(self.frame_8)
+        self.preDownWaifu2x.setObjectName(u"preDownWaifu2x")
+
+        self.verticalLayout_10.addWidget(self.preDownWaifu2x)
 
         self.horizontalLayout_21 = QHBoxLayout()
         self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
@@ -1305,6 +1335,8 @@ class Ui_SettingNew(object):
         self.label_31.setText(QCoreApplication.translate("SettingNew", u"\u4ee3\u7406\u5730\u5740", None))
         self.proxy2.setText(QCoreApplication.translate("SettingNew", u"Sock5\u4ee3\u7406", None))
         self.label_32.setText(QCoreApplication.translate("SettingNew", u"\u4ee3\u7406\u5730\u5740", None))
+        self.proxy3.setText(QCoreApplication.translate("SettingNew", u"\u4f7f\u7528\u7cfb\u7edf\u4ee3\u7406", None))
+        self.openProxy.setText(QCoreApplication.translate("SettingNew", u"\u6253\u5f00\u5206\u6d41\u8bbe\u7f6e", None))
         self.label_9.setText(QCoreApplication.translate("SettingNew", u"\u804a\u5929\u5ba4\uff1a", None))
         self.chatProxy.setText(QCoreApplication.translate("SettingNew", u"\u542f\u7528\u4ee3\u7406", None))
         self.waifu2xLabel.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u8bbe\u7f6e", None))
@@ -1314,6 +1346,7 @@ class Ui_SettingNew(object):
 
         self.label_12.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u770b\u56fe\u6a21\u5f0f", None))
         self.readCheckBox.setText(QCoreApplication.translate("SettingNew", u"\u662f\u5426\u542f\u7528", None))
+        self.preDownWaifu2x.setText(QCoreApplication.translate("SettingNew", u"\u4f18\u5148\u4f7f\u7528\u4e0b\u8f7d\u8f6c\u6362\u597d\u7684\u7f13\u5b58", None))
         self.label_28.setText(QCoreApplication.translate("SettingNew", u"\u4e3a\u4e86\u4fdd\u8bc1\u901f\u5ea6\uff0c\u56fe\u7247\u5206\u8fa8\u7387\u5c0f\u4e8e\u7b49\u4e8e\u8be5\u503c\u65f6\u624d\u8fdb\u884c\u8f6c\u6362\uff08\u9ed8\u8ba44096P\uff09", None))
         self.label_13.setText(QCoreApplication.translate("SettingNew", u"\u53bb\u566a\u7b49\u7ea7", None))
         self.readNoise.setItemText(0, QCoreApplication.translate("SettingNew", u"0", None))
