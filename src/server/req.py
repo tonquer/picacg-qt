@@ -15,13 +15,22 @@ class ServerReq(object):
         self.method = method
         self.isParseRes = True
         self.useImgProxy = True
-        self.isUseHttps = True
+        self.isUseHttps = bool(Setting.IsUseHttps.value)
+        self.proxyUrl = ""
+        if Setting.ProxySelectIndex.value == 5:
+            host = ToolUtil.GetUrlHost(url)
+            if host in config.ApiDomain:
+                self.proxyUrl = config.ProxyApiDomain
+            elif host in config.ImageDomain:
+                self.proxyUrl = config.ProxyImgDomain
+
         if Setting.IsHttpProxy.value == 1:
             self.proxy = {"http": Setting.HttpProxy.value, "https": Setting.HttpProxy.value}
         elif Setting.IsHttpProxy.value == 3:
             self.proxy = {}
         else:
             self.proxy = {"http": None, "https": None}
+
 
     def __str__(self):
         # if Setting.LogIndex.value == 0:

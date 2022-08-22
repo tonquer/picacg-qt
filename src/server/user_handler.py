@@ -344,9 +344,9 @@ class SpeedTestHandler(object):
                 now = time.time()
                 for chunk in r.iter_content(chunk_size=1024):
                     getSize += len(chunk)
-                    # consume = time.time() - now
-                    # if consume >= 5.0:
-                    #     break
+                    consume = time.time() - now
+                    if consume >= 3.0:
+                        break
                 consume = time.time() - now
                 downloadSize = getSize / consume
                 speed = ToolUtil.GetDownloadSize(downloadSize)

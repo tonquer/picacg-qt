@@ -44,7 +44,7 @@ DatabaseUpdate3 = "https://raw.bika.life/bika-robot/picacg-database/main/version
 DatabaseDownload3 = "https://raw.bika.life/bika-robot/picacg-database/main/data3/"
 
 UpdateVersion = "v1.3.9"
-RealVersion = "v1.3.9"
+RealVersion = "v1.3.9.1"
 TimeVersion = "2022-8-14"
 
 Waifu2xVersion = "1.1.4"
@@ -78,6 +78,9 @@ ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
 ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器
 
 ImageServer3 = 'storage.wikawika.xyz'          # 分流3 使用的图片服务器
+
+ProxyApiDomain = "api.bika.life"
+ProxyImgDomain = "img.bika.life"
 
 ApiDomain = [
     "picaapi.picacomic.com",

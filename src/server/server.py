@@ -147,6 +147,7 @@ class Server(Singleton):
             request.headers["authorization"] = self.token
         if token:
             request.headers["authorization"] = token
+
         host = ToolUtil.GetUrlHost(request.url)
         if self.imageServer and host in config.ImageDomain:
             if not is_ipaddress(self.imageServer):
@@ -154,6 +155,9 @@ class Server(Singleton):
 
         if not request.isUseHttps:
             request.url = request.url.replace("https://", "http://")
+
+        if request.proxyUrl:
+            request.url = request.url.replace(host, request.proxyUrl+"/"+host)
 
         # host = ToolUtil.GetUrlHost(request.url)
         # if self.address and host in config.ApiDomain:

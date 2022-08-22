@@ -25,6 +25,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.buttonGroup.setId(self.radioButton_2, 2)
         self.buttonGroup.setId(self.radioButton_3, 3)
         self.buttonGroup.setId(self.radioButton_4, 4)
+        self.buttonGroup.setId(self.radioButton_5, 5)
         self.LoadSetting()
         self.UpdateServer()
         self.commandLinkButton.clicked.connect(self.OpenUrl)
@@ -53,6 +54,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radioButton_2.setEnabled(enabled)
         self.radioButton_3.setEnabled(enabled)
         self.radioButton_4.setEnabled(enabled)
+        self.radioButton_5.setEnabled(enabled)
         self.cdnIp.setEnabled(enabled)
         self.httpsBox.setEnabled(enabled)
 
@@ -61,27 +63,34 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.speedPingNum = 0
         self.speedTest = []
 
-        for i in range(1, 9):
+        for i in range(1, 11):
             label = getattr(self, "label" + str(i))
             label.setText("")
 
-        self.speedTest = [("", "", False, 1), ("", "", True, 2)]
+        self.speedTest = [("", "", False, False, 1), ("", "", True, False, 2)]
         i = 3
-        self.speedTest.append((config.Address[0], config.ImageServer2, False, i))
+        self.speedTest.append((config.Address[0], config.ImageServer2, False, False, i))
         i += 1
-        self.speedTest.append((config.Address[0], config.ImageServer2, True, i))
+        self.speedTest.append((config.Address[0], config.ImageServer2, True, False, i))
         i += 1
-        self.speedTest.append((config.Address[1], config.ImageServer3, False, i))
+        self.speedTest.append((config.Address[1], config.ImageServer3, False, False, i))
         i += 1
-        self.speedTest.append((config.Address[1], config.ImageServer3, True, i))
+        self.speedTest.append((config.Address[1], config.ImageServer3, True, False, i))
         i += 1
 
         PreferCDNIP = self.cdnIp.text()
         if PreferCDNIP:
-            self.speedTest.append((PreferCDNIP, PreferCDNIP, False, i))
+            self.speedTest.append((PreferCDNIP, PreferCDNIP, False, False, i))
             i += 1
-            self.speedTest.append((PreferCDNIP, PreferCDNIP, True, i))
+            self.speedTest.append((PreferCDNIP, PreferCDNIP, True, False, i))
             i += 1
+        else:
+            i += 2
+
+        self.speedTest.append(("", "", False, True, i))
+        i += 1
+        self.speedTest.append(("", "", True, True, i))
+        i += 1
 
         self.SetEnabled(False)
         self.StartSpeedPing()
@@ -90,7 +99,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         if len(self.speedTest) <= self.speedPingNum:
             self.StartSpeedTest()
             return
-        address, imageProxy, isHttpProxy, i = self.speedTest[self.speedPingNum]
+        address, imageProxy, isHttpProxy, isProxyUrl, i = self.speedTest[self.speedPingNum]
         httpProxy = self.httpLine.text()
         if isHttpProxy and (self.buttonGroup_2.checkedId() == 0 or
                             (self.buttonGroup_2.checkedId() == 1 and not self.httpLine.text()) or
@@ -110,6 +119,11 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             request.proxy = ""
         else:
             request.proxy = {"http": None, "https": None}
+
+        if isProxyUrl:
+            request.proxyUrl = config.ProxyApiDomain
+        else:
+            request.proxyUrl = ""
 
         if isHttpProxy and self.buttonGroup_2.checkedId() == 2:
             self.SetSock5Proxy(True)
@@ -138,7 +152,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.SetEnabled(True)
             return
 
-        address, imageProxy, isHttpProxy, i = self.speedTest[self.speedIndex]
+        address, imageProxy, isHttpProxy, isProxyUrl, i = self.speedTest[self.speedIndex]
         httpProxy = self.httpLine.text()
         if isHttpProxy and (self.buttonGroup_2.checkedId() == 0 or
                             (self.buttonGroup_2.checkedId() == 1 and not self.httpLine.text()) or
@@ -155,6 +169,11 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             request.proxy = {"http": httpProxy, "https": httpProxy}
         else:
             request.proxy = ""
+
+        if isProxyUrl:
+            request.proxyUrl = config.ProxyImgDomain
+        else:
+            request.proxyUrl = ""
 
         if isHttpProxy and self.buttonGroup_2.checkedId() == 2:
             self.SetSock5Proxy(True)
@@ -203,6 +222,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         elif Setting.ProxySelectIndex.value == 3:
             imageServer = config.ImageServer3
             address = config.Address[1]
+        elif Setting.ProxySelectIndex.value == 5:
+            imageServer = ""
+            address = ""
         else:
             imageServer = Setting.PreferCDNIP.value
             address = Setting.PreferCDNIP.value

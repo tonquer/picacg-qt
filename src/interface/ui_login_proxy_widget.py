@@ -241,6 +241,29 @@ class Ui_LoginProxyWidget(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.radioButton_5 = QRadioButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.radioButton_5)
+        self.radioButton_5.setObjectName(u"radioButton_5")
+
+        self.horizontalLayout_13.addWidget(self.radioButton_5)
+
+        self.label9 = QLabel(self.scrollAreaWidgetContents)
+        self.label9.setObjectName(u"label9")
+        self.label9.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_13.addWidget(self.label9)
+
+        self.label10 = QLabel(self.scrollAreaWidgetContents)
+        self.label10.setObjectName(u"label10")
+        self.label10.setAlignment(Qt.AlignCenter)
+
+        self.horizontalLayout_13.addWidget(self.label10)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_13)
+
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.radioButton_4 = QRadioButton(self.scrollAreaWidgetContents)
@@ -335,6 +358,12 @@ class Ui_LoginProxyWidget(object):
         self.radioButton_3.setText(QCoreApplication.translate("LoginProxyWidget", u"\u5206\u6d413", None))
         self.label5.setText("")
         self.label6.setText("")
+#if QT_CONFIG(tooltip)
+        self.radioButton_5.setToolTip(QCoreApplication.translate("LoginProxyWidget", u"\u5176\u4ed6\u5206\u6d41\u53ef\u4f7f\u7528\u65f6\uff0c\u8bf7\u4e0d\u8981\u4f7f\u7528\u8be5\u5206\u6d41", None))
+#endif // QT_CONFIG(tooltip)
+        self.radioButton_5.setText(QCoreApplication.translate("LoginProxyWidget", u"\u5206\u6d415", None))
+        self.label9.setText("")
+        self.label10.setText("")
         self.radioButton_4.setText(QCoreApplication.translate("LoginProxyWidget", u"CDN\u5206\u6d41", None))
         self.label7.setText("")
         self.label8.setText("")
