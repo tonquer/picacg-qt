@@ -43,7 +43,7 @@
    <item>
     <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>用户名</string>
+      <string>账号</string>
      </property>
     </widget>
    </item>

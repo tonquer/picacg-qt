@@ -29,11 +29,11 @@ class RegisterWidget(QtWidgets.QWidget, Ui_RegisterWidget, QtTaskBase):
     def Register(self):
         if not self.buttonGroup.checkedButton():
             # QtWidgets.QMessageBox.information(self, '错误', "不能为空", QtWidgets.QMessageBox.Yes)
-            MsgLabel.ShowErrorEx(self, Str.GetStr(Str.NotSpace))
+            QtOwner().ShowError(Str.GetStr(Str.NotSpace))
             return
         if len(self.passwdEdit.text()) < 8:
             # QtWidgets.QMessageBox.information(self, '错误', "密码太短", QtWidgets.QMessageBox.Yes)
-            MsgLabel.ShowErrorEx(self, Str.GetStr(Str.PasswordShort))
+            QtOwner().ShowError(Str.GetStr(Str.PasswordShort))
             return
         birthday = self.birthdayEdit.date()
         data = {

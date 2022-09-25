@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>575</width>
     <height>440</height>
    </rect>
   </property>
@@ -60,6 +60,20 @@
          <width>75</width>
          <height>25</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>          </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="updateTime">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

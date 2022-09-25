@@ -1,6 +1,8 @@
 import base64
 import json
 import pickle
+import time
+from datetime import datetime, timedelta
 from functools import partial
 
 from PySide6.QtCore import QUrl
@@ -117,8 +119,14 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         num, timeStr, version = data
         self.curSubVersion = version
         self.curUpdateTick = ToolUtil.GetTimeTickEx(timeStr)
+
+        # curEndTime = datetime.now() - timedelta(7)
+        # newTick = int(curEndTime.timestamp())
+        # self.curUpdateTick = newTick
+
         self.localNum.setText(str(num))
         self.localTime.setText(timeStr)
+        QtOwner().searchView.UpdateTime(timeStr)
         if not self.isCheckUp:
             self.isCheckUp = True
             self.ReUpdateDatabase()
@@ -174,12 +182,26 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             return
         day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
         url = self.dbUpdateDbUrl[self.curIndex]
-        if day <= 0:
-            self.AddHttpTask(req.DownloadDatabaseReq(url, newTick), self.DownloadDataBack, backParam=(newTick, newTick))
+
+        curTime = datetime.fromtimestamp(self.curUpdateTick)
+        curFirstTime = curTime - timedelta(curTime.weekday())
+
+        nowTime = datetime.now()
+        nowFirstTIme = nowTime - timedelta(nowTime.weekday())
+
+        ## 判断是否同一周
+        if curFirstTime.date() == nowFirstTIme.date():
+            if day <= 0:
+                self.AddHttpTask(req.DownloadDatabaseReq(url, newTick), self.DownloadDataBack, backParam=(newTick, newTick))
+            else:
+                self.curSubVersion = 0
+                self.AddHttpTask(req.DownloadDatabaseReq(url, self.curUpdateTick), self.DownloadDataBack, backParam=(ToolUtil.GetCurZeroDatatime(self.curUpdateTick + 24*3600), newTick))
+            return
         else:
-            self.curSubVersion = 0
-            self.AddHttpTask(req.DownloadDatabaseReq(url, self.curUpdateTick), self.DownloadDataBack, backParam=(ToolUtil.GetCurZeroDatatime(self.curUpdateTick + 24*3600), newTick))
-        return
+            curEndTime = curTime + timedelta(7 - curTime.weekday())
+            curEndTime = datetime(curEndTime.year, curEndTime.month, curEndTime.day)
+            weekTick = int(curEndTime.timestamp())
+            self.AddHttpTask(req.DownloadDatabaseWeekReq(url, self.curUpdateTick), self.DownloadWeekDataBack, backParam=(weekTick, newTick))
 
     def DownloadDataBack(self, raw, v):
         updateTick, newTick = v
@@ -187,7 +209,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             data = raw["data"]
             if not data:
                 return
-            Log.Info("db: check update, {}->{}->{}".format(self.curUpdateTick, updateTick, newTick))
+            Log.Info("db: check update, {}->{}->{}".format(time.strftime('%Y-%m-%d', time.localtime(self.curUpdateTick)), time.strftime('%Y-%m-%d', time.localtime(updateTick)), time.strftime('%Y-%m-%d', time.localtime(newTick))))
             if len(data) <= 200:
                 Log.Info("Update code: {}".format(data))
                 return
@@ -201,6 +223,26 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 else:
                     # 全部更新
                     rawList = data.split("\r\n")
+                addData = self.ParseBookInfo(rawList)
+                self.AddSqlTask("book", (addData, updateTick, self.curSubVersion), SqlServer.TaskTypeUpdateBook)
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            self.curUpdateTick = updateTick
+            self.CheckLoadNextDayData(newTick)
+
+    def DownloadWeekDataBack(self, raw, v):
+        updateTick, newTick = v
+        try:
+            data = raw["data"]
+            if not data:
+                return
+            Log.Info("db: check week update, {}->{}->{}".format(time.strftime('%Y-%m-%d', time.localtime(self.curUpdateTick)), time.strftime('%Y-%m-%d', time.localtime(updateTick)), time.strftime('%Y-%m-%d', time.localtime(newTick))))
+            if len(data) <= 200:
+                Log.Info("Update code: {}".format(data))
+                return
+            elif data:
+                rawList = data.split("\r\n")
                 addData = self.ParseBookInfo(rawList)
                 self.AddSqlTask("book", (addData, updateTick, self.curSubVersion), SqlServer.TaskTypeUpdateBook)
         except Exception as es:

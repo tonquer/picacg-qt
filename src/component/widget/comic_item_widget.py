@@ -33,6 +33,13 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         width = baseW * rate / 100
         height = baseH * rate / 100
 
+        icon2 = QIcon()
+        icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.toolButton.setMinimumSize(QSize(0, 40))
+        self.toolButton.setFocusPolicy(Qt.NoFocus)
+        self.toolButton.setIcon(icon2)
+        self.toolButton.setIconSize(QSize(32, 32))
+
         self.picLabel.setFixedSize(width, height)
         # self.picLabel.setMinimumSize(300, 400)
         # self.picLabel.setMaximumSize(220, 308)

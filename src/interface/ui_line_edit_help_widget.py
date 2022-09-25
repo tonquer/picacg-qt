@@ -24,7 +24,7 @@ class Ui_LineEditHelp(object):
     def setupUi(self, LineEditHelp):
         if not LineEditHelp.objectName():
             LineEditHelp.setObjectName(u"LineEditHelp")
-        LineEditHelp.resize(400, 440)
+        LineEditHelp.resize(575, 440)
         self.verticalLayout_2 = QVBoxLayout(LineEditHelp)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label = QLabel(LineEditHelp)
@@ -56,6 +56,16 @@ class Ui_LineEditHelp(object):
         self.localWidget.setMinimumSize(QSize(75, 25))
 
         self.horizontalLayout_2.addWidget(self.localWidget, 0, Qt.AlignLeft)
+
+        self.label_3 = QLabel(LineEditHelp)
+        self.label_3.setObjectName(u"label_3")
+
+        self.horizontalLayout_2.addWidget(self.label_3)
+
+        self.updateTime = QLabel(LineEditHelp)
+        self.updateTime.setObjectName(u"updateTime")
+
+        self.horizontalLayout_2.addWidget(self.updateTime)
 
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -201,6 +211,8 @@ class Ui_LineEditHelp(object):
         self.label.setText(QCoreApplication.translate("LineEditHelp", u"\u8054\u60f3\u8bcd", None))
         self.label_2.setText(QCoreApplication.translate("LineEditHelp", u"\u6761\u4ef6", None))
         self.label_4.setText(QCoreApplication.translate("LineEditHelp", u"\u4f7f\u7528\u672c\u5730\u5e93", None))
+        self.label_3.setText("")
+        self.updateTime.setText("")
         self.titleLabel.setText(QCoreApplication.translate("LineEditHelp", u"\u6807\u9898", None))
         self.desLabel.setText(QCoreApplication.translate("LineEditHelp", u"\u63cf\u8ff0", None))
         self.categoryLabel.setText(QCoreApplication.translate("LineEditHelp", u"\u5206\u7c7b", None))

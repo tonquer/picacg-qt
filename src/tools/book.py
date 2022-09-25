@@ -4,6 +4,7 @@ from server import ToolUtil, Status, Log
 from server import req
 # 一张图
 from tools.singleton import Singleton
+from tools.str import Str
 
 
 class Picture(object):
@@ -97,7 +98,7 @@ class BookMgr(Singleton):
         info.title = dbBook.title
         info.author = dbBook.author
         info.description = dbBook.description
-        # info.epsCount = dbBook.epsCount
+        info.epsCount = dbBook.epsCount
         info.finished = dbBook.finished
         info.pagesCount = dbBook.pages
         info.categories = dbBook.categories
@@ -127,6 +128,8 @@ class BookMgr(Singleton):
             info = self.books.get(bookId)
             if r.message == "under review":
                 return Status.UnderReviewBook
+            elif r.message == 'unauthorized':
+                return Str.NotLogin
             info.epsCount = r.data['eps']["total"]
             page = r.data['eps']["page"]
 
@@ -145,7 +148,11 @@ class BookMgr(Singleton):
 
             for i, data2 in enumerate(r.data['eps']['docs']):
                 # index = (page -1) * limit + i
-                index = data2.get("order")-1
+                # 居然有重复的order。。。 比如'5821a1fe5f6b9a4f93ef5c6d'
+                # index = data2.get("order")-1
+
+                index = info.epsCount - info.epsLimit * (page-1) - i - 1
+
                 if index in info.epsDict:
                     epsInfo = info.epsDict[index]
                 else:

@@ -89,7 +89,7 @@
               </size>
              </property>
              <property name="text">
-              <string>用户名：</string>
+              <string>名称：</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -266,7 +266,7 @@
               <enum>Qt::LeftToRight</enum>
              </property>
              <property name="text">
-              <string>帐号：</string>
+              <string>账号：</string>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

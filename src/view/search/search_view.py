@@ -67,6 +67,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.allBox[text] = box
             self.flowLayout.addWidget(box)
 
+    def UpdateTime(self, text):
+        self.lineEdit.UpdateTime(text)
+
     def GetSelectCategory(self):
         if self.isSelectAll:
             return []

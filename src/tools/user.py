@@ -1,6 +1,7 @@
 from tools.log import Log
 from tools.singleton import Singleton
 from tools.status import Status
+from tools.str import Str
 from tools.tool import ToolUtil
 
 
@@ -112,6 +113,8 @@ class User(Singleton):
                 return Status.Ok, token
             elif backData.res.code == 400:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
+                if backData.res.error == "1004":
+                    return Status.UserError, ""
                 return Status.Error, ""
             else:
                 Log.Info("登陆失败！！！, userId:{}, code:{}, text:{}".format(self.userId, str(backData.res.code), backData.res.GetText()))
@@ -161,8 +164,15 @@ class User(Singleton):
             if backData.res.code == 200:
                 Log.Info("注册成功: {}".format(backData.res.raw.text))
                 return Status.Ok
-            else:
+            elif backData.res.code == 400:
                 Log.Info("注册失败！！！, userId:{}, msg:{}".format(self.userId, backData.res.message))
+                if backData.res.message == "email is already exist":
+                    return Str.AccountAlready
+                elif backData.res.message == "validation error":
+                    return Str.NotAdult
+
+                return Status.RegisterError
+            else:
                 return Status.RegisterError
         except Exception as es:
             Log.Error(es)

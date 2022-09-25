@@ -12,7 +12,6 @@ from tools.user import User
 from . import req
 from .server import handler
 
-
 @handler(req.InitReq)
 class InitHandler(object):
     def __call__(self, task):
@@ -196,7 +195,7 @@ class SpeedTestPingHandler(object):
         data = {"st": task.status, "data": task.res.GetText()}
         if hasattr(task.res.raw, "elapsed"):
             if task.res.raw.status_code == 401 or task.res.raw.status_code == 200:
-                data["data"] = str(task.res.raw.elapsed.total_seconds())
+                data["data"] = str(task.res.raw.elapsed.total_seconds()*1000//4)
             else:
                 data["st"] = Status.Error
                 data["data"] = "0"
@@ -270,6 +269,7 @@ class DownloadBookHandler(object):
 
 @handler(req.CheckUpdateDatabaseReq)
 @handler(req.DownloadDatabaseReq)
+@handler(req.DownloadDatabaseWeekReq)
 class DownloadDatabaseReqHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": ""}

@@ -42,6 +42,14 @@ if sys.platform == "win32" and not Setting.IsNotUseTitleBar.value:
                 self.widget.subTitle.setText(text)
                 return
 
+            def hide(self):
+                self.widget.hide()
+                return super(MainWidget, self).hide()
+
+            def show(self):
+                self.widget.show()
+                return super(MainWidget, self).show()
+
         Main = MainWidget
         MainType = 2
     except Exception as es:

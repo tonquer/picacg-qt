@@ -18,7 +18,7 @@ class Str:
     Load = 1002            # "加载"
     Error = 1003           # "错误"
     WaitLoad = 1004        # "等待"
-    NetError = 1005        # "网络错误，请检查代理设置"
+    NetError = 1005        # "网络错误"
     UserError = 1006       # "用户名密码错误"
     RegisterError = 1007   # "注册失败"
     UnKnowError = 1008     # "未知错误，"
@@ -42,6 +42,8 @@ class Str:
     DownloadFail = 1026      # "下载失败"
     OfflineModel = 1027      # "离线模式中"
     NotDownload = 1028       # "未下载"
+    AccountAlready = 1029    # "账号已被注册"
+    NotAdult = 1030          # "未成年禁止注册"
 
     Success = 2001         # "下载完成"
     Reading = 2002         # "获取信息"
@@ -205,6 +207,8 @@ class Str:
     Copy = 137  # 复制
     CopyPicture = 138  # 复制图片到剪贴板
     CopyFile = 139     # 保存文件
+    MainUi = 140     # 主界面
+    ShowMin = 141     # 最小化
 
     @classmethod
     def Reload(cls):
@@ -214,7 +218,7 @@ class Str:
         cls.strDict[cls.Load] = QCoreApplication.translate("cls.obj",  "加载", None)
         cls.strDict[cls.Error] = QCoreApplication.translate("cls.obj",  "错误", None)
         cls.strDict[cls.WaitLoad] = QCoreApplication.translate("cls.obj",  "等待", None)
-        cls.strDict[cls.NetError] = QCoreApplication.translate("cls.obj",  "网络错误，请检查代理设置", None)
+        cls.strDict[cls.NetError] = QCoreApplication.translate("cls.obj",  "网络错误", None)
         cls.strDict[cls.UserError] = QCoreApplication.translate("cls.obj",  "用户名密码错误", None)
         cls.strDict[cls.RegisterError] = QCoreApplication.translate("cls.obj",  "注册失败", None)
         cls.strDict[cls.UnKnowError] = QCoreApplication.translate("cls.obj",  "未知错误", None)
@@ -238,6 +242,8 @@ class Str:
         cls.strDict[cls.DownloadFail] = QCoreApplication.translate("cls.obj", "下载失败", None)
         cls.strDict[cls.OfflineModel] = QCoreApplication.translate("cls.obj", "离线模式中", None)
         cls.strDict[cls.NotDownload] = QCoreApplication.translate("cls.obj", "未下载", None)
+        cls.strDict[cls.AccountAlready] = QCoreApplication.translate("cls.obj", "账号已被注册", None)
+        cls.strDict[cls.NotAdult] = QCoreApplication.translate("cls.obj", "未成年禁止注册", None)
 
         cls.strDict[cls.LoadingPicture] = QCoreApplication.translate("cls.obj",  "图片加载中...", None)
         cls.strDict[cls.LoadingFail] = QCoreApplication.translate("cls.obj",  "图片加载失败", None)
@@ -398,6 +404,8 @@ class Str:
         cls.strDict[cls.Copy] = QCoreApplication.translate("cls.obj", "复制", None)
         cls.strDict[cls.CopyPicture] = QCoreApplication.translate("cls.obj", "复制图片到剪贴板", None)
         cls.strDict[cls.CopyFile] = QCoreApplication.translate("cls.obj", "保存文件", None)
+        cls.strDict[cls.MainUi] = QCoreApplication.translate("cls.obj", "主界面", None)
+        cls.strDict[cls.ShowMin] = QCoreApplication.translate("cls.obj", "最小化", None)
 
     @classmethod
     def GetStr(cls, enumType):

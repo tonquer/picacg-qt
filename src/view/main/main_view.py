@@ -5,7 +5,9 @@ from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QFont
 from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
 
 from component.dialog.loading_dialog import LoadingDialog
+from component.dialog.show_close_dialog import ShowCloseDialog
 from component.label.msg_label import MsgLabel
+from component.system_tray_icon.my_system_tray_icon import MySystemTrayIcon
 from component.widget.main_widget import Main
 from config import config
 from config.setting import Setting
@@ -62,6 +64,9 @@ class MainView(Main, QtTaskBase):
 
         self.searchView.searchTab.hide()
         self.searchView2.searchWidget.hide()
+        self.myTrayIcon = MySystemTrayIcon()
+        self.myTrayIcon.show()
+        # self.myTrayIcon.hide()
         # self.readView.LoadSetting()
         # QApplication.instance().installEventFilter(self)
         # QtOwner().app.paletteChanged.connect(self.CheckPaletteChanged)
@@ -294,6 +299,27 @@ class MainView(Main, QtTaskBase):
             self.readView.Close()
             a0.ignore()
             return
+
+        if not self.isHidden():
+            if Setting.ShowCloseType.value == 1 and QtOwner().closeType == 1:
+                QtOwner().app.setQuitOnLastWindowClosed(False)
+                self.myTrayIcon.show()
+                self.hide()
+                a0.ignore()
+                return
+            # if not Setting.IsNotShowCloseTip.value and QtOwner().closeType == 1:
+                # log = ShowCloseDialog(QtOwner().owner)
+                # log.show()
+                # log.LoadSetting()
+                # a0.ignore()
+                # return
+
+            # if  Setting.ShowCloseType.value == 2:
+            #     self.myTrayIcon.show()
+            #     self.hide()
+            #     a0.ignore()
+            #     return
+        QtOwner().app.setQuitOnLastWindowClosed(True)
         super().closeEvent(a0)
         # reply = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('提示'), self.tr('确定要退出吗？'))
         self.GetExitScreen()

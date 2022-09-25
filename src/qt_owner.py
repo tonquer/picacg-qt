@@ -17,6 +17,7 @@ class QtOwner(Singleton):
         self.backSock = None
         self.isUseDb = True
         self.isOfflineModel = False
+        self.closeType = 1   # 1普通， 2关闭弹窗触发， 3任务栏触发
 
     # db不可使用
     def SetDbError(self):

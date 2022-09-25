@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime, timedelta
 from urllib.parse import quote
 
 from config import config
@@ -20,8 +21,10 @@ class ServerReq(object):
         if Setting.ProxySelectIndex.value == 5:
             host = ToolUtil.GetUrlHost(url)
             if host in config.ApiDomain:
+                self.headers.pop("user-agent")
                 self.proxyUrl = config.ProxyApiDomain
             elif host in config.ImageDomain:
+                self.headers.pop("user-agent")
                 self.proxyUrl = config.ProxyImgDomain
 
         if Setting.IsHttpProxy.value == 1:
@@ -365,6 +368,27 @@ class DownloadDatabaseReq(ServerReq):
         import time
         day = time.strftime('%Y-%m-%d', time.localtime(tick))
         url = url + day + ".data"
+        method = "GET"
+        header = {
+            "Pragma": "No-cache",
+            "Cache-Control": "no-cache",
+            "Expires": '0'
+        }
+        super(self.__class__, self).__init__(url, header, {}, method)
+        self.isParseRes = False
+        self.useImgProxy = False
+
+
+# 下载
+class DownloadDatabaseWeekReq(ServerReq):
+    def __init__(self, url, tick):
+        import time
+        curTime = datetime.fromtimestamp(tick)
+        curEndTime = curTime + timedelta(6-curTime.weekday())
+        newTick = curEndTime.timestamp()
+
+        day = time.strftime('%Y-%m-%d', time.localtime(newTick))
+        url = url +"week/"+ day + "_week.data"
         method = "GET"
         header = {
             "Pragma": "No-cache",

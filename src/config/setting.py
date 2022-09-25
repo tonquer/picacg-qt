@@ -88,6 +88,9 @@ class Setting:
     FontSize = SettingValue("GeneraSetting", "", True)
     FontStyle = SettingValue("GeneraSetting", 0, True)
 
+    IsNotShowCloseTip = SettingValue("GeneraSetting", 0, False)
+    ShowCloseType = SettingValue("GeneraSetting", 0, False)
+
     # 代理设置
     IsHttpProxy = SettingValue("ProxySetting", 0, False, ["", "Http", "Sock5", "system"])
     HttpProxy = SettingValue("ProxySetting", "", False)
@@ -139,6 +142,7 @@ class Setting:
     SavePassword = SettingValue("Other", 1, False)
     IsShowCmd = SettingValue("Other", 0, False)
     IsGrabGesture: SettingValue = SettingValue("Other", 0, True)
+    IsShowProxy5 = SettingValue("Other", 0, False)
 
     @staticmethod
     def InitLoadSetting():

@@ -42,6 +42,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.mainScaleGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ScaleLevel))
         self.proxyGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.IsHttpProxy))
         self.saveNameGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.SaveNameType))
+        self.showCloseButtonGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ShowCloseType))
 
         # CheckButton:
         self.checkBox_IsUpdate.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUpdate, self.checkBox_IsUpdate))
@@ -52,6 +53,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
         self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotUseTitleBar, self.titleBox))
         self.grabGestureBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsGrabGesture, self.grabGestureBox))
+        # self.isShowClose.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotShowCloseTip, self.isShowClose))
 
         # LineEdit:
         self.httpEdit.editingFinished.connect(partial(self.LineEditEvent, Setting.HttpProxy, self.httpEdit))
@@ -194,6 +196,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.SetRadioGroup("mainScaleButton", Setting.ScaleLevel.value)
         self.SetRadioGroup("proxy", Setting.IsHttpProxy.value)
         self.SetRadioGroup("saveNameButton", Setting.SaveNameType.value)
+        self.SetRadioGroup("showCloseButton", Setting.ShowCloseType.value)
         self.coverSize.setValue(Setting.CoverSize.value)
         self.categorySize.setValue(Setting.CategorySize.value)
         self.SetRadioGroup("logutton", Setting.LogIndex.value)
@@ -202,6 +205,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.chatProxy.setChecked(Setting.ChatProxy.value)
         self.titleBox.setChecked(Setting.IsNotUseTitleBar.value)
         self.grabGestureBox.setChecked(Setting.IsGrabGesture.value)
+        # self.isShowClose.setChecked(Setting.IsNotShowCloseTip.value)
         for index in range(self.encodeSelect.count()):
             if Setting.SelectEncodeGpu.value == self.encodeSelect.itemText(index):
                 self.encodeSelect.setCurrentIndex(index)
@@ -239,6 +243,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         loginView.tabWidget.removeTab(0)
         loginView.tabWidget.removeTab(0)
         loginView.tabWidget.removeTab(0)
+        loginView.loginButton.setText(Str.GetStr(Str.Save))
         loginView.show()
 
         loginView.closed.connect(QtOwner().owner.navigationWidget.UpdateProxyName)

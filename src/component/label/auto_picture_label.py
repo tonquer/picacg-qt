@@ -74,8 +74,8 @@ class AutoPictureLabel(QLabel):
             newPic = pic.scaled(width*radio, height*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.setPixmap(newPic)
             self.setScaledContents(True)
-            widget = data.width() // max(1, data.devicePixelRatioF())
-            height = data.height()//max(1, data.devicePixelRatioF())
+            widget = newPic.width() // max(1, newPic.devicePixelRatioF())
+            height = newPic.height()//max(1, newPic.devicePixelRatioF())
             self.setFixedWidth(widget)
             self.setFixedHeight(height)
 

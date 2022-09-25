@@ -65,6 +65,10 @@ class SearchLineEdit(QLineEdit):
     def SetWordData(self, data):
         self.words = data
 
+    def UpdateTime(self, text):
+        self.help.updateTime.setText(text)
+        return
+
     def SetCacheWord(self):
         SqlServer().SetCacheWord(self.cacheWords)
         self.model.setStringList(self.cacheWords)

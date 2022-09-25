@@ -69,6 +69,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
     def UpdateProxyName(self):
         if Setting.ProxySelectIndex.value == 4:
             self.proxyName.setText("CDN_{}".format(Setting.PreferCDNIP.value))
+        elif Setting.ProxySelectIndex.value == 5:
+            self.proxyName.setText("JP反代分流")
         else:
             self.proxyName.setText("分流{}".format(str(Setting.ProxySelectIndex.value)))
 

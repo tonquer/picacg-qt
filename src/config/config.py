@@ -43,9 +43,9 @@ DatabaseDownload2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/dat
 DatabaseUpdate3 = "https://raw.bika.life/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload3 = "https://raw.bika.life/bika-robot/picacg-database/main/data3/"
 
-UpdateVersion = "v1.3.9"
-RealVersion = "v1.3.9.1"
-TimeVersion = "2022-8-14"
+UpdateVersion = "v1.4.0"
+RealVersion = "v1.4.0"
+TimeVersion = "2022-9-25"
 
 Waifu2xVersion = "1.1.4"
 

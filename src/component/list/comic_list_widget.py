@@ -81,7 +81,7 @@ class ComicListWidget(BaseListWidget):
         pagesCount = v.get("pagesCount")
         self.AddBookItem(_id, title, categoryStr, url, path, likesCount, "", pagesCount, finished)
 
-    def AddBookItemByBook(self, v, isShowHistory=False):
+    def AddBookItemByBook(self, v, isShowHistory=False, isShowToolButton=False):
         title = v.title
         url = v.fileServer
         path = v.path
@@ -95,8 +95,11 @@ class ComicListWidget(BaseListWidget):
         if isShowHistory:
             info = QtOwner().owner.historyView.GetHistory(_id)
             if info:
+                if v.epsCount > info.epsId:
+                    isShowToolButton = True
+
                 categories = Str.GetStr(Str.LastLook) + str(info.epsId + 1) + Str.GetStr(Str.Chapter) + "/" + str(v.epsCount) + Str.GetStr(Str.Chapter)
-        self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished)
+        self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished, isShowToolButton=isShowToolButton)
 
     def AddBookItemByHistory(self, v):
         _id = v.bookId
@@ -106,7 +109,7 @@ class ComicListWidget(BaseListWidget):
         categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.tick), Str.GetStr(Str.Looked))
         self.AddBookItem(_id, title, categories, url, path)
 
-    def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished=""):
+    def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished="", isShowToolButton=False):
         index = self.count()
         widget = ComicItemWidget()
         widget.setFocusPolicy(Qt.NoFocus)
@@ -118,6 +121,8 @@ class ComicListWidget(BaseListWidget):
             widget.path = ToolUtil.GetRealPath(_id, "cover")
 
         widget.index = index
+        if not isShowToolButton:
+            widget.toolButton.hide()
         widget.categoryLabel.setText(categoryStr)
         if updated_at:
             dayStr = ToolUtil.GetUpdateStr(updated_at)

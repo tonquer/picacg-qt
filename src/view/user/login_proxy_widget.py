@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from PySide6 import QtWidgets
 from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
@@ -14,6 +16,7 @@ from tools.str import Str
 
 class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
     def __init__(self):
+        self.isShowProxy5 = Setting.IsShowProxy5.value
         super(self.__class__, self).__init__()
         Ui_LoginProxyWidget.__init__(self)
         QtTaskBase.__init__(self)
@@ -21,6 +24,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.speedTest = []
         self.speedIndex = 0
         self.speedPingNum = 0
+        self.pingBackNumCnt = {}
+        self.pingBackNumDict = {}
+        self.needBackNum = 0
         self.buttonGroup.setId(self.radioButton_1, 1)
         self.buttonGroup.setId(self.radioButton_2, 2)
         self.buttonGroup.setId(self.radioButton_3, 3)
@@ -34,6 +40,10 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.buttonGroup_2.setId(self.proxy_1, 1)
         self.buttonGroup_2.setId(self.proxy_2, 2)
         self.buttonGroup_2.setId(self.proxy_3, 3)
+        if not self.isShowProxy5:
+            self.radioButton_5.setEnabled(False)
+        if Setting.ProxySelectIndex.value == 5:
+            self.radioButton_5.setEnabled(True)
 
     def Init(self):
         self.LoadSetting()
@@ -57,10 +67,15 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radioButton_5.setEnabled(enabled)
         self.cdnIp.setEnabled(enabled)
         self.httpsBox.setEnabled(enabled)
+        
+        if not self.isShowProxy5:
+            self.radioButton_5.setEnabled(False)
+        else:
+            self.radioButton_5.setEnabled(enabled)
 
     def SpeedTest(self):
         self.speedIndex = 0
-        self.speedPingNum = 0
+        # self.speedPingNum = 0
         self.speedTest = []
 
         for i in range(1, 11):
@@ -93,12 +108,15 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         i += 1
 
         self.SetEnabled(False)
+        self.needBackNum = 0
+        self.speedPingNum = 0
         self.StartSpeedPing()
 
     def StartSpeedPing(self):
         if len(self.speedTest) <= self.speedPingNum:
             self.StartSpeedTest()
             return
+        # for v in self.speedTest:
         address, imageProxy, isHttpProxy, isProxyUrl, i = self.speedTest[self.speedPingNum]
         httpProxy = self.httpLine.text()
         if isHttpProxy and (self.buttonGroup_2.checkedId() == 0 or
@@ -131,25 +149,63 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.SetSock5Proxy(False)
 
         Server().UpdateDns(address, imageProxy)
-        self.AddHttpTask(lambda x: Server().TestSpeedPing(request, x), self.SpeedTestPingBack, i)
+        self.pingBackNumCnt[i] = 0
+        self.pingBackNumDict[i] = [0, 0, 0]
+        request1 = deepcopy(request)
+        request2 = deepcopy(request)
+        self.AddHttpTask(lambda x: Server().TestSpeedPing(request, x), self.SpeedTestPingBack, (i, 0))
+        self.AddHttpTask(lambda x: Server().TestSpeedPing(request1, x), self.SpeedTestPingBack, (i, 1))
+        self.AddHttpTask(lambda x: Server().TestSpeedPing(request2, x), self.SpeedTestPingBack, (i, 2))
+        self.needBackNum += 1
         return
 
-    def SpeedTestPingBack(self, raw, i):
+    def SpeedTestPingBack(self, raw, v):
+        i, backNum = v
         data = raw["data"]
         st = raw["st"]
         label = getattr(self, "label" + str(i))
         if float(data) > 0.0:
-            label.setText("<font color=#7fb80e>{}</font>".format(str(int(float(data)*500)) + "ms") + "/")
+            self.pingBackNumDict[i][backNum] = int(float(data))
+            label.setText("<font color=#7fb80e>{}</font>".format(str(int(float(data))) + "ms") + "/")
         else:
+            self.pingBackNumDict[i][backNum] = str(st)
             label.setText("<font color=#d71345>{}</font>".format(Str.GetStr(st)) + "/")
-        self.speedPingNum += 1
-        self.StartSpeedPing()
-        return
+        self.pingBackNumCnt[i] += 1
+
+        if self.pingBackNumCnt[i] >= 3:
+            sumData = 0
+            sumCnt = 0
+            sumSt = 0
+            for data in self.pingBackNumDict[i]:
+                if isinstance(data, int):
+                   sumData += data
+                   sumCnt += 1
+                else:
+                    sumSt = data
+            if sumCnt >= 1:
+                label.setText("<font color=#7fb80e>{}</font>".format(str(int(float(sumData/sumCnt))) + "ms") + "/")
+            else:
+                label.setText("<font color=#d71345>{}</font>".format(Str.GetStr(int(sumSt))) + "/")
+
+            self.speedPingNum += 1
+            self.StartSpeedPing()
+            return
+
+    def CheckShow5(self):
+        isShow = True
+        for i in range(1, 9):
+            label = getattr(self, "label" + str(i))
+            if label.text().count("7fb80e") == 2:
+                isShow = False
+        if isShow and not self.isShowProxy5:
+            self.isShowProxy5 = True
+            self.radioButton_5.setEnabled(True)
 
     def StartSpeedTest(self):
         if len(self.speedTest) <= self.speedIndex:
             self.UpdateServer()
             self.SetEnabled(True)
+            self.CheckShow5()
             return
 
         address, imageProxy, isHttpProxy, isProxyUrl, i = self.speedTest[self.speedIndex]
@@ -211,6 +267,13 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         button = getattr(self, "proxy_{}".format(int(Setting.IsHttpProxy.value)))
         button.setChecked(True)
         self.cdnIp.setText(Setting.PreferCDNIP.value)
+        if Setting.ProxySelectIndex.value == 5:
+            self.isShowProxy5 = True
+
+        if not self.isShowProxy5:
+            self.radioButton_5.setEnabled(False)
+        else:
+            self.radioButton_5.setEnabled(True)
 
     def UpdateServer(self):
         if Setting.ProxySelectIndex.value == 1:

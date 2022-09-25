@@ -2,15 +2,17 @@ import os
 import shutil
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import Qt, QTimer, QUrl
-from PySide6.QtGui import QCursor, QDesktopServices, QAction
+from PySide6.QtCore import Qt, QTimer, QUrl, QSize
+from PySide6.QtGui import QCursor, QDesktopServices, QAction, QIcon
 from PySide6.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem
 
 from config import config
 from config.setting import Setting
 from interface.ui_download import Ui_Download
 from qt_owner import QtOwner
+from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
+from tools.book import BookMgr, Book
 from tools.log import Log
 from tools.status import Status
 from tools.str import Str
@@ -53,11 +55,13 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.order = {}
         self.radioButton.setChecked(Setting.DownloadAuto.value)
         datas = self.db.LoadDownload(self)
+        self.needLoadBookID = []
         for task in datas.values():
             self.downloadDict[task.bookId] = task
             if not task.epsIds:
                 Log.Warn("not fond task, epsIds, bookId:{}, title:{}".format(task.bookId, task.title))
                 continue
+            self.needLoadBookID.append(task.bookId)
 
             rowCont = self.tableWidget.rowCount()
             task.tableRow = rowCont
@@ -146,7 +150,20 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         return os.path.join(savePath, "{:04}.{}".format(index + 1, "jpg"))
 
     def SwitchCurrent(self, **kwargs):
+        self.OpenLocalBack()
         pass
+
+    def OpenLocalBack(self):
+        if len(self.needLoadBookID) <= 0:
+            return
+        bookId = self.needLoadBookID.pop(0)
+        self.AddSqlTask("book", bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack, backParam=bookId)
+
+    def SendLocalBack(self, books, bookID):
+        task = self.downloadDict.get(bookID)
+        if task:
+            self.UpdateTableItem(task)
+        self.OpenLocalBack()
 
     def AddDownload(self, bookId, downloadIds):
         if not downloadIds:
@@ -196,10 +213,17 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.tableWidget.setItem(info.tableRow, 1, item)
 
         self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(info.GetStatusMsg()))
-        self.tableWidget.setItem(info.tableRow, 2,
-                                 QTableWidgetItem("{}/{}".format(str(info.curDownloadPic), str(info.maxDownloadPic))))
-        self.tableWidget.setItem(info.tableRow, 3,
-                                 QTableWidgetItem("{}/{}".format(str(info.curDownloadEps), str(info.epsCount))))
+
+        self.tableWidget.setItem(info.tableRow, 2, QTableWidgetItem("{}/{}".format(str(info.curDownloadPic), str(info.maxDownloadPic))))
+        bookInfo = BookMgr().GetBook(info.bookId)
+
+        item2 = QTableWidgetItem("{}/{}".format(str(info.curDownloadEps), str(info.epsCount)))
+        if isinstance(bookInfo, Book):
+            if len(info.epsIds) < bookInfo.epsCount:
+                icon2 = QIcon()
+                icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
+                item2.setIcon(icon2)
+        self.tableWidget.setItem(info.tableRow, 3, item2)
         self.tableWidget.setItem(info.tableRow, 4, QTableWidgetItem(info.speedStr))
         self.tableWidget.setItem(info.tableRow, 6, QTableWidgetItem("{}/{}".format(str(info.curConvertCnt), str(info.convertCnt))))
         self.tableWidget.setItem(info.tableRow, 7, QTableWidgetItem("{}/{}".format(str(info.curConvertEps), str(info.convertEpsCnt))))
@@ -294,6 +318,10 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                     menu.addAction(startConvertAction)
             else:
                 menu = QMenu(self.tableWidget)
+                menu.addAction(startAction)
+                menu.addAction(pauseAction)
+                menu.addAction(startConvertAction)
+                menu.addAction(pauseConvertAction)
 
             menu.addAction(removeAction)
             menu.addAction(removeFileAction)

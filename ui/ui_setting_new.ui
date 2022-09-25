@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-980</y>
+          <y>-382</y>
           <width>661</width>
-          <height>2734</height>
+          <height>2835</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -662,6 +662,50 @@
               <property name="text">
                <string>使用默认标题栏（如果标题栏出现显示异常，请勾选）</string>
               </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_17">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_21">
+            <item>
+             <widget class="QLabel" name="label_38">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>关闭设置</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="showCloseButton0">
+              <property name="text">
+               <string>关闭后退出</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">showCloseButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="showCloseButton1">
+              <property name="text">
+               <string>关闭后最小化到托盘</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">showCloseButtonGroup</string>
+              </attribute>
              </widget>
             </item>
            </layout>
@@ -2434,10 +2478,11 @@
  <connections/>
  <buttongroups>
   <buttongroup name="logGroup"/>
-  <buttongroup name="themeGroup"/>
-  <buttongroup name="mainScaleGroup"/>
   <buttongroup name="saveNameGroup"/>
-  <buttongroup name="proxyGroup"/>
+  <buttongroup name="mainScaleGroup"/>
   <buttongroup name="languageGroup"/>
+  <buttongroup name="proxyGroup"/>
+  <buttongroup name="showCloseButtonGroup"/>
+  <buttongroup name="themeGroup"/>
  </buttongroups>
 </ui>

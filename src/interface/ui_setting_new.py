@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -980, 661, 2734))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -382, 661, 2835))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -385,6 +385,35 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_4.addWidget(self.frame)
+
+        self.frame_17 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_17.setObjectName(u"frame_17")
+        self.frame_17.setFrameShape(QFrame.StyledPanel)
+        self.frame_17.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_21 = QVBoxLayout(self.frame_17)
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.label_38 = QLabel(self.frame_17)
+        self.label_38.setObjectName(u"label_38")
+        self.label_38.setFont(font1)
+
+        self.verticalLayout_21.addWidget(self.label_38)
+
+        self.showCloseButton0 = QRadioButton(self.frame_17)
+        self.showCloseButtonGroup = QButtonGroup(SettingNew)
+        self.showCloseButtonGroup.setObjectName(u"showCloseButtonGroup")
+        self.showCloseButtonGroup.addButton(self.showCloseButton0)
+        self.showCloseButton0.setObjectName(u"showCloseButton0")
+
+        self.verticalLayout_21.addWidget(self.showCloseButton0)
+
+        self.showCloseButton1 = QRadioButton(self.frame_17)
+        self.showCloseButtonGroup.addButton(self.showCloseButton1)
+        self.showCloseButton1.setObjectName(u"showCloseButton1")
+
+        self.verticalLayout_21.addWidget(self.showCloseButton1)
+
+
+        self.verticalLayout_4.addWidget(self.frame_17)
 
         self.frame_14 = QFrame(self.scrollAreaWidgetContents)
         self.frame_14.setObjectName(u"frame_14")
@@ -1322,6 +1351,9 @@ class Ui_SettingNew(object):
         self.mainScaleButton5.setText(QCoreApplication.translate("SettingNew", u"200%", None))
         self.label_30.setText(QCoreApplication.translate("SettingNew", u"\u6807\u9898\u680f\u8bbe\u7f6e\uff08\u9700\u91cd\u542f\uff09", None))
         self.titleBox.setText(QCoreApplication.translate("SettingNew", u"\u4f7f\u7528\u9ed8\u8ba4\u6807\u9898\u680f\uff08\u5982\u679c\u6807\u9898\u680f\u51fa\u73b0\u663e\u793a\u5f02\u5e38\uff0c\u8bf7\u52fe\u9009\uff09", None))
+        self.label_38.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u8bbe\u7f6e", None))
+        self.showCloseButton0.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u9000\u51fa", None))
+        self.showCloseButton1.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u6700\u5c0f\u5316\u5230\u6258\u76d8", None))
         self.label_2.setText(QCoreApplication.translate("SettingNew", u"\u5c01\u9762\u663e\u793a\u5927\u5c0f\uff08\u9ed8\u8ba4\u4e3a100%\uff09\uff1a", None))
         self.label_29.setText(QCoreApplication.translate("SettingNew", u"\u5206\u7c7b\u5c01\u9762\u5927\u5c0f\uff1a", None))
         self.label_10.setText(QCoreApplication.translate("SettingNew", u"\u65e5\u5fd7\u7b49\u7ea7\uff1a", None))
