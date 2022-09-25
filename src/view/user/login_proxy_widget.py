@@ -139,6 +139,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             request.proxy = {"http": None, "https": None}
 
         if isProxyUrl:
+            request.headers.pop("user-agent")
             request.proxyUrl = config.ProxyApiDomain
         else:
             request.proxyUrl = ""
@@ -227,6 +228,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             request.proxy = ""
 
         if isProxyUrl:
+            request.headers.pop("user-agent")
             request.proxyUrl = config.ProxyImgDomain
         else:
             request.proxyUrl = ""
