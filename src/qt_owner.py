@@ -88,6 +88,10 @@ class QtOwner(Singleton):
         return self._app()
 
     @property
+    def localServer(self):
+        return self._localServer()
+
+    @property
     def downloadView(self):
         return self.owner.downloadView
 
@@ -148,6 +152,10 @@ class QtOwner(Singleton):
     def OpenIndex(self):
         arg = {"refresh": True}
         self.owner.SwitchWidget(self.owner.indexView, **arg)
+
+    def OpenDownloadAll(self, books):
+        arg = {"books": books}
+        self.owner.SwitchWidget(self.owner.downloadAllView, **arg)
 
     def OpenSubComment(self, commentId, widget):
         # self.owner.subCommentView.SetOpenEvent(commentId, widget)
@@ -243,6 +251,9 @@ class QtOwner(Singleton):
 
     def SetApp(self, app):
         self._app = weakref.ref(app)
+
+    def SetLocalServer(self, app):
+        self._localServer = weakref.ref(app)
 
     def SetDirty(self):
         pass

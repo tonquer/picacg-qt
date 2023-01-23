@@ -13,21 +13,25 @@ class GifLabel(QLabel):
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
         # self.movie.frameChanged.connect(self.FrameChange)
 
-    def FrameChange(self):
-        currentPixmap = self.movie.currentPixmap()
-        size = currentPixmap.size()
-        radioF = self.devicePixelRatioF()
-        pixmap = QPixmap()
-        pixmap.setDevicePixelRatio(radioF)
-        self.setPixmap(pixmap)
-        return
+    # def FrameChange(self):
+    #     currentPixmap = self.movie.currentPixmap()
+    #     size = currentPixmap.size()
+    #     radioF = self.devicePixelRatioF()
+    #     pixmap = QPixmap()
+    #     pixmap.setDevicePixelRatio(radioF)
+    #     self.setPixmap(pixmap)
+    #     return
 
-    def Init(self, data):
-        self.resize(124, 124)
+    def Show(self):
+        self.move(self.parent().width()//2-self.width()//2, self.parent().height()//2-self.height()//2)
+        return self.show()
+
+    def Init(self, data, size=124):
+        self.resize(size, size)
         self.byteArray = QByteArray(data)
         self.bBuffer = QBuffer(self.byteArray)
 
-        self.movie.setFormat(QByteArray(b"GIF"))
+        # self.movie.setFormat(QByteArray(b"GIF"))
 
         self.movie.setCacheMode(QMovie.CacheNone)
         self.movie.setDevice(self.bBuffer)

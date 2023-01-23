@@ -28,6 +28,7 @@ from view.comment.comment_view import CommentView
 from view.comment.game_comment_view import GameCommentView
 from view.comment.my_comment_view import MyCommentView
 from view.comment.sub_comment_view import SubCommentView
+from view.download.download_all_view import DownloadAllView
 from view.download.download_view import DownloadView
 from view.fried.fried_view import FriedView
 from view.game.game_view import GameView
@@ -151,6 +152,9 @@ class Ui_Main(object):
         self.waifu2xToolView = Waifu2xToolView()
         self.waifu2xToolView.setObjectName(u"waifu2xToolView")
         self.subStackWidget.addWidget(self.waifu2xToolView)
+        self.downloadAllView = DownloadAllView()
+        self.downloadAllView.setObjectName(u"downloadAllView")
+        self.subStackWidget.addWidget(self.downloadAllView)
         self.bookEpsView = BookEpsView()
         self.bookEpsView.setObjectName(u"bookEpsView")
         self.subStackWidget.addWidget(self.bookEpsView)

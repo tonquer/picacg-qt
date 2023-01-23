@@ -29,7 +29,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.dbUpdateUrl = [config.DatabaseUpdate2, config.DatabaseUpdate3, config.DatabaseUpdate]
+        self.dbUpdateUrl = [config.DatabaseUpdate3, config.DatabaseUpdate2, config.DatabaseUpdate]
         self.dbUpdateDbUrl = [config.DatabaseDownload2, config.DatabaseDownload3, config.DatabaseDownload]
         self.curIndex = 0
         self.curSubVersion = 0
@@ -183,10 +183,14 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
         url = self.dbUpdateDbUrl[self.curIndex]
 
-        curTime = datetime.fromtimestamp(self.curUpdateTick)
+        # 由于时区的问题，只能加上一个偏移时间
+        offset = (time.timezone if (time.localtime().tm_isdst == 0) else time.altzone) + 8*3600
+
+        curTime = datetime.fromtimestamp(self.curUpdateTick+offset)
+
         curFirstTime = curTime - timedelta(curTime.weekday())
 
-        nowTime = datetime.now()
+        nowTime = datetime.fromtimestamp(int(time.time())+offset)
         nowFirstTIme = nowTime - timedelta(nowTime.weekday())
 
         ## 判断是否同一周
@@ -195,13 +199,14 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 self.AddHttpTask(req.DownloadDatabaseReq(url, newTick), self.DownloadDataBack, backParam=(newTick, newTick))
             else:
                 self.curSubVersion = 0
-                self.AddHttpTask(req.DownloadDatabaseReq(url, self.curUpdateTick), self.DownloadDataBack, backParam=(ToolUtil.GetCurZeroDatatime(self.curUpdateTick + 24*3600), newTick))
+                self.AddHttpTask(req.DownloadDatabaseReq(url, self.curUpdateTick+offset), self.DownloadDataBack, backParam=(ToolUtil.GetCurZeroDatatime(self.curUpdateTick + 24*3600), newTick))
             return
         else:
             curEndTime = curTime + timedelta(7 - curTime.weekday())
             curEndTime = datetime(curEndTime.year, curEndTime.month, curEndTime.day)
-            weekTick = int(curEndTime.timestamp())
-            self.AddHttpTask(req.DownloadDatabaseWeekReq(url, self.curUpdateTick), self.DownloadWeekDataBack, backParam=(weekTick, newTick))
+            weekTick = int(curEndTime.timestamp()-offset)
+
+            self.AddHttpTask(req.DownloadDatabaseWeekReq(url, self.curUpdateTick+offset), self.DownloadWeekDataBack, backParam=(weekTick, newTick))
 
     def DownloadDataBack(self, raw, v):
         updateTick, newTick = v
@@ -214,7 +219,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 Log.Info("Update code: {}".format(data))
                 return
             elif data:
-                if ToolUtil.DiffDays(updateTick, self.curUpdateTick) <= 0:
+                offset = (time.timezone if (time.localtime().tm_isdst == 0) else time.altzone) + 8 * 3600
+                if ToolUtil.DiffDays(updateTick+offset, self.curUpdateTick+offset) <= 0:
                     # 分割数据
                     dataList = data.split("\r\n")
                     dataList = list(filter(lambda data: data != "", dataList))

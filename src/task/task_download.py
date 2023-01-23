@@ -21,6 +21,7 @@ class QtDownloadTask(object):
     Success = Str.Success
     Error = Str.Error
     Cache = Str.Cache
+    SpaceEps = Str.SpaceEps
 
     def __init__(self, downloadId=0):
         self.downloadId = downloadId
@@ -247,6 +248,11 @@ class TaskDownload(TaskBase, QtTaskBase):
 
                 epsInfo = info.epsDict[task.epsId]
                 assert isinstance(epsInfo, BookEps)
+
+                if epsInfo.isSpace:
+                    self.SetTaskStatus(taskId, backData, task.SpaceEps)
+                    return
+
                 if epsInfo.maxPicPages <= 0:
                     self.AddHttpTask(req.GetComicsBookOrderReq(task.bookId, task.epsId+1), self.HandlerDownload, (taskId, task.ReadingEps), task.cleanFlag)
                     return
@@ -259,12 +265,15 @@ class TaskDownload(TaskBase, QtTaskBase):
             if task.status == task.ReadingPicture:
                 epsInfo = info.epsDict[task.epsId]
                 assert isinstance(epsInfo, BookEps)
+                if epsInfo.isSpace:
+                    self.SetTaskStatus(taskId, backData, task.SpaceEps)
+                    return
+
                 backData["maxPic"] = epsInfo.maxPics
                 backData["title"] = epsInfo.title
                 backData["maxEps"] = info.epsCount
                 backData["bookName"] = info.title
                 backData["author"] = info.author
-                isReset or self.SetTaskStatus(taskId, backData, task.Downloading)
 
                 if task.isInit:
                     self.SetTaskStatus(taskId, backData, task.Success)
@@ -289,11 +298,14 @@ class TaskDownload(TaskBase, QtTaskBase):
                             if imgData:
                                 TaskBase.taskObj.downloadBack.emit(taskId, len(imgData), b"")
                                 TaskBase.taskObj.downloadBack.emit(taskId, 0, imgData)
+                                isReset or self.SetTaskStatus(taskId, backData, task.Cache)
                                 return
 
                 if task.index not in epsInfo.pics:
                     self.SetTaskStatus(taskId, backData, task.Error)
                     return
+
+                isReset or self.SetTaskStatus(taskId, backData, task.Downloading)
 
                 picInfo = epsInfo.pics[task.index]
                 assert isinstance(picInfo, Picture)
@@ -309,6 +321,7 @@ class TaskDownload(TaskBase, QtTaskBase):
 
     def SetTaskStatus(self, taskId, backData, status):
         backData["st"] = status
+        # print(status)
         self.taskObj.downloadStBack.emit(taskId, dict(backData))
         return
 
@@ -330,8 +343,12 @@ class TaskDownload(TaskBase, QtTaskBase):
         assert isinstance(task, QtDownloadTask)
         try:
             self.CallBookBack(data, task)
+            st = data.get("st")
+            if st:
+                task.status = st
+            # print("st:{} {}".format(task.status, data))
             status = task.status
-            if status == task.Downloading or status == task.Error or status == task.Cache:
+            if status == task.Downloading or status == task.Error or status == task.SpaceEps or status == task.Cache:
                 self.ClearDownloadTask(downloadId)
         except Exception as es:
             Log.Error(es)

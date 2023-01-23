@@ -19,6 +19,7 @@ class DownloadItem(QtTaskBase):
     Waiting = Str.Waiting
     Pause = Str.Pause
     Error = Str.Error
+    SpaceEps = Str.SpaceEps
 
     Converting = Str.Converting
     ConvertSuccess = Str.ConvertSuccess

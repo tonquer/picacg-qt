@@ -44,6 +44,7 @@ class Str:
     NotDownload = 1028       # "未下载"
     AccountAlready = 1029    # "账号已被注册"
     NotAdult = 1030          # "未成年禁止注册"
+    SpaceEps = 1031          # "空白章节"
 
     Success = 2001         # "下载完成"
     Reading = 2002         # "获取信息"
@@ -67,6 +68,7 @@ class Str:
     WaifuStateEnd = 3007       # "转换完成"
     WaifuStateFail = 3008      # "转换失败"
     OverResolution = 3009      # "超过设置分辨率"
+    AnimationNotAuto = 3010      # "动图不自动转换"
 
     LoadingPicture = 1     # "图片加载中..."
     LoadingFail = 2        # "图片加载失败"
@@ -209,6 +211,7 @@ class Str:
     CopyFile = 139     # 保存文件
     MainUi = 140     # 主界面
     ShowMin = 141     # 最小化
+    DownloadAll = 142            # 批量下载
 
     @classmethod
     def Reload(cls):
@@ -244,6 +247,7 @@ class Str:
         cls.strDict[cls.NotDownload] = QCoreApplication.translate("cls.obj", "未下载", None)
         cls.strDict[cls.AccountAlready] = QCoreApplication.translate("cls.obj", "账号已被注册", None)
         cls.strDict[cls.NotAdult] = QCoreApplication.translate("cls.obj", "未成年禁止注册", None)
+        cls.strDict[cls.SpaceEps] = QCoreApplication.translate("cls.obj", "空白章节", None)
 
         cls.strDict[cls.LoadingPicture] = QCoreApplication.translate("cls.obj",  "图片加载中...", None)
         cls.strDict[cls.LoadingFail] = QCoreApplication.translate("cls.obj",  "图片加载失败", None)
@@ -272,6 +276,7 @@ class Str:
         cls.strDict[cls.WaifuStateEnd] = QCoreApplication.translate("cls.obj",  "转换完成", None)
         cls.strDict[cls.WaifuStateFail] = QCoreApplication.translate("cls.obj",  "转换失败", None)
         cls.strDict[cls.OverResolution] = QCoreApplication.translate("cls.obj",  "超过设置分辨率", None)
+        cls.strDict[cls.AnimationNotAuto] = QCoreApplication.translate("cls.obj",  "动图不自动转换", None)
 
         cls.strDict[cls.Menu] = QCoreApplication.translate("cls.obj",  "菜单", None)
         cls.strDict[cls.FullSwitch] = QCoreApplication.translate("cls.obj",  "全屏切换", None)
@@ -406,6 +411,7 @@ class Str:
         cls.strDict[cls.CopyFile] = QCoreApplication.translate("cls.obj", "保存文件", None)
         cls.strDict[cls.MainUi] = QCoreApplication.translate("cls.obj", "主界面", None)
         cls.strDict[cls.ShowMin] = QCoreApplication.translate("cls.obj", "最小化", None)
+        cls.strDict[cls.DownloadAll] = QCoreApplication.translate("cls.obj", "批量下载", None)
 
     @classmethod
     def GetStr(cls, enumType):

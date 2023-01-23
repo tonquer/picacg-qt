@@ -31,8 +31,8 @@ UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
 UpdateUrl2 = "https://hub.fastgit.xyz/tonquer/picacg-qt/releases/latest"
 UpdateUrl2Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
-UpdateUrl3 = "https://raw.bika.life/tonquer/picacg-qt/releases/latest"
-UpdateUrl3Back = "https://raw.bika.life/tonquer/picacg-qt"
+UpdateUrl3 = "https://hub.ggo.icu/tonquer/picacg-qt/releases/latest"
+UpdateUrl3Back = "https://hub.ggo.icu/tonquer/picacg-qt"
 
 DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
@@ -40,12 +40,12 @@ DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database
 DatabaseUpdate2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/data3/"
 
-DatabaseUpdate3 = "https://raw.bika.life/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload3 = "https://raw.bika.life/bika-robot/picacg-database/main/data3/"
+DatabaseUpdate3 = "https://raw.ggo.icu/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload3 = "https://raw.ggo.icu/bika-robot/picacg-database/main/data3/"
 
-UpdateVersion = "v1.4.0"
-RealVersion = "v1.4.0"
-TimeVersion = "2022-9-25"
+UpdateVersion = "v1.4.1"
+RealVersion = "v1.4.1"
+TimeVersion = "2023-1-23"
 
 Waifu2xVersion = "1.1.4"
 
@@ -72,15 +72,15 @@ ProxyUrl = "https://github.com/tonquer/picacg-qt/discussions/48"
 # Waifu2x相关
 Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 
-Address = ['104.20.181.50', '104.20.180.50']  # 分类2，3 Ip列表
+Address = ["104.22.64.159",  "104.21.91.145"]  # 分类2，3 Ip列表
 
 ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
 ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器
 
-ImageServer3 = 'storage.wikawika.xyz'          # 分流3 使用的图片服务器
+ImageServer3 = 'storage.diwodiwo.xyz'          # 分流3 使用的图片服务器
 
-ProxyApiDomain = "api.bika.life"
-ProxyImgDomain = "img.bika.life"
+ProxyApiDomain = "bika-api.ggo.icu"
+ProxyImgDomain = "bika-img.ggo.icu"
 
 ApiDomain = [
     "picaapi.picacomic.com",
@@ -89,6 +89,7 @@ ApiDomain = [
 
 ImageDomain = [
     "s3.picacomic.com",
+    "storage.diwodiwo.xyz",
     "storage1.picacomic.com",
     "img.tipatipa.xyz",
     "img.picacomic.com",

@@ -28,7 +28,7 @@ class DownloadStatus(QtTaskBase):
             self._SetTaskWait(task)
         elif status == task.Pause:
             self._SetTaskPause(task)
-        elif status == task.Error:
+        elif status == task.Error or status == task.SpaceEps:
             self._SetDownloadTaskNone(task)
         elif status == task.Downloading:
             self._SetTaskDownloading(task)
@@ -48,7 +48,7 @@ class DownloadStatus(QtTaskBase):
             self._SetTaskConvertWait(task)
         elif status == task.Pause:
             self._SetTaskConvertPause(task)
-        elif status == task.Error:
+        elif status == task.Error or status == task.SpaceEps:
             self._SetTaskConvertNone(task)
         elif status == task.Converting:
             self._SetTaskConverting(task)
@@ -205,6 +205,8 @@ class DownloadStatus(QtTaskBase):
         elif st in [Str.Reading, Str.ReadingEps, Str.ReadingPicture, Str.Downloading]:
             task.statusMsg = st
             self.UpdateTableItem(task)
+        elif st == Str.SpaceEps:
+            self.SetNewStatus(task, task.SpaceEps)
         else:
             self.SetNewStatus(task, task.Error)
         return

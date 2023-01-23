@@ -87,7 +87,7 @@ class TaskWaifu2x(TaskBase):
                 if task.loadPath:
                     data = ToolUtil.LoadCachePicture(task.loadPath)
                     if data:
-                        w, h, mat = ToolUtil.GetPictureSize(data)
+                        w, h, mat,_ = ToolUtil.GetPictureSize(data)
                         model = ToolUtil.GetDownloadScaleModel(w, h, mat)
                         task.model = model
                         task.imgData = data

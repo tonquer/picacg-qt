@@ -435,7 +435,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             data.model = model
             data.waifuData = None
             data.cacheWaifu2xImage = None
-            w, h, _ = ToolUtil.GetPictureSize(data.data)
+
+            w, h, _, isAnima = ToolUtil.GetPictureSize(data.data)
             if max(w, h) <= Setting.LookMaxNum.value:
                data.waifuState = data.WaifuWait
             else:
@@ -443,6 +444,10 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
                     data.waifuState = data.OverResolution
                 else:
                     data.waifuState = data.WaifuWait
+
+            if data._isWaifu2x == -1 and isAnima:
+                data.waifuState = data.AnimationNotAuto
+
             data.waifuDataSize = 0
             data.scaleW, data.scaleH = 0, 0
             data.waifuTick = 0

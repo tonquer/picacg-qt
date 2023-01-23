@@ -1,3 +1,4 @@
+from config import config
 from tools.log import Log
 from tools.singleton import Singleton
 from tools.status import Status
@@ -40,7 +41,7 @@ class User(Singleton):
 
         self.avatar = {}
 
-        self.addresss = ['104.20.180.50', '104.20.181.50']  # 列表
+        # self.addresss = ['104.20.180.50', '104.20.181.50']  # 列表
         self.imageServer = 'storage.wikawika.xyz'
         self.searchCache = []
 
@@ -60,10 +61,10 @@ class User(Singleton):
     def InitBack(self, backData):
         try:
             if backData.status == Status.Ok and backData.res.status == "ok":
-                if len(backData.res.addresses) > 0:
-                    self.addresss = backData.res.addresses[:]
+                if len(backData.res.addresses) >= 2:
+                    config.Address = backData.res.addresses[:]
                 #     self.address = backData.res.addresses[0]
-                Log.Info("初始化成功,  Ips:{}".format(self.addresss))
+                Log.Info("初始化成功,  Ips:{}".format(config.Address))
                 self.initRes = backData.res
                 return Status.Ok
             else:

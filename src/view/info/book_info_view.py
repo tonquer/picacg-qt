@@ -282,7 +282,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.picture.setPixmap(newPic)
             # self.picture.setScaledContents(True)
             if Setting.CoverIsOpenWaifu.value:
-                w, h, mat = ToolUtil.GetPictureSize(self.pictureData)
+                w, h, mat,_ = ToolUtil.GetPictureSize(self.pictureData)
                 if max(w, h) <= Setting.CoverMaxNum.value:
                     model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value, mat)
                     self.AddConvertTask(self.path, self.pictureData, model, self.Waifu2xPictureBack)
@@ -305,7 +305,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         if st == Status.Ok:
             self.UpdateEpsData()
             self.lastEpsId = -1
-            # self.LoadHistory()
+            self.LoadHistory()
             return
         else:
             QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
@@ -482,6 +482,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def LoadHistory(self):
         info = QtOwner().historyView.GetHistory(self.bookId)
         if not info:
+            self.lastEpsId = -1
+            self.lastIndex = 0
             self.startRead.setText(Str.GetStr(Str.LookFirst))
             return
         if self.lastEpsId == info.epsId:

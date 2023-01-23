@@ -25,6 +25,7 @@ class BookEps(object):
 
         self.curLoadPicPages = set()
         self.maxPicPages = 0
+        self.isSpace = False   # 某些章节出现了空白的问题,导致死循环了
         self.picLimit = 0
 
 
@@ -193,6 +194,10 @@ class BookMgr(Singleton):
             page = r.data['pages']["page"]
             pages = r.data['pages']["pages"]
             limit = r.data['pages']["limit"]
+
+            # 空白章节
+            if epsInfo.maxPics == 0:
+                epsInfo.isSpace = True
 
             # 重新初始化
             # if page == 1:

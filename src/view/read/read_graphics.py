@@ -3,7 +3,7 @@ import time
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect, QFile
 from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics, QWheelEvent
 from PySide6.QtWidgets import QGraphicsView, QFrame, QGraphicsItem, QGraphicsScene, \
-    QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider, QApplication
+    QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider, QApplication, QLabel
 
 from component.label.msg_label import MsgLabel
 from component.scroll.read_scroll import ReadScroll
@@ -14,6 +14,7 @@ from config.setting import Setting
 from tools.str import Str
 from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_pool import QtReadImgPoolManager
+from view.read.read_qgraphics_proxy_widget import ReadQGraphicsProxyWidget
 
 
 class ReadGraphicsView(QGraphicsView, SmoothScroll):
@@ -64,8 +65,10 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.setScene(self.graphicsScene)
         # self.graphicsScene.addItem(self.graphicsGroup)
-        self.graphicsItem1 = QGraphicsPixmapItem()
-        self.graphicsItem2 = QGraphicsPixmapItem()
+        self.graphicsItem1 = ReadQGraphicsProxyWidget()
+        self.graphicsItem1.setWidget(QLabel())
+        self.graphicsItem2 = ReadQGraphicsProxyWidget()
+        self.graphicsItem2.setWidget(QLabel())
         # self.graphicsItem1.setFlag(QGraphicsItem.ItemIsFocusable)
         # self.graphicsItem2.setFlag(QGraphicsItem.ItemIsFocusable)
 
@@ -122,15 +125,15 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     @property
     def scaleCnt(self):
         return self.readImg.frame.scaleCnt
-    
+
     def radioWidth(self):
-        return int(self.devicePixelRatioF()*self.width())
+        return int(self.devicePixelRatioF() * self.width())
 
     def radioWidthF(self):
         return self.devicePixelRatioF() * self.width()
 
     def radioHeight(self):
-        return int(self.devicePixelRatioF()*self.height())
+        return int(self.devicePixelRatioF() * self.height())
 
     def radioHeightF(self):
         return self.devicePixelRatioF() * self.height()
@@ -188,7 +191,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         #             self.parent().qtTool.LastPage()
         #             return
 
-        if self.initReadMode in [ReadMode.UpDown, ReadMode.LeftRight, ReadMode.RightLeftDouble2, ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
+        if self.initReadMode in [ReadMode.UpDown, ReadMode.LeftRight, ReadMode.RightLeftDouble2,
+                                 ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]:
             self.vScrollBar.Scroll(value, 100)
             # QScroller.scroller(self).scrollTo(QPoint(0, self.verticalScrollBar().value() + value), 500)
         else:
@@ -206,7 +210,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                     self.frame.helpLabel.hide()
                     return True
                 if ev.key() == Qt.Key_Down:
-                    self.ScrollValue(self.height()/2)
+                    self.ScrollValue(self.height() / 2)
                 elif ev.key() == Qt.Key_Up:
                     self.ScrollValue(-self.height() / 2)
                 elif ev.key() == Qt.Key_Left:
@@ -261,9 +265,9 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                                 self.ScrollLastPage()
                         elif curPos.x() <= self.width() // 3 * 2:
                             if curPos.y() <= self.height() // 2:
-                                self.ScrollValue(-self.height()/2)
+                                self.ScrollValue(-self.height() / 2)
                             else:
-                                self.ScrollValue(self.height()/2)
+                                self.ScrollValue(self.height() / 2)
                         else:
                             if curPos.y() <= self.height() // 2:
                                 self.readImg.ShowAndCloseTool()
@@ -302,7 +306,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             return
 
         curPictureSize = self.labelSize.get(self.readImg.curIndex)
-        nextPictureSize = self.labelSize.get(self.readImg.curIndex+1, 0)
+        nextPictureSize = self.labelSize.get(self.readImg.curIndex + 1, 0)
         if self.initReadMode == ReadMode.RightLeftScroll:
             while True:
                 newValue = value + self.width()
@@ -415,7 +419,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             self.horizontalScrollBar().setMaximum(self.width())
         elif ReadMode.isDouble(self.initReadMode):
             self.graphicsItem1.setPos(0, 0)
-            self.graphicsItem2.setPos(self.width()//2, 0)
+            self.graphicsItem2.setPos(self.width() // 2, 0)
             self.graphicsScene.addItem(self.graphicsItem1)
             self.graphicsScene.addItem(self.graphicsItem2)
             self.horizontalScrollBar().setMaximum(self.width())
@@ -439,13 +443,15 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             self.GetScrollBar().setMaximum(maxSize)
             self.GetOtherScrollBar().setMaximum(0)
         elif self.initReadMode in [ReadMode.UpDown]:
-            maxSize = max(self.height(), self.labelSize.get(maxNum, 0)-self.height()) + 50
+            maxSize = max(self.height(), self.labelSize.get(maxNum, 0) - self.height()) + 50
             self.graphicsScene.setSceneRect(0, 0, self.width(), maxSize)
             self.GetScrollBar().setMaximum(maxSize)
             self.GetOtherScrollBar().setMaximum(0)
         else:
-            self.graphicsScene.setSceneRect(0, 0, self.width(), max(self.height(), self.graphicsItem1.pixmap().height()//self.graphicsItem1.pixmap().devicePixelRatio()))
-            self.verticalScrollBar().setMaximum(max(0, self.graphicsItem1.pixmap().height()//self.graphicsItem1.pixmap().devicePixelRatio()- self.height()))
+            self.graphicsScene.setSceneRect(0, 0, self.width(), max(self.height(),
+                                                                    self.graphicsItem1.pixmap().height() // self.graphicsItem1.pixmap().devicePixelRatio()))
+            self.verticalScrollBar().setMaximum(max(0,
+                                                    self.graphicsItem1.pixmap().height() // self.graphicsItem1.pixmap().devicePixelRatio() - self.height()))
             self.horizontalScrollBar().setMaximum(0)
 
     def ResetLabelSize(self, size):
@@ -461,7 +467,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             if labelIndex:
                 for lenSize, i in enumerate(labelIndex):
                     self.labelSize[i] = height
-                    if lenSize == len(labelIndex)-1:
+                    if lenSize == len(labelIndex) - 1:
                         continue
 
                     proxy = self.allItems[i]
@@ -469,12 +475,12 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                         if isinstance(proxy, QGraphicsProxyWidget):
                             height += proxy.widget().height()
                         else:
-                            height += proxy.pixmap().height()//proxy.pixmap().devicePixelRatio()
+                            height += proxy.pixmap().height() // proxy.pixmap().devicePixelRatio()
                     else:
                         if isinstance(proxy, QGraphicsProxyWidget):
                             height += proxy.widget().width()
                         else:
-                            height += proxy.pixmap().width()//proxy.pixmap().devicePixelRatio()
+                            height += proxy.pixmap().width() // proxy.pixmap().devicePixelRatio()
 
         self.ResetMaxNum()
 
@@ -498,13 +504,14 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         if index >= self.maxPic:
             text = "End"
         else:
-            text = str(index+1)
+            text = str(index + 1)
         font = QFont()
         font.setPointSize(64)
         fm = QFontMetrics(font)
         p = QPixmap(self.radioWidth(), self.radioHeight())
         p.setDevicePixelRatio(self.devicePixelRatio())
-        rect = QRect(self.width()//2, self.height()//2 - fm.height()//2, self.width()//2, self.height()//2+fm.height()//2)
+        rect = QRect(self.width() // 2, self.height() // 2 - fm.height() // 2, self.width() // 2,
+                     self.height() // 2 + fm.height() // 2)
         p.fill(Qt.transparent)
         painter = QPainter(p)
         painter.setFont(font)
@@ -526,15 +533,18 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                     raise
                 label = newProxy.widget()
                 # label.setPixmap(QPixmap())
-                text = str(index+1)
+                text = str(index + 1)
                 font = QFont()
                 font.setPointSize(64)
                 label.setAlignment(Qt.AlignCenter)
                 label.setFont(font)
                 label.setText(text)
-                label.resize(proxy.pixmap().width()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().height()//proxy.pixmap().devicePixelRatio())
-                newProxy.widget().setMinimumSize(proxy.pixmap().width()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().height()//proxy.pixmap().devicePixelRatio())
-                newProxy.widget().setMaximumSize(proxy.pixmap().width()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().height()//proxy.pixmap().devicePixelRatio())
+                label.resize(proxy.pixmap().width() // proxy.pixmap().devicePixelRatio(),
+                             proxy.pixmap().height() // proxy.pixmap().devicePixelRatio())
+                newProxy.widget().setMinimumSize(proxy.pixmap().width() // proxy.pixmap().devicePixelRatio(),
+                                                 proxy.pixmap().height() // proxy.pixmap().devicePixelRatio())
+                newProxy.widget().setMaximumSize(proxy.pixmap().width() // proxy.pixmap().devicePixelRatio(),
+                                                 proxy.pixmap().height() // proxy.pixmap().devicePixelRatio())
                 newProxy.setPos(oldPox)
                 # print(index, newProxy.widget().width(), newProxy.widget().height())
                 self.graphicsScene.addItem(newProxy)
@@ -546,32 +556,40 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     def LabelToPixmap(self, index):
         proxy = self.GetLabel(index)
         if self.initReadMode in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
-            if isinstance(proxy, QGraphicsProxyWidget):
-                oldHeight, oldWidth = proxy.widget().height(), proxy.widget().width()
-                oldPox = proxy.pos()
-                self.graphicsScene.removeItem(proxy)
-                newProxy = QtReadImgPoolManager().GetPixMapItem()
-
-                assert isinstance(newProxy, QGraphicsPixmapItem)
-                newProxy.setPos(oldPox)
-                self.graphicsScene.addItem(newProxy)
-                self.allItems[index] = newProxy
-                QtReadImgPoolManager().AddProxyItem(proxy)
-                return oldHeight, oldWidth
-            else:
-                return proxy.pixmap().height()//proxy.pixmap().devicePixelRatio(), proxy.pixmap().width()//proxy.pixmap().devicePixelRatio()
-        elif (self.initReadMode == ReadMode.RightLeftDouble and index == self.readImg.curIndex)or (self.initReadMode == ReadMode.RightLeftDouble2 and index == self.readImg.curIndex) or (self.initReadMode == ReadMode.LeftRightDouble and index != self.readImg.curIndex):
+            return proxy.height(), proxy.width()
+        elif (self.initReadMode == ReadMode.RightLeftDouble and index == self.readImg.curIndex) or (
+                        self.initReadMode == ReadMode.RightLeftDouble2 and index == self.readImg.curIndex) or (
+                             self.initReadMode == ReadMode.LeftRightDouble and index != self.readImg.curIndex):
             self.graphicsItem2.pixmap().height(), self.graphicsItem2.pixmap().width()
         return self.graphicsItem1.pixmap().height(), self.graphicsItem1.pixmap().width()
 
     def ClearPixItem(self):
         self.SetPixIem(self.readImg.curIndex, None)
-        if self.readImg.curIndex+1 < self.readImg.maxPic:
-            self.SetPixIem(self.readImg.curIndex+1, None)
+        if self.readImg.curIndex + 1 < self.readImg.maxPic:
+            self.SetPixIem(self.readImg.curIndex + 1, None)
+        return
+
+    def SetGifData(self, index, data, width, height):
+        if not self.allItems and self.readImg.stripModel in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll]:
+            return
+        if not data:
+            return
+        label = self.GetLabel(index)
+
+        oldPos = label.pos()
+        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height())
+
+        scale = min(toW / width, toH / height)
+        label.setScale(scale)
+        label.SetGifData(data, width, height)
+
+        pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), label.width()*scale, label.height()*scale, index, self.readImg.curIndex, oldPos)
+        label.setPos(pos)
         return
 
     def SetPixIem(self, index, data, isWaifu2x=False):
-        if not self.allItems and self.readImg.stripModel in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll]:
+        if not self.allItems and self.readImg.stripModel in [ReadMode.UpDown, ReadMode.LeftRightScroll,
+                                                             ReadMode.RightLeftScroll]:
             return
         if not data:
             self.labelWaifu2xState[index] = isWaifu2x
@@ -594,15 +612,17 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         oldPos = label.pos()
         radio = data.devicePixelRatio()
         toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height())
-        newData = data.scaled(toW*radio, toH*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), newData.width()/radio, newData.height()//radio, index, self.readImg.curIndex, oldPos)
+        newData = data.scaled(toW * radio, toH * radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), newData.width() / radio,
+                                      newData.height() // radio, index, self.readImg.curIndex, oldPos)
         # print(index, pos, radio, newData.size(), self.size())
         label.setPos(pos)
         label.setPixmap(newData)
+        # print("pos:{}, pos:{} {} {}".format(pos, self.graphicsItem1.pos(), self.graphicsItem1.widget().devicePixelRatioF(), self.graphicsItem1.widget().size()))
         if self.initReadMode == ReadMode.UpDown:
-            self.UpdateOtherHeight(index, oldHeight, label.pixmap().height()//radio)
+            self.UpdateOtherHeight(index, oldHeight, label.pixmap().height() // radio)
         else:
-            self.UpdateOtherHeight(index, oldWidth, label.pixmap().width()//radio)
+            self.UpdateOtherHeight(index, oldWidth, label.pixmap().width() // radio)
 
     def UpdateOtherHeight(self, index, oldHeight, height):
         # 修改了图片导致label长宽变化，重新计算
@@ -613,7 +633,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         oldValue = self.GetScrollBar().value()
 
         if self.initReadMode == ReadMode.RightLeftScroll:
-            indexList = list(range(index-1, -1, -1))
+            indexList = list(range(index - 1, -1, -1))
             indexList.append(-1)
             # TODO 需要重新定位
             curPixcurSize = self.labelSize.get(index)
@@ -622,7 +642,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 self.oldValue = self.GetScrollBar().value()
 
         elif self.initReadMode in [ReadMode.LeftRightScroll, ReadMode.UpDown]:
-            indexList = list(range(index+1, self.readImg.maxPic))
+            indexList = list(range(index + 1, self.readImg.maxPic))
             indexList.append(self.readImg.maxPic)
             curPixcurSize = self.labelSize.get(index)
             # TODO 需要重新定位
@@ -645,13 +665,15 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             if self.initReadMode == ReadMode.UpDown:
                 if isinstance(proxy, QGraphicsPixmapItem):
                     radio = proxy.pixmap().devicePixelRatio()
-                    proxy.setPos(max(0, self.width()//2 - proxy.pixmap().width()//radio//2), oldPos.y() + addHeight)
+                    proxy.setPos(max(0, self.width() // 2 - proxy.pixmap().width() // radio // 2),
+                                 oldPos.y() + addHeight)
                 else:
                     proxy.setPos(oldPos.x(), oldPos.y() + addHeight)
             else:
                 if isinstance(proxy, QGraphicsPixmapItem):
                     radio = proxy.pixmap().devicePixelRatio()
-                    proxy.setPos(oldPos.x() + addHeight, max(0, self.height()//2 - proxy.pixmap().height()//radio//2))
+                    proxy.setPos(oldPos.x() + addHeight,
+                                 max(0, self.height() // 2 - proxy.pixmap().height() // radio // 2))
                 else:
                     proxy.setPos(oldPos.x() + addHeight, oldPos.y())
 
@@ -667,7 +689,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         # TODO 取消其他图片的显示, 节约内存占用
         if self.initReadMode in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             if index + config.PreLoading < self.maxPic:
-                self.SetPixIem(index+config.PreLoading, None)
+                self.SetPixIem(index + config.PreLoading, None)
         elif ReadMode.isDouble(self.initReadMode):
             self.SetPixIem(index - 1, None)
         self.ReloadImg()
@@ -677,7 +699,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         # TODO 取消其他图片的显示, 节约内存占用
         if self.initReadMode in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             if index - 1 >= 0:
-                self.SetPixIem(index-1, None)
+                self.SetPixIem(index - 1, None)
         elif ReadMode.isDouble(self.initReadMode):
             self.SetPixIem(index + 1, None)
 
@@ -689,7 +711,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         # TODO 取消其他图片的显示, 节约内存占用
         if self.initReadMode in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             self.SetPixIem(oldIndex, None)
-            for newIndex in range(oldIndex+1, min(oldIndex+config.PreLoading, self.maxPic)):
+            for newIndex in range(oldIndex + 1, min(oldIndex + config.PreLoading, self.maxPic)):
                 self.SetPixIem(newIndex, None)
             value = self.labelSize.get(index)
             self.GetScrollBar().setValue(value)
@@ -705,7 +727,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         return
 
     def ReloadImg(self):
-        if self.initReadMode in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDouble, ReadMode.LeftRight]:
+        if self.initReadMode in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDouble,
+                                 ReadMode.LeftRight]:
             self.verticalScrollBar().setValue(0)
 
         self.readImg.ShowImg()

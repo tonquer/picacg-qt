@@ -34,7 +34,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         # else:
         #     HorizontalHeaderLabels = ["id", "标题", "下载状态", "下载进度", "下载章节", "下载速度", "转换进度", "转换章节", "转换耗时", "转换状态"]
 
-        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -68,6 +68,12 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             self.tableWidget.insertRow(rowCont)
             self.RepairData(task)
             self.UpdateTableItem(task)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # self.tableWidget.horizontalHeader().setMinimumSectionSize(120)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        # self.tableWidget.setColumnWidth(0, 40)
+        print(self.width())
+        self.tableWidget.setColumnWidth(1, 300)
 
     # 修复下数据
     def RepairData(self, task):
@@ -307,14 +313,14 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 menu.addAction(openDirAction)
                 menu.addAction(selectEpsAction)
                 assert isinstance(task, DownloadItem)
-                if task.status in [task.Pause, task.Error]:
+                if task.status in [task.Pause, task.Error, task.SpaceEps]:
                     menu.addAction(startAction)
                 elif task.status in [task.Downloading, task.Waiting]:
                     menu.addAction(pauseAction)
 
                 if task.convertStatus in [task.Converting, task.Waiting]:
                     menu.addAction(pauseConvertAction)
-                elif task.convertStatus in [task.Pause, task.Error]:
+                elif task.convertStatus in [task.Pause, task.Error, task.SpaceEps]:
                     menu.addAction(startConvertAction)
             else:
                 menu = QMenu(self.tableWidget)
@@ -410,12 +416,12 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             task = self.downloadDict.get(bookId)
             if not task:
                 continue
-            if task.status not in [task.Pause, task.Error]:
+            if task.status not in [task.Pause, task.Error, task.SpaceEps]:
                 continue
             self.SetNewStatus(task, task.Waiting)
 
             if Setting.DownloadAuto.value:
-                if task.convertStatus not in [task.Pause, task.Error]:
+                if task.convertStatus not in [task.Pause, task.Error, task.SpaceEps]:
                     continue
                 self.SetNewCovertStatus(task, task.Waiting)
 
@@ -432,7 +438,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             task = self.downloadDict.get(bookId)
             if not task:
                 continue
-            if task.convertStatus not in [task.Pause, task.Error]:
+            if task.convertStatus not in [task.Pause, task.Error, task.SpaceEps]:
                 continue
             self.SetNewCovertStatus(task, task.Waiting)
 
@@ -495,11 +501,11 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             task = self.downloadDict.get(bookId)
             if not task:
                 continue
-            if task.status not in [task.Pause, task.Error]:
+            if task.status not in [task.Pause, task.Error, task.SpaceEps]:
                 continue
             self.SetNewStatus(task, task.Waiting)
             if Setting.DownloadAuto.value:
-                if task.convertStatus not in [task.Pause, task.Error]:
+                if task.convertStatus not in [task.Pause, task.Error, task.SpaceEps]:
                     continue
                 self.SetNewCovertStatus(task, task.Waiting)
 
@@ -521,7 +527,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             task = self.downloadDict.get(bookId)
             if not task:
                 continue
-            if task.convertStatus not in [task.Pause, task.Error]:
+            if task.convertStatus not in [task.Pause, task.Error, task.SpaceEps]:
                 continue
             self.SetNewCovertStatus(task, task.Waiting)
 

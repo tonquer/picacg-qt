@@ -232,6 +232,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if not p:
             return
         p.isWaifu2x = isWaifu2x
+        if isWaifu2x and (p.waifuState == p.OverResolution or p.waifuState == p.AnimationNotAuto):
+            p.waifuState = p.WaifuStateCancle
         if ReadMode.isDouble(self.stripModel):
             p = self.pictureData.get(self.curIndex+1)
             if not p:
@@ -298,9 +300,10 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
     def StartLoadPicUrlBack(self, raw, v):
         st = raw["st"]
-        if st == Status.Error:
+        if st == Status.Error or st == Str.SpaceEps:
             QtOwner().ShowError(Str.GetStr(st))
             return
+
         maxPic = raw.get("maxPic")
         if not maxPic or self.maxPic > 0:
             return
@@ -387,8 +390,15 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         else:
             p2 = p.cacheImage
 
-        pixMap = QPixmap(p2)
-        self.scrollArea.SetPixIem(index, pixMap, waifu2x)
+        if p.isGif:
+            self.scrollArea.SetGifData(index, p.data, p.w, p.h)
+            if p.waifuData:
+                self.scrollArea.SetGifData(index, p.waifuData, p.scaleW, p.scaleH)
+            else:
+                self.scrollArea.SetGifData(index, p.data, p.w, p.h)
+        else:
+            pixMap = QPixmap(p2)
+            self.scrollArea.SetPixIem(index, pixMap, waifu2x)
 
     @time_me
     def ShowOtherPage(self):
@@ -448,8 +458,14 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
         self.qtTool.UpdateText(p.model)
 
-        pixMap = QPixmap(p2)
-        self.scrollArea.SetPixIem(self.curIndex, pixMap, waifu2x)
+        if p.isGif:
+            if p.waifuData:
+                self.scrollArea.SetGifData(self.curIndex, p.waifuData, p.scaleW, p.scaleH)
+            else:
+                self.scrollArea.SetGifData(self.curIndex, p.data, p.w, p.h)
+        else:
+            pixMap = QPixmap(p2)
+            self.scrollArea.SetPixIem(self.curIndex, pixMap, waifu2x)
         # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
         # self.frame.ScalePicture()
         self.CheckLoadPicture()

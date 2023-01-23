@@ -12,6 +12,7 @@ from component.widget.main_widget import Main
 from config import config
 from config.setting import Setting
 from qt_owner import QtOwner
+from server import req
 from server.server import Server
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
@@ -144,6 +145,7 @@ class MainView(Main, QtTaskBase):
     def Init(self):
         IsCanUse = False
         self.downloadView.Init()
+        self.InitApiProxy()
         if config.CanWaifu2x:
             from waifu2x_vulkan import waifu2x_vulkan
             
@@ -160,6 +162,7 @@ class MainView(Main, QtTaskBase):
             IsCanUse = True
             gpuInfo = waifu2x_vulkan.getGpuInfo()
             cpuNum = waifu2x_vulkan.getCpuCoreNum()
+            gpuNum = waifu2x_vulkan.getGpuCoreNum()
             self.settingView.SetGpuInfos(gpuInfo, cpuNum)
             # if not gpuInfo or (gpuInfo and config.Encode < 0) or (gpuInfo and config.Encode >= len(gpuInfo)):
             #     config.Encode = 0
@@ -169,10 +172,13 @@ class MainView(Main, QtTaskBase):
             version = waifu2x_vulkan.getVersion()
             config.Waifu2xVersion = version
             self.helpView.waifu2x.setText(config.Waifu2xVersion)
-            Log.Warn("Waifu2x init: " + str(stat) + " encode: " + str(
-                config.Encode) + " version:" + version + " code:" + str(sts) + " cpuNum:" + str(config.UseCpuNum))
+            Log.Warn("Waifu2x init:{}, encode:{}, version:{}, code:{}, cpuNum:{}/{}, gpuNum:{}, gpuList:{}".format(
+                stat, config.Encode, version, sts, config.UseCpuNum, cpuNum, gpuNum, gpuInfo
+            ))
+
         else:
             QtOwner().ShowError("Waifu2x Error, " + config.ErrorMsg)
+            Log.Warn("Waifu2x Error: " + str(config.ErrorMsg))
 
         if not IsCanUse:
             self.settingView.readCheckBox.setEnabled(False)
@@ -201,6 +207,11 @@ class MainView(Main, QtTaskBase):
             view.closed.connect(self.OpenLoginView)
         else:
             self.OpenLoginView()
+
+    def InitApiProxy(self):
+        request = req.InitReq()
+        request.proxy = {}
+        self.AddHttpTask(request)
 
     def ClearTabBar(self):
         for toolButton in self.toolButtons:
@@ -323,6 +334,9 @@ class MainView(Main, QtTaskBase):
         super().closeEvent(a0)
         # reply = QtOwner().ShowMsgBox(QMessageBox.Question, self.tr('提示'), self.tr('确定要退出吗？'))
         self.GetExitScreen()
+
+        # 点击关闭按钮或者点击退出事件会出现图标无法消失的bug，需要手动将图标内存清除
+        # self.myTrayIcon = None
         a0.accept()
 
     def GetExitScreen(self):
@@ -399,3 +413,16 @@ class MainView(Main, QtTaskBase):
         SqlServer().Stop()
         # QtTask().Stop()
 
+    def OnNewConnection(self):
+        socket = QtOwner().localServer.nextPendingConnection()
+        socket.readyRead.connect(self.OnReadConnection)
+        return
+
+    def OnReadConnection(self):
+        conn = self.sender()
+        if not conn:
+            return
+        data = conn.readAll()
+        if data == b"restart":
+            self.show()
+            self.showNormal()

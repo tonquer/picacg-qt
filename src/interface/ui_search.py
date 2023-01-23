@@ -200,6 +200,11 @@ class Ui_Search(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
+        self.someDownButton = QPushButton(Search)
+        self.someDownButton.setObjectName(u"someDownButton")
+
+        self.horizontalLayout.addWidget(self.someDownButton)
+
         self.line_4 = QFrame(Search)
         self.line_4.setObjectName(u"line_4")
         self.line_4.setFrameShape(QFrame.VLine)
@@ -287,6 +292,7 @@ class Ui_Search(object):
         self.comboBox.setItemText(2, QCoreApplication.translate("Search", u"\u6700\u591a\u7231\u5fc3", None))
         self.comboBox.setItemText(3, QCoreApplication.translate("Search", u"\u6700\u591a\u7ec5\u58eb\u6307\u6570", None))
 
+        self.someDownButton.setText(QCoreApplication.translate("Search", u"\u6279\u91cf\u4e0b\u8f7d", None))
         self.label.setText(QCoreApplication.translate("Search", u"\u9875\uff1a0/0", None))
         self.jumpPage.setText(QCoreApplication.translate("Search", u"\u8df3\u8f6c", None))
     # retranslateUi

@@ -134,6 +134,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="someDownButton">
+         <property name="text">
+          <string>批量下载</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="Line" name="line_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

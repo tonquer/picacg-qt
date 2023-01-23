@@ -15,8 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QListWidgetItem, QSizePolicy, QTabWidget,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QListWidgetItem, QPushButton,
+    QSizePolicy, QSpacerItem, QTabWidget, QVBoxLayout,
+    QWidget)
 
 from component.list.comic_list_widget import ComicListWidget
 from component.list.user_list_widget import UserListWidget
@@ -25,7 +26,7 @@ class Ui_Rank(object):
     def setupUi(self, Rank):
         if not Rank.objectName():
             Rank.setObjectName(u"Rank")
-        Rank.resize(400, 300)
+        Rank.resize(536, 379)
         self.verticalLayout = QVBoxLayout(Rank)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.tabWidget = QTabWidget(Rank)
@@ -69,6 +70,20 @@ class Ui_Rank(object):
 
         self.verticalLayout_5.addWidget(self.kindList)
 
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+        self.pushButton = QPushButton(self.widget_4)
+        self.pushButton.setObjectName(u"pushButton")
+
+        self.horizontalLayout.addWidget(self.pushButton)
+
+
+        self.verticalLayout_5.addLayout(self.horizontalLayout)
+
         self.tabWidget.addTab(self.widget_4, "")
 
         self.verticalLayout.addWidget(self.tabWidget)
@@ -87,6 +102,7 @@ class Ui_Rank(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.widget_1), QCoreApplication.translate("Rank", u"24\u5c0f\u65f6", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.widget_2), QCoreApplication.translate("Rank", u"7\u5929", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.widget_3), QCoreApplication.translate("Rank", u"30\u5929", None))
+        self.pushButton.setText(QCoreApplication.translate("Rank", u"\u6279\u91cf\u4e0b\u8f7d", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.widget_4), QCoreApplication.translate("Rank", u"\u9a91\u58eb\u699c", None))
     # retranslateUi
 

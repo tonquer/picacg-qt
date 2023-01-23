@@ -56,6 +56,11 @@ class ComicListWidget(BaseListWidget):
             action.triggered.connect(partial(self.CopyHandler, index))
             action = popMenu.addAction(Str.GetStr(Str.Download))
             action.triggered.connect(partial(self.DownloadHandler, index))
+
+            if not self.isGame:
+                action = popMenu.addAction(Str.GetStr(Str.DownloadAll))
+                action.triggered.connect(self.OpenBookDownloadAll)
+
             if self.isDelMenu:
                 action = popMenu.addAction(Str.GetStr(Str.Delete))
                 action.triggered.connect(partial(self.DelHandler, index))
@@ -95,7 +100,7 @@ class ComicListWidget(BaseListWidget):
         if isShowHistory:
             info = QtOwner().owner.historyView.GetHistory(_id)
             if info:
-                if v.epsCount > info.epsId:
+                if v.epsCount-1 > info.epsId:
                     isShowToolButton = True
 
                 categories = Str.GetStr(Str.LastLook) + str(info.epsId + 1) + Str.GetStr(Str.Chapter) + "/" + str(v.epsCount) + Str.GetStr(Str.Chapter)
@@ -114,6 +119,10 @@ class ComicListWidget(BaseListWidget):
         widget = ComicItemWidget()
         widget.setFocusPolicy(Qt.NoFocus)
         widget.id = _id
+        widget.title = title
+        widget.picNum = pagesCount
+        widget.category = categoryStr
+
         widget.url = ToolUtil.GetRealUrl(url, path)
         if self.isGame:
             widget.path = ToolUtil.GetRealPath(_id, "game/cover")
@@ -222,7 +231,7 @@ class ComicListWidget(BaseListWidget):
         widget = self.indexWidget(index)
         assert isinstance(widget, ComicItemWidget)
         if widget and widget.picData:
-            w, h, mat = ToolUtil.GetPictureSize(widget.picData)
+            w, h, mat,_ = ToolUtil.GetPictureSize(widget.picData)
             if max(w, h) <= Setting.CoverMaxNum.value or not isIfSize:
                 model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value, mat)
                 widget.isWaifu2xLoading = True
@@ -250,6 +259,11 @@ class ComicListWidget(BaseListWidget):
             data = data.strip("\r\n")
             clipboard.setText(data)
         pass
+
+    def OpenBookDownloadAll(self):
+        from view.download.download_all_item import DownloadAllItem
+        allData = DownloadAllItem.MakeAllItem(self)
+        QtOwner().OpenDownloadAll(allData)
 
     def DelHandler(self, index):
         widget = self.indexWidget(index)

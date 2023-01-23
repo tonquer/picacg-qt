@@ -72,6 +72,7 @@ class ToolUtil(object):
             "app-platform": config.Platform,
             "app-build-version": config.BuildVersion,
             "user-agent": config.Agent,
+            "version": config.UpdateVersion,
         }
         if method.lower() in ["post", "put"]:
             header["Content-Type"] = "application/json; charset=UTF-8"
@@ -299,13 +300,13 @@ class ToolUtil(object):
     @staticmethod
     def GetPictureSize(data):
         if not data:
-            return 0, 0, "jpg"
+            return 0, 0, "jpg", False
         try:
             from PIL import Image
             from io import BytesIO
             a = BytesIO(data)
             img = Image.open(a)
-            a.close()
+            isAnima = getattr(img, "is_animated", False)
             if img.format == "PNG":
                 mat = "png"
             elif img.format == "GIF":
@@ -314,10 +315,11 @@ class ToolUtil(object):
                 mat = "webp"
             else:
                 mat = "jpg"
-            return img.width, img.height, mat
+            a.close()
+            return img.width, img.height, mat, isAnima
         except Exception as es:
             Log.Error(es)
-        return 0, 0, "jpg"
+        return 0, 0, "jpg", False
 
     @staticmethod
     def GetLookModel(category):
@@ -444,7 +446,10 @@ class ToolUtil(object):
     @staticmethod
     def GetRealUrl(url, path):
         if path:
-            return url + "/static/" + path
+            if url[-7:] != "static/":
+                return url + "/static/" + path
+            else:
+                return url + path
         else:
             return url
 

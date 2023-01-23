@@ -10,13 +10,13 @@ from tools.tool import ToolUtil
 
 class ReadMode(Enum):
     """ 阅读模式 """
-    UpDown = 0              # 上下模式
-    LeftRight = 1           # 默认
-    LeftRightDouble = 2     # 左右双页
-    RightLeftDouble = 3     # 右左双页
-    LeftRightScroll = 4     # 左右滚动
-    RightLeftScroll = 5     # 右左滚动
-    RightLeftDouble2 = 6     # 右左双页(滚轮正序)
+    UpDown = 0  # 上下模式
+    LeftRight = 1  # 默认
+    LeftRightDouble = 2  # 左右双页
+    RightLeftDouble = 3  # 右左双页
+    LeftRightScroll = 4  # 左右滚动
+    RightLeftScroll = 5  # 右左滚动
+    RightLeftDouble2 = 6  # 右左双页(滚轮正序)
 
     @staticmethod
     def isDouble(model):
@@ -40,6 +40,7 @@ class QtFileData(object):
     WaifuStateEnd = Str.WaifuStateEnd
     WaifuStateFail = Str.WaifuStateFail
     OverResolution = Str.OverResolution
+    AnimationNotAuto = Str.AnimationNotAuto
 
     def __init__(self):
         self.size = 0
@@ -61,6 +62,8 @@ class QtFileData(object):
         self.cacheWaifu2xImage = None
 
         self.downloadSize = 0
+        self.isGif = False
+        self.saveParams = None
 
     @property
     def isWaifu2x(self):
@@ -85,19 +88,24 @@ class QtFileData(object):
             self.state = self.DownloadError
             return
 
-        self.w, self.h, mat = ToolUtil.GetPictureSize(data)
+        self.w, self.h, mat, isAni = ToolUtil.GetPictureSize(data)
 
-        if Setting.IsOpenWaifu.value:
-            self.waifuState = self.WaifuWait
-        else:
-            self.waifuState = self.WaifuStateCancle
+        if self.cacheImage:
+            if Setting.IsOpenWaifu.value:
+                self.waifuState = self.WaifuWait
+            else:
+                self.waifuState = self.WaifuStateCancle
 
-        if max(self.w, self.h) <= Setting.LookMaxNum.value:
-            pass
-        else:
-            if self._isWaifu2x == -1:
-                self.waifuState = self.OverResolution
+            if max(self.w, self.h) <= Setting.LookMaxNum.value:
+                pass
+            else:
+                if self._isWaifu2x == -1:
+                    self.waifuState = self.OverResolution
 
+            if self._isWaifu2x == -1 and isAni:
+                self.waifuState = self.AnimationNotAuto
+
+        self.isGif = isAni
         self.data = data
         self.model = ToolUtil.GetLookScaleModel(category, mat)
         self.state = self.DownloadSuc
@@ -110,7 +118,7 @@ class QtFileData(object):
         self.waifuData = data
         self.waifuState = self.WaifuStateEnd
         self.waifuDataSize = len(self.waifuData)
-        self.scaleW, self.scaleH, _ = ToolUtil.GetPictureSize(data)
+        self.scaleW, self.scaleH, _, _ = ToolUtil.GetPictureSize(data)
         self.waifuTick = tick
         return
 
@@ -148,21 +156,21 @@ class QtFileData(object):
         else:
             return maxWidth, maxHeight
         return toScaleW, toScaleH
-    
+
     @staticmethod
     def GetReadToPos(stripModel, maxWidth, maxHeight, toWidth, toHeight, index, curIndex, oldPos):
         if stripModel == ReadMode.LeftRight:
-            return QPoint(maxWidth//2 - toWidth//2, max(0, maxHeight//2-toHeight//2))
+            return QPoint(maxWidth // 2 - toWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
         elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
             if index == curIndex:
-                return QPoint(maxWidth//2, max(0, maxHeight//2 - toHeight//2))
+                return QPoint(maxWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
             else:
-                return QPoint(maxWidth//2-toWidth, max(0, maxHeight//2 - toHeight//2))
+                return QPoint(maxWidth // 2 - toWidth, max(0, maxHeight // 2 - toHeight // 2))
         elif stripModel in [ReadMode.LeftRightDouble]:
             if index != curIndex:
-                return QPoint(maxWidth//2, max(0, maxHeight//2 - toHeight//2))
+                return QPoint(maxWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
             else:
-                return QPoint(maxWidth//2-toWidth, max(0, maxHeight//2 - toHeight//2))
+                return QPoint(maxWidth // 2 - toWidth, max(0, maxHeight // 2 - toHeight // 2))
         elif stripModel in [ReadMode.LeftRightScroll]:
             return QPoint(oldPos.x(), max(0, maxHeight // 2 - toHeight // 2))
 
@@ -170,6 +178,6 @@ class QtFileData(object):
             return QPoint(oldPos.x(), max(0, maxHeight // 2 - toHeight // 2))
 
         elif stripModel in [ReadMode.UpDown]:
-            return QPoint(maxWidth//2 - toWidth//2, oldPos.y())
+            return QPoint(maxWidth // 2 - toWidth // 2, oldPos.y())
         else:
             return QPoint(0, 0)

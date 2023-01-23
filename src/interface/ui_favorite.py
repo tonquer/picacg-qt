@@ -82,6 +82,11 @@ class Ui_Favorite(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.someDownButton = QPushButton(Favorite)
+        self.someDownButton.setObjectName(u"someDownButton")
+
+        self.horizontalLayout.addWidget(self.someDownButton)
+
         self.line_2 = QFrame(Favorite)
         self.line_2.setObjectName(u"line_2")
         self.line_2.setFrameShape(QFrame.VLine)
@@ -166,6 +171,7 @@ class Ui_Favorite(object):
         self.sortCombox.setItemText(2, QCoreApplication.translate("Favorite", u"\u6700\u591a\u7231\u5fc3", None))
         self.sortCombox.setItemText(3, QCoreApplication.translate("Favorite", u"\u6700\u591a\u7ec5\u58eb\u6307\u6570", None))
 
+        self.someDownButton.setText(QCoreApplication.translate("Favorite", u"\u6279\u91cf\u4e0b\u8f7d", None))
         self.nums.setText(QCoreApplication.translate("Favorite", u"\u6536\u85cf\u6570\uff1a", None))
         self.pages.setText(QCoreApplication.translate("Favorite", u"\u9875", None))
         self.jumpButton.setText(QCoreApplication.translate("Favorite", u"\u8df3\u8f6c", None))

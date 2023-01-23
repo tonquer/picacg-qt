@@ -56,6 +56,9 @@ class FriedView(QtWidgets.QWidget, Ui_Fried, QtTaskBase):
         QtOwner().CloseLoading()
         errMsg = ""
         try:
+            st = data.get("st")
+            if st != Status.Ok:
+                return QtOwner().ShowError(Str.GetStr(st))
             info = json.loads(data.get("data"))
             errMsg = info.get("error", {}).get("message", "")
             self.maxPage = info.get("data").get('total')

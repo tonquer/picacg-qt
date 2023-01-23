@@ -43,6 +43,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         # TODO 判断是否使用本地
         self.isLocal = False
         self.SetLocal(False)
+        self.someDownButton.clicked.connect(self.bookList.OpenBookDownloadAll)
 
     def SwitchCurrent(self, **kwargs):
         refresh = kwargs.get("refresh")
