@@ -245,6 +245,9 @@ class TaskDownload(TaskBase, QtTaskBase):
                 task.status = task.ReadingEps
             if task.status == task.ReadingEps:
                 isReset or self.SetTaskStatus(taskId, backData, task.ReadingPicture)
+                if task.epsId not in info.epsDict:
+                    self.SetTaskStatus(taskId, backData, task.SpaceEps)
+                    return
 
                 epsInfo = info.epsDict[task.epsId]
                 assert isinstance(epsInfo, BookEps)
