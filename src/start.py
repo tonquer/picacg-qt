@@ -68,7 +68,7 @@ if __name__ == "__main__":
         socket.close()
         app.quit()
         Log.Warn("server already star")
-        exit(1)
+        sys.exit(1)
 
     localServer = QLocalServer()  # 没有实例运行，创建服务器
     localServer.listen(serverName)
