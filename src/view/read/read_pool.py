@@ -2,6 +2,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QGraphicsProxyWidget, QGraphicsPixmapItem, QLabel
 
 from tools.singleton import Singleton
+from view.read.read_qgraphics_proxy_widget import ReadQGraphicsProxyWidget
 
 
 class QtReadImgPoolManager(Singleton):

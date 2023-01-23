@@ -3,7 +3,7 @@ import time
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect, QFile
 from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics, QWheelEvent
 from PySide6.QtWidgets import QGraphicsView, QFrame, QGraphicsItem, QGraphicsScene, \
-    QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider, QApplication, QLabel
+    QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider, QApplication
 
 from component.label.msg_label import MsgLabel
 from component.scroll.read_scroll import ReadScroll
@@ -14,7 +14,6 @@ from config.setting import Setting
 from tools.str import Str
 from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_pool import QtReadImgPoolManager
-from view.read.read_qgraphics_proxy_widget import ReadQGraphicsProxyWidget
 
 
 class ReadGraphicsView(QGraphicsView, SmoothScroll):
@@ -65,10 +64,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.setScene(self.graphicsScene)
         # self.graphicsScene.addItem(self.graphicsGroup)
-        self.graphicsItem1 = ReadQGraphicsProxyWidget()
-        self.graphicsItem1.setWidget(QLabel())
-        self.graphicsItem2 = ReadQGraphicsProxyWidget()
-        self.graphicsItem2.setWidget(QLabel())
+        self.graphicsItem1 = QGraphicsPixmapItem()
+        self.graphicsItem2 = QGraphicsPixmapItem()
         # self.graphicsItem1.setFlag(QGraphicsItem.ItemIsFocusable)
         # self.graphicsItem2.setFlag(QGraphicsItem.ItemIsFocusable)
 
@@ -556,10 +553,23 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     def LabelToPixmap(self, index):
         proxy = self.GetLabel(index)
         if self.initReadMode in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
-            return proxy.height(), proxy.width()
+            if isinstance(proxy, QGraphicsProxyWidget):
+                oldHeight, oldWidth = proxy.widget().height(), proxy.widget().width()
+                oldPox = proxy.pos()
+                self.graphicsScene.removeItem(proxy)
+                newProxy = QtReadImgPoolManager().GetPixMapItem()
+
+                assert isinstance(newProxy, QGraphicsPixmapItem)
+                newProxy.setPos(oldPox)
+                self.graphicsScene.addItem(newProxy)
+                self.allItems[index] = newProxy
+                QtReadImgPoolManager().AddProxyItem(proxy)
+                return oldHeight, oldWidth
+            else:
+                return proxy.pixmap().height() // proxy.pixmap().devicePixelRatio(), proxy.pixmap().width() // proxy.pixmap().devicePixelRatio()
         elif (self.initReadMode == ReadMode.RightLeftDouble and index == self.readImg.curIndex) or (
-                        self.initReadMode == ReadMode.RightLeftDouble2 and index == self.readImg.curIndex) or (
-                             self.initReadMode == ReadMode.LeftRightDouble and index != self.readImg.curIndex):
+                self.initReadMode == ReadMode.RightLeftDouble2 and index == self.readImg.curIndex) or (
+                self.initReadMode == ReadMode.LeftRightDouble and index != self.readImg.curIndex):
             self.graphicsItem2.pixmap().height(), self.graphicsItem2.pixmap().width()
         return self.graphicsItem1.pixmap().height(), self.graphicsItem1.pixmap().width()
 
@@ -567,24 +577,6 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.SetPixIem(self.readImg.curIndex, None)
         if self.readImg.curIndex + 1 < self.readImg.maxPic:
             self.SetPixIem(self.readImg.curIndex + 1, None)
-        return
-
-    def SetGifData(self, index, data, width, height):
-        if not self.allItems and self.readImg.stripModel in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll]:
-            return
-        if not data:
-            return
-        label = self.GetLabel(index)
-
-        oldPos = label.pos()
-        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height())
-
-        scale = min(toW / width, toH / height)
-        label.setScale(scale)
-        label.SetGifData(data, width, height)
-
-        pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), label.width()*scale, label.height()*scale, index, self.readImg.curIndex, oldPos)
-        label.setPos(pos)
         return
 
     def SetPixIem(self, index, data, isWaifu2x=False):
@@ -618,7 +610,6 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         # print(index, pos, radio, newData.size(), self.size())
         label.setPos(pos)
         label.setPixmap(newData)
-        # print("pos:{}, pos:{} {} {}".format(pos, self.graphicsItem1.pos(), self.graphicsItem1.widget().devicePixelRatioF(), self.graphicsItem1.widget().size()))
         if self.initReadMode == ReadMode.UpDown:
             self.UpdateOtherHeight(index, oldHeight, label.pixmap().height() // radio)
         else:

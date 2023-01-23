@@ -44,7 +44,7 @@ DatabaseUpdate3 = "https://raw.ggo.icu/bika-robot/picacg-database/main/version3.
 DatabaseDownload3 = "https://raw.ggo.icu/bika-robot/picacg-database/main/data3/"
 
 UpdateVersion = "v1.4.1"
-RealVersion = "v1.4.1"
+RealVersion = "v1.4.1.1"
 TimeVersion = "2023-1-23"
 
 Waifu2xVersion = "1.1.4"

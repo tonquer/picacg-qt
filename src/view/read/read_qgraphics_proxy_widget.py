@@ -40,15 +40,10 @@ class ReadQGraphicsProxyWidget(QGraphicsProxyWidget):
             self.bBuffer = None
             self.byteArray = None
         # self.widget().setText("")
-        width = data.width() // max(1, data.devicePixelRatioF())
+        widget = data.width() // max(1, data.devicePixelRatioF())
         height = data.height()//max(1, data.devicePixelRatioF())
-        self.setMinimumWidth(width)
-        self.setMinimumHeight(height)
-        self.setMaximumWidth(width)
-        self.setMaximumHeight(height)
-        self.setScale(1)
-        # self.widget().setMinimumWidth(widget)
-        # self.widget().setFixedHeight(height)
+        self.widget().setFixedWidth(widget)
+        self.widget().setFixedHeight(height)
         # self.widget().setStyleSheet("border:2px solid rgb(177,177,177);")
         return self.widget().setPixmap(data)
 
@@ -71,12 +66,8 @@ class ReadQGraphicsProxyWidget(QGraphicsProxyWidget):
             self.movie = QMovie()
             self.gifWidth = width
             self.gifHeight = height
-            self.setMinimumWidth(width)
-            self.setMinimumHeight(height)
-            self.setMaximumWidth(width)
-            self.setMaximumHeight(height)
-            # self.widget().setFixedWidth(width)
-            # self.widget().setFixedHeight(height)
+            self.widget().setFixedWidth(width)
+            self.widget().setFixedHeight(height)
             self.byteArray = QByteArray(data)
             self.bBuffer = QBuffer(self.byteArray)
             # self.movie.frameChanged.connect(self.FrameChange)
@@ -92,8 +83,6 @@ class ReadQGraphicsProxyWidget(QGraphicsProxyWidget):
             radio = self.widget().devicePixelRatio()
             pic.setDevicePixelRatio(radio)
             newPic = pic.scaled(width*radio, height*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.setMinimumWidth(width)
-            self.setMinimumHeight(height)
             self.setPixmap(newPic)
             # self.widget().setScaledContents(True)
 
