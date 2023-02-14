@@ -71,8 +71,21 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
             self.proxyName.setText("CDN_{}".format(Setting.PreferCDNIP.value))
         elif Setting.ProxySelectIndex.value == 5:
             self.proxyName.setText("JP反代分流")
+        elif Setting.ProxySelectIndex.value == 6:
+            self.proxyName.setText("US反代分流")
+
         else:
             self.proxyName.setText("分流{}".format(str(Setting.ProxySelectIndex.value)))
+
+        if Setting.ProxyImgSelectIndex.value == 4:
+            self.proxyImgName.setText("CDN_{}".format(Setting.PreferCDNIPImg.value))
+        elif Setting.ProxyImgSelectIndex.value == 5:
+            self.proxyImgName.setText("JP反代分流")
+        elif Setting.ProxyImgSelectIndex.value == 6:
+            self.proxyImgName.setText("US反代分流")
+        else:
+            self.proxyImgName.setText("分流{}".format(str(Setting.ProxyImgSelectIndex.value)))
+
 
     def UpdateUserBack(self, raw):
         self.levelLabel.setText("LV" + str(User().level))
@@ -162,7 +175,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:
-                if self.picData and (obj == self.picLabel):
+                if (obj == self.picLabel):
                     QtOwner().OpenWaifu2xTool(self.picData)
                     return True
                 return False

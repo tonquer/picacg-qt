@@ -41,6 +41,7 @@ from view.info.game_info_view import GameInfoView
 from view.read.read_view import ReadView
 from view.search.search_view import SearchView
 from view.setting.setting_view import SettingView
+from view.tool.local_read_view import LocalReadView
 from view.tool.waifu2x_tool_view import Waifu2xToolView
 from view.user.favorite_view import FavoriteView
 from view.user.history_view import HistoryView
@@ -162,6 +163,9 @@ class Ui_MainWindows(object):
         self.downloadAllView = DownloadAllView()
         self.downloadAllView.setObjectName(u"downloadAllView")
         self.subStackWidget.addWidget(self.downloadAllView)
+        self.localReadView = LocalReadView()
+        self.localReadView.setObjectName(u"localReadView")
+        self.subStackWidget.addWidget(self.localReadView)
         self.bookEpsView = BookEpsView()
         self.bookEpsView.setObjectName(u"bookEpsView")
         self.subStackWidget.addWidget(self.bookEpsView)
@@ -184,7 +188,7 @@ class Ui_MainWindows(object):
 
         self.retranslateUi(MainWindows)
 
-        self.subStackWidget.setCurrentIndex(19)
+        self.subStackWidget.setCurrentIndex(20)
 
 
         QMetaObject.connectSlotsByName(MainWindows)

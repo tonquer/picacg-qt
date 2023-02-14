@@ -70,6 +70,14 @@ class Str:
     OverResolution = 3009      # "超过设置分辨率"
     AnimationNotAuto = 3010      # "动图不自动转换"
 
+    NotFoundEps = 4001            # "未找到该章节"
+    NotFoundPictureIndex = 4002   # "超过索引"
+    NotFoundPicture = 4003        # "未找到该图片"
+    NotZIPFile = 4004        # "不是ZIP文件"
+    ErrorPath = 4005        # "错误的路径"
+    NotPictureFile = 4006        # "没有发现图片文件"
+    FileLock = 4007        # "文件已加密"
+
     LoadingPicture = 1     # "图片加载中..."
     LoadingFail = 2        # "图片加载失败"
     LoginCookie = 3        # "使用Cookie登录"
@@ -211,7 +219,11 @@ class Str:
     CopyFile = 139     # 保存文件
     MainUi = 140     # 主界面
     ShowMin = 141     # 最小化
-    DownloadAll = 142            # 批量下载
+    DownloadAll = 143            # 批量下载
+    ImportSimple = 144        # 导入单本目录
+    ImportSimpleZip = 145     # 导入单本Zip
+    ImportSimpleDir = 146     # 批量导入单本目录
+    ImportChipDir = 147       # 批量导入带章节目录
 
     @classmethod
     def Reload(cls):
@@ -277,6 +289,14 @@ class Str:
         cls.strDict[cls.WaifuStateFail] = QCoreApplication.translate("cls.obj",  "转换失败", None)
         cls.strDict[cls.OverResolution] = QCoreApplication.translate("cls.obj",  "超过设置分辨率", None)
         cls.strDict[cls.AnimationNotAuto] = QCoreApplication.translate("cls.obj",  "动图不自动转换", None)
+
+        cls.strDict[cls.NotFoundEps] = QCoreApplication.translate("cls.obj",  "未找到该章节", None)
+        cls.strDict[cls.NotFoundPictureIndex] = QCoreApplication.translate("cls.obj",  "超过索引", None)
+        cls.strDict[cls.NotFoundPicture] = QCoreApplication.translate("cls.obj",  "未找到该图片", None)
+        cls.strDict[cls.NotZIPFile] = QCoreApplication.translate("cls.obj",  "不是ZIP文件", None)
+        cls.strDict[cls.ErrorPath] = QCoreApplication.translate("cls.obj",  "错误的路径", None)
+        cls.strDict[cls.NotPictureFile] = QCoreApplication.translate("cls.obj",  "没有发现图片文件", None)
+        cls.strDict[cls.FileLock] = QCoreApplication.translate("cls.obj",  "文件已加密", None)
 
         cls.strDict[cls.Menu] = QCoreApplication.translate("cls.obj",  "菜单", None)
         cls.strDict[cls.FullSwitch] = QCoreApplication.translate("cls.obj",  "全屏切换", None)
@@ -412,6 +432,10 @@ class Str:
         cls.strDict[cls.MainUi] = QCoreApplication.translate("cls.obj", "主界面", None)
         cls.strDict[cls.ShowMin] = QCoreApplication.translate("cls.obj", "最小化", None)
         cls.strDict[cls.DownloadAll] = QCoreApplication.translate("cls.obj", "批量下载", None)
+        cls.strDict[cls.ImportSimple] = QCoreApplication.translate("cls.obj", "导入单本目录", None)
+        cls.strDict[cls.ImportSimpleZip] = QCoreApplication.translate("cls.obj", "导入单本Zip", None)
+        cls.strDict[cls.ImportSimpleDir] = QCoreApplication.translate("cls.obj", "批量导入单本目录", None)
+        cls.strDict[cls.ImportChipDir] = QCoreApplication.translate("cls.obj", "批量导入带章节目录", None)
 
     @classmethod
     def GetStr(cls, enumType):

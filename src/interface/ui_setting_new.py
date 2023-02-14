@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -382, 661, 2835))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -1441, 661, 2891))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -742,6 +742,30 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_12.addLayout(self.horizontalLayout_16)
 
+        self.label_39 = QLabel(self.frame_10)
+        self.label_39.setObjectName(u"label_39")
+        self.label_39.setFont(font1)
+
+        self.verticalLayout_12.addWidget(self.label_39)
+
+        self.horizontalLayout_29 = QHBoxLayout()
+        self.horizontalLayout_29.setObjectName(u"horizontalLayout_29")
+        self.tileComboBox = WheelComboBox(self.frame_10)
+        self.tileComboBox.addItem("")
+        self.tileComboBox.addItem("")
+        self.tileComboBox.addItem("")
+        self.tileComboBox.addItem("")
+        self.tileComboBox.setObjectName(u"tileComboBox")
+
+        self.horizontalLayout_29.addWidget(self.tileComboBox)
+
+        self.horizontalSpacer_27 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_29.addItem(self.horizontalSpacer_27)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_29)
+
 
         self.verticalLayout_4.addWidget(self.frame_10)
 
@@ -1375,6 +1399,12 @@ class Ui_SettingNew(object):
         self.label_20.setText(QCoreApplication.translate("SettingNew", u"CPU/GPU\u9009\u62e9\uff08\u9700\u91cd\u542f\u751f\u6548\uff09", None))
         self.label_11.setText(QCoreApplication.translate("SettingNew", u"\u4f7f\u7528CPU\u6570\u91cf\uff08CPU\u6a21\u5f0f\u751f\u6548\uff0c\u9700\u91cd\u542f\uff09", None))
         self.threadSelect.setItemText(0, QCoreApplication.translate("SettingNew", u"Auto", None))
+
+        self.label_39.setText(QCoreApplication.translate("SettingNew", u"Tile\u5927\u5c0f\uff0c\u964d\u4f4e\u53ef\u51cf\u5c11\u663e\u5b58\u5360\u7528\uff08\u5982\u51fa\u73b0\u90e8\u5206\u56fe\u7247\u65e0\u6cd5\u8f6c\u6362\u53ef\u8c03\u4f4e\u8be5\u503c\uff09", None))
+        self.tileComboBox.setItemText(0, QCoreApplication.translate("SettingNew", u"Auto", None))
+        self.tileComboBox.setItemText(1, QCoreApplication.translate("SettingNew", u"200", None))
+        self.tileComboBox.setItemText(2, QCoreApplication.translate("SettingNew", u"100", None))
+        self.tileComboBox.setItemText(3, QCoreApplication.translate("SettingNew", u"32", None))
 
         self.label_12.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u770b\u56fe\u6a21\u5f0f", None))
         self.readCheckBox.setText(QCoreApplication.translate("SettingNew", u"\u662f\u5426\u542f\u7528", None))

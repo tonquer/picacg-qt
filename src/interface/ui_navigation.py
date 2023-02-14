@@ -28,7 +28,7 @@ class Ui_Navigation(object):
     def setupUi(self, Navigation):
         if not Navigation.objectName():
             Navigation.setObjectName(u"Navigation")
-        Navigation.resize(248, 473)
+        Navigation.resize(248, 496)
         Navigation.setStyleSheet(u"")
         self.verticalLayout_2 = QVBoxLayout(Navigation)
         self.verticalLayout_2.setSpacing(6)
@@ -111,6 +111,21 @@ class Ui_Navigation(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_3)
 
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.label_6 = QLabel(self.widget)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_5.addWidget(self.label_6)
+
+        self.proxyImgName = QLabel(self.widget)
+        self.proxyImgName.setObjectName(u"proxyImgName")
+
+        self.horizontalLayout_5.addWidget(self.proxyImgName)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_5)
+
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.label_5 = QLabel(self.widget)
@@ -138,7 +153,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 211, 700))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 211, 746))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -357,6 +372,20 @@ class Ui_Navigation(object):
 
         self.verticalLayout_3.addWidget(self.downloadButton)
 
+        self.localReadButton = QToolButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.localReadButton)
+        self.localReadButton.setObjectName(u"localReadButton")
+        sizePolicy1.setHeightForWidth(self.localReadButton.sizePolicy().hasHeightForWidth())
+        self.localReadButton.setSizePolicy(sizePolicy1)
+        self.localReadButton.setMinimumSize(QSize(0, 40))
+        self.localReadButton.setFocusPolicy(Qt.NoFocus)
+        self.localReadButton.setIcon(icon)
+        self.localReadButton.setIconSize(QSize(32, 32))
+        self.localReadButton.setCheckable(True)
+        self.localReadButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.verticalLayout_3.addWidget(self.localReadButton)
+
         self.waifu2xButton = QToolButton(self.scrollAreaWidgetContents)
         self.buttonGroup.addButton(self.waifu2xButton)
         self.waifu2xButton.setObjectName(u"waifu2xButton")
@@ -434,8 +463,10 @@ class Ui_Navigation(object):
         self.titleLabel.setText("")
         self.expLabel.setText("")
         self.levelLabel.setText("")
-        self.label_4.setText(QCoreApplication.translate("Navigation", u"\u5206\u6d41\uff1a", None))
+        self.label_4.setText(QCoreApplication.translate("Navigation", u"API\u5206\u6d41\uff1a", None))
         self.proxyName.setText("")
+        self.label_6.setText(QCoreApplication.translate("Navigation", u"\u56fe\u7247\u5206\u6d41\uff1a", None))
+        self.proxyImgName.setText("")
         self.label_5.setText(QCoreApplication.translate("Navigation", u"\u79bb\u7ebf\u6a21\u5f0f\uff1a", None))
         self.label.setText(QCoreApplication.translate("Navigation", u"\u7528\u6237", None))
         self.collectButton.setText(QCoreApplication.translate("Navigation", u"\u6211\u7684\u6536\u85cf", None))
@@ -452,6 +483,7 @@ class Ui_Navigation(object):
         self.friedButton.setText(QCoreApplication.translate("Navigation", u"\u9505\u8d34", None))
         self.label_3.setText(QCoreApplication.translate("Navigation", u"\u5176\u4ed6", None))
         self.downloadButton.setText(QCoreApplication.translate("Navigation", u"\u4e0b\u8f7d", None))
+        self.localReadButton.setText(QCoreApplication.translate("Navigation", u"\u672c\u5730\u6f2b\u753b", None))
         self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"Waifu2x", None))
         self.helpButton.setText(QCoreApplication.translate("Navigation", u"\u5e2e\u52a9", None))
         self.settingButton.setText(QCoreApplication.translate("Navigation", u"\u8bbe\u7f6e", None))

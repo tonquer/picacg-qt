@@ -61,10 +61,19 @@ class User(Singleton):
     def InitBack(self, backData):
         try:
             if backData.status == Status.Ok and backData.res.status == "ok":
-                if len(backData.res.addresses) >= 2:
-                    config.Address = backData.res.addresses[:]
+
+                from config.setting import Setting
+                if len(backData.res.addresses) >= 1:
+                    # 只更新分流三 第一个地址
+                    config.Address[1] = backData.res.addresses[0]
+                    Setting.SaveCacheAddress.SetValue(backData.res.addresses[0])
                 #     self.address = backData.res.addresses[0]
-                Log.Info("初始化成功,  Ips:{}".format(config.Address))
+                Log.Info("初始化成功,  Ips:{}, {}".format(backData.res.addresses, config.Address))
+                # 需要更新DNS
+                if Setting.ProxySelectIndex.value == 3:
+                    imageServer = config.ImageServer3
+                    address = config.Address[1]
+                    self.server.UpdateDns(address, imageServer)
                 self.initRes = backData.res
                 return Status.Ok
             else:

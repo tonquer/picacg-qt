@@ -30,6 +30,7 @@ class ComicListWidget(BaseListWidget):
         self.itemClicked.connect(self.SelectItem)
         self.isDelMenu = False
         self.isGame = False
+        self.isLocal = False
 
     def SelectMenuBook(self, pos):
         index = self.indexAt(pos)
@@ -37,8 +38,11 @@ class ComicListWidget(BaseListWidget):
         if index.isValid() and widget:
             assert isinstance(widget, ComicItemWidget)
             popMenu = QMenu(self)
-            action = popMenu.addAction(Str.GetStr(Str.Open))
-            action.triggered.connect(partial(self.OpenBookInfoHandler, index))
+
+            if not self.isLocal:
+                action = popMenu.addAction(Str.GetStr(Str.Open))
+                action.triggered.connect(partial(self.OpenBookInfoHandler, index))
+
             action = popMenu.addAction(Str.GetStr(Str.LookCover))
             action.triggered.connect(partial(self.OpenPicture, index))
             action = popMenu.addAction(Str.GetStr(Str.ReDownloadCover))
@@ -54,12 +58,14 @@ class ComicListWidget(BaseListWidget):
                     action.triggered.connect(partial(self.CancleWaifu2xPicture, index))
             action = popMenu.addAction(Str.GetStr(Str.CopyTitle))
             action.triggered.connect(partial(self.CopyHandler, index))
-            action = popMenu.addAction(Str.GetStr(Str.Download))
-            action.triggered.connect(partial(self.DownloadHandler, index))
 
-            if not self.isGame:
-                action = popMenu.addAction(Str.GetStr(Str.DownloadAll))
-                action.triggered.connect(self.OpenBookDownloadAll)
+            if not self.isLocal:
+                action = popMenu.addAction(Str.GetStr(Str.Download))
+                action.triggered.connect(partial(self.DownloadHandler, index))
+
+                if not self.isGame:
+                    action = popMenu.addAction(Str.GetStr(Str.DownloadAll))
+                    action.triggered.connect(self.OpenBookDownloadAll)
 
             if self.isDelMenu:
                 action = popMenu.addAction(Str.GetStr(Str.Delete))
@@ -85,6 +91,37 @@ class ComicListWidget(BaseListWidget):
         finished = v.get("finished")
         pagesCount = v.get("pagesCount")
         self.AddBookItem(_id, title, categoryStr, url, path, likesCount, "", pagesCount, finished)
+
+    def AddBookByLocal(self, v, isFirstAdd=False):
+        from task.task_local import LocalData
+        assert isinstance(v, LocalData)
+        index = self.count()
+        widget = ComicItemWidget()
+        widget.setFocusPolicy(Qt.NoFocus)
+        widget.id = v.id
+        title = v.title
+        widget.index = index
+        widget.title = v.title
+        widget.picNum = v.picCnt
+        widget.url = v.file
+        title += "<font color=#d5577c>{}</font>".format("(" + str(v.picCnt) + "P)")
+        if v.lastReadTime:
+            categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.lastReadTime), Str.GetStr(Str.Looked))
+
+            widget.timeLabel.setText(categories)
+        else:
+            widget.timeLabel.setVisible(False)
+
+        widget.toolButton.setVisible(False)
+        widget.categoryLabel.setVisible(False)
+        widget.starButton.setVisible(False)
+        widget.nameLable.setText(title)
+        item = QListWidgetItem(self)
+        item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
+        item.setSizeHint(widget.sizeHint())
+        self.setItemWidget(item, widget)
+        widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
+        widget.PicLoad.connect(self.LoadingPicture)
 
     def AddBookItemByBook(self, v, isShowHistory=False, isShowToolButton=False):
         title = v.title
@@ -197,6 +234,8 @@ class ComicListWidget(BaseListWidget):
         assert isinstance(widget, ComicItemWidget)
         if self.isGame:
             QtOwner().OpenGameInfo(widget.id)
+        elif self.isLocal:
+            QtOwner().OpenLocalBook(widget.id)
         else:
             QtOwner().OpenBookInfo(widget.id)
         return
@@ -235,7 +274,10 @@ class ComicListWidget(BaseListWidget):
             if max(w, h) <= Setting.CoverMaxNum.value or not isIfSize:
                 model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value, mat)
                 widget.isWaifu2xLoading = True
-                self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index)
+                if self.isLocal:
+                    self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index, noSaveCache=True)
+                else:
+                    self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index)
 
     def CancleWaifu2xPicture(self, index):
         widget = self.indexWidget(index)

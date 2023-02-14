@@ -18,14 +18,21 @@ class ServerReq(object):
         self.useImgProxy = True
         self.isUseHttps = bool(Setting.IsUseHttps.value)
         self.proxyUrl = ""
-        if Setting.ProxySelectIndex.value == 5:
-            host = ToolUtil.GetUrlHost(url)
-            if host in config.ApiDomain:
-                self.headers.pop("user-agent")
-                self.proxyUrl = config.ProxyApiDomain
-            elif host in config.ImageDomain:
-                self.headers.pop("user-agent")
-                self.proxyUrl = config.ProxyImgDomain
+
+        host = ToolUtil.GetUrlHost(url)
+        if host in config.ApiDomain and Setting.ProxySelectIndex.value == 5:
+            self.headers.pop("user-agent")
+            self.proxyUrl = config.ProxyApiDomain
+        if host in config.ImageDomain and Setting.ProxyImgSelectIndex.value == 5:
+            self.headers.pop("user-agent")
+            self.proxyUrl = config.ProxyImgDomain
+
+        if host in config.ApiDomain and Setting.ProxySelectIndex.value == 6:
+            self.headers.pop("user-agent")
+            self.proxyUrl = config.ProxyApiDomain2
+        if host in config.ImageDomain and Setting.ProxyImgSelectIndex.value == 6:
+            self.headers.pop("user-agent")
+            self.proxyUrl = config.ProxyImgDomain2
 
         if Setting.IsHttpProxy.value == 1:
             self.proxy = {"http": Setting.HttpProxy.value, "https": Setting.HttpProxy.value}
@@ -311,7 +318,6 @@ class DownloadBookReq(ServerReq):
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
 
-
 # 获得评论
 class GetCommentsReq(ServerReq):
     def __init__(self, bookId="", page=1):
@@ -344,6 +350,15 @@ class CheckUpdateReq(ServerReq):
     def __init__(self, url=config.UpdateUrl):
         method = "GET"
         super(self.__class__, self).__init__(url, {}, {}, method)
+        self.isParseRes = False
+        self.useImgProxy = False
+
+
+# 检查Pre更新
+class CheckPreUpdateReq(ServerReq):
+    def __init__(self, url=config.UpdateUrl):
+        method = "GET"
+        super(self.__class__, self).__init__(url.replace("/latest", ""), {}, {}, method)
         self.isParseRes = False
         self.useImgProxy = False
 

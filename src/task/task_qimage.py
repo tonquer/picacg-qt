@@ -1,6 +1,5 @@
 from PySide6.QtGui import QImage
-
-from PySide6.QtGui import QImage
+from PySide6.QtCore import Qt
 
 from task.qt_task import TaskBase
 from tools.log import Log
@@ -12,6 +11,11 @@ class QtQImageTask(object):
         self.callBack = None
         self.backParam = None
         self.cleanFlag = ""
+        self.data = ""
+        self.radio = 1
+        self.toH = 0
+        self.toW = 0
+        self.model = 0
 
 
 class TaskQImage(TaskBase):
@@ -27,7 +31,7 @@ class TaskQImage(TaskBase):
                 v = self._inQueue.get(True)
                 if v == "":
                     break
-                taskId, data = v
+                taskId = v
             except Exception as es:
                 continue
             self._inQueue.task_done()
@@ -37,32 +41,48 @@ class TaskQImage(TaskBase):
 
             q = QImage()
             try:
-                if not data:
+                info = self.tasks.get(taskId)
+                if not info:
+                    continue
+
+                if not info.data:
                     return
-                q.loadFromData(data)
+                q.loadFromData(info.data)
+                q.setDevicePixelRatio(info.radio)
+                newQ = q.scaled(info.toW * info.radio, info.toH * info.radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             except Exception as es:
                 Log.Error(es)
             finally:
-                self.taskObj.imageBack.emit(taskId, q)
+                self.taskObj.imageBack.emit(taskId, newQ)
 
-    def AddQImageTask(self, data, callBack=None, backParam=None, cleanFlag=None):
+    def AddQImageTask(self, data, radio, toW, toH, model, callBack=None, backParam=None, cleanFlag=None):
         self.taskId += 1
         info = QtQImageTask(self.taskId)
         info.callBack = callBack
         info.backParam = backParam
+        info.data = data
+        info.radio = radio
+        info.toW = toW
+        info.toH = toH
+        info.model = model
+
         self.tasks[self.taskId] = info
         if cleanFlag:
             info.cleanFlag = cleanFlag
             taskIds = self.flagToIds.setdefault(cleanFlag, set())
             taskIds.add(self.taskId)
-        self._inQueue.put((self.taskId, data))
-        return
+        self._inQueue.put(self.taskId)
+        return self.taskId
 
-    def HandlerTask(self, taskId, data):
+    def ClearQImageTaskById(self, taskId):
+        if taskId in self.tasks:
+            self.tasks.pop(taskId)
+
+    def HandlerTask(self, taskId, newData):
         try:
             info = self.tasks.get(taskId)
             if not info:
-                Log.Warn("[Task] not find taskId:{}, {}".format(taskId, data))
+                Log.Warn("[Task] not find taskId:{}".format(taskId))
                 return
             assert isinstance(info, QtQImageTask)
             if info.cleanFlag:
@@ -70,9 +90,9 @@ class TaskQImage(TaskBase):
                 taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
-                    info.callBack(data)
+                    info.callBack(newData)
                 else:
-                    info.callBack(data, info.backParam)
+                    info.callBack(newData, info.backParam)
                 del info.callBack
             del self.tasks[taskId]
         except Exception as es:

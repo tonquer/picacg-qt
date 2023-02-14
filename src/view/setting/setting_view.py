@@ -74,6 +74,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.fontBox.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.FontName))
         self.fontSize.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.FontSize))
         self.fontStyle.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.FontStyle))
+        self.tileComboBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.Waifu2xTileSize))
 
         # spinBox
         # self.preDownNum.valueChanged.connect(partial(self.SpinBoxEvent, "", self.preDownNum))
@@ -226,6 +227,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.readScale.setValue(Setting.LookScale.value)
         self.readModel.setCurrentIndex(Setting.LookModel.value)
 
+        self.tileComboBox.setCurrentIndex(Setting.Waifu2xTileSize.value)
         self.coverCheckBox.setChecked(Setting.CoverIsOpenWaifu.value)
         self.coverNoise.setCurrentIndex(Setting.CoverLookNoise.value)
         self.coverScale.setValue(Setting.CoverLookScale.value)

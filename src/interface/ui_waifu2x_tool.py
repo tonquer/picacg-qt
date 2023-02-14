@@ -395,6 +395,6 @@ class Ui_Waifu2xTool(object):
         self.pushButton_3.setText(QCoreApplication.translate("Waifu2xTool", u"\u7f29\u5c0f", None))
         self.pushButton.setText(QCoreApplication.translate("Waifu2xTool", u"\u653e\u5927", None))
         self.saveButton.setText(QCoreApplication.translate("Waifu2xTool", u"\u4fdd\u5b58\u56fe\u7247", None))
-        self.headButton.setText(QCoreApplication.translate("Waifu2xTool", u"\u8bbe\u7f6e\u4e3a\u5934\u50cf", None))
+        self.headButton.setText(QCoreApplication.translate("Waifu2xTool", u"\u8bbe\u7f6e\u5934\u50cf", None))
     # retranslateUi
 

@@ -6,7 +6,6 @@ import sys
 import time
 import traceback
 
-
 from config import config
 from config.setting import Setting
 from qt_error import showError
@@ -54,6 +53,7 @@ if __name__ == "__main__":
         Log.Error(es)
         app = QtWidgets.QApplication(sys.argv)
         showError(traceback.format_exc(), app)
+
         if config.CanWaifu2x:
             waifu2x_vulkan.stop()
         sys.exit(-111)
@@ -92,6 +92,7 @@ if __name__ == "__main__":
         sys.exit(-111)
 
     sts = app.exec()
+    socket.close()
     main.Close()
     if config.CanWaifu2x:
         waifu2x_vulkan.stop()

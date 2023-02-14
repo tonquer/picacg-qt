@@ -17,6 +17,7 @@ class ReadMode(Enum):
     LeftRightScroll = 4  # 左右滚动
     RightLeftScroll = 5  # 右左滚动
     RightLeftDouble2 = 6  # 右左双页(滚轮正序)
+    Samewight = 7  # 等宽模式
 
     @staticmethod
     def isDouble(model):
@@ -25,6 +26,10 @@ class ReadMode(Enum):
     @staticmethod
     def isRightLeft(model):
         return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll]
+
+    @staticmethod
+    def isScroll(model):
+        return model in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll]
 
 
 class QtFileData(object):
@@ -59,7 +64,11 @@ class QtFileData(object):
         self.model = {}
 
         self.cacheImage = None
+        self.cacheImageScale = ""
+        self.cacheImageTaskId = 0
         self.cacheWaifu2xImage = None
+        self.cacheWaifu2xImageScale = ""
+        self.cacheWaifu2xImageTaskId = 0
 
         self.downloadSize = 0
         self.isGif = False

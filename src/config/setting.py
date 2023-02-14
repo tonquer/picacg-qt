@@ -96,9 +96,12 @@ class Setting:
     HttpProxy = SettingValue("ProxySetting", "", False)
     Sock5Proxy = SettingValue("ProxySetting", "", False)
     ChatProxy = SettingValue("ProxySetting", 0, False)
-    PreferCDNIP = SettingValue("ProxySetting", "104.16.109.107", False)
+    PreferCDNIP = SettingValue("ProxySetting", "104.18.227.172", False)
     IsUseHttps = SettingValue("ProxySetting", 1, False)
+
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)
+    ProxyImgSelectIndex = SettingValue("ProxySetting", 1, False)
+    PreferCDNIPImg = SettingValue("ProxySetting", "104.18.227.172", False)
 
     # 下载与缓存
     SavePath = SettingValue("DownloadSetting", "", False)
@@ -107,6 +110,7 @@ class Setting:
     # Waifu2x设置
     SelectEncodeGpu = SettingValue("Waifu2xSetting", "", True)
     Waifu2xCpuCore = SettingValue("Waifu2xSetting", 0, True)
+    Waifu2xTileSize = SettingValue("Waifu2xSetting", 0, False, [0, 200, 100, 32])
 
     # 封面 Waifu2x
     CoverIsOpenWaifu = SettingValue("Waifu2xSetting", 0, False)
@@ -143,6 +147,8 @@ class Setting:
     IsShowCmd = SettingValue("Other", 0, False)
     IsGrabGesture: SettingValue = SettingValue("Other", 0, True)
     IsShowProxy5 = SettingValue("Other", 0, False)
+    IsPreUpdate = SettingValue("Other", 0, False)
+    SaveCacheAddress = SettingValue("Other", "104.21.91.145", False)
 
     @staticmethod
     def InitLoadSetting():
@@ -182,8 +188,18 @@ class Setting:
         path = Setting.GetConfigPath()
         if not os.path.isdir(path):
             os.mkdir(path)
+        path2 = Setting.GetLocalHomePath()
+        if not os.path.isdir(path2):
+            os.mkdir(path2)
         Setting.CheckRepair()
         return
+
+    @staticmethod
+    def GetLocalHomePath():
+        from PySide6.QtCore import QDir
+        homePath = QDir.homePath()
+        projectName = ".comic-qt"
+        return os.path.join(homePath, projectName)
 
     @staticmethod
     def GetConfigPath():

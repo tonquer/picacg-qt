@@ -29,8 +29,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.dbUpdateUrl = [config.DatabaseUpdate3, config.DatabaseUpdate2, config.DatabaseUpdate]
-        self.dbUpdateDbUrl = [config.DatabaseDownload2, config.DatabaseDownload3, config.DatabaseDownload]
+        self.dbUpdateUrl = [config.DatabaseUpdate, config.DatabaseUpdate2, config.DatabaseUpdate3]
+        self.dbUpdateDbUrl = [config.DatabaseDownload, config.DatabaseDownload2, config.DatabaseDownload3]
         self.curIndex = 0
         self.curSubVersion = 0
         self.curUpdateTick = 0
@@ -44,6 +44,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.verCheck.clicked.connect(self.InitUpdate)
 
         self.updateUrl = [config.UpdateUrl, config.UpdateUrl2, config.UpdateUrl3]
+        self.updatePreUrl = [config.UpdateUrlApi, config.UpdateUrl2Api, config.UpdateUrl3Api]
         self.updateBackUrl = [config.UpdateUrlBack, config.UpdateUrl2Back, config.UpdateUrl3Back]
         self.checkUpdateIndex = 0
         self.helpLogWidget = HelpLogWidget()
@@ -55,12 +56,17 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.updateWidget.setVisible(False)
         self.selectUrl = ""
         self.updateButton.clicked.connect(self.OpenUpdateUrl)
+        self.preCheckBox.setChecked(bool(Setting.IsPreUpdate.value))
+        self.preCheckBox.clicked.connect(self.SwitchCheckPre)
 
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)
         self.version.setText(config.RealVersion)
         self.upTimeLabel.setText(config.TimeVersion)
         self.waifu2x.setText(config.Waifu2xVersion)
+
+    def SwitchCheckPre(self):
+        Setting.IsPreUpdate.SetValue(int(self.preCheckBox.isChecked()))
 
     def Init(self):
         self.CheckDb()
@@ -75,7 +81,10 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         if self.checkUpdateIndex > len(self.updateUrl) -1:
             self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
             return
-        self.AddHttpTask(req.CheckUpdateReq(self.updateUrl[self.checkUpdateIndex]), self.InitUpdateBack)
+        if Setting.IsPreUpdate.value:
+            self.AddHttpTask(req.CheckPreUpdateReq(self.updatePreUrl[self.checkUpdateIndex]), self.InitUpdateBack)
+        else:
+            self.AddHttpTask(req.CheckUpdateReq(self.updateUrl[self.checkUpdateIndex]), self.InitUpdateBack)
 
     def InitUpdateBack(self, raw):
         try:
@@ -274,7 +283,14 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             return infos
 
     def OpenUrl(self):
-        QDesktopServices.openUrl(QUrl(config.Issues))
+        UrlList = [config.Issues1, config.Issues2, config.Issues3]
+        url = UrlList[0] if self.checkUpdateIndex >= len(UrlList) else UrlList[self.checkUpdateIndex]
+        QDesktopServices.openUrl(QUrl(url))
+
+    def OpenProxyUrl(self):
+        UrlList = [config.ProxyUrl1, config.ProxyUrl2, config.ProxyUrl3]
+        url = UrlList[0] if self.checkUpdateIndex >= len(UrlList) else UrlList[self.checkUpdateIndex]
+        QDesktopServices.openUrl(QUrl(url))
 
     def OpenLogDir(self):
         path = Setting.GetLogPath()

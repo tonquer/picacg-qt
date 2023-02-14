@@ -23,6 +23,7 @@ class QConvertTask(object):
         self.tick = 0
         self.loadPath = ""  #
         self.preDownPath = ""  #
+        self.noSaveCache = False
         self.cachePath = ""  #
         self.savePath = ""  #
         self.imgData = b""
@@ -105,11 +106,12 @@ class TaskWaifu2x(TaskBase):
                     from waifu2x_vulkan import waifu2x_vulkan
                     scale = task.model.get("scale", 0)
                     # mat = task.model.get("format", "jpg")
+                    tileSize = Setting.Waifu2xTileSize.GetIndexV()
                     if scale <= 0:
                         sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, task.model.get("width", 0),
-                                          task.model.get("high", 0))
+                                          task.model.get("high", 0), tileSize=tileSize )
                     else:
-                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, scale)
+                        sts = waifu2x_vulkan.add(task.imgData, task.model.get('model', 0), task.taskId, scale, tileSize=tileSize)
 
                     if sts <= 0:
                         err = waifu2x_vulkan.getLastError()
@@ -159,13 +161,14 @@ class TaskWaifu2x(TaskBase):
             info.saveData = data
             info.tick = tick
             try:
-                for path in [info.cachePath, info.savePath]:
-                    if path and not os.path.isdir(os.path.dirname(path)):
-                        os.makedirs(os.path.dirname(path))
+                if not info.noSaveCache:
+                    for path in [info.cachePath, info.savePath]:
+                        if path and not os.path.isdir(os.path.dirname(path)):
+                            os.makedirs(os.path.dirname(path))
 
-                    if path and data:
-                        with open(path, "wb+") as f:
-                            f.write(data)
+                        if path and data:
+                            with open(path, "wb+") as f:
+                                f.write(data)
             except Exception as es:
                 info.status = Status.SaveError
                 Log.Error(es)
@@ -173,7 +176,7 @@ class TaskWaifu2x(TaskBase):
             self.taskObj.convertBack.emit(taskId)
             t1.Refresh("RunLoad")
 
-    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, preDownPath=None, cleanFlag=None):
+    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag=None):
         info = QConvertTask()
         info.callBack = callBack
         info.backParam = backParam
@@ -183,7 +186,8 @@ class TaskWaifu2x(TaskBase):
         info.imgData = imgData
         info.model = model
         info.preDownPath = preDownPath
-        if path and Setting.SavePath.value:
+        info.noSaveCache = noSaveCache
+        if not noSaveCache and path and Setting.SavePath.value:
             info.cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.join("waifu2x", path))
 
         if cleanFlag:
@@ -232,7 +236,7 @@ class TaskWaifu2x(TaskBase):
         for taskId in taskIds:
             if taskId in self.tasks:
                 del self.tasks[taskId]
-        Log.Info("cancel wait convert taskId, {}".format(taskIds))
+        # Log.Info("cancel wait convert taskId, {}".format(taskIds))
         if config.CanWaifu2x:
             from waifu2x_vulkan import waifu2x_vulkan
             waifu2x_vulkan.removeWaitProc(list(taskIds))

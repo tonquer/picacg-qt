@@ -40,6 +40,7 @@ from view.info.game_info_view import GameInfoView
 from view.read.read_view import ReadView
 from view.search.search_view import SearchView
 from view.setting.setting_view import SettingView
+from view.tool.local_read_view import LocalReadView
 from view.tool.waifu2x_tool_view import Waifu2xToolView
 from view.user.favorite_view import FavoriteView
 from view.user.history_view import HistoryView
@@ -152,6 +153,9 @@ class Ui_Main(object):
         self.waifu2xToolView = Waifu2xToolView()
         self.waifu2xToolView.setObjectName(u"waifu2xToolView")
         self.subStackWidget.addWidget(self.waifu2xToolView)
+        self.localReadView = LocalReadView()
+        self.localReadView.setObjectName(u"localReadView")
+        self.subStackWidget.addWidget(self.localReadView)
         self.downloadAllView = DownloadAllView()
         self.downloadAllView.setObjectName(u"downloadAllView")
         self.subStackWidget.addWidget(self.downloadAllView)

@@ -27,27 +27,35 @@ PreLook = 4                    # 预显示
 IsLoadingPicture = True
 
 UpdateUrl = "https://github.com/tonquer/picacg-qt/releases/latest"
+UpdateUrlApi = "https://api.github.com/repos/tonquer/picacg-qt/releases"
 UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
-UpdateUrl2 = "https://hub.fastgit.xyz/tonquer/picacg-qt/releases/latest"
-UpdateUrl2Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
-UpdateUrl3 = "https://hub.ggo.icu/tonquer/picacg-qt/releases/latest"
-UpdateUrl3Back = "https://hub.ggo.icu/tonquer/picacg-qt"
+UpdateUrl2 = "https://hub.ggo.icu/tonquer/picacg-qt/releases/latest"
+UpdateUrl2Api = "https://api.ggo.icu/repos/tonquer/picacg-qt/releases"
+UpdateUrl2Back = "https://hub.ggo.icu/tonquer/picacg-qt"
 
-DatabaseUpdate = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
+UpdateUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/releases/latest"
+UpdateUrl3Api = "https://api.fastgit.xyz/repos/tonquer/picacg-qt/releases"
+UpdateUrl3Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
-DatabaseUpdate2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload2 = "https://raw.fastgit.org/bika-robot/picacg-database/main/data3/"
+DatabaseUpdate = "https://raw.ggo.icu/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload = "https://raw.ggo.icu/bika-robot/picacg-database/main/data3/"
 
-DatabaseUpdate3 = "https://raw.ggo.icu/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload3 = "https://raw.ggo.icu/bika-robot/picacg-database/main/data3/"
+DatabaseUpdate2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
 
-UpdateVersion = "v1.4.1"
-RealVersion = "v1.4.1.1"
-TimeVersion = "2023-1-23"
+DatabaseUpdate3 = "https://raw.fastgit.org/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload3 = "https://raw.fastgit.org/bika-robot/picacg-database/main/data3/"
 
-Waifu2xVersion = "1.1.4"
+Issues1 = "https://github.com/tonquer/picacg-qt/issues"
+Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
+Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
+
+UpdateVersion = "v1.4.2"
+RealVersion = "v1.4.2"
+TimeVersion = "2023-2-5"
+
+Waifu2xVersion = "1.1.5"
 
 
 # waifu2x
@@ -63,16 +71,15 @@ Waifu2xPath = "waifu2x"
 
 IsTips = 1
 
-# ISSUES
-Issues = "https://github.com/tonquer/picacg-qt/issues"
-
 # 代理与分流相关
-ProxyUrl = "https://github.com/tonquer/picacg-qt/discussions/48"
+ProxyUrl1 = "https://github.com/tonquer/picacg-qt/discussions/48"
+ProxyUrl2 = "https://hub.ggo.icu/tonquer/picacg-qt/discussions/48"
+ProxyUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/discussions/48"
 
 # Waifu2x相关
 Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 
-Address = ["104.22.64.159",  "104.21.91.145"]  # 分类2，3 Ip列表
+Address = ["188.114.98.153", "104.21.91.145"]  # 分类2，3 Ip列表
 
 ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
 ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器
@@ -81,6 +88,9 @@ ImageServer3 = 'storage.diwodiwo.xyz'          # 分流3 使用的图片服务�
 
 ProxyApiDomain = "bika-api.ggo.icu"
 ProxyImgDomain = "bika-img.ggo.icu"
+
+ProxyApiDomain2 = "bika2-api.ggo.icu"
+ProxyImgDomain2 = "bika2-img.ggo.icu"
 
 ApiDomain = [
     "picaapi.picacomic.com",
