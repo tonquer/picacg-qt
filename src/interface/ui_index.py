@@ -52,25 +52,6 @@ class Ui_Index(object):
 
         self.verticalLayout_3.addWidget(self.godList)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer)
-
-        self.pushButton = QPushButton(self.tab_3)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.horizontalLayout.addWidget(self.pushButton)
-
-        self.toolButton = QToolButton(self.tab_3)
-        self.toolButton.setObjectName(u"toolButton")
-
-        self.horizontalLayout.addWidget(self.toolButton)
-
-
-        self.verticalLayout_3.addLayout(self.horizontalLayout)
-
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
@@ -85,10 +66,29 @@ class Ui_Index(object):
 
         self.verticalLayout_2.addWidget(self.tabWidget)
 
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+        self.pushButton = QPushButton(Index)
+        self.pushButton.setObjectName(u"pushButton")
+
+        self.horizontalLayout.addWidget(self.pushButton)
+
+        self.toolButton = QToolButton(Index)
+        self.toolButton.setObjectName(u"toolButton")
+
+        self.horizontalLayout.addWidget(self.toolButton)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
+
 
         self.retranslateUi(Index)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(Index)
@@ -97,12 +97,12 @@ class Ui_Index(object):
     def retranslateUi(self, Index):
         Index.setWindowTitle(QCoreApplication.translate("Index", u"\u9996\u9875", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), QCoreApplication.translate("Index", u"\u968f\u673a\u63a8\u8350", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Index", u"\u672c\u5b50\u795e\u63a8\u8350", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Index", u"\u672c\u5b50\u9b54\u63a8\u8350", None))
         self.pushButton.setText(QCoreApplication.translate("Index", u"\u6279\u91cf\u4e0b\u8f7d", None))
         self.toolButton.setText(QCoreApplication.translate("Index", u"\u5237\u65b0(F5)", None))
 #if QT_CONFIG(shortcut)
         self.toolButton.setShortcut(QCoreApplication.translate("Index", u"F5", None))
 #endif // QT_CONFIG(shortcut)
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Index", u"\u672c\u5b50\u795e\u63a8\u8350", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Index", u"\u672c\u5b50\u9b54\u63a8\u8350", None))
     # retranslateUi
 

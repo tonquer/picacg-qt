@@ -516,7 +516,7 @@
           </size>
          </property>
          <property name="text">
-          <string>设置为头像</string>
+          <string>设置头像</string>
          </property>
         </widget>
        </item>

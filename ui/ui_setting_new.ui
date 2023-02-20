@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-382</y>
+          <y>-1441</y>
           <width>661</width>
-          <height>2835</height>
+          <height>2891</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -1303,6 +1303,59 @@
               </item>
              </layout>
             </item>
+            <item>
+             <widget class="QLabel" name="label_39">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Tile大小，降低可减少显存占用（如出现部分图片无法转换可调低该值）</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_29">
+              <item>
+               <widget class="WheelComboBox" name="tileComboBox">
+                <item>
+                 <property name="text">
+                  <string>Auto</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>200</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>100</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>32</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_27">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
          </item>
@@ -2477,12 +2530,12 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="showCloseButtonGroup"/>
+  <buttongroup name="mainScaleGroup"/>
+  <buttongroup name="themeGroup"/>
+  <buttongroup name="languageGroup"/>
   <buttongroup name="logGroup"/>
   <buttongroup name="saveNameGroup"/>
-  <buttongroup name="mainScaleGroup"/>
-  <buttongroup name="languageGroup"/>
   <buttongroup name="proxyGroup"/>
-  <buttongroup name="showCloseButtonGroup"/>
-  <buttongroup name="themeGroup"/>
  </buttongroups>
 </ui>

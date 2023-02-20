@@ -105,6 +105,7 @@
             <widget class="GameInfoView" name="gameInfoView"/>
             <widget class="GameView" name="gameView"/>
             <widget class="Waifu2xToolView" name="waifu2xToolView"/>
+            <widget class="LocalReadView" name="localReadView"/>
             <widget class="DownloadAllView" name="downloadAllView"/>
             <widget class="BookEpsView" name="bookEpsView"/>
             <widget class="FriedView" name="friedView"/>
@@ -263,6 +264,12 @@
    <class>DownloadAllView</class>
    <extends>QWidget</extends>
    <header location="global">view.download.download_all_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalReadView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.local_read_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

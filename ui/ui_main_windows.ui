@@ -105,7 +105,7 @@
          <item>
           <widget class="AnimationStackWidget" name="subStackWidget">
            <property name="currentIndex">
-            <number>19</number>
+            <number>20</number>
            </property>
            <widget class="IndexView" name="indexView"/>
            <widget class="HelpView" name="helpView"/>
@@ -127,6 +127,7 @@
            <widget class="GameView" name="gameView"/>
            <widget class="Waifu2xToolView" name="waifu2xToolView"/>
            <widget class="DownloadAllView" name="downloadAllView"/>
+           <widget class="LocalReadView" name="localReadView"/>
            <widget class="BookEpsView" name="bookEpsView"/>
            <widget class="FriedView" name="friedView"/>
           </widget>
@@ -280,15 +281,21 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TitleBarWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">component.widget.title_bar_widget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>DownloadAllView</class>
    <extends>QWidget</extends>
    <header location="global">view.download.download_all_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalReadView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.local_read_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TitleBarWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">component.widget.title_bar_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
