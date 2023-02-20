@@ -159,7 +159,7 @@ class QtFileData(object):
             toScaleH = min(maxHeight, maxHeight * scale)
 
         elif stripModel in [ReadMode.UpDown]:
-            scale = (0.5 + scaleCnt * 0.1)
+            scale = (1 + scaleCnt * 0.1)
             toScaleW = min(maxWidth, maxWidth * scale)
             toScaleH = maxHeight * scale * 10
         else:

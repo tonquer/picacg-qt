@@ -515,22 +515,25 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         
     def ChangeReadMode2(self, index):
         self.stripModel = ReadMode(index)
-        if self.stripModel == ReadMode.LeftRight:
-            self.ScalePicture2(100)
+        self.ScalePicture2(100)
+        if self.stripModel == ReadMode.UpDown:
+            self.ScalePicture2(80)
+        elif self.stripModel == ReadMode.LeftRight:
+            pass
             # self.zoomSlider.setValue(100)
             # properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
             # properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 2)
             # properties.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, 2)
             # QScroller.scroller(self.readImg.scrollArea).setScrollerProperties(properties)
         elif ReadMode.isDouble(self.stripModel):
-            self.ScalePicture2(100)
+            pass
             # self.zoomSlider.setValue(100)
             # properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
             # properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 2)
             # properties.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, 2)
             # QScroller.scroller(self.readImg.scrollArea).setScrollerProperties(properties)
         elif self.stripModel in [ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
-            self.ScalePicture2(100)
+            pass
             # self.zoomSlider.setValue(100)
             # properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
             # properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 2)
@@ -540,7 +543,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             # self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(False)
 
         else:
-            self.ScalePicture2(100)
+            pass
             # self.zoomSlider.setValue(100)
             # properties = QScroller.scroller(self.readImg.scrollArea).scrollerProperties()
             # properties.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, 1)
