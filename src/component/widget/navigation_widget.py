@@ -1,6 +1,6 @@
 from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent, QSize
 from PySide6.QtGui import QPixmap, Qt, QIcon
-from PySide6.QtWidgets import QWidget, QScroller
+from PySide6.QtWidgets import QWidget, QScroller, QScrollerProperties
 
 from config import config
 from config.setting import Setting
@@ -36,6 +36,14 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.picData = None
         self.offlineButton.SetState(False)
         self.offlineButton.Switch.connect(self.SwitchOffline)
+
+        if Setting.IsGrabGesture.value:
+            QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
+            propertiesOne = QScroller.scroller(self).scrollerProperties()
+            propertiesOne.setScrollMetric(QScrollerProperties.MousePressEventDelay, 0)
+            propertiesOne.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
+            propertiesOne.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
+            QScroller.scroller(self.scrollArea).setScrollerProperties(propertiesOne)
 
     def SwitchOffline(self, state):
         QtOwner().isOfflineModel = state

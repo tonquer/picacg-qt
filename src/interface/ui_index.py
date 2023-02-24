@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QListWidgetItem, QPushButton,
-    QSizePolicy, QSpacerItem, QTabWidget, QToolButton,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QListWidgetItem, QSizePolicy,
+    QSpacerItem, QTabWidget, QToolButton, QVBoxLayout,
+    QWidget)
 
 from component.list.comic_list_widget import ComicListWidget
 
@@ -41,6 +41,20 @@ class Ui_Index(object):
         self.randomList.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.randomList)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+        self.toolButton = QToolButton(self.tab_1)
+        self.toolButton.setObjectName(u"toolButton")
+
+        self.horizontalLayout.addWidget(self.toolButton)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.tabWidget.addTab(self.tab_1, "")
         self.tab_3 = QWidget()
@@ -66,25 +80,6 @@ class Ui_Index(object):
 
         self.verticalLayout_2.addWidget(self.tabWidget)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer)
-
-        self.pushButton = QPushButton(Index)
-        self.pushButton.setObjectName(u"pushButton")
-
-        self.horizontalLayout.addWidget(self.pushButton)
-
-        self.toolButton = QToolButton(Index)
-        self.toolButton.setObjectName(u"toolButton")
-
-        self.horizontalLayout.addWidget(self.toolButton)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
-
 
         self.retranslateUi(Index)
 
@@ -96,13 +91,12 @@ class Ui_Index(object):
 
     def retranslateUi(self, Index):
         Index.setWindowTitle(QCoreApplication.translate("Index", u"\u9996\u9875", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), QCoreApplication.translate("Index", u"\u968f\u673a\u63a8\u8350", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Index", u"\u672c\u5b50\u795e\u63a8\u8350", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Index", u"\u672c\u5b50\u9b54\u63a8\u8350", None))
-        self.pushButton.setText(QCoreApplication.translate("Index", u"\u6279\u91cf\u4e0b\u8f7d", None))
         self.toolButton.setText(QCoreApplication.translate("Index", u"\u5237\u65b0(F5)", None))
 #if QT_CONFIG(shortcut)
         self.toolButton.setShortcut(QCoreApplication.translate("Index", u"F5", None))
 #endif // QT_CONFIG(shortcut)
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), QCoreApplication.translate("Index", u"\u968f\u673a\u63a8\u8350", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("Index", u"\u672c\u5b50\u795e\u63a8\u8350", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QCoreApplication.translate("Index", u"\u672c\u5b50\u9b54\u63a8\u8350", None))
     # retranslateUi
 

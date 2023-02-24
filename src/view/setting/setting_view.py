@@ -5,9 +5,9 @@ import sys
 from functools import partial
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QSettings, Qt, QSize, QUrl, QFile, QTranslator, QLocale
+from PySide6.QtCore import QSettings, Qt, QSize, QUrl, QFile, QTranslator, QLocale, QEvent
 from PySide6.QtGui import QDesktopServices, QFont, QFontDatabase
-from PySide6.QtWidgets import QFileDialog, QScroller
+from PySide6.QtWidgets import QFileDialog, QScroller, QScrollerProperties
 
 from config import config
 from config.setting import Setting, SettingValue
@@ -104,8 +104,23 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
 
         self.msgLabel.setVisible(False)
 
-        # if Setting.IsGrabGesture.value:
+        if Setting.IsGrabGesture.value:
+            QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
+            propertiesOne = QScroller.scroller(self).scrollerProperties()
+            propertiesOne.setScrollMetric(QScrollerProperties.MousePressEventDelay, 0)
+            propertiesOne.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
+            propertiesOne.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
+            QScroller.scroller(self.scrollArea).setScrollerProperties(propertiesOne)
+
         #     QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
+    #     self.grabGestureBox.installEventFilter(self)
+    #
+    # def eventFilter(self, watched, event) -> bool:
+    #     if (watched == self.grabGestureBox and event.type() == QEvent.Enter):
+    #         QScroller.ungrabGesture(self.scrollArea)
+    #     elif (watched == self.grabGestureBox and event.type() == QEvent.Leave):
+    #         QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
+    #     return super(self.__class__, self).eventFilter(watched, event)
 
     def MoveToLabel(self, label):
         p = label.pos()
@@ -437,7 +452,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
                 index += 1
 
             self.encodeSelect.addItem("CPU")
-            
+
         if config.EncodeGpu == "CPU":
             config.Encode = -1
             self.encodeSelect.setCurrentIndex(index)

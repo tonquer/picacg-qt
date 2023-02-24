@@ -1,5 +1,6 @@
 import json
 import os
+from this import d
 
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QAction
@@ -57,6 +58,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
         self.sortIdCombox.currentIndexChanged.connect(self.Init)
         self.sortKeyCombox.currentIndexChanged.connect(self.Init)
+        self.setAcceptDrops(True)
 
     def Init(self):
         self.bookList.clear()
@@ -183,7 +185,8 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             return
         alreadyNum = 0
         addNum = 0
-        self.lastPath = url
+        if url:
+            self.lastPath = url
         for v in books:
             if v.id in self.allBookInfos:
                 alreadyNum += 1
@@ -219,3 +222,20 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
     def JumpPage(self):
         return
+
+    def dragEnterEvent(self, event):
+        if(event.mimeData().hasUrls()):
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, evemt):
+        return
+
+    def dropEvent(self, event):
+        mimeData  = event.mimeData()
+        if(mimeData.hasUrls()):
+            urls = mimeData.urls()
+            QtOwner().ShowLoading()
+            fileNames = [str(i.toLocalFile()) for i in urls]
+            self.AddLocalTaskLoad(LocalData.Type5, fileNames, "", self.CheckAction1LoadBack)

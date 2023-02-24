@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QListWidget, QAbstractItemView, QScroller
+from PySide6.QtWidgets import QListWidget, QAbstractItemView, QScroller, QScrollerProperties
 
 from component.scroll.smooth_scroll_bar import SmoothScrollBar
 from config.setting import Setting
@@ -22,18 +22,25 @@ class BaseListWidget(QListWidget, QtTaskBase):
         self.LikeBack = None
         self.KillBack = None
         self.parentId = -1
-
-        self.vScrollBar = SmoothScrollBar()
-        self.vScrollBar.setOrientation(Qt.Vertical)
-        self.setVerticalScrollBar(self.vScrollBar)
-
-        self.vScrollBar.MoveEvent.connect(self.OnActionTriggered)
+        self.vScrollBar = None
         if Setting.IsGrabGesture.value:
-            QScroller.grabGesture(self.viewport(), QScroller.LeftMouseButtonGesture)
+            QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
+            propertiesOne = QScroller.scroller(self).scrollerProperties()
+            print(propertiesOne.scrollMetric(propertiesOne.MousePressEventDelay))
+            propertiesOne.setScrollMetric(QScrollerProperties.MousePressEventDelay, 1)
+            propertiesOne.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
+            propertiesOne.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
+            propertiesOne.setScrollMetric(QScrollerProperties.AcceleratingFlickMaximumTime , 0)
+            QScroller.scroller(self).setScrollerProperties(propertiesOne)
+            self.verticalScrollBar().valueChanged.connect(self.ValueChange)
+        else:
+            self.vScrollBar = SmoothScrollBar()
+            self.vScrollBar.setOrientation(Qt.Vertical)
+            self.setVerticalScrollBar(self.vScrollBar)
+            self.vScrollBar.MoveEvent.connect(self.OnActionTriggered)
 
         self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.verticalScrollBar().setSingleStep(30)
-
         # self.timer = QTimer()
         # self.timer.setInterval(1000)
         # self.timer.timeout.connect(self.TimeOut)
@@ -42,6 +49,19 @@ class BaseListWidget(QListWidget, QtTaskBase):
         self.lastClick = 0
         self.lastIndex = -1
         self.doubleClickType = 0
+
+    def ValueChange(self, v):
+        if v >= self.verticalScrollBar().maximum():
+            if Setting.IsGrabGesture.value:
+                QScroller.ungrabGesture(self)
+
+            self.ClearWheelEvent()
+            self.isLoadingPage = True
+            if self.LoadCallBack:
+                self.LoadCallBack()
+
+            if Setting.IsGrabGesture.value:
+                QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
 
     # def event(self, e) -> bool:
     #     print(e)
@@ -57,7 +77,12 @@ class BaseListWidget(QListWidget, QtTaskBase):
     def wheelEvent(self, arg__1) -> None:
         if not self.wheelStatus:
             return
-        self.vScrollBar.ScrollValue(-arg__1.angleDelta().y())
+        if self.vScrollBar:
+            self.vScrollBar.ScrollValue(-arg__1.angleDelta().y())
+        else:
+            print(self.verticalScrollMode())
+            print(self.verticalScrollBar().singleStep())
+            return QListWidget.wheelEvent(self, arg__1)
 
     def OnActionTriggered(self):
         if self.isLoadingPage:
@@ -89,7 +114,8 @@ class BaseListWidget(QListWidget, QtTaskBase):
 
         # 防止异步加载时，信息错乱
         self.ClearTask()
-        self.vScrollBar.ResetValue(0)
+        if self.vScrollBar:
+            self.vScrollBar.ResetValue(0)
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.ForwardButton:

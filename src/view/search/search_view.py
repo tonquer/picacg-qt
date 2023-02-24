@@ -236,6 +236,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
                 for v in info.get("docs", []):
                     self.bookList.AddBookByDict(v)
                 self.CheckCategoryShowItem()
+                self.bookList.setFocus()
             else:
                 # QtWidgets.QMessageBox.information(self, '未搜索到结果', "未搜索到结果", QtWidgets.QMessageBox.Yes)
                 QtOwner().ShowError(Str.GetStr(st))
