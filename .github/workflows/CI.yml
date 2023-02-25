@@ -31,7 +31,8 @@ jobs:
         pip install urllib3==1.25.11
         pip install pillow==8.3.2
         pip install Pysocks==1.7.1
-        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.5/waifu2x_vulkan-1.1.5-cp37-cp37m-macosx_10_15_x86_64.whl
+        pip install natsort==8.2.0
+        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/waifu2x_vulkan-1.1.6-cp37-cp37m-macosx_10_15_x86_64.whl
         brew install create-dmg
     - name: Build
       run: |
@@ -124,7 +125,8 @@ jobs:
         pip install urllib3==1.25.11
         pip install pillow==8.3.2
         pip install Pysocks==1.7.1
-        pip install waifu2x-vulkan==1.1.5
+        pip install natsort==8.2.0
+        pip install waifu2x-vulkan==1.1.6
     - name: Build
       run: |
         cd src

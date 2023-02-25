@@ -88,7 +88,7 @@ class ReadFrame(QFrame):
         painter.drawText(QRect(0, self.height() // 4 * 1, self.width(), self.height()),Str.GetStr(Str.Menu))
         painter.drawText(QRect(self.width()*2 // 3, self.height() // 4 * 1, self.width(), self.height()), Str.GetStr(Str.Menu))
 
-        if self.qtTool.stripModel in [ReadMode.UpDown, ReadMode.LeftRight]:
+        if self.qtTool.stripModel in [ReadMode.UpDown, ReadMode.LeftRight, ReadMode.Samewight]:
             painter.drawText(QRect(self.width() // 3, self.height() // 4 * 1, self.width(), self.height()), Str.GetStr(Str.LastScroll))
             painter.drawText(QRect(self.width() // 3, self.height() // 4 * 3, self.width(), self.height()), Str.GetStr(Str.NextScroll))
         self.helpPixMap = p

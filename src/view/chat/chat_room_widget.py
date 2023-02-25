@@ -95,7 +95,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         self.toolMenu.addAction(self.action1)
         self.toolMenu.addAction(self.action2)
         self.toolButton.setMenu(self.toolMenu)
-        if Setting.ChatSendAction.value == 2:
+        if Setting.ChatSendAction.value == 0:
             self.action2.setChecked(True)
         else:
             self.action1.setChecked(True)

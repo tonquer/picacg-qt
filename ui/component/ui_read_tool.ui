@@ -476,6 +476,11 @@
                <string>右左双页(滚轮正序)</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>等宽模式</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>

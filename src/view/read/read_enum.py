@@ -162,13 +162,17 @@ class QtFileData(object):
             scale = (1 + scaleCnt * 0.1)
             toScaleW = min(maxWidth, maxWidth * scale)
             toScaleH = maxHeight * scale * 10
+        elif stripModel in [ReadMode.Samewight]:
+            scale = (1 + scaleCnt * 0.1)
+            toScaleW = min(maxWidth, maxWidth * scale)
+            toScaleH = maxHeight * scale * 10
         else:
             return maxWidth, maxHeight
         return toScaleW, toScaleH
 
     @staticmethod
     def GetReadToPos(stripModel, maxWidth, maxHeight, toWidth, toHeight, index, curIndex, oldPos):
-        if stripModel == ReadMode.LeftRight:
+        if stripModel in [ReadMode.LeftRight, ReadMode.Samewight]:
             return QPoint(maxWidth // 2 - toWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
         elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
             if index == curIndex:

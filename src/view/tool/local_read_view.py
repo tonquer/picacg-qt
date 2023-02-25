@@ -3,7 +3,7 @@ import os
 from this import d
 
 from PySide6.QtCore import Signal
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, Qt
 from PySide6.QtWidgets import QWidget, QMenu, QFileDialog
 
 from interface.ui_index import Ui_Index
@@ -31,11 +31,14 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
         self.action1 = QAction(Str.GetStr(Str.ImportSimple), self.toolMenu, triggered=self.CheckAction1)
         self.action2 = QAction(Str.GetStr(Str.ImportSimpleZip), self.toolMenu, triggered=self.CheckAction2)
+        self.action3 = QAction(Str.GetStr(Str.SupportDrop), self.toolMenu)
+        self.action3.setEnabled(False)
         # self.action3 = QAction(Str.GetStr(Str.ImportSimpleDir), self.toolMenu, triggered=self.CheckAction3)
         # self.action4 = QAction(Str.GetStr(Str.ImportChipDir), self.toolMenu, triggered=self.CheckAction4)
 
         self.toolMenu.addAction(self.action1)
         self.toolMenu.addAction(self.action2)
+        self.toolMenu.addAction(self.action3)
         # self.toolMenu.addAction(self.action3)
         # self.toolMenu.addAction(self.action4)
 
@@ -59,22 +62,65 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.sortIdCombox.currentIndexChanged.connect(self.Init)
         self.sortKeyCombox.currentIndexChanged.connect(self.Init)
         self.setAcceptDrops(True)
+        self.categoryBook = {}
+        self.bookCategory = {}
+        self.tagsList.clicked.connect(self.ClickTagsItem)
+        self.curSelectCategory = ""
+        self.bookList.isMoveMenu = True
+        self.bookList.MoveHandler = self.MoveCallBack
 
     def Init(self):
-        self.bookList.clear()
+        self.categoryBook, self.bookCategory = self.db.LoadCategory()
+        self.tagsList.clear()
+        self.tagsList.AddItem(Str.GetStr(Str.All), True)
 
+        for category in self.categoryBook.keys():
+            item = self.tagsList.AddItem(category, True)
+
+            if category == self.curSelectCategory:
+                item.setSelected(True)
+        self.tagsList.AddItem("+")
+        self.InitBook()
+
+    def InitBook(self):
+        self.bookList.clear()
         books = self.db.LoadLocalBook()
         oldDict = dict(self.allBookInfos)
         self.allBookInfos.clear()
+
         for v in books.values():
             self.allBookInfos[v.id] = v
             oldV = oldDict.get(v.id)
             if oldV:
                 v.CopyData(oldV)
 
+        if self.curSelectCategory:
+            allBookId = self.categoryBook.get(self.curSelectCategory, [])
+        else:
+            allBookId = self.allBookInfos.keys()
         for v in self.ToSortData(list(self.allBookInfos.values())):
-            self.bookList.AddBookByLocal(v)
+            if v.id in allBookId:
+                categoryList = self.bookCategory.get(v.id, [])
+                categoryStr = ",".join(categoryList)
+                self.bookList.AddBookByLocal(v, categoryStr)
         return
+
+    def ClickTagsItem(self, modelIndex):
+        index = modelIndex.row()
+        item = self.tagsList.item(index)
+        if not item:
+            return
+        widget = self.tagsList.itemWidget(item)
+        text = widget.text()
+        # print(text)
+        if text == "+":
+            self.OpenFavoriteFold()
+        elif text == Str.GetStr(Str.All):
+            self.curSelectCategory = ""
+            self.Init()
+        else:
+            self.curSelectCategory = text
+            self.Init()
 
     def ToSortData(self, value):
         datas = list(value)
@@ -193,7 +239,12 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             else:
                 self.allBookInfos[v.id] = v
                 addNum += 1
-                self.bookList.AddBookByLocal(v)
+                if self.curSelectCategory:
+                    category = self.curSelectCategory
+                    self.db.AddCategory(self.curSelectCategory, v.id)
+                else:
+                    category = ""
+                self.bookList.AddBookByLocal(v, category)
                 self.AddDataToDB(v.id)
         QtOwner().ShowMsg("已添加{}本到书架, {}本存在已忽略".format(addNum, alreadyNum))
         return
@@ -239,3 +290,36 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             QtOwner().ShowLoading()
             fileNames = [str(i.toLocalFile()) for i in urls]
             self.AddLocalTaskLoad(LocalData.Type5, fileNames, "", self.CheckAction1LoadBack)
+
+    def MoveCallBack(self, index):
+        widget = self.bookList.indexWidget(index)
+        if widget:
+            self.OpenFavoriteFold(widget.id)
+
+    def OpenFavoriteFold(self, bookId=""):
+        from view.tool.local_fold_view import LocalFoldView
+        w = LocalFoldView(QtOwner().owner, self, bookId)
+        w.show()
+        w.AddFold.connect(self.AddCategory)
+        w.DelFold.connect(self.DelCategory)
+        w.MoveOkBack.connect(self.MoveCategory)
+
+    def AddCategory(self, name):
+        if name in self.categoryBook:
+            return
+        self.categoryBook[name] = []
+        self.db.AddCategory(name)
+        self.Init()
+
+    def DelCategory(self, name):
+        if name not in self.categoryBook:
+            return
+        self.db.DelCategory(name)
+        self.curSelectCategory = ""
+        self.Init()
+
+    def MoveCategory(self, bookId, categoryList):
+        self.db.DelBookCategory(bookId)
+        for v in categoryList:
+            self.db.AddCategory(v, bookId)
+        self.Init()

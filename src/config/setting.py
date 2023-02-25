@@ -149,6 +149,7 @@ class Setting:
     IsShowProxy5 = SettingValue("Other", 0, False)
     IsPreUpdate = SettingValue("Other", 0, False)
     SaveCacheAddress = SettingValue("Other", "104.21.91.145", False)
+    IsReDownload = SettingValue("Other", 0, False)
 
     @staticmethod
     def InitLoadSetting():

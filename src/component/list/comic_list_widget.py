@@ -31,6 +31,7 @@ class ComicListWidget(BaseListWidget):
         self.isDelMenu = False
         self.isGame = False
         self.isLocal = False
+        self.isMoveMenu = False
 
     def SelectMenuBook(self, pos):
         index = self.indexAt(pos)
@@ -70,6 +71,10 @@ class ComicListWidget(BaseListWidget):
             if self.isDelMenu:
                 action = popMenu.addAction(Str.GetStr(Str.Delete))
                 action.triggered.connect(partial(self.DelHandler, index))
+            if self.isMoveMenu:
+                action = popMenu.addAction(Str.GetStr(Str.Move))
+                action.triggered.connect(partial(self.MoveHandler, index))
+
             popMenu.exec_(QCursor.pos())
         return
 
@@ -92,7 +97,7 @@ class ComicListWidget(BaseListWidget):
         pagesCount = v.get("pagesCount")
         self.AddBookItem(_id, title, categoryStr, url, path, likesCount, "", pagesCount, finished)
 
-    def AddBookByLocal(self, v, isFirstAdd=False):
+    def AddBookByLocal(self, v, category=""):
         from task.task_local import LocalData
         assert isinstance(v, LocalData)
         index = self.count()
@@ -111,10 +116,14 @@ class ComicListWidget(BaseListWidget):
             widget.timeLabel.setText(categories)
         else:
             widget.timeLabel.setVisible(False)
+            widget.starButton.setVisible(False)
+
+        widget.categoryLabel.setVisible(False)
+        if category:
+            widget.categoryLabel.setText(category)
+            widget.categoryLabel.setVisible(True)
 
         widget.toolButton.setVisible(False)
-        widget.categoryLabel.setVisible(False)
-        widget.starButton.setVisible(False)
         widget.nameLable.setText(title)
         item = QListWidgetItem(self)
         item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
@@ -320,3 +329,6 @@ class ComicListWidget(BaseListWidget):
         if widget:
             QtOwner().OpenEpsInfo(widget.id)
         pass
+
+    def MoveHandler(self, index):
+        return

@@ -516,7 +516,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
     def ChangeReadMode2(self, index):
         self.stripModel = ReadMode(index)
         self.ScalePicture2(100)
-        if self.stripModel == ReadMode.UpDown:
+        if self.stripModel in [ReadMode.UpDown, ReadMode.Samewight]:
             self.ScalePicture2(80)
         elif self.stripModel == ReadMode.LeftRight:
             pass

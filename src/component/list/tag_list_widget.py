@@ -55,3 +55,4 @@ class TagListWidget(BaseListWidget):
             item.setFlags(item.flags() & (~Qt.ItemIsSelectable))
 
         self.addItem(item)
+        return item

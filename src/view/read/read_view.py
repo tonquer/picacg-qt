@@ -55,6 +55,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         self.stripModel = ReadMode(Setting.LookReadMode.value)
         self.ChangeReadMode(Setting.LookReadMode.value)
+        self.qtTool.ChangeReadMode2(Setting.LookReadMode.value)
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
         self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
         self.pageIndex = -1
@@ -110,6 +111,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         AddReadMode(Str.GetStr(Str.LeftRightScroll), 4)
         AddReadMode(Str.GetStr(Str.RightLeftScroll), 5)
         AddReadMode(Str.GetStr(Str.RightLeftDouble2), 6)
+        AddReadMode(Str.GetStr(Str.SameWight), 7)
 
         menu3 = popMenu.addMenu(Str.GetStr(Str.Scale)+ "(- +)")
 

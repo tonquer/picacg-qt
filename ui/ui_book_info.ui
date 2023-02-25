@@ -275,7 +275,7 @@ QListWidget::item {
                 <widget class="QLabel" name="label_5">
                  <property name="maximumSize">
                   <size>
-                   <width>16777215</width>
+                   <width>40</width>
                    <height>40</height>
                   </size>
                  </property>
@@ -285,16 +285,9 @@ QListWidget::item {
                 </widget>
                </item>
                <item>
-                <widget class="TagListWidget" name="tagsList">
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>60</height>
-                  </size>
-                 </property>
+                <widget class="QWidget" name="tagList" native="true">
                  <property name="styleSheet">
-                  <string notr="true">QListWidget {background-color:transparent;}
-QListWidget::item {
+                  <string notr="true">QPushButton {
     background-color:rgb(251, 239, 243);
     color: rgb(196, 95, 125);
 	border:2px solid red;
@@ -302,19 +295,13 @@ QListWidget::item {
 	border-color:rgb(196, 95, 125);
 }
 /* 鼠标在按钮上时，按钮颜色 */
- QListWidget::item:hover 
+QPushButton:hover 
 {
     background-color:rgb(21, 85, 154);
     border-radius: 10px;
     color: rgb(0, 0, 0);
 }
 </string>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::NoFrame</enum>
-                 </property>
-                 <property name="spacing">
-                  <number>6</number>
                  </property>
                 </widget>
                </item>

@@ -205,15 +205,13 @@ class Ui_BookInfo(object):
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.label_5 = QLabel(self.scrollAreaWidgetContents)
         self.label_5.setObjectName(u"label_5")
-        self.label_5.setMaximumSize(QSize(16777215, 40))
+        self.label_5.setMaximumSize(QSize(40, 40))
 
         self.horizontalLayout_7.addWidget(self.label_5)
 
-        self.tagsList = TagListWidget(self.scrollAreaWidgetContents)
-        self.tagsList.setObjectName(u"tagsList")
-        self.tagsList.setMaximumSize(QSize(16777215, 60))
-        self.tagsList.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
-"QListWidget::item {\n"
+        self.tagList = QWidget(self.scrollAreaWidgetContents)
+        self.tagList.setObjectName(u"tagList")
+        self.tagList.setStyleSheet(u"QPushButton {\n"
 "    background-color:rgb(251, 239, 243);\n"
 "    color: rgb(196, 95, 125);\n"
 "	border:2px solid red;\n"
@@ -221,17 +219,15 @@ class Ui_BookInfo(object):
 "	border-color:rgb(196, 95, 125);\n"
 "}\n"
 "/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
-" QListWidget::item:hover \n"
+"QPushButton:hover \n"
 "{\n"
 "    background-color:rgb(21, 85, 154);\n"
 "    border-radius: 10px;\n"
 "    color: rgb(0, 0, 0);\n"
 "}\n"
 "")
-        self.tagsList.setFrameShape(QFrame.NoFrame)
-        self.tagsList.setSpacing(6)
 
-        self.horizontalLayout_7.addWidget(self.tagsList)
+        self.horizontalLayout_7.addWidget(self.tagList)
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_7)

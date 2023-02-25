@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>609</width>
-    <height>372</height>
+    <width>707</width>
+    <height>361</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,6 +30,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="redownloadRadio">
+         <property name="text">
+          <string>下载失败后1分钟自动重试</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton">

@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
     QSizePolicy, QSpacerItem, QSpinBox, QWidget)
 
 from component.list.comic_list_widget import ComicListWidget
+from component.list.tag_list_widget import TagListWidget
 
 class Ui_Local(object):
     def setupUi(self, Local):
@@ -30,15 +31,40 @@ class Ui_Local(object):
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.tagsList = TagListWidget(Local)
+        self.tagsList.setObjectName(u"tagsList")
+        self.tagsList.setMaximumSize(QSize(16777215, 60))
+        self.tagsList.setStyleSheet(u"QListWidget {background-color:transparent;}\n"
+"QListWidget::item {\n"
+"    background-color:rgb(251, 239, 243);\n"
+"    color: rgb(196, 95, 125);\n"
+"	border:2px solid red;\n"
+"    border-radius: 10px;\n"
+"	border-color:rgb(196, 95, 125);\n"
+"}\n"
+"/* \u9f20\u6807\u5728\u6309\u94ae\u4e0a\u65f6\uff0c\u6309\u94ae\u989c\u8272 */\n"
+" QListWidget::item:hover \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}\n"
+" QListWidget::item:selected \n"
+"{\n"
+"    background-color:rgb(21, 85, 154);\n"
+"    border-radius: 10px;\n"
+"    color: rgb(0, 0, 0);\n"
+"}")
+        self.tagsList.setFrameShape(QFrame.NoFrame)
+        self.tagsList.setSpacing(6)
 
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
+        self.horizontalLayout_2.addWidget(self.tagsList)
 
         self.toolButton = QPushButton(Local)
         self.toolButton.setObjectName(u"toolButton")
         self.toolButton.setMaximumSize(QSize(16777215, 20))
 
-        self.horizontalLayout_2.addWidget(self.toolButton)
+        self.horizontalLayout_2.addWidget(self.toolButton, 0, Qt.AlignRight)
 
 
         self.gridLayout_2.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)

@@ -38,11 +38,57 @@ class LocalReadDb(object):
         except Exception as es:
             Log.Error(es)
 
-    def DelDownloadDB(self, bookId):
-        sql = "delete from local_book where id='{}'".format(bookId)
+        sql = """\
+            create table if not exists local_category(\
+            category varchar,\
+            book_id varchar,\
+            unique(category,book_id)
+            )\
+            """
+        # sql = "drop table local_category;"
+        try:
+            suc = self.db.execute(sql)
+        except Exception as es:
+            Log.Error(es)
+
+    def DelCategory(self, category):
+        sql = "delete from local_category where category='{}'".format(category)
         suc = self.cur.execute(sql)
         self.cur.execute("COMMIT")
         return
+
+    def DelBookCategory(self, bookID):
+        sql = "delete from local_category where book_id='{}'".format(bookID)
+        suc = self.cur.execute(sql)
+        self.cur.execute("COMMIT")
+
+    def AddCategory(self, category, bookId=""):
+        try:
+            sql = "INSERT INTO local_category(category, book_id) values ('{}', '{}')".format(category, bookId)
+            suc = self.cur.execute(sql)
+            self.cur.execute("COMMIT")
+        except Exception as es:
+            Log.Error(es)
+        return
+
+    def LoadCategory(self):
+        suc = self.cur.execute(
+            """
+            select category, book_id  from local_category
+            """
+        )
+        categoryBook = {}
+        bookCategory = {}
+        for query in self.cur.fetchall():
+            category = query[0]
+            book_id = query[1]
+            data = bookCategory.setdefault(book_id, [])
+            data.append(category)
+
+            data2 = categoryBook.setdefault(category, [])
+            data2.append(book_id)
+
+        return categoryBook, bookCategory
 
     def GetSaveStr(self, name):
         return name.replace("'", "''")
@@ -55,6 +101,14 @@ class LocalReadDb(object):
             format(info.id, self.GetSaveStr(info.title), self.GetSaveStr(info.file), self.GetSaveStr(info.path), self.GetSaveStr(info.cover), info.epsId, int(info.isZipFile), info.lastIndex
                    , info.lastEpsId, info.addTime, info.lastReadTime, info.picCnt, info.main_id)
 
+        suc = self.cur.execute(sql)
+        self.cur.execute("COMMIT")
+        return
+
+    def DelDownloadDB(self, bookId):
+        sql = "delete from local_book where id='{}'".format(bookId)
+        suc = self.cur.execute(sql)
+        sql = "delete from local_category where book_id='{}'".format(bookId)
         suc = self.cur.execute(sql)
         self.cur.execute("COMMIT")
         return

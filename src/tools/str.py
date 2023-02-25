@@ -224,6 +224,9 @@ class Str:
     ImportSimpleZip = 145     # 导入单本Zip
     ImportSimpleDir = 146     # 批量导入单本目录
     ImportChipDir = 147       # 批量导入带章节目录
+    SupportDrop = 148         # 支持拖拽文件导入
+    AlreadyHave = 149         # 已存在
+    SameWight = 150    # 等宽模式
 
     @classmethod
     def Reload(cls):
@@ -436,6 +439,9 @@ class Str:
         cls.strDict[cls.ImportSimpleZip] = QCoreApplication.translate("cls.obj", "导入单本Zip", None)
         cls.strDict[cls.ImportSimpleDir] = QCoreApplication.translate("cls.obj", "批量导入单本目录", None)
         cls.strDict[cls.ImportChipDir] = QCoreApplication.translate("cls.obj", "批量导入带章节目录", None)
+        cls.strDict[cls.SupportDrop] = QCoreApplication.translate("cls.obj", "支持拖拽文件导入", None)
+        cls.strDict[cls.AlreadyHave] = QCoreApplication.translate("cls.obj", "已存在", None)
+        cls.strDict[cls.SameWight] = QCoreApplication.translate("cls.obj", "等宽模式", None)
 
     @classmethod
     def GetStr(cls, enumType):

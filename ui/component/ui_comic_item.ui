@@ -146,7 +146,7 @@ background-color:transparent;</string>
        </property>
       </widget>
      </item>
-     <item>
+     <item alignment="Qt::AlignRight">
       <widget class="QLabel" name="timeLabel">
        <property name="text">
         <string>TextLabel</string>

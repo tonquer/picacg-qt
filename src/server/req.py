@@ -370,7 +370,8 @@ class CheckUpdateDatabaseReq(ServerReq):
         header = {
             "Pragma": "No-cache",
             "Cache-Control": "no-cache",
-            "Expires": '0'
+            "Expires": '0',
+            "version": config.UpdateVersion,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
@@ -387,7 +388,8 @@ class DownloadDatabaseReq(ServerReq):
         header = {
             "Pragma": "No-cache",
             "Cache-Control": "no-cache",
-            "Expires": '0'
+            "Expires": '0',
+            "version": config.UpdateVersion,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
@@ -408,7 +410,8 @@ class DownloadDatabaseWeekReq(ServerReq):
         header = {
             "Pragma": "No-cache",
             "Cache-Control": "no-cache",
-            "Expires": '0'
+            "Expires": '0',
+            "version": config.UpdateVersion,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False

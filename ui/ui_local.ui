@@ -17,19 +17,45 @@
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
+      <widget class="TagListWidget" name="tagsList">
+       <property name="maximumSize">
         <size>
-         <width>40</width>
-         <height>20</height>
+         <width>16777215</width>
+         <height>60</height>
         </size>
        </property>
-      </spacer>
+       <property name="styleSheet">
+        <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+ QListWidget::item:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+ QListWidget::item:selected 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="spacing">
+        <number>6</number>
+       </property>
+      </widget>
      </item>
-     <item>
+     <item alignment="Qt::AlignRight">
       <widget class="QPushButton" name="toolButton">
        <property name="maximumSize">
         <size>
@@ -210,6 +236,11 @@
    <class>ComicListWidget</class>
    <extends>QListWidget</extends>
    <header location="global">component.list.comic_list_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TagListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.tag_list_widget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

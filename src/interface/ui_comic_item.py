@@ -98,7 +98,7 @@ class Ui_ComicItem(object):
         self.timeLabel.setObjectName(u"timeLabel")
         self.timeLabel.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-        self.horizontalLayout_2.addWidget(self.timeLabel)
+        self.horizontalLayout_2.addWidget(self.timeLabel, 0, Qt.AlignRight)
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
