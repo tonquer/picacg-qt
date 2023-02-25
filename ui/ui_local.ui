@@ -113,6 +113,11 @@ QListWidget::item {
            <string>添加时间</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>名称</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>

@@ -5,6 +5,7 @@ from this import d
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QAction, Qt
 from PySide6.QtWidgets import QWidget, QMenu, QFileDialog
+from natsort import natsorted
 
 from interface.ui_index import Ui_Index
 from interface.ui_local import Ui_Local
@@ -129,6 +130,8 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         isRevert = (sortId != 0)
         if sortKeyID == 0:
             datas.sort(key=lambda a: a.lastReadTime, reverse=isRevert)
+        elif sortKeyID == 1:
+            datas = natsorted(datas, key=lambda a:a.title, reverse=isRevert)
         else:
             datas.sort(key=lambda a: a.addTime, reverse=isRevert)
         return datas
