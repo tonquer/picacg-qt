@@ -130,7 +130,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         isRevert = (sortId != 0)
         if sortKeyID == 0:
             datas.sort(key=lambda a: a.lastReadTime, reverse=isRevert)
-        elif sortKeyID == 1:
+        elif sortKeyID == 2:
             datas = natsorted(datas, key=lambda a:a.title, reverse=isRevert)
         else:
             datas.sort(key=lambda a: a.addTime, reverse=isRevert)
