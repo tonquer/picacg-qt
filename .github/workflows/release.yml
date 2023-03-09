@@ -81,13 +81,18 @@ jobs:
             --hidden-import view \
             --strip --windowed -i Icon.icns \
             start.py
-        rm -rf dist/PicACG
-        cp Icon.icns dist/
-        ln -s /Applications/   dist/Applications
+        # rm -rf dist/PicACG
+        # cp Icon.icns dist/
+        # ln -s /Applications/   dist/Applications
         cp -avf data dist/PicACG.app/Contents/MacOS
         xattr -cr dist/PicACG.app
-        create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "Icon.icns" 200 190 \
-            --hide-extension "Icon.icns" ${{ env.PACKAGENAME }}.dmg dist/
+        create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --hide-extension "PicACG.app" app-drop-link 600 185 \
+            ${{ env.PACKAGENAME }}.dmg dist/PicACG.app
+
         zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
         mv ${{ env.PACKAGENAME }}.dmg ..
         mv bika.zip ..
