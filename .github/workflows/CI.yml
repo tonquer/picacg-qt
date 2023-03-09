@@ -58,7 +58,7 @@ jobs:
             --window-pos 200 120 \
             --window-size 800 400 \
             --icon-size 100 \
-            --hide-extension "PicACG.app" app-drop-link 600 185 \
+            --hide-extension "PicACG.app" --app-drop-link 600 185 \
             ${{ env.PACKAGENAME }}.dmg dist/PicACG.app
 
         zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
