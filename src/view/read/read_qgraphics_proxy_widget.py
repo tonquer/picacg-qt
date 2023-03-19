@@ -1,6 +1,6 @@
 from PySide6.QtCore import QByteArray, QBuffer, Qt, QSize
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QGraphicsProxyWidget
+from PySide6.QtWidgets import QGraphicsProxyWidget, QLabel
 
 from tools.tool import ToolUtil
 
@@ -13,6 +13,8 @@ class ReadQGraphicsProxyWidget(QGraphicsProxyWidget):
         self.bBuffer = None
         self.gifWidth = 0
         self.gifHeight = 0
+        self.label = QLabel()
+        self.setWidget(self.label)
 
     def pixmap(self):
         if self.widget().pixmap() is not None:
@@ -24,6 +26,9 @@ class ReadQGraphicsProxyWidget(QGraphicsProxyWidget):
 
     def height(self):
         return self.widget().height()
+
+    def devicePixelRatio(self):
+        return self.widget().devicePixelRatio()
 
     def realW(self):
         return self.pixmap().width() / max(1, self.pixmap().devicePixelRatioF())
@@ -66,8 +71,8 @@ class ReadQGraphicsProxyWidget(QGraphicsProxyWidget):
             self.movie = QMovie()
             self.gifWidth = width
             self.gifHeight = height
-            self.widget().setFixedWidth(width)
-            self.widget().setFixedHeight(height)
+            self.widget().setFixedWidth(width/max(1, self.widget().devicePixelRatioF()))
+            self.widget().setFixedHeight(height/max(1, self.widget().devicePixelRatioF()))
             self.byteArray = QByteArray(data)
             self.bBuffer = QBuffer(self.byteArray)
             # self.movie.frameChanged.connect(self.FrameChange)

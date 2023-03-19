@@ -92,6 +92,7 @@ class Ui_Local(object):
         self.sortKeyCombox = QComboBox(Local)
         self.sortKeyCombox.addItem("")
         self.sortKeyCombox.addItem("")
+        self.sortKeyCombox.addItem("")
         self.sortKeyCombox.setObjectName(u"sortKeyCombox")
         self.sortKeyCombox.setEnabled(True)
         self.sortKeyCombox.setMinimumSize(QSize(100, 0))
@@ -182,6 +183,7 @@ class Ui_Local(object):
         self.msgLabel.setText("")
         self.sortKeyCombox.setItemText(0, QCoreApplication.translate("Local", u"\u4e0a\u6b21\u9605\u8bfb\u65f6\u95f4", None))
         self.sortKeyCombox.setItemText(1, QCoreApplication.translate("Local", u"\u6dfb\u52a0\u65f6\u95f4", None))
+        self.sortKeyCombox.setItemText(2, QCoreApplication.translate("Local", u"\u540d\u79f0", None))
 
         self.sortIdCombox.setItemText(0, QCoreApplication.translate("Local", u"\u964d\u5e8f", None))
         self.sortIdCombox.setItemText(1, QCoreApplication.translate("Local", u"\u5347\u5e8f", None))

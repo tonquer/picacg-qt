@@ -422,3 +422,31 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         QtOwner().owner.navigationWidget.UpdatePictureData(data)
         QtOwner().ShowMsg(Str.GetStr(Str.HeadUpload))
         # QtImgMgr().SetHeadStatus(not self.isHeadUp)
+
+    def dragEnterEvent(self, event):
+        if(event.mimeData().hasUrls()):
+            event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, evemt):
+        return
+
+    def dropEvent(self, event):
+        mimeData  = event.mimeData()
+        if(mimeData.hasUrls()):
+            urls = mimeData.urls()
+            QtOwner().ShowLoading()
+            fileNames = [str(i.toLocalFile()) for i in urls]
+            if not fileNames:
+                return
+            name = fileNames[0]
+            if os.path.isfile(name):
+                f = open(name, "rb")
+                data = f.read()
+                f.close()
+                self.data = data
+                self.waifu2xData = None
+                self.ClearConvert()
+                self.backStatus = ""
+                self.ShowImg(data)

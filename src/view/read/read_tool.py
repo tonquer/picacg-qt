@@ -313,7 +313,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         else:
             self.readImg.SetIsWaifu2x(0)
         # self.scrollArea.changeScale.emit(self.scaleCnt)
-        self.readImg.ShowImg()
+        self.readImg.ShowImgAll()
         self.readImg.CheckLoadPicture()
         return
 
@@ -329,9 +329,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         else:
             Setting.IsOpenWaifu.SetValue(0)
 
-        self.readImg.ShowImg()
-        self.readImg.ShowOtherPage()
-        self.readImg.CheckLoadPicture()
+        self.readImg.ShowImgAll()
+        # self.readImg.CheckLoadPicture()
         # self.scrollArea.changeScale.emit(self.scaleCnt)
         return
 
@@ -445,7 +444,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
         for data in self.readImg.pictureData.values():
 
-            model = ToolUtil.GetLookScaleModel(self.readImg.category)
+            model = ToolUtil.GetLookScaleModel(self.readImg.category, data.w, data.h, data.mat)
             if data.model.get("model") == model.get("model") and data.model.get("scale") == model.get("scale"):
                 continue
             data.model = model
@@ -468,9 +467,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             data.scaleW, data.scaleH = 0, 0
             data.waifuTick = 0
 
-        self.readImg.ShowImg()
-        self.readImg.ShowOtherPage()
-        self.readImg.CheckLoadPicture()
+        self.readImg.ShowImgAll()
+        # self.readImg.CheckLoadPicture()
 
         self.SetWaifu2xCancle(False)
 
@@ -498,9 +496,9 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
         changeV = scaleV - oldV
         if scaleV == 0:
-            self.scrollArea.ScaleReset(oldV)
-        else:
-            self.readImg.scrollArea.changeScale.emit(changeV)
+            self.scrollArea.ScaleReset(changeV)
+
+        self.readImg.scrollArea.changeScale.emit(changeV)
 
     def eventFilter(self, obj, ev):
         if ev.type() == QEvent.KeyRelease:
@@ -515,6 +513,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         
     def ChangeReadMode2(self, index):
         self.stripModel = ReadMode(index)
+        self.scrollArea.initReadMode = self.stripModel
         self.ScalePicture2(100)
         if self.stripModel in [ReadMode.UpDown, ReadMode.Samewight]:
             self.ScalePicture2(80)
@@ -553,13 +552,11 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             # self.imgFrame.graphicsView.horizontalScrollBar().blockSignals(True)
         self.ClearQImage()
         self.readImg.scrollArea.InitAllQLabel(self.readImg.maxPic, self.readImg.curIndex)
-        self.readImg.CheckLoadPicture()
-        self.readImg.ShowImg()
-        self.readImg.ShowOtherPage()
+        # self.readImg.CheckLoadPicture()
+        self.readImg.ShowImgAll()
 
         Setting.LookReadMode.SetValue(index)
         # QtOwner().SetV("Read/LookReadMode", config.LookReadMode)
-
 
     def ClearQImage(self):
         for index, v in self.readImg.pictureData.items():
@@ -568,11 +565,13 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             v.cacheImage = None
             if v.cacheImageTaskId:
                 self.readImg.ClearQImageTaskById(v.cacheImageTaskId)
+                v.cacheImageTaskId = 0
             if v.cacheWaifu2xImageTaskId:
                 self.readImg.ClearQImageTaskById(v.cacheWaifu2xImageTaskId)
+                v.cacheWaifu2xImageTaskId = 0
 
-            self.readImg.CheckToQImage(index, v, False)
-            self.readImg.CheckToQImage(index, v, True)
+            # self.readImg.CheckToQImage(index, v, False)
+            # self.readImg.CheckToQImage(index, v, True)
 
     def SwitchScrollAndTurn(self):
         if self.IsStartScrollAndTurn():

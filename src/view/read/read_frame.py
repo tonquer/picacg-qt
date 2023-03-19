@@ -29,11 +29,22 @@ class ReadFrame(QFrame):
         self.endPos = QPoint()
         self.process = DWaterProgress(self)
         self.process.hide()
+
+        self.process2 = DWaterProgress(self)
+        self.process2.hide()
+
         self.waifu2xProcess = GifLabel(self)
         self.waifu2xProcess.setVisible(False)
         f = QFile(":/png/icon/loading_gif.webp")
         f.open(QFile.ReadOnly)
         self.waifu2xProcess.Init(f.readAll())
+
+        self.waifu2xProcess2 = GifLabel(self)
+        self.waifu2xProcess2.setVisible(False)
+        f = QFile(":/png/icon/loading_gif.webp")
+        f.open(QFile.ReadOnly)
+        self.waifu2xProcess2.Init(f.readAll())
+
         f.close()
         self.downloadSize = 1
         self.downloadMaxSize = 1
@@ -115,7 +126,9 @@ class ReadFrame(QFrame):
         # w = max((w - 150)//2, 0)
         # h = max((h - 150)//2, 0)
         self.process.setGeometry(w-150, h-150, 150, 150)
+        self.process2.setGeometry(w//2-150, h-150, 150, 150)
         self.waifu2xProcess.setGeometry(w-150, h-150, 150, 150)
+        self.waifu2xProcess2.setGeometry(w//2-150, h-150, 150, 150)
         self.scrollArea.ResetLabelSize(self.qtTool.maxPic)
         return
 
@@ -130,6 +143,18 @@ class ReadFrame(QFrame):
             self.downloadSize = 0
             self.downloadMaxSize = 1
             self.process.setValue(0)
+
+    def UpdateProcessBar2(self, info):
+        if info:
+            self.downloadSize = info.downloadSize
+            self.downloadMaxSize = max(1, info.size)
+            value = int((self.downloadSize / self.downloadMaxSize) * 100)
+            # print(value)
+            self.process2.setValue(value)
+        else:
+            self.downloadSize = 0
+            self.downloadMaxSize = 1
+            self.process2.setValue(0)
 
     def eventFilter(self, obj, ev) -> bool:
         # print(obj, ev.type())

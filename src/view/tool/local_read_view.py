@@ -2,8 +2,8 @@ import json
 import os
 from this import d
 
-from PySide6.QtCore import Signal
-from PySide6.QtGui import QAction, Qt
+from PySide6.QtCore import Signal, QUrl
+from PySide6.QtGui import QAction, Qt, QDesktopServices
 from PySide6.QtWidgets import QWidget, QMenu, QFileDialog
 from natsort import natsorted
 
@@ -69,6 +69,8 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.curSelectCategory = ""
         self.bookList.isMoveMenu = True
         self.bookList.MoveHandler = self.MoveCallBack
+        self.bookList.openMenu = True
+        self.bookList.OpenDirHandler = self.OpenDirCallBack
 
     def Init(self):
         self.categoryBook, self.bookCategory = self.db.LoadCategory()
@@ -298,6 +300,18 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         widget = self.bookList.indexWidget(index)
         if widget:
             self.OpenFavoriteFold(widget.id)
+
+    def OpenDirCallBack(self, index):
+        widget = self.bookList.indexWidget(index)
+        if widget:
+            info = self.allBookInfos.get(widget.id)
+            if not info:
+                return
+            assert isinstance(info, LocalData)
+            if info.isZipFile:
+                QDesktopServices.openUrl(QUrl.fromLocalFile(os.path.dirname(info.file)))
+            else:
+                QDesktopServices.openUrl(QUrl.fromLocalFile(info.file))
 
     def OpenFavoriteFold(self, bookId=""):
         from view.tool.local_fold_view import LocalFoldView

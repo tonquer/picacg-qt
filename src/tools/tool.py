@@ -269,8 +269,14 @@ class ToolUtil(object):
         return size
 
     @staticmethod
-    def GetLookScaleModel(category, mat="jpg"):
-        return ToolUtil.GetModelByIndex(Setting.LookNoise.value, Setting.LookScale.value, ToolUtil.GetLookModel(category), mat)
+    def GetLookScaleModel(category, w, h, mat="jpg"):
+        data = ToolUtil.GetModelByIndex(Setting.LookNoise.value, Setting.LookScale.value, ToolUtil.GetLookModel(category), mat)
+        # 放大倍数不能过大，如果图片超过4k了，QImage无法显示出来，bug
+        if min(w, h) > 3000:
+            data["scale"] = 1
+        elif min(w, h) > 2000:
+            data["scale"] = 1.5
+        return data
 
     @staticmethod
     def GetDownloadScaleModel(w, h, mat):

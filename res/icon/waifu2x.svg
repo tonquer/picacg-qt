@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 1024"
+  width="200" height="200">
+  <style>
+    @keyframes circle-1-rotate {
+  0%,
+  20%,
+  40% {
+    transform: rotate(-185deg);
+    opacity: 0;
+    stroke-dasharray: 40, 3000;
+  }
+  42% {
+    transform: rotate(-185deg);
+    opacity: 1;
+    stroke-dasharray: 40, 3000;
+  }
+  100% {
+    transform: rotate(135deg);
+    opacity: 0.3;
+    stroke-dasharray: 400, 3000;
+  }
+}
+@keyframes circle-2-rotate {
+  0%,
+  20%,
+  40% {
+    transform: rotate(0deg);
+    opacity: 0;
+    stroke-dasharray: 40, 3000;
+  }
+  42% {
+    transform: rotate(0deg);
+    opacity: 1;
+    stroke-dasharray: 40, 3000;
+  }
+  100% {
+    transform: rotate(320deg);
+    opacity: 0.3;
+    stroke-dasharray: 400, 3000;
+  }
+}
+
+    @keyframes circle-bg-scale {
+      0% {
+        transform: scale(0);
+      }
+
+      40% {
+        transform: scale(1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes circle-s1-point {
+      0% {
+        r: 60;
+        cx: 512;
+        opacity: 1;
+      }
+
+      40% {
+        r: 20;
+        cx: 30;
+        opacity: 1;
+      }
+
+      42% {
+        r: 20;
+        cx: 994;
+        opacity: 0;
+      }
+
+      100% {
+        r: 20;
+        cx: 30;
+        opacity: 0;
+      }
+    }
+
+    @keyframes circle-s2-point {
+      0% {
+        r: 60;
+        cx: 512;
+        opacity: 1;
+      }
+
+      40% {
+        r: 20;
+        cx: 994;
+        opacity: 1;
+      }
+
+      42% {
+        r: 20;
+        cx: 994;
+        opacity: 0;
+      }
+
+      100% {
+        r: 20;
+        cx: 994;
+        opacity: 0;
+      }
+    }
+
+    @keyframes path-icon-draw {
+      0% {
+        stroke-dasharray: 0, 5382.197265625;
+      }
+
+      40% {
+        stroke-dasharray: 0, 5382.197265625;
+      }
+
+      100% {
+        stroke-dasharray: 5382.197265625, 0;
+      }
+    }
+
+    .icm-circle-1-rotate {
+      transform-origin: 50% 50%;
+      animation: circle-1-rotate 2s linear infinite;
+    }
+
+    .icm-circle-2-rotate {
+      transform-origin: 50% 50%;
+      animation: circle-2-rotate 2s linear infinite;
+    }
+
+    .icm-circle-bg-scale {
+      transform-origin: 50% 50%;
+      animation: circle-bg-scale 2s linear 1;
+    }
+
+    .icm-circle-s1-point {
+      animation: circle-s1-point 2s linear 1;
+    }
+
+    .icm-circle-s2-point {
+      animation: circle-s2-point 2s linear 1;
+    }
+
+    .icm-path-icon-draw {
+      animation: path-icon-draw 2s linear 1;
+    }
+  </style>
+  <circle class="icm-circle-bg-scale" r="440" cx="512" cy="512" fill="#F6F4F4"></circle>
+  <circle class="icm-circle-s1-point" cx="512" cy="512" fill="#F6C449"></circle>
+  <circle class="icm-circle-s2-point" cx="512" cy="512" fill="#EF917F"></circle>
+  <circle class="icm-circle-1-rotate" r="475" cx="512" cy="512" stroke-width="70" stroke="#F6C449"
+    stroke-linecap="round" fill="none">
+  </circle>
+  <circle class="icm-circle-2-rotate" r="475" cx="512" cy="512" stroke-width="70" stroke="#EF917F"
+    stroke-linecap="round" fill="none">
+  </circle>
+  <text class="icm-path-icon-draw" font-family="microsoft yahei" font-size="200" x="150" y="600" fill="none" stroke="#BA5754" stroke-width="20" transform="scale(0.7)" transform-origin="512 512">
+   waifu2x
+  </text>
+</svg>

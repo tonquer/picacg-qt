@@ -292,7 +292,7 @@ class TaskLocal(TaskBase, QtTaskBase):
             l = LocalData()
             l.path = nextPath
             l.file = dirName
-            l.id = hashlib.md5(l.path.encode("utf-8")).hexdigest()
+            l.id = hashlib.md5(l.file.encode("utf-8")).hexdigest()
             l.main_id = l.id
             l.title = os.path.basename(dirName)
             l.isZipFile = False

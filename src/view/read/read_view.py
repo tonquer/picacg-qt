@@ -54,6 +54,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.isShowMenu = False
 
         self.stripModel = ReadMode(Setting.LookReadMode.value)
+        self.frame.scrollArea.initReadMode = self.stripModel
+
         self.ChangeReadMode(Setting.LookReadMode.value)
         self.qtTool.ChangeReadMode2(Setting.LookReadMode.value)
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
@@ -176,6 +178,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         Setting.ScrollSpeed.SetValue(int(self.qtTool.scrollSpeed.value()))
         self.qtTool.UpdateText("")
         self.frame.UpdateProcessBar(None)
+        self.frame.UpdateProcessBar2(None)
         self.qtTool.CloseScrollAndTurn()
         self.bookId = ""
         self.epsId = 0
@@ -293,6 +296,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             return
 
         preLoadList = list(range(self.curIndex, self.curIndex + config.PreLoading))
+        preQImage = list(range(self.curIndex, self.curIndex + config.PreLook))
 
         # 预加载上一页
         if len(preLoadList) >= 2 and self.curIndex > 0:
@@ -339,6 +343,31 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                 break
             if p.waifuState == p.WaifuStateStart:
                 break
+
+        for i in preQImage:
+            p = self.pictureData.get(i)
+            if not p or not p.data:
+                continue
+            assert isinstance(p, QtFileData)
+            if not (p.cacheImage or p.cacheImageTaskId > 0):
+                self.CheckToQImage(i, p, False)
+
+            if not (not p.waifuData or p.cacheWaifu2xImage or p.cacheWaifu2xImageTaskId > 0):
+                self.CheckToQImage(i, p, True)
+
+        for i in set(self.pictureData.keys()) - set(preQImage):
+            p = self.pictureData.get(i)
+            if not p:
+                continue
+            assert isinstance(p, QtFileData)
+            if p.cacheImageTaskId > 0:
+                self.ClearQImageTaskById(p.cacheImageTaskId)
+                p.cacheImageTaskId = 0
+            if p.cacheWaifu2xImageTaskId > 0:
+                self.ClearQImageTaskById(p.cacheWaifu2xImageTaskId)
+                p.cacheWaifu2xImageTaskId = 0
+            p.cacheImage = None
+            p.cacheWaifu2xImage = None
         pass
 
     def StartLoadPicUrlBack(self, raw, v):
@@ -376,9 +405,20 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if info.size <= 0:
             info.size = laveFileSize
         info.downloadSize += downloadSize
-        if self.curIndex != backParam:
-            return
-        self.frame.UpdateProcessBar(info)
+        if ReadMode.isDouble(self.stripModel):
+            if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+                if backParam == self.curIndex:
+                    self.frame.UpdateProcessBar(info)
+                elif backParam == self.curIndex + 1:
+                    self.frame.UpdateProcessBar2(info)
+            else:
+                if backParam == self.curIndex:
+                    self.frame.UpdateProcessBar2(info)
+                elif backParam == self.curIndex + 1:
+                    self.frame.UpdateProcessBar(info)
+        else:
+            if self.curIndex == backParam:
+                self.frame.UpdateProcessBar(info)
 
     def CompleteDownloadPic(self, data, st, index):
         QtOwner().CloseLoading()
@@ -390,17 +430,20 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             QtOwner().ShowError(Str.GetStr(st))
         elif st != Status.Ok:
             p.state = p.DownloadReset
+            if QtOwner().owner.totalStackWidget.currentIndex == 0:
+                return
             self.AddDownload(index)
         else:
             p.SetData(data, self.category)
-            self.CheckToQImage(index, p, False)
+            # self.CheckToQImage()
             self.CheckLoadPicture()
+        self.CheckSetProcess()
 
     def CheckToQImage(self, index, p, isWaifu2x=False):
         assert isinstance(p, QtFileData)
         model = self.qtTool.stripModel
         toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, 0, self.scrollArea.width(),
-                                           self.scrollArea.height())
+                                           self.scrollArea.height(), True)
         if not isWaifu2x:
             if p.data:
                 p.cacheImage = None
@@ -419,117 +462,249 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             return
         assert isinstance(p, QtFileData)
         p.cacheImage = data
+        p.cacheImageTaskId = 0
         if index == self.curIndex:
-            self.ShowImg()
+            self.ShowImg(index)
         elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll,
                                  ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading - 1:
-            self.ShowOtherPage()
+            self.ShowImg(index)
         elif ReadMode.isDouble(self.stripModel) and self.curIndex < index <= self.curIndex + 1:
-            self.ShowOtherPage()
+            self.ShowImg(index)
+        self.CheckSetWaifu2xProcess()
         return
 
-    def ShowPage(self, index):
-        if index >= self.maxPic:
-            return
+    # def ShowPage(self, index):
+    #     if index >= self.maxPic:
+    #         return
+    #
+    #     p = self.pictureData.get(index)
+    #     if not p or (not p.data) or (not p.cacheImage):
+    #         self.scrollArea.SetPixIem(index, None)
+    #         return
+    #
+    #     waifu2x = False
+    #     assert isinstance(p, QtFileData)
+    #
+    #     if not p.isWaifu2x:
+    #         p2 = p.cacheImage
+    #
+    #     elif p.cacheWaifu2xImage:
+    #         waifu2x = True
+    #         p2 = p.cacheWaifu2xImage
+    #     else:
+    #         p2 = p.cacheImage
+    #
+    #     if p.isGif and not ReadMode.isScroll(self.stripModel):
+    #         self.scrollArea.SetGifData(index, p.data, p.w, p.h)
+    #         w, h = p2.wight(), p2.heigh()
+    #         if p.waifuData:
+    #             self.scrollArea.SetGifData(index, p.waifuData, w, h)
+    #         else:
+    #             self.scrollArea.SetGifData(index, p.data, w, h)
+    #     else:
+    #         pixMap = QPixmap(p2)
+    #         self.scrollArea.SetPixIem(index, pixMap, waifu2x)
 
-        p = self.pictureData.get(index)
-        if not p or (not p.data) or (not p.cacheImage):
-            self.scrollArea.SetPixIem(index, None)
-            return
+    # @time_me
+    # def ShowOtherPage(self):
+    #     if self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
+    #         size = config.PreLook
+    #     elif ReadMode.isDouble(self.stripModel):
+    #         size = 2
+    #     else:
+    #         size = 0
+    #
+    #     for index in range(self.curIndex + 1, self.curIndex + size):
+    #         self.ShowPage(index)
+    #     # self.frame.ScalePicture()
+    #     return True
 
-        waifu2x = False
-        assert isinstance(p, QtFileData)
-
-        if not p.isWaifu2x:
-            p2 = p.cacheImage
-
-        elif p.cacheWaifu2xImage:
-            waifu2x = True
-            p2 = p.cacheWaifu2xImage
-        else:
-            p2 = p.cacheImage
-
-        if p.isGif:
-            self.scrollArea.SetGifData(index, p.data, p.w, p.h)
-            if p.waifuData:
-                self.scrollArea.SetGifData(index, p.waifuData, p.scaleW, p.scaleH)
-            else:
-                self.scrollArea.SetGifData(index, p.data, p.w, p.h)
-        else:
-            pixMap = QPixmap(p2)
-            self.scrollArea.SetPixIem(index, pixMap, waifu2x)
-
-    @time_me
-    def ShowOtherPage(self):
+    def ShowImgAll(self):
         if self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll, ReadMode.LeftRightScroll]:
             size = config.PreLook
         elif ReadMode.isDouble(self.stripModel):
             size = 2
         else:
-            size = 0
+            size = 1
 
-        for index in range(self.curIndex + 1, self.curIndex + size):
-            self.ShowPage(index)
-        # self.frame.ScalePicture()
-        return True
+        for index in range(self.curIndex, self.curIndex + size):
+            self.ShowImg(index)
+        self.CheckSetProcess()
+        self.CheckSetWaifu2xProcess()
+        self.CheckLoadPicture()
 
     @time_me
-    def ShowImg(self):
-        p = self.pictureData.get(self.curIndex)
+    def ShowImg(self, index):
+        if index >= self.maxPic:
+            return
+        isCurIndex = index == self.curIndex
+        p = self.pictureData.get(index)
 
         if not p or (not p.data) or (not p.cacheImage):
-            if not p or (not p.data):
-                self.qtTool.SetData(state=QtFileData.Downloading)
-            else:
-                self.qtTool.SetData(state=QtFileData.Converting)
+            self.scrollArea.SetPixIem(index, None)
+            if isCurIndex:
+                if not p or (not p.data):
+                    self.qtTool.SetData(state=QtFileData.Downloading)
+                else:
+                    self.qtTool.SetData(state=QtFileData.Converting)
 
-            self.scrollArea.SetPixIem(self.curIndex, None)
-
-            self.qtTool.modelBox.setEnabled(False)
-            self.frame.UpdateProcessBar(None)
-            self.frame.process.show()
+                self.qtTool.modelBox.setEnabled(False)
+                # self.frame.process.show()
             return
-
-        self.frame.process.hide()
-        if config.CanWaifu2x:
-            self.qtTool.modelBox.setEnabled(True)
+        if isCurIndex:
+            # self.frame.process.hide()
+            if config.CanWaifu2x:
+                self.qtTool.modelBox.setEnabled(True)
         assert isinstance(p, QtFileData)
         waifu2x = False
         if not p.isWaifu2x:
-            self.frame.waifu2xProcess.hide()
-            self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
+            if isCurIndex:
+                # self.frame.waifu2xProcess.hide()
+                self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
+
             p2 = p.cacheImage
 
         elif p.cacheWaifu2xImage:
             p2 = p.cacheWaifu2xImage
             waifu2x = True
-            self.frame.waifu2xProcess.hide()
-            self.qtTool.SetData(waifuSize=p.waifuQSize, waifuDataLen=p.waifuDataSize,
-                                waifuTick=p.waifuTick)
+            if isCurIndex:
+                # self.frame.waifu2xProcess.hide()
+                self.qtTool.SetData(waifuSize=p.waifuQSize, waifuDataLen=p.waifuDataSize,
+                                    waifuTick=p.waifuTick)
 
         else:
             p2 = p.cacheImage
-            if p.isWaifu2x:
+            # if isCurIndex:
+            #     if p.isWaifu2x:
+            #         self.frame.waifu2xProcess.show()
+            #     else:
+            #         self.frame.waifu2xProcess.hide()
+
+        if isCurIndex:
+            self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
+            self.qtTool.UpdateText(p.model)
+
+        if p.isGif and not ReadMode.isScroll(self.stripModel):
+            if p.isWaifu2x and p.waifuData:
+                self.scrollArea.SetGifData(index, p.waifuData, p2, True)
+            else:
+                self.scrollArea.SetGifData(index, p.data, p2)
+        else:
+            pixMap = QPixmap(p2)
+            pixMap.setDevicePixelRatio(p2.devicePixelRatio())
+            self.scrollArea.SetPixIem(index, pixMap, waifu2x)
+        # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
+        # self.frame.ScalePicture()
+        return True
+
+    def CheckClearProcess(self):
+        self.frame.UpdateProcessBar(None)
+        self.frame.UpdateProcessBar2(None)
+
+    def CheckSetProcess(self):
+        if not ReadMode.isDouble(self.stripModel):
+            self.frame.process2.hide()
+            index = self.curIndex
+            p = self.pictureData.get(index)
+
+            if not p or (not p.data):
+                self.frame.process.show()
+            else:
+                self.frame.process.hide()
+
+        elif self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+            index = self.curIndex
+            p = self.pictureData.get(index)
+            if not p or (not p.data):
+                self.frame.process2.show()
+            else:
+                self.frame.process2.hide()
+
+            index = self.curIndex+1
+            if index >= self.maxPic:
+                self.frame.process.hide()
+                return
+            p = self.pictureData.get(index)
+            if not p or (not p.data):
+                self.frame.process.show()
+            else:
+                self.frame.process.hide()
+        else:
+            index = self.curIndex
+            p = self.pictureData.get(index)
+            if not p or (not p.data):
+                self.frame.process.show()
+            else:
+                self.frame.process.hide()
+
+            index = self.curIndex+1
+            if index >= self.maxPic:
+                self.frame.process2.hide()
+                return
+            p = self.pictureData.get(index)
+            if not p or (not p.data):
+                self.frame.process2.show()
+            else:
+                self.frame.process2.hide()
+
+    def CheckSetWaifu2xProcess(self):
+        if not ReadMode.isDouble(self.stripModel):
+            self.frame.waifu2xProcess2.hide()
+            index = self.curIndex
+            p = self.pictureData.get(index)
+            if not p:
+                self.frame.waifu2xProcess.hide()
+                return
+            if p.isWaifu2x and not p.cacheWaifu2xImage:
+                self.frame.waifu2xProcess.show()
+            else:
+                self.frame.waifu2xProcess.hide()
+        elif self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+            index = self.curIndex
+            p = self.pictureData.get(index)
+            if not p:
+                self.frame.waifu2xProcess2.hide()
+                return
+            if p.isWaifu2x and not p.cacheWaifu2xImage:
+                self.frame.waifu2xProcess2.show()
+            else:
+                self.frame.waifu2xProcess2.hide()
+
+            index = self.curIndex+1
+            if index >= self.maxPic:
+                self.frame.waifu2xProcess.hide()
+                return
+            p = self.pictureData.get(index)
+            if not p:
+                self.frame.waifu2xProcess.hide()
+                return
+            if p.isWaifu2x and not p.cacheWaifu2xImage:
+                self.frame.waifu2xProcess.show()
+            else:
+                self.frame.waifu2xProcess.hide()
+        else:
+            index = self.curIndex
+            p = self.pictureData.get(index)
+            if not p:
+                self.frame.waifu2xProcess.hide()
+                return
+            if p.isWaifu2x and not p.cacheWaifu2xImage:
                 self.frame.waifu2xProcess.show()
             else:
                 self.frame.waifu2xProcess.hide()
 
-        self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
-        self.qtTool.UpdateText(p.model)
-
-        if p.isGif:
-            if p.waifuData:
-                self.scrollArea.SetGifData(self.curIndex, p.waifuData, p.scaleW, p.scaleH)
+            index = self.curIndex+1
+            if index >= self.maxPic:
+                self.frame.waifu2xProcess2.hide()
+                return
+            p = self.pictureData.get(index)
+            if not p:
+                self.frame.waifu2xProcess2.hide()
+                return
+            if p.isWaifu2x and not p.cacheWaifu2xImage:
+                self.frame.waifu2xProcess2.show()
             else:
-                self.scrollArea.SetGifData(self.curIndex, p.data, p.w, p.h)
-        else:
-            pixMap = QPixmap(p2)
-            pixMap.setDevicePixelRatio(p2.devicePixelRatio())
-            self.scrollArea.SetPixIem(self.curIndex, pixMap, waifu2x)
-        # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
-        # self.frame.ScalePicture()
-        self.CheckLoadPicture()
-        return True
+                self.frame.waifu2xProcess2.hide()
 
     def AddHistory(self):
         if self.isLocal:
@@ -558,7 +733,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         p.SetWaifuData(data, round(tick, 2))
         if data:
             model = self.qtTool.stripModel
-            self.CheckToQImage(index, p, True)
+            self.CheckLoadPicture()
+            # self.CheckToQImage(index, p, True)
             # toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.frame.scaleCnt, self.scrollArea.width(), self.scrollArea.height())
             # self.AddQImageTask(data, self.devicePixelRatio(), toW, toH, model, self.ConvertQImageWaifu2xBack, index)
         if index == self.curIndex:
@@ -578,14 +754,17 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if not p:
             return
         assert isinstance(p, QtFileData)
+
         p.cacheWaifu2xImage = data
+        p.cacheWaifu2xImageTaskId = 0
         if index == self.curIndex:
-            self.ShowImg()
+            self.ShowImg(index)
         elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll,
                                  ReadMode.LeftRightScroll] and self.curIndex < index <= self.curIndex + config.PreLoading - 1:
-            self.ShowOtherPage()
+            self.ShowImg(index)
         elif ReadMode.isDouble(self.stripModel) and self.curIndex < index <= self.curIndex + 1:
-            self.ShowOtherPage()
+            self.ShowImg(index)
+        self.CheckSetWaifu2xProcess()
         return
 
     def AddCovertData(self, i):
@@ -599,7 +778,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         else:
             filePath = ""
         if self.isLocal:
-            info.waifu2xTaskId = self.AddConvertTask(path, info.data, info.model, self.Waifu2xBack, i, noSaveCache=True, preDownPath=filePath)
+            info.waifu2xTaskId = self.AddConvertTask(path, info.data, info.model, self.Waifu2xBack, i, noSaveCache=True)
         else:
             info.waifu2xTaskId = self.AddConvertTask(path, info.data, info.model, self.Waifu2xBack, i,
                                                      preDownPath=filePath)
@@ -640,7 +819,10 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if i not in self.pictureData:
             data = QtFileData()
             self.pictureData[i] = data
-        self.qtTool.SetData(state=self.pictureData[i].state)
+        if i == self.curIndex:
+            self.qtTool.SetData(state=self.pictureData[i].state)
+        # self.CheckClearProcess(i)
+        self.CheckSetProcess()
 
     def ChangeReadMode(self, index):
         self.qtTool.comboBox.setCurrentIndex(index)

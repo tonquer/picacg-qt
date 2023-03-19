@@ -51,6 +51,7 @@ class QtFileData(object):
         self.size = 0
         self.w = 0
         self.h = 0
+        self.mat = "jpg"
         self.scaleW = 0
         self.scaleH = 0
         self.state = self.Downloading
@@ -97,7 +98,7 @@ class QtFileData(object):
             self.state = self.DownloadError
             return
 
-        self.w, self.h, mat, isAni = ToolUtil.GetPictureSize(data)
+        self.w, self.h, self.mat, isAni = ToolUtil.GetPictureSize(data)
 
         if self.cacheImage:
             if Setting.IsOpenWaifu.value:
@@ -116,7 +117,7 @@ class QtFileData(object):
 
         self.isGif = isAni
         self.data = data
-        self.model = ToolUtil.GetLookScaleModel(category, mat)
+        self.model = ToolUtil.GetLookScaleModel(category, self.w, self.h, self.mat)
         self.state = self.DownloadSuc
         self.size = len(data)
 
@@ -132,21 +133,23 @@ class QtFileData(object):
         return
 
     @staticmethod
-    def GetReadScale(stripModel, scaleCnt, maxWidth, maxHeight):
+    def GetReadScale(stripModel, scaleCnt, maxWidth, maxHeight, isToQImage):
+        # 不进行缩放了，因为导致模糊
         if stripModel == ReadMode.LeftRight:
             scale = (1 + scaleCnt * 0.1)
-            wight = min(maxWidth, int(maxWidth * scale))
+            wight = int(maxWidth * scale)
             height = maxHeight * scale
             toScaleW = wight
             toScaleH = height
         elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
             scale = (1 + scaleCnt * 0.1)
-            toScaleW = min(maxWidth // 2, int(maxWidth // 2 * scale))
+            toScaleW =int(maxWidth // 2 * scale)
             toScaleH = maxHeight * scale
+
         elif stripModel in [ReadMode.LeftRightDouble]:
             scale = (1 + scaleCnt * 0.1)
 
-            toScaleW = min(maxWidth // 2, int(maxWidth // 2 * scale))
+            toScaleW = int(maxWidth // 2 * scale)
             toScaleH = maxHeight * scale
         elif stripModel in [ReadMode.LeftRightScroll]:
             scale = (1 + scaleCnt * 0.1)
@@ -164,10 +167,15 @@ class QtFileData(object):
             toScaleH = maxHeight * scale * 10
         elif stripModel in [ReadMode.Samewight]:
             scale = (1 + scaleCnt * 0.1)
-            toScaleW = min(maxWidth, maxWidth * scale)
+            toScaleW = maxWidth * scale
             toScaleH = maxHeight * scale * 10
         else:
             return maxWidth, maxHeight
+
+        if not ReadMode.isScroll(stripModel):
+            if isToQImage:
+                toScaleH = 0
+                toScaleW = 0
         return toScaleW, toScaleH
 
     @staticmethod
