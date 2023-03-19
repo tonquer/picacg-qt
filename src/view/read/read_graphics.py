@@ -531,6 +531,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     def ResetLabelSize(self, size):
         # 重新计算每个图片的位置
         if ReadMode.isScroll(self.initReadMode):
+            if not self.allItems:
+                return
             height = 0
             if self.initReadMode != ReadMode.RightLeftScroll:
                 labelIndex = list(range(0, size))
