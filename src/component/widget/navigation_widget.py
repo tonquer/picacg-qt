@@ -103,6 +103,13 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         if User().isPunched:
             self.signButton.setText(Str.GetStr(Str.AlreadySign))
             self.signButton.setVisible(False)
+        else:
+            self.signButton.setText(Str.GetStr(Str.Sign))
+            self.signButton.setVisible(True)
+            if Setting.AutoSign.value:
+                QtOwner().ShowMsg("已自动打卡")
+                self.signButton.click()
+
         if not User().avatar:
             return
         url = User().avatar.get("fileServer")

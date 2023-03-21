@@ -22,8 +22,10 @@ class LoginWidget(QtWidgets.QWidget, Ui_LoginWidget, QtTaskBase):
         # self.buttonGroup.addButton(self.selectIp1)
         # self.selectIp1.setChecked(True)
         self.autoBox.setChecked(bool(Setting.AutoLogin.value))
+        self.autoSign.setChecked(bool(Setting.AutoSign.value))
         self.saveBox.setChecked(bool(Setting.SavePassword.value))
         self.autoBox.clicked.connect(partial(self.CheckButtonEvent, Setting.AutoLogin, self.autoBox))
+        self.autoSign.clicked.connect(partial(self.CheckButtonEvent, Setting.AutoSign, self.autoSign))
         self.saveBox.clicked.connect(partial(self.CheckButtonEvent, Setting.SavePassword, self.saveBox))
 
     def CheckButtonEvent(self, setItem, button):

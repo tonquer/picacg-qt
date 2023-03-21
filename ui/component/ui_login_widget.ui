@@ -80,6 +80,13 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QCheckBox" name="autoSign">
+       <property name="text">
+        <string>自动打卡</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

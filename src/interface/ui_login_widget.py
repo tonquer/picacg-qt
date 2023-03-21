@@ -70,6 +70,11 @@ class Ui_LoginWidget(object):
 
         self.horizontalLayout.addWidget(self.autoBox)
 
+        self.autoSign = QCheckBox(LoginWidget)
+        self.autoSign.setObjectName(u"autoSign")
+
+        self.horizontalLayout.addWidget(self.autoSign)
+
 
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
@@ -90,5 +95,6 @@ class Ui_LoginWidget(object):
         self.label_6.setText(QCoreApplication.translate("LoginWidget", u"\u5bc6\u7801", None))
         self.saveBox.setText(QCoreApplication.translate("LoginWidget", u"\u4fdd\u5b58\u5bc6\u7801", None))
         self.autoBox.setText(QCoreApplication.translate("LoginWidget", u"\u81ea\u52a8\u767b\u5f55", None))
+        self.autoSign.setText(QCoreApplication.translate("LoginWidget", u"\u81ea\u52a8\u6253\u5361", None))
     # retranslateUi
 
