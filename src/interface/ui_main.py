@@ -24,6 +24,7 @@ from component.widget.navigation_widget import NavigationWidget
 from view.category.category_view import CategoryView
 from view.category.rank_view import RankView
 from view.chat.chat_view import ChatView
+from view.chat_new.chat_new_view import ChatNewView
 from view.comment.comment_view import CommentView
 from view.comment.game_comment_view import GameCommentView
 from view.comment.my_comment_view import MyCommentView
@@ -99,6 +100,9 @@ class Ui_Main(object):
         self.indexView = IndexView()
         self.indexView.setObjectName(u"indexView")
         self.subStackWidget.addWidget(self.indexView)
+        self.chatNewView = ChatNewView()
+        self.chatNewView.setObjectName(u"chatNewView")
+        self.subStackWidget.addWidget(self.chatNewView)
         self.helpView = HelpView()
         self.helpView.setObjectName(u"helpView")
         self.subStackWidget.addWidget(self.helpView)

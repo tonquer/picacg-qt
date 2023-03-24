@@ -105,7 +105,7 @@
          <item>
           <widget class="AnimationStackWidget" name="subStackWidget">
            <property name="currentIndex">
-            <number>20</number>
+            <number>21</number>
            </property>
            <widget class="IndexView" name="indexView"/>
            <widget class="HelpView" name="helpView"/>
@@ -128,6 +128,7 @@
            <widget class="Waifu2xToolView" name="waifu2xToolView"/>
            <widget class="DownloadAllView" name="downloadAllView"/>
            <widget class="LocalReadView" name="localReadView"/>
+           <widget class="ChatNewView" name="chatNewView"/>
            <widget class="BookEpsView" name="bookEpsView"/>
            <widget class="FriedView" name="friedView"/>
           </widget>
@@ -296,6 +297,12 @@
    <class>TitleBarWidget</class>
    <extends>QWidget</extends>
    <header location="global">component.widget.title_bar_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChatNewView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.chat_new.chat_new_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

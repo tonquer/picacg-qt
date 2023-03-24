@@ -80,6 +80,16 @@ class ToolUtil(object):
         return header
 
     @staticmethod
+    def GetNewChatHeader():
+        header = {
+            "user-agent": "Dart/2.19 (dart:io)",
+            "accept-encoding":"gzip",
+            "api-version": "1.0.2",
+            "content-type":"application/json; charset=UTF-8",
+        }
+        return header
+
+    @staticmethod
     def __ConFromNative(datas):
         # 以下是IDA PRO反编译的混淆代码
         key = ""

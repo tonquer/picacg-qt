@@ -25,6 +25,7 @@ from component.widget.title_bar_widget import TitleBarWidget
 from view.category.category_view import CategoryView
 from view.category.rank_view import RankView
 from view.chat.chat_view import ChatView
+from view.chat_new.chat_new_view import ChatNewView
 from view.comment.comment_view import CommentView
 from view.comment.game_comment_view import GameCommentView
 from view.comment.my_comment_view import MyCommentView
@@ -166,6 +167,9 @@ class Ui_MainWindows(object):
         self.localReadView = LocalReadView()
         self.localReadView.setObjectName(u"localReadView")
         self.subStackWidget.addWidget(self.localReadView)
+        self.chatNewView = ChatNewView()
+        self.chatNewView.setObjectName(u"chatNewView")
+        self.subStackWidget.addWidget(self.chatNewView)
         self.bookEpsView = BookEpsView()
         self.bookEpsView.setObjectName(u"bookEpsView")
         self.subStackWidget.addWidget(self.bookEpsView)
@@ -188,7 +192,7 @@ class Ui_MainWindows(object):
 
         self.retranslateUi(MainWindows)
 
-        self.subStackWidget.setCurrentIndex(20)
+        self.subStackWidget.setCurrentIndex(21)
 
 
         QMetaObject.connectSlotsByName(MainWindows)

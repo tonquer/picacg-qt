@@ -13,7 +13,6 @@
   <property name="windowTitle">
    <string>聊天室</string>
   </property>
-
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="0">
     <widget class="QPushButton" name="atLabel">
@@ -50,7 +49,7 @@
      <item>
       <widget class="QLabel" name="numLabel">
        <property name="text">
-        <string>TextLabel</string>
+        <string/>
        </property>
       </widget>
      </item>

@@ -425,6 +425,11 @@ class SpeedTestHandler(object):
 @handler(req.ForgotPasswordReq)
 @handler(req.ResetPasswordReq)
 @handler(req.ChangePasswordReq)
+@handler(req.GetNewChatReq)
+@handler(req.GetNewChatProfileReq)
+@handler(req.GetNewChatLoginReq)
+@handler(req.SendNewChatMsgReq)
+@handler(req.SendNewChatImgMsgReq)
 class MsgHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": task.res.GetText()}

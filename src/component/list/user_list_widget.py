@@ -129,6 +129,64 @@ class UserListWidget(BaseListWidget):
         # if "pica-web.wakamoment.tk" not in character and character and config.IsLoadingPicture:
         #     self.AddDownloadTask(character, "", completeCallBack=self.LoadingHeadComplete, backParam=index)
 
+    def AddNewChatItem(self, info, floor):
+        title = info.get("title")
+        description = info.get("description")
+        level = info.get("minLevel")
+        slogan = description
+        character = ""
+        url = info.get("icon", "")
+        id = info.get("id")
+        path = ""
+
+        index = self.count()
+        iwidget = CommentItemWidget(self)
+        iwidget.index = index
+        iwidget.setFocusPolicy(Qt.NoFocus)
+        if isinstance(info.get("_comic"), dict):
+            iwidget.linkId = info.get("_comic").get("_id")
+            linkData = info.get("_comic").get("title", "")
+            iwidget.linkLabel.setText("<u><font color=#d5577c>{}</font></u>".format(linkData))
+            iwidget.linkLabel.setVisible(True)
+            iwidget.killButton.setVisible(False)
+
+        if isinstance(info.get("_game"), dict):
+            iwidget.linkId = info.get("_game").get("_id")
+            linkData = info.get("_game").get("title", "")
+            iwidget.isGame = True
+            iwidget.linkLabel.setText("GAME: <u><font color=#d5577c>{}</font></u>".format(linkData))
+            iwidget.linkLabel.setVisible(True)
+            iwidget.killButton.setVisible(False)
+
+        if info.get("isLiked"):
+            iwidget.SetLike()
+        iwidget.starButton.hide()
+        iwidget.commentButton.hide()
+        iwidget.starButton.hide()
+
+        # iwidget.commentLabel.setTextInteractionFlags(Qt.TextSelectableByKeyboard)
+        iwidget.setToolTip(slogan)
+        iwidget.id = id
+        iwidget.commentLabel.setText(description)
+        iwidget.nameLabel.setText(title)
+        # iwidget.commentButton.setText("({})".format(commentsCount))
+        # iwidget.starButton.setText("({})".format(likesCount))
+        iwidget.levelLabel.setText(" LV" + str(level) + " ")
+        iwidget.titleLabel.setText(" " + title + " ")
+        iwidget.url = ToolUtil.GetRealUrl(url, path)
+        iwidget.path = path
+
+        iwidget.character = character
+        dayStr = ToolUtil.GetUpdateStr("")
+        iwidget.dateLabel.setText(dayStr)
+        iwidget.indexLabel.setText("{}".format(str(floor))+Str.GetStr(Str.Floor))
+        iwidget.adjustSize()
+        item = QListWidgetItem(self)
+        item.setSizeHint(iwidget.sizeHint())
+        item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
+        self.setItemWidget(item, iwidget)
+        iwidget.PicLoad.connect(self.LoadingPicture)
+
     def LoadingPicture(self, index):
         item = self.item(index)
         widget = self.itemWidget(item)

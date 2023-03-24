@@ -408,6 +408,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                         QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastPage))
                         return
                     self.readImg.curIndex -= 1
+                    print("last page, addv:{}, val:{}, cur:{}, next:{}".format(addValue, value, curPictureSize, nextPictureSize))
                     self.changeLastPage.emit(self.readImg.curIndex)
 
                 ## 切换下一图片
@@ -416,6 +417,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                         QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
                         return
                     self.readImg.curIndex += 1
+                    print("next page, addv:{}, val:{}, cur:{}, next:{}".format(addValue, value, curPictureSize, nextPictureSize))
                     self.changeNextPage.emit(self.readImg.curIndex)
                 else:
                     break

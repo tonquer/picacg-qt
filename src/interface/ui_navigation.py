@@ -153,7 +153,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 211, 746))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -431, 211, 792))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -318,6 +318,20 @@ class Ui_Navigation(object):
 
         self.verticalLayout_3.addWidget(self.chatButton)
 
+        self.chatNewButton = QToolButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.chatNewButton)
+        self.chatNewButton.setObjectName(u"chatNewButton")
+        sizePolicy1.setHeightForWidth(self.chatNewButton.sizePolicy().hasHeightForWidth())
+        self.chatNewButton.setSizePolicy(sizePolicy1)
+        self.chatNewButton.setMinimumSize(QSize(150, 40))
+        self.chatNewButton.setFocusPolicy(Qt.NoFocus)
+        self.chatNewButton.setIcon(icon)
+        self.chatNewButton.setIconSize(QSize(32, 32))
+        self.chatNewButton.setCheckable(True)
+        self.chatNewButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.verticalLayout_3.addWidget(self.chatNewButton)
+
         self.gameButton = QToolButton(self.scrollAreaWidgetContents)
         self.buttonGroup.addButton(self.gameButton)
         self.gameButton.setObjectName(u"gameButton")
@@ -479,6 +493,7 @@ class Ui_Navigation(object):
         self.categoryButton.setText(QCoreApplication.translate("Navigation", u"\u5206\u7c7b", None))
         self.rankButton.setText(QCoreApplication.translate("Navigation", u"\u6392\u884c\u699c", None))
         self.chatButton.setText(QCoreApplication.translate("Navigation", u"\u804a\u5929\u5ba4", None))
+        self.chatNewButton.setText(QCoreApplication.translate("Navigation", u"\u65b0\u804a\u5929\u5ba4", None))
         self.gameButton.setText(QCoreApplication.translate("Navigation", u"\u6e38\u620f\u533a", None))
         self.friedButton.setText(QCoreApplication.translate("Navigation", u"\u9505\u8d34", None))
         self.label_3.setText(QCoreApplication.translate("Navigation", u"\u5176\u4ed6", None))

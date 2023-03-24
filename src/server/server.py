@@ -246,7 +246,12 @@ class Server(Singleton):
             request.headers = {}
 
         task.res = res.BaseRes("", False)
-        r = self.session.post(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=task.timeout, verify=False)
+        if request.file:
+            r = self.session.post(request.url, proxies=request.proxy, headers=request.headers, files=request.file,
+                                  timeout=task.timeout, verify=False)
+        else:
+            r = self.session.post(request.url, proxies=request.proxy, headers=request.headers,
+                                  data=json.dumps(request.params), timeout=task.timeout, verify=False)
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 

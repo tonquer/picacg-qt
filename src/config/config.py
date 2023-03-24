@@ -1,5 +1,6 @@
 BaseUrl = "http://68.183.234.72/"            # 获得ip列表接口
 Url = "https://picaapi.picacomic.com/"       # 域名
+NewChatUrl = "https://live-server.bidobido.xyz/"       # 域名
 ApiKey = "C69BAF41DA5ABD1FFEDC6D2FEA56B"     # apiKey
 AppChannel = "3"
 Version = "2.2.1.3.3.4"                      # 版本号

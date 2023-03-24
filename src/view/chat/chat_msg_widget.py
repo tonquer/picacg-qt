@@ -1,7 +1,7 @@
 import weakref
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QEvent, QProcess
+from PySide6.QtCore import QEvent, QProcess, QFile
 from PySide6.QtGui import QPixmap, Qt, QIcon, QCursor, QFont
 from PySide6.QtWidgets import QMenu, QApplication
 
@@ -19,6 +19,10 @@ class ChatMsgWidget(QtWidgets.QWidget, Ui_ChatRoomMsg):
         self.resize(400, 100)
         self.setWindowTitle("PicACG")
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
+        f = QFile(u":/png/icon/placeholder_avatar.png")
+        f.open(QFile.ReadOnly)
+        self.picLabel.SetPicture(f.readAll())
+        f.close()
 
         # p = QPixmap()
         # p.loadFromData(DataMgr().GetData("placeholder_avatar"))

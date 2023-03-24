@@ -1,4 +1,7 @@
 import base64
+import os
+import random
+import uuid
 from datetime import datetime, timedelta
 from urllib.parse import quote
 
@@ -10,6 +13,7 @@ from tools.tool import ToolUtil
 class ServerReq(object):
     def __init__(self, url, header=None, params=None, method="POST") -> None:
         self.url = url
+        self.file = ""
         self.token = ""
         self.headers = header
         self.params = params
@@ -650,3 +654,82 @@ class SendGameCommentsReq(ServerReq):
         method = "POST"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {"content": content}, method)
+
+# 新聊天频道登录
+class GetNewChatLoginReq(ServerReq):
+    def __init__(self, user, passwd):
+        url = config.NewChatUrl + "auth/signin"
+        method = "POST"
+        header = ToolUtil.GetNewChatHeader()
+        data = {
+            "email": user,
+            "password": passwd
+        }
+        super(self.__class__, self).__init__(url, header,
+                                             data, method)
+#{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9ucXVlcjIiLCJpZCI6IjYwMTIyODdjNjFhYWU4MmZkMmMwZDM1NSIsImVtYWlsIjoidG9ucXVlcjIiLCJpYXQiOjE2Nzk1NDQ0MzMsImV4cCI6MTcxNTU0NDQzM30.DyFOhNnJtgfei0FzTFem66GVWrWyiPbnx7dP_IdO1Ho"}
+
+# 获取新聊天频道
+class GetNewChatReq(ServerReq):
+    def __init__(self, token):
+        url = config.NewChatUrl + "room/list"
+        method = "Get"
+        header = ToolUtil.GetNewChatHeader()
+        header["authorization"] = "Bearer " + token
+        super(self.__class__, self).__init__(url, header,
+                                             {}, method)
+        self.token = "Bearer " + token
+# {"rooms":[{"isAvailable":true,"id":"63de3c05eaa71845c0647003","title":"嗶咔公眾澡堂","description":"嗶咔公眾澡堂","minLevel":1,"minRegisterDays":2,"isPublic":true,"allowedCharacters":[],"icon":"https://live-server.bidobido.xyz/media/0pTiqgSSCrDw8bA_GTM8-.jpg"},{"isAvailable":true,"id":"63de1a77ba9358b220392bd4","title":"嗶咔高級會所","description":"嗶咔高級會所","minLevel":20,"minRegisterDays":365,"isPublic":true,"allowedCharacters":[],"icon":"https://live-server.bidobido.xyz/media/-YCNHEpt7KJQdyITWWjML.jpg"},{"isAvailable":true,"id":"63de14e8ba9358b220392bac","title":"嗶咔學習教室","description":"嗶咔學習教室","minLevel":2,"minRegisterDays":10,"isPublic":true,"allowedCharacters":[],"icon":"https://live-server.bidobido.xyz/media/01tXnwXH0NhR2SazzmHfg.jpg"}]}
+
+# 获取新聊天用户信息
+class GetNewChatProfileReq(ServerReq):
+    def __init__(self, token):
+        url = config.NewChatUrl + "user/profile"
+        method = "Get"
+        header = ToolUtil.GetNewChatHeader()
+        header["authorization"] = "Bearer " + token,
+        super(self.__class__, self).__init__(url, header,
+                                             {}, method)
+                                             
+        self.token = "Bearer " + token
+
+
+# 发送消息
+class SendNewChatMsgReq(ServerReq):
+    def __init__(self, token, roomId, msg, userMentions, reply):
+        url = config.NewChatUrl + "room/send-message"
+        method = "POST"
+        header = ToolUtil.GetNewChatHeader()
+        header["authorization"] = "Bearer " + token,
+        data = {
+            "roomId": roomId,
+            "message": msg,
+            "referenceId": str(uuid.uuid1()),
+            "userMentions": userMentions,
+        }
+        if reply:
+            data["reply"] = reply
+        super(self.__class__, self).__init__(url, header,
+                                             data, method)
+        self.token = "Bearer " + token
+
+
+# 发送消息
+class SendNewChatImgMsgReq(ServerReq):
+    def __init__(self, token, roomId, msg, filePath):
+        url = config.NewChatUrl + "room/send-image"
+        method = "POST"
+        header = ToolUtil.GetNewChatHeader()
+        header.pop("content-type")
+
+        header["authorization"] = "Bearer " + token,
+        super(self.__class__, self).__init__(url, header,
+                                             {}, method)
+        self.token = "Bearer " + token
+        self.file = {
+            "roomId": (None, roomId),
+            "caption": (None, msg),
+            "referenceId": (None, str(uuid.uuid1())),
+            "userMentionsJson": (None, "[]"),
+            "images": (os.path.basename(filePath), open(filePath, 'rb'))
+        }

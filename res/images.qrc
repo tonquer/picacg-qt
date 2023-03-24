@@ -69,10 +69,10 @@
 	<file>icon/loading/loading_10.png</file>
 <!--    <file>icon/icon_unknown_error.png</file>-->
 <!--    <file>icon/icon_success.png</file>-->
-<!--    <file>icon/icon_question_error.png</file>-->
+    <file>icon/icon_question_error.png</file>
 <!--    <file>icon/icon_no_comment.png</file>-->
 <!--    <file>icon/icon_leave.png</file>-->
-<!--    <file>icon/icon_exclamation_error.png</file>-->
+    <file>icon/icon_exclamation_error.png</file>
 <!--    <file>icon/icon_empty.png</file>-->
     <file>icon/cat_latest.jpg</file>
     <file>icon/cat_forum.jpg</file>

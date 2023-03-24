@@ -122,6 +122,7 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.waifu2xButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.waifu2xToolView)))
         self.navigationWidget.localReadButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.localReadView)))
         self.navigationWidget.friedButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.friedView)))
+        self.navigationWidget.chatNewButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.chatNewView)))
         self.navigationWidget.friedButton.hide()
 
     def RetranslateUi(self):
