@@ -44,17 +44,38 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.isLocal = False
         self.SetLocal(False)
         self.someDownButton.clicked.connect(self.bookList.OpenBookDownloadAll)
+        self.widget.hide()
+        self.lineEdit.textChanged.connect(self.SearchTextChange)
+        self.searchText = ""
 
     def SwitchCurrent(self, **kwargs):
         refresh = kwargs.get("refresh")
         if refresh or self.bookList.count() <= 0:
             self.RefreshDataFocus()
 
+    def SearchTextChange(self, text):
+        self.searchText = text
+        sortId = self.sortIdCombox.currentIndex()
+        sortKey = self.sortKeyCombox.currentIndex()
+        sql = SqlServer.SearchFavorite(self.bookList.page, sortKey, sortId, self.searchText)
+        self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.SearchTextChangeBack, self.searchText)
+
+    def SearchTextChangeBack(self, bookList, bakKey):
+        if bakKey == self.searchText:
+            self.bookList.UpdatePage(1, 1)
+            self.bookList.UpdateState()
+            self.bookList.clear()
+            for info in bookList:
+                self.bookList.AddBookItemByBook(info, isShowHistory=True)
+            self.UpdatePageNum()
+            return
+
     def SetLocal(self, isLocal):
         self.isLocal = isLocal
         self.sortCombox.setVisible(not isLocal)
         self.sortIdCombox.setVisible(isLocal)
         self.sortKeyCombox.setVisible(isLocal)
+        self.widget.setVisible(isLocal)
         return
 
     def UpdatePageNum(self):
@@ -147,7 +168,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         sortId = self.sortIdCombox.currentIndex()
         sortKey = self.sortKeyCombox.currentIndex()
         if self.isLocal or QtOwner().isOfflineModel:
-            sql = SqlServer.SearchFavorite(self.bookList.page, sortKey, sortId)
+            sql = SqlServer.SearchFavorite(self.bookList.page, sortKey, sortId, self.searchText)
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.SearchLocalBack)
         else:
             sort = self.sortList[self.sortCombox.currentIndex()]

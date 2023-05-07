@@ -90,6 +90,11 @@
        </column>
        <column>
         <property name="text">
+         <string>时间</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
          <string>标题</string>
         </property>
        </column>

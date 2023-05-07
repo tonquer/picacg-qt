@@ -696,8 +696,8 @@ class GetNewChatProfileReq(ServerReq):
 
 # 发送消息
 class SendNewChatMsgReq(ServerReq):
-    def __init__(self, token, roomId, msg, userMentions, reply):
-        url = config.NewChatUrl + "room/send-message"
+    def __init__(self, token, roomId, msg, userMentions, replyId):
+        url = config.NewChatUrl + "message/send-message"
         method = "POST"
         header = ToolUtil.GetNewChatHeader()
         header["authorization"] = "Bearer " + token,
@@ -707,17 +707,17 @@ class SendNewChatMsgReq(ServerReq):
             "referenceId": str(uuid.uuid1()),
             "userMentions": userMentions,
         }
-        if reply:
-            data["reply"] = reply
+        if replyId:
+            data["replyId"] = replyId
         super(self.__class__, self).__init__(url, header,
                                              data, method)
         self.token = "Bearer " + token
 
 
-# 发送消息
+# 发送图片
 class SendNewChatImgMsgReq(ServerReq):
     def __init__(self, token, roomId, msg, filePath):
-        url = config.NewChatUrl + "room/send-image"
+        url = config.NewChatUrl + "message/send-image"
         method = "POST"
         header = ToolUtil.GetNewChatHeader()
         header.pop("content-type")
@@ -730,6 +730,6 @@ class SendNewChatImgMsgReq(ServerReq):
             "roomId": (None, roomId),
             "caption": (None, msg),
             "referenceId": (None, str(uuid.uuid1())),
-            "userMentionsJson": (None, "[]"),
-            "images": (os.path.basename(filePath), open(filePath, 'rb'))
+            "userMentions": (None, "[]"),
+            "medias": (os.path.basename(filePath), open(filePath, 'rb'))
         }

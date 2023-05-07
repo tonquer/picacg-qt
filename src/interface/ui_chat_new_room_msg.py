@@ -16,7 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
-    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+    QSizePolicy, QSpacerItem, QToolButton, QVBoxLayout,
+    QWidget)
 
 from component.label.head_label import HeadLabel
 import images_rc
@@ -25,7 +26,7 @@ class Ui_ChatNewRoomMsg(object):
     def setupUi(self, ChatNewRoomMsg):
         if not ChatNewRoomMsg.objectName():
             ChatNewRoomMsg.setObjectName(u"ChatNewRoomMsg")
-        ChatNewRoomMsg.resize(636, 299)
+        ChatNewRoomMsg.resize(749, 299)
         ChatNewRoomMsg.setStyleSheet(u"QWidget#widget{\n"
 "            border-image:url(:png/icon/skin_aio_friend_bubble_pressed.9.png) 50;\n"
 "			border-width: 45;\n"
@@ -70,16 +71,6 @@ class Ui_ChatNewRoomMsg(object):
         self.gridLayout = QGridLayout()
         self.gridLayout.setSpacing(1)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.nameLabel = QLabel(ChatNewRoomMsg)
-        self.nameLabel.setObjectName(u"nameLabel")
-        self.nameLabel.setMinimumSize(QSize(0, 20))
-        self.nameLabel.setMaximumSize(QSize(16777215, 30))
-        font = QFont()
-        font.setPointSize(12)
-        self.nameLabel.setFont(font)
-
-        self.gridLayout.addWidget(self.nameLabel, 0, 0, 1, 1)
-
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setSpacing(6)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -110,7 +101,7 @@ class Ui_ChatNewRoomMsg(object):
         self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout, 2, 0, 1, 1)
 
         self.widget = QWidget(ChatNewRoomMsg)
         self.widget.setObjectName(u"widget")
@@ -135,6 +126,8 @@ class Ui_ChatNewRoomMsg(object):
         self.replayLabel = QLabel(self.replayWidget)
         self.replayLabel.setObjectName(u"replayLabel")
         self.replayLabel.setMinimumSize(QSize(40, 50))
+        font = QFont()
+        font.setPointSize(12)
         self.replayLabel.setFont(font)
         self.replayLabel.setStyleSheet(u"padding-left:20px;\n"
 "padding-right:10px;")
@@ -182,7 +175,60 @@ class Ui_ChatNewRoomMsg(object):
         self.verticalLayout_3.addWidget(self.infoLabel)
 
 
-        self.gridLayout.addWidget(self.widget, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.widget, 5, 0, 1, 1)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.nameLabel = QLabel(ChatNewRoomMsg)
+        self.nameLabel.setObjectName(u"nameLabel")
+        self.nameLabel.setMinimumSize(QSize(0, 20))
+        self.nameLabel.setMaximumSize(QSize(16777215, 30))
+        self.nameLabel.setFont(font)
+
+        self.horizontalLayout_4.addWidget(self.nameLabel)
+
+        self.vipIcon = QToolButton(ChatNewRoomMsg)
+        self.vipIcon.setObjectName(u"vipIcon")
+        icon = QIcon()
+        icon.addFile(u":/png/icon/vip.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.vipIcon.setIcon(icon)
+        self.vipIcon.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_4.addWidget(self.vipIcon)
+
+        self.managerIcon = QToolButton(ChatNewRoomMsg)
+        self.managerIcon.setObjectName(u"managerIcon")
+        icon1 = QIcon()
+        icon1.addFile(u":/png/icon/svip.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.managerIcon.setIcon(icon1)
+        self.managerIcon.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_4.addWidget(self.managerIcon)
+
+        self.nvIcon = QToolButton(ChatNewRoomMsg)
+        self.nvIcon.setObjectName(u"nvIcon")
+        icon2 = QIcon()
+        icon2.addFile(u":/png/icon/nv.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.nvIcon.setIcon(icon2)
+        self.nvIcon.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_4.addWidget(self.nvIcon)
+
+        self.officialIcon = QToolButton(ChatNewRoomMsg)
+        self.officialIcon.setObjectName(u"officialIcon")
+        icon3 = QIcon()
+        icon3.addFile(u":/png/icon/icon_picacg.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.officialIcon.setIcon(icon3)
+        self.officialIcon.setIconSize(QSize(32, 32))
+
+        self.horizontalLayout_4.addWidget(self.officialIcon)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
+
+
+        self.gridLayout.addLayout(self.horizontalLayout_4, 1, 0, 1, 1)
 
 
         self.gridLayout_2.addLayout(self.gridLayout, 0, 1, 1, 1)
@@ -196,7 +242,6 @@ class Ui_ChatNewRoomMsg(object):
     def retranslateUi(self, ChatNewRoomMsg):
         ChatNewRoomMsg.setWindowTitle(QCoreApplication.translate("ChatNewRoomMsg", u"Form", None))
         self.picLabel.setText("")
-        self.nameLabel.setText(QCoreApplication.translate("ChatNewRoomMsg", u"TextLabel", None))
         self.indexLabel.setText(QCoreApplication.translate("ChatNewRoomMsg", u"X\u697c", None))
         self.levelLabel.setText(QCoreApplication.translate("ChatNewRoomMsg", u"LV", None))
         self.titleLabel.setText(QCoreApplication.translate("ChatNewRoomMsg", u"TextLabel", None))
@@ -205,5 +250,22 @@ class Ui_ChatNewRoomMsg(object):
         self.commentLabel.setText(QCoreApplication.translate("ChatNewRoomMsg", u"TextLabel", None))
         self.pic2Label.setText("")
         self.infoLabel.setText(QCoreApplication.translate("ChatNewRoomMsg", u"TextLabel", None))
+        self.nameLabel.setText(QCoreApplication.translate("ChatNewRoomMsg", u"TextLabel", None))
+#if QT_CONFIG(tooltip)
+        self.vipIcon.setToolTip(QCoreApplication.translate("ChatNewRoomMsg", u"vip\u7528\u6237", None))
+#endif // QT_CONFIG(tooltip)
+        self.vipIcon.setText(QCoreApplication.translate("ChatNewRoomMsg", u"...", None))
+#if QT_CONFIG(tooltip)
+        self.managerIcon.setToolTip(QCoreApplication.translate("ChatNewRoomMsg", u"\u623f\u7ba1", None))
+#endif // QT_CONFIG(tooltip)
+        self.managerIcon.setText("")
+#if QT_CONFIG(tooltip)
+        self.nvIcon.setToolTip(QCoreApplication.translate("ChatNewRoomMsg", u"\u5973\u83e9\u8428", None))
+#endif // QT_CONFIG(tooltip)
+        self.nvIcon.setText(QCoreApplication.translate("ChatNewRoomMsg", u"...", None))
+#if QT_CONFIG(tooltip)
+        self.officialIcon.setToolTip(QCoreApplication.translate("ChatNewRoomMsg", u"\u54d4\u5494\u5b98\u65b9", None))
+#endif // QT_CONFIG(tooltip)
+        self.officialIcon.setText(QCoreApplication.translate("ChatNewRoomMsg", u"...", None))
     # retranslateUi
 

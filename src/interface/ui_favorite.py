@@ -16,8 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QListWidgetItem, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QWidget)
+    QHBoxLayout, QLabel, QLineEdit, QListWidgetItem,
+    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
+    QWidget)
 
 from component.list.comic_list_widget import ComicListWidget
 
@@ -37,7 +38,7 @@ class Ui_Favorite(object):
         self.gridLayout_3.addWidget(self.bookList, 0, 0, 1, 1)
 
 
-        self.gridLayout_2.addLayout(self.gridLayout_3, 0, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout_3, 1, 0, 1, 1)
 
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setObjectName(u"gridLayout_4")
@@ -144,7 +145,24 @@ class Ui_Favorite(object):
         self.gridLayout_4.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
 
-        self.gridLayout_2.addLayout(self.gridLayout_4, 1, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout_4, 2, 0, 1, 1)
+
+        self.widget = QWidget(Favorite)
+        self.widget.setObjectName(u"widget")
+        self.horizontalLayout_2 = QHBoxLayout(self.widget)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label = QLabel(self.widget)
+        self.label.setObjectName(u"label")
+
+        self.horizontalLayout_2.addWidget(self.label)
+
+        self.lineEdit = QLineEdit(self.widget)
+        self.lineEdit.setObjectName(u"lineEdit")
+
+        self.horizontalLayout_2.addWidget(self.lineEdit)
+
+
+        self.gridLayout_2.addWidget(self.widget, 0, 0, 1, 1)
 
 
         self.retranslateUi(Favorite)
@@ -178,5 +196,6 @@ class Ui_Favorite(object):
 #if QT_CONFIG(shortcut)
         self.jumpButton.setShortcut(QCoreApplication.translate("Favorite", u"Return", None))
 #endif // QT_CONFIG(shortcut)
+        self.label.setText(QCoreApplication.translate("Favorite", u"\u641c\u7d22\uff1a", None))
     # retranslateUi
 

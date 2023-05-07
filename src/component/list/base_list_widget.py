@@ -26,7 +26,7 @@ class BaseListWidget(QListWidget, QtTaskBase):
         if Setting.IsGrabGesture.value:
             QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
             propertiesOne = QScroller.scroller(self).scrollerProperties()
-            print(propertiesOne.scrollMetric(propertiesOne.MousePressEventDelay))
+            # print(propertiesOne.scrollMetric(propertiesOne.MousePressEventDelay))
             propertiesOne.setScrollMetric(QScrollerProperties.MousePressEventDelay, 1)
             propertiesOne.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
             propertiesOne.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
@@ -80,8 +80,8 @@ class BaseListWidget(QListWidget, QtTaskBase):
         if self.vScrollBar:
             self.vScrollBar.ScrollValue(-arg__1.angleDelta().y())
         else:
-            print(self.verticalScrollMode())
-            print(self.verticalScrollBar().singleStep())
+            # print(self.verticalScrollMode())
+            # print(self.verticalScrollBar().singleStep())
             return QListWidget.wheelEvent(self, arg__1)
 
     def OnActionTriggered(self):

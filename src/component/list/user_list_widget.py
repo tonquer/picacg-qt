@@ -165,6 +165,7 @@ class UserListWidget(BaseListWidget):
         iwidget.starButton.hide()
 
         # iwidget.commentLabel.setTextInteractionFlags(Qt.TextSelectableByKeyboard)
+        iwidget.commentLabel.setTextInteractionFlags(Qt.NoTextInteraction)
         iwidget.setToolTip(slogan)
         iwidget.id = id
         iwidget.commentLabel.setText(description)

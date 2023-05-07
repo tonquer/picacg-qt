@@ -87,6 +87,7 @@
           <item>
            <widget class="AnimationStackWidget" name="subStackWidget">
             <widget class="IndexView" name="indexView"/>
+            <widget class="LocalEpsReadView" name="localEpsReadView"/>
             <widget class="ChatNewView" name="chatNewView"/>
             <widget class="HelpView" name="helpView"/>
             <widget class="MyCommentView" name="myCommentView"/>
@@ -277,6 +278,12 @@
    <class>ChatNewView</class>
    <extends>QWidget</extends>
    <header location="global">view.chat_new.chat_new_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalEpsReadView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.local_eps_read_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

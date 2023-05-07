@@ -184,17 +184,17 @@ class TaskLocal(TaskBase, QtTaskBase):
             return
         type = task.type
         dir = task.path
-        if type == 1:
+        if type == LocalData.Type1:
             st, data = self.ParseBookInfoByDir(dir)
             datas = [data]
-        elif type == 2:
+        elif type == LocalData.Type2:
             st, data = self.ParseBookInfoByFile(dir)
             datas = [data]
-        elif type == 3:
+        elif type == LocalData.Type3:
             st, datas = self.ParseBookInfoByFile(dir)
-        elif type == 4:
+        elif type == LocalData.Type4:
             st, datas = self.ParseBookInfoByFile(dir)
-        elif type == 5:
+        elif type == LocalData.Type5:
             st, datas = self.ParseBookInfoByFileAll(dir)
 
         self.taskObj.localBack.emit(taskId, st, datas)

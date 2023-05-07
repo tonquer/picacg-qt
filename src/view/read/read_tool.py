@@ -364,7 +364,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
         self.readImg.AddHistory()
         QtOwner().bookInfoView.LoadHistory()
-        self.readImg.OpenPage(bookId, epsId)
+        self.readImg.OpenPage(bookId, epsId, 9999)
         return
 
     def OpenNextEps(self):
@@ -512,6 +512,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.InitHelp()
         
     def ChangeReadMode2(self, index):
+        self.imgFrame.isLastPageMode = False
         self.stripModel = ReadMode(index)
         self.scrollArea.initReadMode = self.stripModel
         self.ScalePicture2(100)

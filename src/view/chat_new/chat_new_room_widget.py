@@ -29,6 +29,7 @@ class MsgData:
         self.id = ""
         self.referenceId = ""
         self.type = "TEXT_MESSAGE"
+        self.createdAt = ""
         self.isBlocked = False
         self.data = {}
 
@@ -223,6 +224,17 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
                 self._RecvImageMsg(msg)
             elif msg.type == "CONNECTED":
                 pass
+            elif msg.type == "INITIAL_MESSAGES":
+                self._RecvBroadcastInitMsgs(msg)
+            elif msg.type == "DELETE_MESSAGE_ACTION":
+                "删除消息"
+                pass
+            elif msg.type == "UPDATE_ROOM_ONLINE_USERS_COUNT_ACTION":
+                onlineCount = msg.data.get("onlineCount", 0)
+                self.onlineNum.setText(str(onlineCount))
+                pass
+            elif msg.type == "PODCAST_IS_LIVE_ACTION":
+                pass
             # if len(data) < 2:
             #     return
             # elif data[0] == "new_connection":
@@ -254,20 +266,51 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         return
 
     @time_me
+    def _RecvBroadcastInitMsgs(self, rawMsg):
+        for v in rawMsg.data.get("messages", []):
+            msg = MsgData()
+            msg.ParseData(v)
+            if msg.type == "TEXT_MESSAGE":
+                self._RecvBroadcastMsg(msg)
+            elif msg.type == "IMAGE_MESSAGE":
+                self._RecvImageMsg(msg)
+            else:
+                pass
+        pass
+
+    @time_me
     def _RecvBroadcastMsg(self, rawMsg):
         data = rawMsg.data
-        msg = data.get("message", {}).get("message", "")
-        date = data.get("message", {}).get("date", "")
+        msg = data.get("message", "")
 
         userMentions = data.get("userMentions", [])
         reply = data.get("reply", {})
 
+        createdTime = rawMsg.createdAt
+        timeArray, _ = ToolUtil.GetDateStr(createdTime)
+        strTime = "{}:{}:{}   ".format(timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
+
         name = data.get("profile", {}).get("name", "")
         level = data.get("profile", {}).get("level", "")
         title = data.get("profile", {}).get("title", "")
+        characters = data.get("profile", {}).get("characters", [])
         info = ChatNewMsgWidget(self)
+        info.vipIcon.hide()
+        info.managerIcon.hide()
+        info.nvIcon.hide()
+        info.officialIcon.hide()
         info.rawMsg = rawMsg
-
+        for i in characters:
+            if i == "vip":
+                info.vipIcon.setVisible(True)
+            elif i == "girl":
+                info.nvIcon.setVisible(True)
+            elif i == "manager":
+                info.managerIcon.setVisible(True)
+            elif i == "official":
+                info.officialIcon.setVisible(True)
+            elif i == "anchor":
+                pass
         for at in userMentions:
             atName = at.get("name", "")
             msg = "<font color=#1661ab>@{}</font>".format(atName) + "\n" + msg
@@ -278,17 +321,18 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         info.levelLabel.setText("<font color=#130c0e>{}</font>".format(" LV"+str(level))+" ")
         info.titleLabel.setText("<font color=#130c0e>{}</font>".format(" " + title + " "))
         # info.indexLabel.setText("{}".format(str(self.indexMsgId + 1))+ Str.GetStr(Str.Floor))
-        date = time.strftime("%H:%M:%S")
-        info.indexLabel.setText(date)
+        # date = time.strftime("%H:%M:%S")
+        info.indexLabel.setText(strTime)
         # info.numLabel.setText("{}楼".format(str(self.indexMsgId+1)))
         info.infoLabel.setText(data.get("platform", "")+" ")
         if reply:
             replayId = reply.get("id")
             replyType = reply.get("type", "")
-            replyMsg = str(reply.get("message", ""))
+
+            replyData = reply.get("data", {})
+            replyMsg = str(replyData.get("message", ""))
             if replyMsg == "null" or replyMsg == "None":
                 replyMsg = ""
-            replyData = reply.get("data", {})
 
             index = self.msgIdInfo.get(replayId)
             oldWiget = self.msgInfo.get(index)
@@ -296,7 +340,7 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
                 assert isinstance(oldWiget, ChatNewMsgWidget)
                 replyData = oldWiget.rawMsg.data
 
-            replyName = replyData.get("profile", {}).get("name", "")
+            replyName = replyData.get("name", "")
             info.replayLabel.setText("<font color=#1661ab>@{}</font>{}".format(replyName, "<br/>" + replyMsg))
             info.replayWidget.setVisible(True)
             if replyType == "TEXT_MESSAGE":
@@ -307,7 +351,9 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
             elif replyType == "IMAGE_MESSAGE":
                 ## 回复图片
                 info.SetReplyPictureDefault()
-                replayImage = reply.get("image")
+                replayImage = reply.get("data", {}).get("media")
+                replyName = reply.get("data", {}).get("name", "")
+                info.replayLabel.setText("<font color=#1661ab>@{}</font>{}".format(replyName, "<br/>" + replyMsg))
                 if replayImage:
                     path = ToolUtil.GetMd5RealPath(replayImage, "chat2/img")
                     self.AddDownloadTask(replayImage, path, completeCallBack=self.LoadingReplyMsgImgComplete, backParam=self.indexMsgId)
@@ -345,11 +391,15 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
     @time_me
     def _RecvImageMsg(self, rawMsg):
         data = rawMsg.data
-        msg = data.get("message", {}).get("caption", "")
-        date = data.get("message", {}).get("date", "")
-
+        msg = data.get("caption", "")
+        if msg == "null" or msg == "None" or not msg:
+            msg = ""
         userMentions = data.get("userMentions", [])
         reply = data.get("reply", {})
+
+        createdTime = rawMsg.createdAt
+        timeArray, _ = ToolUtil.GetDateStr(createdTime)
+        strTime = "{}:{}:{}   ".format(timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
 
         name = data.get("profile", {}).get("name", "")
         level = data.get("profile", {}).get("level", "")
@@ -367,8 +417,7 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         info.levelLabel.setText("<font color=#130c0e>{}</font>".format(" LV"+str(level))+" ")
         info.titleLabel.setText("<font color=#130c0e>{}</font>".format(" " + title + " "))
         # info.indexLabel.setText("{}".format(str(self.indexMsgId + 1))+ Str.GetStr(Str.Floor))
-        date = time.strftime("%H:%M:%S")
-        info.indexLabel.setText(date)
+        info.indexLabel.setText(strTime)
         info.replayWidget.setVisible(False)
         # info.numLabel.setText("{}楼".format(str(self.indexMsgId+1)))
         info.infoLabel.setText(data.get("platform", "")+" ")
@@ -383,7 +432,7 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
             path = ToolUtil.GetMd5RealPath(url, "chat2/user")
             self.AddDownloadTask(url, path, completeCallBack=self.LoadingPictureComplete, backParam=self.indexMsgId)
 
-        medias = data.get("message", {}).get("medias", [])
+        medias = data.get("medias", [])
         if medias and config.IsLoadingPicture:
             ## 这里目前只有一张
             url = medias[0]
@@ -494,12 +543,12 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         if not msg and not imageData:
             return
         userMentions = []
-        reply = ""
+        replyId = ""
         if self.atLabel.isVisible() and self.atRoleId:
-            userMentions = [{"id":self.atRoleId, "name": self.atRoleName}]
+            userMentions = [self.atRoleId]
         if self.replyLabel.isVisible() and self.reply:
-            reply = self.reply
-        data = req.SendNewChatMsgReq(self.token, self.url, msg, userMentions, reply)
+            replyId = self.reply.get("id", "")
+        data = req.SendNewChatMsgReq(self.token, self.url, msg, userMentions, replyId)
         self.AddHttpTask(data, callBack=self.SendMsgBack)
         self.textEdit.setText("")
         self.replyLabel.setVisible(False)
@@ -552,7 +601,7 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         assert isinstance(widget, ChatNewMsgWidget)
         assert isinstance(widget.rawMsg, MsgData)
         name = widget.rawMsg.data.get("profile", {}).get("name", "")
-        text = widget.rawMsg.data.get("message", {}).get("message", "")
+        text = widget.rawMsg.data.get("message", "")
         self.reply = {
             "id": widget.rawMsg.id,
             "name": name,

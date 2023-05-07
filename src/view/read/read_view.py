@@ -387,6 +387,9 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if 0 < self.pageIndex < self.maxPic:
             self.curIndex = self.pageIndex
             QtOwner().ShowMsg(Str.GetStr(Str.ContinueRead) + str(self.pageIndex + 1) + Str.GetStr(Str.Page))
+        elif self.pageIndex > self.maxPic:
+            self.curIndex = self.maxPic-1
+            # QtOwner().ShowMsg(Str.GetStr(Str.ContinueRead) + str(self.maxPic) + Str.GetStr(Str.Page))
 
         self.AddHistory()
         self.scrollArea.InitAllQLabel(self.maxPic, self.curIndex)

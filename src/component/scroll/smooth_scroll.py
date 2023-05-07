@@ -52,7 +52,7 @@ class SmoothScroll:
     def __smoothMove(self):
         """ 计时器溢出时进行平滑滚动 """
         totalDelta = 0
-        # 计算所有未处理完事件的滚动距离，定时器每溢出一次就将步数-1
+        # 计算所有未处理完事件的滚动距离，定时器每溢出 一次就将步数-1
         for i in self.stepsLeftQueue:
             totalDelta += self.__subDelta(i[0], i[1])
             i[1] -= 1
@@ -72,6 +72,7 @@ class SmoothScroll:
                             Qt.ScrollBegin,
                             False
                             )
+            # print("old {}".format(self.verticalScrollBar().value()))
             QApplication.sendEvent(self.verticalScrollBar(), e)
         else:
             # 构造滚轮事件

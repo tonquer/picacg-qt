@@ -350,10 +350,23 @@ class SqlServer(Singleton):
         cur.execute("COMMIT")
 
     @staticmethod
-    def SearchFavorite(page, sortKey=0, sortId=0):
-        sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
-            Setting.UserId.value)
+    def SearchFavorite(page, sortKey=0, sortId=0, searchText=""):
+        if not searchText:
+            sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
+                Setting.UserId.value)
+        else:
+            sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
+                Setting.UserId.value)
+            sql += " and (book.title like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
+            sql += " book.title2 like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
+            sql += " book.author like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
+            sql += " book.chineseTeam like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
+            sql += " book.description like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
+            sql += " book.tags like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
+            sql += " book.categories like '%{}%')  ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
+
         if sortKey == 0:
             sql += "ORDER BY book.updated_at "
 

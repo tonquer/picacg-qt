@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QTimer, QUrl, QSize
@@ -38,7 +39,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.tableWidget.setColumnCount(10)
+        self.tableWidget.setColumnCount(11)
         # self.tableWidget.setHorizontalHeaderLabels(HorizontalHeaderLabels)
         self.timer = QTimer(self.tableWidget)
         self.timer.setInterval(1000)
@@ -61,6 +62,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         datas = self.db.LoadDownload(self)
         self.redownloadRadio.clicked.connect(self.SwitchReDownload)
         self.needLoadBookID = []
+        self.tableWidget.setColumnHidden(0, True)
         for task in datas.values():
             self.downloadDict[task.bookId] = task
             if not task.epsIds:
@@ -221,14 +223,19 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
 
     def UpdateTableItem(self, info):
         assert isinstance(info, DownloadItem)
+
+        localTime = time.localtime(info.tick)
+
+        strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
         self.tableWidget.setItem(info.tableRow, 0, QTableWidgetItem(info.bookId))
+        self.tableWidget.setItem(info.tableRow, 1, QTableWidgetItem(strTime))
         item = QTableWidgetItem(info.title)
         item.setToolTip(info.title)
-        self.tableWidget.setItem(info.tableRow, 1, item)
+        self.tableWidget.setItem(info.tableRow, 2, item)
 
-        self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(info.GetStatusMsg()))
+        self.tableWidget.setItem(info.tableRow, 6, QTableWidgetItem(info.GetStatusMsg()))
 
-        self.tableWidget.setItem(info.tableRow, 2, QTableWidgetItem("{}/{}".format(str(info.curDownloadPic), str(info.maxDownloadPic))))
+        self.tableWidget.setItem(info.tableRow, 3, QTableWidgetItem("{}/{}".format(str(info.curDownloadPic), str(info.maxDownloadPic))))
         bookInfo = BookMgr().GetBook(info.bookId)
 
         item2 = QTableWidgetItem("{}/{}".format(str(info.curDownloadEps), str(info.epsCount)))
@@ -237,12 +244,12 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 icon2 = QIcon()
                 icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
                 item2.setIcon(icon2)
-        self.tableWidget.setItem(info.tableRow, 3, item2)
-        self.tableWidget.setItem(info.tableRow, 4, QTableWidgetItem(info.speedStr))
-        self.tableWidget.setItem(info.tableRow, 6, QTableWidgetItem("{}/{}".format(str(info.curConvertCnt), str(info.convertCnt))))
-        self.tableWidget.setItem(info.tableRow, 7, QTableWidgetItem("{}/{}".format(str(info.curConvertEps), str(info.convertEpsCnt))))
-        self.tableWidget.setItem(info.tableRow, 8, QTableWidgetItem("{}".format(str(info.convertTick))))
-        self.tableWidget.setItem(info.tableRow, 9, QTableWidgetItem(info.GetConvertStatusMsg()))
+        self.tableWidget.setItem(info.tableRow, 4, item2)
+        self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(info.speedStr))
+        self.tableWidget.setItem(info.tableRow, 7, QTableWidgetItem("{}/{}".format(str(info.curConvertCnt), str(info.convertCnt))))
+        self.tableWidget.setItem(info.tableRow, 8, QTableWidgetItem("{}/{}".format(str(info.curConvertEps), str(info.convertEpsCnt))))
+        self.tableWidget.setItem(info.tableRow, 9, QTableWidgetItem("{}".format(str(info.convertTick))))
+        self.tableWidget.setItem(info.tableRow, 10, QTableWidgetItem(info.GetConvertStatusMsg()))
         return
 
     def RemoveRecord(self, bookId):

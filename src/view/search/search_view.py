@@ -59,6 +59,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.searchLabel.installEventFilter(self)
         self.someDownButton.clicked.connect(self.bookList.OpenBookDownloadAll)
 
+
     def InitCategory(self):
         for categorory in CateGoryMgr().allCategorise:
             text = Converter('zh-hans').convert(categorory)

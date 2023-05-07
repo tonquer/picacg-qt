@@ -52,9 +52,9 @@ Issues1 = "https://github.com/tonquer/picacg-qt/issues"
 Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
 Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.4.4"
-RealVersion = "v1.4.4"
-TimeVersion = "2023-3-19"
+UpdateVersion = "v1.4.5"
+RealVersion = "v1.4.5"
+TimeVersion = "2023-5-7"
 
 Waifu2xVersion = "1.1.6"
 

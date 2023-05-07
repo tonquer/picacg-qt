@@ -79,6 +79,10 @@
     <file>icon/cat_random.jpg</file>
     <file>icon/cat_leaderboard.jpg</file>
     <file>icon/new.svg</file>
+    <file>icon/vip.png</file>
+    <file>icon/svip.png</file>
+    <file>icon/nv.png</file>
+    <file>icon/icon_picacg.png</file>
   </qresource>
   <qresource prefix="icon">
     <file>theme/dark_pink/disabled/base.svg</file>

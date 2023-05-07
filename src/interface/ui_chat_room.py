@@ -45,6 +45,16 @@ class Ui_ChatRoom(object):
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_2)
 
+        self.label = QLabel(ChatRoom)
+        self.label.setObjectName(u"label")
+
+        self.horizontalLayout_3.addWidget(self.label)
+
+        self.onlineNum = QLabel(ChatRoom)
+        self.onlineNum.setObjectName(u"onlineNum")
+
+        self.horizontalLayout_3.addWidget(self.onlineNum)
+
         self.numLabel = QLabel(ChatRoom)
         self.numLabel.setObjectName(u"numLabel")
 
@@ -161,6 +171,8 @@ class Ui_ChatRoom(object):
         ChatRoom.setWindowTitle(QCoreApplication.translate("ChatRoom", u"\u804a\u5929\u5ba4", None))
         self.atLabel.setText(QCoreApplication.translate("ChatRoom", u"PushButton", None))
         self.nameLabel.setText(QCoreApplication.translate("ChatRoom", u"TextLabel", None))
+        self.label.setText(QCoreApplication.translate("ChatRoom", u"\u5728\u7ebf\u4eba\u6570\uff1a", None))
+        self.onlineNum.setText(QCoreApplication.translate("ChatRoom", u"0", None))
         self.numLabel.setText("")
         self.replyLabel.setText(QCoreApplication.translate("ChatRoom", u"PushButton", None))
         self.pushButton.setText(QCoreApplication.translate("ChatRoom", u"\u8868\u60c5", None))
