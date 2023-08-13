@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>838</width>
+    <width>1084</width>
     <height>705</height>
    </rect>
   </property>
@@ -55,7 +55,7 @@ QScrollArea {background-color:transparent;}</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>818</width>
+        <width>1064</width>
         <height>685</height>
        </rect>
       </property>
@@ -357,7 +357,7 @@ QPushButton:hover
          <item row="1" column="0">
           <widget class="QTabWidget" name="tabWidget">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab">
             <attribute name="title">
@@ -436,7 +436,7 @@ QPushButton:hover
                     <string notr="true"/>
                    </property>
                    <property name="text">
-                    <string/>
+                    <string>爱心</string>
                    </property>
                    <property name="icon">
                     <iconset resource="../res/images.qrc">
@@ -455,6 +455,9 @@ QPushButton:hover
                    <property name="checked">
                     <bool>false</bool>
                    </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -472,7 +475,7 @@ QPushButton:hover
                     <string notr="true">background-color:transparent;</string>
                    </property>
                    <property name="text">
-                    <string/>
+                    <string>收藏</string>
                    </property>
                    <property name="icon">
                     <iconset resource="../res/images.qrc">
@@ -487,6 +490,9 @@ QPushButton:hover
                    </property>
                    <property name="checkable">
                     <bool>false</bool>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
                    </property>
                   </widget>
                  </item>
@@ -505,7 +511,7 @@ QPushButton:hover
                     <string notr="true">background-color:transparent;</string>
                    </property>
                    <property name="text">
-                    <string/>
+                    <string>评论</string>
                    </property>
                    <property name="icon">
                     <iconset resource="../res/images.qrc">
@@ -516,6 +522,9 @@ QPushButton:hover
                      <width>50</width>
                      <height>50</height>
                     </size>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
                    </property>
                   </widget>
                  </item>
@@ -534,7 +543,7 @@ QPushButton:hover
                     <string notr="true">background-color:transparent;</string>
                    </property>
                    <property name="text">
-                    <string/>
+                    <string>下载</string>
                    </property>
                    <property name="icon">
                     <iconset resource="../res/images.qrc">
@@ -545,6 +554,35 @@ QPushButton:hover
                      <width>50</width>
                      <height>50</height>
                     </size>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="clearButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>清理</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../../18comic-new/res/images.qrc">
+                     <normaloff>:/png/icon/clear_off.png</normaloff>:/png/icon/clear_off.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
                    </property>
                   </widget>
                  </item>
@@ -740,15 +778,15 @@ QListWidget::item {
  </widget>
  <customwidgets>
   <customwidget>
+   <class>TagListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.tag_list_widget.h</header>
+  </customwidget>
+  <customwidget>
    <class>SmoothScrollArea</class>
    <extends>QScrollArea</extends>
    <header location="global">component.scroll_area.smooth_scroll_area.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>TagListWidget</class>
-   <extends>QListWidget</extends>
-   <header location="global">component.list.tag_list_widget.h</header>
   </customwidget>
   <customwidget>
    <class>HeadLabel</class>
@@ -768,6 +806,7 @@ QListWidget::item {
  </customwidgets>
  <resources>
   <include location="../res/images.qrc"/>
+  <include location="../../18comic-new/res/images.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -777,8 +816,8 @@ QListWidget::item {
    <slot>StartRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>519</x>
-     <y>478</y>
+     <x>790</x>
+     <y>524</y>
     </hint>
     <hint type="destinationlabel">
      <x>313</x>
@@ -793,8 +832,8 @@ QListWidget::item {
    <slot>AddBookLike()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>346</x>
-     <y>478</y>
+     <x>329</x>
+     <y>524</y>
     </hint>
     <hint type="destinationlabel">
      <x>821</x>
@@ -809,8 +848,8 @@ QListWidget::item {
    <slot>AddFavorite()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>392</x>
-     <y>478</y>
+     <x>424</x>
+     <y>524</y>
     </hint>
     <hint type="destinationlabel">
      <x>781</x>
@@ -825,12 +864,28 @@ QListWidget::item {
    <slot>AddDownload()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>438</x>
-     <y>478</y>
+     <x>614</x>
+     <y>524</y>
     </hint>
     <hint type="destinationlabel">
      <x>788</x>
      <y>413</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>ClearCache()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>659</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1160</x>
+     <y>394</y>
     </hint>
    </hints>
   </connection>
@@ -841,5 +896,6 @@ QListWidget::item {
   <slot>StartRead()</slot>
   <slot>AddBookLike()</slot>
   <slot>ChangeTab()</slot>
+  <slot>ClearCache()</slot>
  </slots>
 </ui>

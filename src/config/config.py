@@ -52,8 +52,8 @@ Issues1 = "https://github.com/tonquer/picacg-qt/issues"
 Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
 Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.4.5"
-RealVersion = "v1.4.5"
+UpdateVersion = "v1.4.6"
+RealVersion = "v1.4.6"
 TimeVersion = "2023-8-13"
 
 Waifu2xVersion = "1.1.6"
@@ -86,6 +86,7 @@ ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
 ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器
 
 ImageServer3 = 'storage.diwodiwo.xyz'          # 分流3 使用的图片服务器
+ImageServer3Jump = 'img.diwodiwo.xyz'          # 分流3 使用的图片服务器
 
 ProxyApiDomain = "bika-api.ggo.icu"
 ProxyImgDomain = "bika-img.ggo.icu"
@@ -100,7 +101,8 @@ ApiDomain = [
 
 ImageDomain = [
     "s3.picacomic.com",
-    "storage.diwodiwo.xyz",
+    # "storage.diwodiwo.xyz",
+    # "img.diwodiwo.xyz",
     "storage1.picacomic.com",
     "img.tipatipa.xyz",
     "img.picacomic.com",

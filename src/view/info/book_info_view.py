@@ -1,9 +1,11 @@
 import json
+import os
+import shutil
 
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup, QMessageBox
 
 from component.layout.flow_layout import FlowLayout
 from config.setting import Setting
@@ -107,6 +109,13 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.favoriteButton.setIcon(QIcon(":/png/icon/icon_like.png"))
         else:
             self.favoriteButton.setIcon(QIcon(":/png/icon/icon_like_off.png"))
+
+        path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), "book/{}".format(self.bookId))
+        waifuPath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), "waifu2x/book/{}".format(self.bookId))
+        if os.path.isdir(path) or os.path.isdir(waifuPath):
+            self.clearButton.setIcon(QIcon(":/png/icon/clear_on.png"))
+        else:
+            self.clearButton.setIcon(QIcon(":/png/icon/clear_off.png"))
 
     def UpdateLikeIcon(self):
         p = QPixmap()
@@ -449,6 +458,22 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             QtOwner().favoriteView.AddFavorites(self.bookId)
         else:
             QtOwner().favoriteView.DelAndFavoritesBack({"st": Status.Ok}, self.bookId)
+
+    def ClearCache(self):
+        isClear = QMessageBox.information(self, '清除缓存', "是否清除本书所有缓存", QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+        if isClear == QtWidgets.QMessageBox.Yes:
+            if not Setting.SavePath.value:
+                return
+            path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
+                                "book/{}".format(self.bookId))
+            waifuPath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
+                                     "waifu2x/book/{}".format(self.bookId))
+            if os.path.isdir(path):
+                shutil.rmtree(path, True)
+            if os.path.isdir(waifuPath):
+                shutil.rmtree(waifuPath, True)
+        self.UpdateFavoriteIcon()
+
 
     def OpenReadImg(self, modelIndex):
         index = modelIndex.row()

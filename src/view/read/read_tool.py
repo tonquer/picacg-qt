@@ -178,7 +178,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
         if self.curIndex >= self.maxPic - 1:
             if self.readImg.isLocal:
-                QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
+                QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
+                self.OpenNextEps()
                 return
             elif self.readImg.isOffline:
                 if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId + 1):
@@ -225,7 +226,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
         if self.curIndex <= 0:
             if self.readImg.isLocal:
-                QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastPage))
+                QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipLast))
+                self.OpenLastEps()
                 return
             elif self.readImg.isOffline:
                 if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId - 1):
@@ -376,7 +378,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
         epsId += 1
         if self.readImg.isLocal:
-            if epsId >= len(self.readImg._cacheBook):
+            if epsId >= len(self.readImg._cacheBook.eps):
                 QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextChapter))
                 return
             self.readImg.OpenLocalPage(self.readImg._cacheBook, epsId, 0)

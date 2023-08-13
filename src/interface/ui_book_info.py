@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QComm
     QFrame, QGridLayout, QHBoxLayout, QLabel,
     QLayout, QListView, QListWidgetItem, QPlainTextEdit,
     QPushButton, QSizePolicy, QSpacerItem, QTabWidget,
-    QVBoxLayout, QWidget)
+    QToolButton, QVBoxLayout, QWidget)
 
 from component.button.icon_tool_button import IconToolButton
 from component.label.head_label import HeadLabel
@@ -27,12 +27,13 @@ from component.list.eps_list_widget import EpsListWidget
 from component.list.tag_list_widget import TagListWidget
 from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 import images_rc
+import images_rc
 
 class Ui_BookInfo(object):
     def setupUi(self, BookInfo):
         if not BookInfo.objectName():
             BookInfo.setObjectName(u"BookInfo")
-        BookInfo.resize(838, 705)
+        BookInfo.resize(1084, 705)
         BookInfo.setStyleSheet(u"QToolButton\n"
 "{\n"
 "background-color:transparent;\n"
@@ -69,7 +70,7 @@ class Ui_BookInfo(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 818, 685))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1064, 685))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.gridLayout_3 = QGridLayout()
@@ -314,6 +315,7 @@ class Ui_BookInfo(object):
         self.starButton.setIconSize(QSize(50, 50))
         self.starButton.setCheckable(False)
         self.starButton.setChecked(False)
+        self.starButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
         self.horizontalLayout_2.addWidget(self.starButton)
 
@@ -328,6 +330,7 @@ class Ui_BookInfo(object):
         self.favoriteButton.setIcon(icon1)
         self.favoriteButton.setIconSize(QSize(50, 50))
         self.favoriteButton.setCheckable(False)
+        self.favoriteButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
         self.horizontalLayout_2.addWidget(self.favoriteButton)
 
@@ -340,6 +343,7 @@ class Ui_BookInfo(object):
         icon2.addFile(u":/png/icon/icon_comment.png", QSize(), QIcon.Normal, QIcon.Off)
         self.commentButton.setIcon(icon2)
         self.commentButton.setIconSize(QSize(50, 50))
+        self.commentButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
         self.horizontalLayout_2.addWidget(self.commentButton)
 
@@ -352,8 +356,20 @@ class Ui_BookInfo(object):
         icon3.addFile(u":/png/icon/ic_get_app_black_36dp.png", QSize(), QIcon.Normal, QIcon.Off)
         self.downloadButton.setIcon(icon3)
         self.downloadButton.setIconSize(QSize(50, 50))
+        self.downloadButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
         self.horizontalLayout_2.addWidget(self.downloadButton)
+
+        self.clearButton = QToolButton(self.tab)
+        self.clearButton.setObjectName(u"clearButton")
+        self.clearButton.setMinimumSize(QSize(40, 40))
+        icon4 = QIcon()
+        icon4.addFile(u":/png/icon/clear_off.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.clearButton.setIcon(icon4)
+        self.clearButton.setIconSize(QSize(50, 50))
+        self.clearButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.horizontalLayout_2.addWidget(self.clearButton)
 
         self.startRead = QPushButton(self.tab)
         self.startRead.setObjectName(u"startRead")
@@ -477,8 +493,9 @@ class Ui_BookInfo(object):
         self.starButton.clicked.connect(BookInfo.AddBookLike)
         self.favoriteButton.clicked.connect(BookInfo.AddFavorite)
         self.downloadButton.clicked.connect(BookInfo.AddDownload)
+        self.clearButton.clicked.connect(BookInfo.ClearCache)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(BookInfo)
@@ -501,10 +518,11 @@ class Ui_BookInfo(object):
         self.user_icon.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.user_name.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.updateTick.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
-        self.starButton.setText("")
-        self.favoriteButton.setText("")
-        self.commentButton.setText("")
-        self.downloadButton.setText("")
+        self.starButton.setText(QCoreApplication.translate("BookInfo", u"\u7231\u5fc3", None))
+        self.favoriteButton.setText(QCoreApplication.translate("BookInfo", u"\u6536\u85cf", None))
+        self.commentButton.setText(QCoreApplication.translate("BookInfo", u"\u8bc4\u8bba", None))
+        self.downloadButton.setText(QCoreApplication.translate("BookInfo", u"\u4e0b\u8f7d", None))
+        self.clearButton.setText(QCoreApplication.translate("BookInfo", u"\u6e05\u7406", None))
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))
         self.pageLabel.setText(QCoreApplication.translate("BookInfo", u"\u5206\u9875\uff1a", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("BookInfo", u"\u9605\u8bfb", None))

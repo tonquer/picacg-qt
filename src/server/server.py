@@ -127,6 +127,7 @@ class Server(Singleton):
         AllDomain = config.ApiDomain[:]
         AllDomain.append(config.ImageServer2)
         AllDomain.append(config.ImageServer2Jump)
+        # AllDomain.append(config.ImageServer3Jump)
         for domain in AllDomain:
             if is_ipaddress(address):
                 host_table[domain] = address
@@ -138,6 +139,7 @@ class Server(Singleton):
                 host_table[domain] = imageAddress
             elif not imageAddress and domain in host_table:
                 host_table.pop(domain)
+                
         # 换一个，清空pool
         self.session = requests.session()
         return
