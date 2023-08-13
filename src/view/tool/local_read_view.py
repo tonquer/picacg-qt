@@ -10,7 +10,7 @@ from natsort import natsorted
 from interface.ui_index import Ui_Index
 from interface.ui_local import Ui_Local
 from qt_owner import QtOwner
-from server import req, Log, User, Status
+from server import req, Log, User, Status, time
 from task.qt_task import QtTaskBase
 from task.task_local import LocalData
 from tools.str import Str
@@ -32,6 +32,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
         self.action1 = QAction(Str.GetStr(Str.ImportSimple), self.toolMenu, triggered=self.CheckAction1)
         self.action2 = QAction(Str.GetStr(Str.ImportSimpleZip), self.toolMenu, triggered=self.CheckAction2)
+        self.action4 = QAction(Str.GetStr(Str.ImportDouble), self.toolMenu, triggered=self.CheckAction3)
         self.action3 = QAction(Str.GetStr(Str.SupportDrop), self.toolMenu)
         self.action3.setEnabled(False)
         # self.action3 = QAction(Str.GetStr(Str.ImportSimpleDir), self.toolMenu, triggered=self.CheckAction3)
@@ -39,6 +40,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
         self.toolMenu.addAction(self.action1)
         self.toolMenu.addAction(self.action2)
+        self.toolMenu.addAction(self.action4)
         self.toolMenu.addAction(self.action3)
         # self.toolMenu.addAction(self.action3)
         # self.toolMenu.addAction(self.action4)
@@ -71,6 +73,12 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.bookList.MoveHandler = self.MoveCallBack
         self.bookList.openMenu = True
         self.bookList.OpenDirHandler = self.OpenDirCallBack
+        self.lineEdit.textChanged.connect(self.SearchTextChange)
+        self.searchText = ""
+
+    def SearchTextChange(self, text):
+        self.searchText = text
+        self.InitBook()
 
     def Init(self):
         self.categoryBook, self.bookCategory = self.db.LoadCategory()
@@ -105,7 +113,8 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             if v.id in allBookId:
                 categoryList = self.bookCategory.get(v.id, [])
                 categoryStr = ",".join(categoryList)
-                self.bookList.AddBookByLocal(v, categoryStr)
+                if not self.searchText or self.searchText in v.title:
+                    self.bookList.AddBookByLocal(v, categoryStr)
         return
 
     def ClickTagsItem(self, modelIndex):
@@ -129,7 +138,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         datas = list(value)
         sortId = self.sortIdCombox.currentIndex()
         sortKeyID = self.sortKeyCombox.currentIndex()
-        isRevert = (sortId != 0)
+        isRevert = (sortId == 0)
         if sortKeyID == 0:
             datas.sort(key=lambda a: a.lastReadTime, reverse=isRevert)
         elif sortKeyID == 2:
@@ -184,11 +193,19 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             return
         v = self.allBookInfos[bookId]
         assert isinstance(v, LocalData)
-        type = LocalData.Type1 if not v.isZipFile else LocalData.Type2
+        if v.eps != []:
+            type = LocalData.Type3
+        elif v.isZipFile:
+            type = LocalData.Type2
+        else:
+            type = LocalData.Type1
+
+        QtOwner().ShowLoading()
         self.AddLocalTaskLoad(type, v.file, bookId, callBack=self.OpenLocalBookBack)
         return
 
     def OpenLocalBookBack(self, st, books, bookId):
+        QtOwner().CloseLoading()
         if st != Status.Ok:
             QtOwner().ShowError(Str.GetStr(st))
             return
@@ -201,6 +218,10 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         assert isinstance(v, LocalData)
         newV = books[0]
         v.CopyData(newV)
+        if v.eps != []:
+            QtOwner().OpenLocalEpsView(v.id)
+            return
+
         if v.picCnt <= 0:
             QtOwner().ShowError(Str.GetStr(Str.NotPictureFile))
             return
@@ -213,6 +234,22 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             return
         v = self.allBookInfos[taskId]
         self.db.AddLoadLocalBook(v)
+        return
+
+    def UpdateLastTick(self, taskId):
+        if taskId not in self.allBookInfos:
+            return
+        v = self.allBookInfos[taskId]
+        v.lastReadTime = int(time.time())
+        self.db.AddLoadLocalBook(v)
+        return
+
+    def AddEpsDataToDB(self, taskId, subId):
+        if taskId not in self.allBookInfos:
+            return
+        for v in self.allBookInfos[taskId].eps:
+            if v.id == subId:
+                self.db.AddLoadLocalEpsBook(v)
         return
 
     def AddBookByDir(self):
@@ -252,6 +289,9 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
                 self.bookList.AddBookByLocal(v, category)
                 self.AddDataToDB(v.id)
         QtOwner().ShowMsg("已添加{}本到书架, {}本存在已忽略".format(addNum, alreadyNum))
+        self.lineEdit.setText("")
+        self.sortIdCombox.setCurrentIndex(0)
+        self.sortKeyCombox.setCurrentIndex(1)
         return
 
     # 导入单本Zip
@@ -268,8 +308,15 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
                 self.AddLocalTaskLoad(LocalData.Type2, name, path, self.CheckAction1LoadBack)
         return
 
-    # 批量导入目录
+    # 导入单本目录
     def CheckAction3(self):
+        if self.lastPath:
+            url = QFileDialog.getExistingDirectory(self, Str.GetStr(Str.SelectFold), dir=self.lastPath)
+        else:
+            url = QFileDialog.getExistingDirectory(self, Str.GetStr(Str.SelectFold))
+        if url:
+            QtOwner().ShowLoading()
+            self.AddLocalTaskLoad(LocalData.Type3, url, os.path.dirname(url), self.CheckAction1LoadBack)
         return
 
     # 批量导入带章节的目录

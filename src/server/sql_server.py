@@ -224,21 +224,22 @@ class SqlServer(Singleton):
 
     def _SelectUpdateInfo(self, conn, sql, backId):
         cur = conn.cursor()
-        cur.execute("select * from system")
+        cur.execute("select id, size, time, sub_version from system where 1 order by id desc limit 1")
         nums = 0
         time = ""
         version = 0
+        dbVer = ""
         for data in cur.fetchall():
-            if config.UpdateVersion == data[0]:
-                nums = data[1]
-                time = data[2]
-                version = data[3]
+            dbVer = data[0]
+            nums = data[1]
+            time = data[2]
+            version = data[3]
 
         cur.execute("select count(*) from book")
         for data in cur.fetchall():
             nums = data[0]
 
-        data = pickle.dumps((nums, time, version))
+        data = pickle.dumps((dbVer, nums, time, version))
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 

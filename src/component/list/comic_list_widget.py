@@ -31,6 +31,7 @@ class ComicListWidget(BaseListWidget):
         self.isDelMenu = False
         self.isGame = False
         self.isLocal = False
+        self.isLocalEps = False
         self.isMoveMenu = False
         self.openMenu = False
 
@@ -113,7 +114,10 @@ class ComicListWidget(BaseListWidget):
         widget.title = v.title
         widget.picNum = v.picCnt
         widget.url = v.file
-        title += "<font color=#d5577c>{}</font>".format("(" + str(v.picCnt) + "P)")
+        if len(v.eps) > 0:
+            title += "<font color=#d5577c>{}</font>".format("(" + str(len(v.eps)) + "E)")
+        else:
+            title += "<font color=#d5577c>{}</font>".format("(" + str(v.picCnt) + "P)")
         if v.lastReadTime:
             categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.lastReadTime), Str.GetStr(Str.Looked))
 
@@ -247,6 +251,8 @@ class ComicListWidget(BaseListWidget):
         assert isinstance(widget, ComicItemWidget)
         if self.isGame:
             QtOwner().OpenGameInfo(widget.id)
+        elif self.isLocalEps:
+            QtOwner().OpenLocalEpsBook(widget.id)
         elif self.isLocal:
             QtOwner().OpenLocalBook(widget.id)
         else:

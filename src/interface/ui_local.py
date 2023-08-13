@@ -16,8 +16,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
-    QHBoxLayout, QLabel, QListWidgetItem, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QWidget)
+    QHBoxLayout, QLabel, QLineEdit, QListWidgetItem,
+    QPushButton, QSizePolicy, QSpacerItem, QSpinBox,
+    QWidget)
 
 from component.list.comic_list_widget import ComicListWidget
 from component.list.tag_list_widget import TagListWidget
@@ -29,6 +30,17 @@ class Ui_Local(object):
         Local.resize(628, 334)
         self.gridLayout_2 = QGridLayout(Local)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_3 = QGridLayout()
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.bookList = ComicListWidget(Local)
+        self.bookList.setObjectName(u"bookList")
+        self.bookList.setStyleSheet(u"")
+
+        self.gridLayout_3.addWidget(self.bookList, 0, 0, 1, 1)
+
+
+        self.gridLayout_2.addLayout(self.gridLayout_3, 3, 0, 1, 1)
+
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.tagsList = TagListWidget(Local)
@@ -67,18 +79,7 @@ class Ui_Local(object):
         self.horizontalLayout_2.addWidget(self.toolButton, 0, Qt.AlignRight)
 
 
-        self.gridLayout_2.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
-
-        self.gridLayout_3 = QGridLayout()
-        self.gridLayout_3.setObjectName(u"gridLayout_3")
-        self.bookList = ComicListWidget(Local)
-        self.bookList.setObjectName(u"bookList")
-        self.bookList.setStyleSheet(u"")
-
-        self.gridLayout_3.addWidget(self.bookList, 0, 0, 1, 1)
-
-
-        self.gridLayout_2.addLayout(self.gridLayout_3, 2, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.horizontalLayout_2, 1, 0, 1, 1)
 
         self.gridLayout_4 = QGridLayout()
         self.gridLayout_4.setObjectName(u"gridLayout_4")
@@ -168,7 +169,24 @@ class Ui_Local(object):
         self.gridLayout_4.addLayout(self.horizontalLayout, 0, 0, 1, 1)
 
 
-        self.gridLayout_2.addLayout(self.gridLayout_4, 3, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout_4, 4, 0, 1, 1)
+
+        self.widget = QWidget(Local)
+        self.widget.setObjectName(u"widget")
+        self.horizontalLayout_3 = QHBoxLayout(self.widget)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label = QLabel(self.widget)
+        self.label.setObjectName(u"label")
+
+        self.horizontalLayout_3.addWidget(self.label)
+
+        self.lineEdit = QLineEdit(self.widget)
+        self.lineEdit.setObjectName(u"lineEdit")
+
+        self.horizontalLayout_3.addWidget(self.lineEdit)
+
+
+        self.gridLayout_2.addWidget(self.widget, 0, 0, 1, 1)
 
 
         self.retranslateUi(Local)
@@ -194,5 +212,6 @@ class Ui_Local(object):
 #if QT_CONFIG(shortcut)
         self.jumpButton.setShortcut(QCoreApplication.translate("Local", u"Return", None))
 #endif // QT_CONFIG(shortcut)
+        self.label.setText(QCoreApplication.translate("Local", u"\u641c\u7d22\uff1a", None))
     # retranslateUi
 

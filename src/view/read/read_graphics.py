@@ -297,6 +297,14 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                     self.qtTool.FullScreen()
                 elif ev.key() == Qt.Key_F2:
                     self.qtTool.curWaifu2x.click()
+
+                elif ev.key() == Qt.Key_F4:
+                    self.readImg.CopyLastFile()
+                elif ev.key() == Qt.Key_F3:
+                    self.readImg.CopyFile()
+                elif ev.key() == Qt.Key_F1:
+                    self.readImg.CopyPicture()
+
                 elif ev.key() == Qt.Key_F12:
                     self.readImg.ShowAndCloseTool()
                 elif ev.key() == Qt.Key_Space:

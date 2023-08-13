@@ -54,7 +54,7 @@ Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
 UpdateVersion = "v1.4.5"
 RealVersion = "v1.4.5"
-TimeVersion = "2023-5-7"
+TimeVersion = "2023-8-13"
 
 Waifu2xVersion = "1.1.6"
 

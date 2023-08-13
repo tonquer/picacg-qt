@@ -195,6 +195,10 @@ class QtOwner(Singleton):
         self.owner.searchView2.searchTab.setText(Title)
         self.owner.SwitchWidget(self.owner.searchView2, **arg)
 
+    def OpenLocalEpsView(self, bookId):
+        arg = {"bookId": bookId}
+        self.owner.SwitchWidget(self.owner.localReadEpsView, **arg)
+
     def OpenSearchByText(self, text):
         self.owner.searchView.lineEdit.setText(text)
         self.owner.searchView.lineEdit.Search()
@@ -203,9 +207,9 @@ class QtOwner(Singleton):
         self.owner.totalStackWidget.setCurrentIndex(1)
         self.owner.readView.OpenPage(bookId, index, pageIndex=pageIndex, isOffline=isOffline)
 
-    def OpenLocalReadView(self, v):
+    def OpenLocalReadView(self, v, epsId=0):
         self.owner.totalStackWidget.setCurrentIndex(1)
-        self.owner.readView.OpenLocalPage(v)
+        self.owner.readView.OpenLocalPage(v, epsId)
 
     def CloseReadView(self):
         self.owner.totalStackWidget.setCurrentIndex(0)
@@ -237,6 +241,9 @@ class QtOwner(Singleton):
 
     def OpenLocalBook(self, bookId):
         self.owner.localReadView.OpenLocalBook(bookId)
+
+    def OpenLocalEpsBook(self, bookId):
+        self.owner.localReadEpsView.OpenLocalBook(bookId)
 
     def OpenEpsInfo(self, bookId):
         # self.owner.subCommentView.SetOpenEvent(commentId, widget)

@@ -14,7 +14,18 @@
    <string>本地漫画</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
+   <item row="3" column="0">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="ComicListWidget" name="bookList">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="TagListWidget" name="tagsList">
@@ -70,18 +81,7 @@ QListWidget::item {
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
-      <widget class="ComicListWidget" name="bookList">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -233,6 +233,22 @@ QListWidget::item {
       </layout>
      </item>
     </layout>
+   </item>
+   <item row="0" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>搜索：</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit"/>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

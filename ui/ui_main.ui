@@ -87,7 +87,7 @@
           <item>
            <widget class="AnimationStackWidget" name="subStackWidget">
             <widget class="IndexView" name="indexView"/>
-            <widget class="LocalEpsReadView" name="localEpsReadView"/>
+            <widget class="LocalEpsReadView" name="localReadEpsView"/>
             <widget class="ChatNewView" name="chatNewView"/>
             <widget class="HelpView" name="helpView"/>
             <widget class="MyCommentView" name="myCommentView"/>

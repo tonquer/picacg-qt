@@ -125,10 +125,10 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectUpdate, self.UpdateDbInfoBack)
 
     def UpdateDbInfoBack(self, data):
-        num, timeStr, version = data
+        dbVer, num, timeStr, version = data
         self.curSubVersion = version
         self.curUpdateTick = ToolUtil.GetTimeTickEx(timeStr)
-
+        self.localVer.setText(dbVer)
         # curEndTime = datetime.now() - timedelta(7)
         # newTick = int(curEndTime.timestamp())
         # self.curUpdateTick = newTick
@@ -136,6 +136,10 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.localNum.setText(str(num))
         self.localTime.setText(timeStr)
         QtOwner().searchView.UpdateTime(timeStr)
+        if config.RealVersion != dbVer:
+            self.UpdateText(self.dbCheck, "错误的data.db版本", "#7fb80e", False)
+            return
+
         if not self.isCheckUp:
             self.isCheckUp = True
             self.ReUpdateDatabase()
@@ -149,9 +153,11 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         if QtOwner().isOfflineModel:
             return
 
-        if self.curUpdateTick <= 0:
-            return
         if self.curIndex >= len(self.dbUpdateUrl):
+            return
+
+        if self.curUpdateTick <= 0:
+
             return
 
         self.UpdateText(self.dbCheck, Str.CheckUp, "#7fb80e", False)
@@ -174,7 +180,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
 
     def UpdateText(self, label, text, color, enable):
         label.setStyleSheet("background-color:transparent;color:{}".format(color))
-        label.setText("{}".format(Str.GetStr(text)))
+        label.setText("{}".format(Str.GetStr(text, text)))
         label.setEnabled(enable)
         if enable:
             label.setCursor(Qt.PointingHandCursor)

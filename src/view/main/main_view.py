@@ -143,6 +143,7 @@ class MainView(Main, QtTaskBase):
         self.gameView.retranslateUi(self.gameView)
         self.helpView.retranslateUi(self.helpView)
         self.waifu2xToolView.retranslateUi(self.waifu2xToolView)
+        self.navigationWidget.retranslateUi(self.navigationWidget)
 
     def Init(self):
         IsCanUse = False

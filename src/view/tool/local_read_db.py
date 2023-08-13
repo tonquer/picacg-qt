@@ -93,20 +93,37 @@ class LocalReadDb(object):
     def GetSaveStr(self, name):
         return name.replace("'", "''")
 
-    def AddLoadLocalBook(self, info):
+    def AddLoadLocalBook(self, info2):
+        info = info2
+        assert isinstance(info, LocalData)
+        self.AddLoadLocalBook2(info)
+        for info in info2.eps:
+            self.AddLoadLocalBook2(info)
+        self.cur.execute("COMMIT")
+        return
+
+    def AddLoadLocalEpsBook(self, info2):
+        info = info2
+        assert isinstance(info, LocalData)
+        self.AddLoadLocalBook2(info)
+        self.cur.execute("COMMIT")
+        return
+
+    def AddLoadLocalBook2(self, info2):
+        info = info2
         assert isinstance(info, LocalData)
         sql = "INSERT INTO local_book(id, title, file, path, cover, epsId, isZipFile, lastIndex, lastEpsId, addTime, lastReadTime, picCnt, main_id) " \
               "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', {5}, {6}, {7}, {8}, {9}, {10}, {11}, '{12}') " \
               "ON CONFLICT(id) DO UPDATE SET lastIndex='{7}', file='{2}', path='{3}', lastEpsId={8}, addTime={9}, lastReadTime={10}, picCnt={11}, cover='{4}' ".\
             format(info.id, self.GetSaveStr(info.title), self.GetSaveStr(info.file), self.GetSaveStr(info.path), self.GetSaveStr(info.cover), info.epsId, int(info.isZipFile), info.lastIndex
                    , info.lastEpsId, info.addTime, info.lastReadTime, info.picCnt, info.main_id)
-
         suc = self.cur.execute(sql)
-        self.cur.execute("COMMIT")
         return
 
     def DelDownloadDB(self, bookId):
         sql = "delete from local_book where id='{}'".format(bookId)
+        suc = self.cur.execute(sql)
+        sql = "delete from local_book where main_id='{}'".format(bookId)
         suc = self.cur.execute(sql)
         sql = "delete from local_category where book_id='{}'".format(bookId)
         suc = self.cur.execute(sql)

@@ -15,7 +15,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QListWidgetItem, QSizePolicy,
+from PySide6.QtWidgets import (QApplication, QGridLayout, QHBoxLayout, QLabel,
+    QListWidgetItem, QRadioButton, QSizePolicy, QSpacerItem,
     QWidget)
 
 from component.list.comic_list_widget import ComicListWidget
@@ -36,7 +37,26 @@ class Ui_LocalEps(object):
         self.gridLayout_3.addWidget(self.bookList, 0, 0, 1, 1)
 
 
-        self.gridLayout_2.addLayout(self.gridLayout_3, 1, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout_3, 4, 0, 1, 1)
+
+        self.name = QLabel(LocalEps)
+        self.name.setObjectName(u"name")
+
+        self.gridLayout_2.addWidget(self.name, 0, 0, 1, 1)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.showWaifu2x = QRadioButton(LocalEps)
+        self.showWaifu2x.setObjectName(u"showWaifu2x")
+
+        self.horizontalLayout.addWidget(self.showWaifu2x)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer)
+
+
+        self.gridLayout_2.addLayout(self.horizontalLayout, 2, 0, 1, 1)
 
 
         self.retranslateUi(LocalEps)
@@ -46,5 +66,7 @@ class Ui_LocalEps(object):
 
     def retranslateUi(self, LocalEps):
         LocalEps.setWindowTitle(QCoreApplication.translate("LocalEps", u"\u672c\u5730\u6f2b\u753b\u7ae0\u8282", None))
+        self.name.setText("")
+        self.showWaifu2x.setText(QCoreApplication.translate("LocalEps", u"\u53ea\u663e\u793aWaifu2x", None))
     # retranslateUi
 

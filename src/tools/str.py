@@ -227,6 +227,9 @@ class Str:
     SupportDrop = 148         # 支持拖拽文件导入
     AlreadyHave = 149         # 已存在
     SameWight = 150    # 等宽模式
+    CopyFileLast = 151     # 保存上次路径
+    ImportDouble = 152     # 导入多章节目录
+
 
     @classmethod
     def Reload(cls):
@@ -442,10 +445,12 @@ class Str:
         cls.strDict[cls.SupportDrop] = QCoreApplication.translate("cls.obj", "支持拖拽文件导入", None)
         cls.strDict[cls.AlreadyHave] = QCoreApplication.translate("cls.obj", "已存在", None)
         cls.strDict[cls.SameWight] = QCoreApplication.translate("cls.obj", "等宽模式", None)
+        cls.strDict[cls.CopyFileLast] = QCoreApplication.translate("cls.obj", "保存上次路径", None)
+        cls.strDict[cls.ImportDouble] = QCoreApplication.translate("cls.obj", "导入多章节目录", None)
 
     @classmethod
-    def GetStr(cls, enumType):
-        return cls.strDict.get(enumType, "")
+    def GetStr(cls, enumType, defualt=""):
+        return cls.strDict.get(enumType, defualt)
 
     @classmethod
     def CheckStr(cls):

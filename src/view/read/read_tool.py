@@ -348,7 +348,10 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
         epsId -= 1
         if self.readImg.isLocal:
-            QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastChapter))
+            if epsId < 0:
+                QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastChapter))
+                return
+            self.readImg.OpenLocalPage(self.readImg._cacheBook, epsId, 9999)
             return
         elif self.readImg.isOffline:
             if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId - 1):
@@ -373,7 +376,10 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         bookInfo = BookMgr().books.get(bookId)
         epsId += 1
         if self.readImg.isLocal:
-            QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextChapter))
+            if epsId >= len(self.readImg._cacheBook):
+                QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextChapter))
+                return
+            self.readImg.OpenLocalPage(self.readImg._cacheBook, epsId, 0)
             return
         elif self.readImg.isOffline:
             if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId + 1):

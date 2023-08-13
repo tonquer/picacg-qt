@@ -1,14 +1,12 @@
 import os
-import sys
-
 from tools.langconv import Converter
-cmd = "pyside6-lupdate.exe"
-sts = os.system(cmd + " -no-obsolete -source-language zh_CN -target-language zh_HK ../src/tools/str.py -ts ../translate/str_hk.ts")
-sts = os.system(cmd + " -no-obsolete -source-language zh_CN -target-language en_US ../src/tools/str.py -ts ../translate/str_en.ts")
+os.system("chcp 65001")
+sts = os.system("pyside6-lupdate.exe -no-obsolete -source-language zh_CN -target-language zh_HK ../src/tools/str.py -ts ../translate/str_hk.ts")
+sts = os.system("pyside6-lupdate.exe -no-obsolete -source-language zh_CN -target-language en_US ../src/tools/str.py -ts ../translate/str_en.ts")
 
-sts = os.system(cmd + " -no-obsolete -source-language zh_CN -target-language zh_HK ../ui -ts ../translate/ui_hk.ts")
-sts = os.system(cmd + " -no-obsolete -source-language zh_CN -target-language en_US ../ui -ts ../translate/ui_en.ts")
-
+sts = os.system("pyside6-lupdate.exe -no-obsolete -source-language zh_CN -target-language zh_HK ../ui -ts ../translate/ui_hk.ts")
+sts = os.system("pyside6-lupdate.exe -no-obsolete -source-language zh_CN -target-language en_US ../ui -ts ../translate/ui_en.ts")
+#
 for tsFile in ["../translate/str_hk.ts", "../translate/ui_hk.ts"]:
     f = open(tsFile, "r", encoding="utf-8")
     data = ""
@@ -33,6 +31,5 @@ for tsFile in ["../translate/str_hk.ts", "../translate/ui_hk.ts"]:
     f.write(data)
     f.close()
 
-cmd = "pyside6-lrelease.exe"
-sts = os.system(cmd + " ../translate/str_en.ts ../translate/ui_en.ts -qm ../res/tr/tr_en.qm")
-sts = os.system(cmd + " ../translate/str_hk.ts ../translate/ui_hk.ts -qm ../res/tr/tr_hk.qm")
+sts = os.system("pyside6-lrelease.exe ../translate/str_en.ts ../translate/ui_en.ts -qm ../res/tr/tr_en.qm")
+sts = os.system("pyside6-lrelease.exe ../translate/str_hk.ts ../translate/ui_hk.ts -qm ../res/tr/tr_hk.qm")

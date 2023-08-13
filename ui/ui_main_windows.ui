@@ -129,7 +129,7 @@
            <widget class="DownloadAllView" name="downloadAllView"/>
            <widget class="LocalReadView" name="localReadView"/>
            <widget class="ChatNewView" name="chatNewView"/>
-           <widget class="LocalEpsReadView" name="localEpsReadView"/>
+           <widget class="LocalReadEpsView" name="localReadEpsView"/>
            <widget class="BookEpsView" name="bookEpsView"/>
            <widget class="FriedView" name="friedView"/>
           </widget>
@@ -301,15 +301,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>TitleBarWidget</class>
+   <class>LocalReadEpsView</class>
    <extends>QWidget</extends>
-   <header location="global">component.widget.title_bar_widget.h</header>
+   <header location="global">view.tool.local_read_eps_view.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LocalEpsReadView</class>
+   <class>TitleBarWidget</class>
    <extends>QWidget</extends>
-   <header location="global">view.tool.local_eps_read_view.h</header>
+   <header location="global">component.widget.title_bar_widget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -100,7 +100,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
 
         self.openProxy.clicked.connect(self.OpenProxy)
         # TODO
-        self.languageButton3.setVisible(False)
+        # self.languageButton3.setVisible(False)
 
         self.msgLabel.setVisible(False)
 
@@ -312,8 +312,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
                     language = 2
             else:
                 # TODO
-                # language = 3
-                language = 2
+                language = 3
+                # language = 2
 
         if language == Setting.Language.autoValue:
             return
