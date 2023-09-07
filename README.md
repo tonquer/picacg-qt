@@ -57,22 +57,16 @@
 ## 界面
 
 * 登录
-![登录](example/登录.gif)
 
 * 搜索
-![搜索](example/搜索.gif)
 
 * 漫画详情
-![漫画详情](example/漫画详情.gif)
 
 * 下载
-![下载](example/下载.gif)
 
 * 看图
-![看图](example/看图.gif)
 
 * waifu2x
-![waifu2x](example/waifu2x.gif)
 
 ## 感谢以下项目
   ### waifu2x功能
