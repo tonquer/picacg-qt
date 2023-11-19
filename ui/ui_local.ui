@@ -66,6 +66,13 @@ QListWidget::item {
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="delAll">
+       <property name="text">
+        <string>批量删除</string>
+       </property>
+      </widget>
+     </item>
      <item alignment="Qt::AlignRight">
       <widget class="QPushButton" name="toolButton">
        <property name="maximumSize">

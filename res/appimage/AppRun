@@ -10,20 +10,25 @@ export GSETTINGS_SCHEMA_DIR="${HERE}/usr/share/glib-2.0/schemas/${GSETTINGS_SCHE
 export QT_PLUGIN_PATH="${HERE}/usr/lib/qt4/plugins/:${HERE}/usr/lib/i386-linux-gnu/qt4/plugins/:${HERE}/usr/lib/x86_64-linux-gnu/qt4/plugins/:${HERE}/usr/lib32/qt4/plugins/:${HERE}/usr/lib64/qt4/plugins/:${HERE}/usr/lib/qt5/plugins/:${HERE}/usr/lib/i386-linux-gnu/qt5/plugins/:${HERE}/usr/lib/x86_64-linux-gnu/qt5/plugins/:${HERE}/usr/lib32/qt5/plugins/:${HERE}/usr/lib64/qt5/plugins/${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
 EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2 | cut -d " " -f 1)
 echo $EXEC
+if [ ! -d ~/.picacg/db ];then
+	mkdir -p ~/.picacg/db
+	echo "mkdir db"
+fi
+
 if [ ! -d ~/.picacg/data ];then
 	mkdir -p ~/.picacg/data
 	echo "mkdir data"
 fi
 
-if [ ! -f ~/.picacg/data/version ];then
-	touch ~/.picacg/data/version
+if [ ! -f ~/.picacg/db/version ];then
+	touch ~/.picacg/db/version
 	echo "mkdir version"
 fi
 
-if [ ! -f ~/.picacg/data/book.db ] || [ "`cat ~/.picacg/data/version`" != "v1.3.1" ] ; then
-	cp ${HERE}/data/book.db ~/.picacg/data/
-	echo "v1.3.1" > ~/.picacg/data/version
-	echo "copy data"
+if [ ! -f ~/.picacg/db/book.db ] || [ "`cat ~/.picacg/db/version`" != "v1.4.7" ] ; then
+	cp ${HERE}/db/book.db ~/.picacg/db/
+	echo "v1.4.7" > ~/.picacg/db/version
+	echo "copy db"
 fi
 
 exec "${EXEC}" "$@"

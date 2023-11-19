@@ -12,6 +12,7 @@ ImageQuality = "original"      # 画质，original, low, medium, high
 Uuid = "defaultUuid"
 
 
+ProjectName = "PicACG"
 ThreadNum = 10                 # 线程
 DownloadThreadNum = 5          # 下载线程
 ConvertThreadNum = 3           # 同时转换数量
@@ -52,9 +53,9 @@ Issues1 = "https://github.com/tonquer/picacg-qt/issues"
 Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
 Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.4.6"
-RealVersion = "v1.4.6"
-TimeVersion = "2023-8-13"
+UpdateVersion = "v1.4.7"
+RealVersion = "v1.4.7"
+TimeVersion = "2023-11-19"
 
 Waifu2xVersion = "1.1.6"
 

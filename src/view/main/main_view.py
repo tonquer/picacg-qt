@@ -1,6 +1,6 @@
 from functools import partial
 
-from PySide6.QtCore import Qt, QEvent, QPoint, Signal
+from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QTimer
 from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QFont
 from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
 
@@ -31,11 +31,13 @@ class MainView(Main, QtTaskBase):
         Main.__init__(self)
         QtTaskBase.__init__(self)
         self.resize(600, 600)
-        self.setWindowTitle("PicACG")
+        self.setWindowTitle(config.ProjectName)
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
         # self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_QuitOnClose, True)
-
+        self.timer = QTimer()
+        self.timer.setInterval(10000)
+        # self.timer.timeout.connect(self.AfterStartSuc)
         screens = QGuiApplication.screens()
         # print(screens[0].geometry(), screens[1].geometry())
         if Setting.ScreenIndex.value >= len(screens):
@@ -123,7 +125,9 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.localReadButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.localReadView)))
         self.navigationWidget.friedButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.friedView)))
         self.navigationWidget.chatNewButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.chatNewView)))
+        self.navigationWidget.convertButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.convertView)))
         self.navigationWidget.friedButton.hide()
+        self.navigationWidget.convertButton.hide()
 
     def RetranslateUi(self):
         Main.retranslateUi(self, self)
@@ -210,6 +214,11 @@ class MainView(Main, QtTaskBase):
             view.closed.connect(self.OpenLoginView)
         else:
             self.OpenLoginView()
+        # self.timer.start()
+
+    # def AfterStartSuc(self):
+    #     self.timer.stop()
+    #     QtOwner().SetFont(self)
 
     def InitApiProxy(self):
         request = req.InitReq()

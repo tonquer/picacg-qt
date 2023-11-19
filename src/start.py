@@ -78,7 +78,7 @@ if __name__ == "__main__":
         Str.Reload()
         QtOwner().SetApp(app)
         QtOwner().SetLocalServer(localServer)
-        QtOwner().SetFont()
+        QtOwner().SetFont(app)
         from view.main.main_view import MainView
         main = MainView()
         main.show()  # 显示窗体

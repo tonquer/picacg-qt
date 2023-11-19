@@ -400,6 +400,20 @@ class Ui_Navigation(object):
 
         self.verticalLayout_3.addWidget(self.localReadButton)
 
+        self.convertButton = QToolButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.convertButton)
+        self.convertButton.setObjectName(u"convertButton")
+        sizePolicy1.setHeightForWidth(self.convertButton.sizePolicy().hasHeightForWidth())
+        self.convertButton.setSizePolicy(sizePolicy1)
+        self.convertButton.setMinimumSize(QSize(150, 40))
+        self.convertButton.setFocusPolicy(Qt.NoFocus)
+        self.convertButton.setIcon(icon)
+        self.convertButton.setIconSize(QSize(32, 32))
+        self.convertButton.setCheckable(True)
+        self.convertButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.verticalLayout_3.addWidget(self.convertButton)
+
         self.waifu2xButton = QToolButton(self.scrollAreaWidgetContents)
         self.buttonGroup.addButton(self.waifu2xButton)
         self.waifu2xButton.setObjectName(u"waifu2xButton")
@@ -499,6 +513,7 @@ class Ui_Navigation(object):
         self.label_3.setText(QCoreApplication.translate("Navigation", u"\u5176\u4ed6", None))
         self.downloadButton.setText(QCoreApplication.translate("Navigation", u"\u4e0b\u8f7d", None))
         self.localReadButton.setText(QCoreApplication.translate("Navigation", u"\u672c\u5730\u6f2b\u753b", None))
+        self.convertButton.setText(QCoreApplication.translate("Navigation", u"\u8f6c\u6362", None))
         self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"Waifu2x", None))
         self.helpButton.setText(QCoreApplication.translate("Navigation", u"\u5e2e\u52a9", None))
         self.settingButton.setText(QCoreApplication.translate("Navigation", u"\u8bbe\u7f6e", None))

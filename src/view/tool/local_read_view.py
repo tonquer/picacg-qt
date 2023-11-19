@@ -10,10 +10,11 @@ from natsort import natsorted
 from interface.ui_index import Ui_Index
 from interface.ui_local import Ui_Local
 from qt_owner import QtOwner
-from server import req, Log, User, Status, time
+from server import  Status, time
 from task.qt_task import QtTaskBase
 from task.task_local import LocalData
 from tools.str import Str
+from tools.tool import time_me
 from view.tool.local_read_db import LocalReadDb
 
 
@@ -60,6 +61,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.bookList.DelCallBack = self.DelLocalRead
         self.bookList.LoadingPicture = self.LoadingPicture
         self.bookList.ReDownloadPicture = self.LoadingPicture
+        self.bookList.LoadCallBack = self.LoadNextPage
         self.lastPath = ""
 
         self.sortIdCombox.currentIndexChanged.connect(self.Init)
@@ -74,6 +76,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.bookList.openMenu = True
         self.bookList.OpenDirHandler = self.OpenDirCallBack
         self.lineEdit.textChanged.connect(self.SearchTextChange)
+        self.delAll.clicked.connect(self.ShowDelAll)
         self.searchText = ""
 
     def SearchTextChange(self, text):
@@ -104,17 +107,51 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             oldV = oldDict.get(v.id)
             if oldV:
                 v.CopyData(oldV)
+        self.ShowPages()
 
+    @time_me
+    def ShowPages(self, page=1):
         if self.curSelectCategory:
             allBookId = self.categoryBook.get(self.curSelectCategory, [])
         else:
             allBookId = self.allBookInfos.keys()
+
+        allBookId2 = self.db.Search(self.searchText)
+        showIds = list(set(allBookId) & set(allBookId2))
+        showLen = 30
+        maxPage = len(showIds) // showLen + 1
+        showStart = (page-1)*showLen
+        showEnd = page * showLen - 1
+        self.spinBox.setValue(page)
+        self.spinBox.setMaximum(maxPage)
+        self.bookList.UpdatePage(page, maxPage)
+        self.pages.setText(self.bookList.GetPageStr())
+        self.nums.setText("{}：{} ".format(Str.GetStr(Str.FavoriteNum), len(self.allBookInfos)))
+        sortShowIds = []
         for v in self.ToSortData(list(self.allBookInfos.values())):
-            if v.id in allBookId:
+            if v.id in showIds:
+                sortShowIds.append(v.id)
+
+        showIds2 = sortShowIds[showStart:showEnd]
+        for id in showIds2:
+            v = self.allBookInfos.get(id)
+            if v:
                 categoryList = self.bookCategory.get(v.id, [])
                 categoryStr = ",".join(categoryList)
+
                 if not self.searchText or self.searchText in v.title:
                     self.bookList.AddBookByLocal(v, categoryStr)
+        return
+
+    def LoadNextPage(self):
+        self.ShowPages(self.bookList.page+1)
+
+    def JumpPage(self):
+        page = int(self.spinBox.text())
+        if page > self.bookList.pages:
+            return
+        self.bookList.clear()
+        self.ShowPages(page)
         return
 
     def ClickTagsItem(self, modelIndex):
@@ -133,6 +170,9 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         else:
             self.curSelectCategory = text
             self.Init()
+
+    def ShowDelAll(self):
+        QtOwner().OpenLocalDelAll()
 
     def ToSortData(self, value):
         datas = list(value)
@@ -186,6 +226,15 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             return
         del self.allBookInfos[bookId]
         self.db.DelDownloadDB(bookId)
+        # self.Init()
+        self.bookList.DelBookID(bookId)
+
+    def DelLocalReadAll(self, bookIds):
+        for bookId in bookIds:
+            if bookId not in self.allBookInfos:
+                return
+            del self.allBookInfos[bookId]
+            self.db.DelDownloadDB(bookId)
         self.Init()
 
     def OpenLocalBook(self, bookId):
@@ -321,9 +370,6 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
     # 批量导入带章节的目录
     def CheckAction4(self):
-        return
-
-    def JumpPage(self):
         return
 
     def dragEnterEvent(self, event):

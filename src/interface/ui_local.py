@@ -72,6 +72,11 @@ class Ui_Local(object):
 
         self.horizontalLayout_2.addWidget(self.tagsList)
 
+        self.delAll = QPushButton(Local)
+        self.delAll.setObjectName(u"delAll")
+
+        self.horizontalLayout_2.addWidget(self.delAll)
+
         self.toolButton = QPushButton(Local)
         self.toolButton.setObjectName(u"toolButton")
         self.toolButton.setMaximumSize(QSize(16777215, 20))
@@ -197,6 +202,7 @@ class Ui_Local(object):
 
     def retranslateUi(self, Local):
         Local.setWindowTitle(QCoreApplication.translate("Local", u"\u672c\u5730\u6f2b\u753b", None))
+        self.delAll.setText(QCoreApplication.translate("Local", u"\u6279\u91cf\u5220\u9664", None))
         self.toolButton.setText(QCoreApplication.translate("Local", u"\u5bfc\u5165", None))
         self.msgLabel.setText("")
         self.sortKeyCombox.setItemText(0, QCoreApplication.translate("Local", u"\u4e0a\u6b21\u9605\u8bfb\u65f6\u95f4", None))

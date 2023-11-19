@@ -165,6 +165,10 @@ class QtOwner(Singleton):
         arg = {"books": books}
         self.owner.SwitchWidget(self.owner.downloadAllView, **arg)
 
+    def OpenLocalDelAll(self):
+        arg = {}
+        self.owner.SwitchWidget(self.owner.localReadAllView, **arg)
+
     def OpenSubComment(self, commentId, widget):
         # self.owner.subCommentView.SetOpenEvent(commentId, widget)
         arg = {"bookId": commentId}
@@ -281,7 +285,7 @@ class QtOwner(Singleton):
         pass
 
     @staticmethod
-    def SetFont():
+    def SetFont(app):
         try:
             from tools.log import Log
             from config.setting import Setting
@@ -313,7 +317,7 @@ class QtOwner(Singleton):
                 fontStyleList = [QFont.Light, QFont.Normal, QFont.DemiBold, QFont.Bold, QFont.Black]
                 f.setWeight(fontStyleList[Setting.FontStyle.value - 1])
 
-            QtOwner().app.setFont(f)
+            app.setFont(f)
 
         except Exception as es:
             Log.Error(es)

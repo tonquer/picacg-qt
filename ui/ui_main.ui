@@ -87,6 +87,8 @@
           <item>
            <widget class="AnimationStackWidget" name="subStackWidget">
             <widget class="IndexView" name="indexView"/>
+            <widget class="LocalReadAllView" name="localReadAllView"/>
+            <widget class="ConvertView" name="convertView"/>
             <widget class="LocalEpsReadView" name="localReadEpsView"/>
             <widget class="ChatNewView" name="chatNewView"/>
             <widget class="HelpView" name="helpView"/>
@@ -284,6 +286,18 @@
    <class>LocalEpsReadView</class>
    <extends>QWidget</extends>
    <header location="global">view.tool.local_eps_read_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConvertView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.convert.convert_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalReadAllView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.local_read_all_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

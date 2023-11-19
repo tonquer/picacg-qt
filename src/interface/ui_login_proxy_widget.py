@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QCommandLinkButton,
     QFrame, QGridLayout, QHBoxLayout, QLabel,
     QLineEdit, QPushButton, QRadioButton, QSizePolicy,
-    QVBoxLayout, QWidget)
+    QSpacerItem, QVBoxLayout, QWidget)
 
 from component.scroll_area.smooth_scroll_area import SmoothScrollArea
 
@@ -118,6 +118,19 @@ class Ui_LoginProxyWidget(object):
         self.proxy_3.setObjectName(u"proxy_3")
 
         self.horizontalLayout_12.addWidget(self.proxy_3)
+
+        self.checkLabel = QLabel(self.scrollAreaWidgetContents)
+        self.checkLabel.setObjectName(u"checkLabel")
+        font = QFont()
+        font.setBold(False)
+        self.checkLabel.setFont(font)
+        self.checkLabel.setStyleSheet(u"color:rgb(255, 0, 0)")
+
+        self.horizontalLayout_12.addWidget(self.checkLabel)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_12.addItem(self.horizontalSpacer)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_12)
@@ -384,6 +397,7 @@ class Ui_LoginProxyWidget(object):
 #endif // QT_CONFIG(tooltip)
         self.sockEdit.setPlaceholderText("")
         self.proxy_3.setText(QCoreApplication.translate("LoginProxyWidget", u"\u4f7f\u7528\u7cfb\u7edf\u4ee3\u7406", None))
+        self.checkLabel.setText(QCoreApplication.translate("LoginProxyWidget", u"\u672a\u68c0\u6d4b\u5230\u7cfb\u7edf\u4ee3\u7406", None))
         self.httpsBox.setText(QCoreApplication.translate("LoginProxyWidget", u"\u542f\u7528Https\uff08\u5982\u679c\u51fa\u73b0\u8fde\u63a5\u88ab\u91cd\u7f6e\uff0c\u5efa\u8bae\u5173\u95ed\u8bd5\u8bd5\uff09", None))
         self.testSpeedButton.setText(QCoreApplication.translate("LoginProxyWidget", u"\u6d4b\u901f", None))
         self.label_api_2.setText("")

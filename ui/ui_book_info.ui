@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1084</width>
-    <height>705</height>
+    <width>914</width>
+    <height>691</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,8 +55,8 @@ QScrollArea {background-color:transparent;}</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1064</width>
-        <height>685</height>
+        <width>894</width>
+        <height>671</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -572,7 +572,7 @@ QPushButton:hover
                     <string>清理</string>
                    </property>
                    <property name="icon">
-                    <iconset resource="../../18comic-new/res/images.qrc">
+                    <iconset resource="../res/images.qrc">
                      <normaloff>:/png/icon/clear_off.png</normaloff>:/png/icon/clear_off.png</iconset>
                    </property>
                    <property name="iconSize">
@@ -778,15 +778,15 @@ QListWidget::item {
  </widget>
  <customwidgets>
   <customwidget>
-   <class>TagListWidget</class>
-   <extends>QListWidget</extends>
-   <header location="global">component.list.tag_list_widget.h</header>
-  </customwidget>
-  <customwidget>
    <class>SmoothScrollArea</class>
    <extends>QScrollArea</extends>
    <header location="global">component.scroll_area.smooth_scroll_area.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TagListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.tag_list_widget.h</header>
   </customwidget>
   <customwidget>
    <class>HeadLabel</class>
@@ -816,8 +816,8 @@ QListWidget::item {
    <slot>StartRead()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>790</x>
-     <y>524</y>
+     <x>676</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>313</x>
@@ -832,8 +832,8 @@ QListWidget::item {
    <slot>AddBookLike()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>329</x>
-     <y>524</y>
+     <x>262</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>821</x>
@@ -848,8 +848,8 @@ QListWidget::item {
    <slot>AddFavorite()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>424</x>
-     <y>524</y>
+     <x>345</x>
+     <y>517</y>
     </hint>
     <hint type="destinationlabel">
      <x>781</x>
@@ -864,8 +864,8 @@ QListWidget::item {
    <slot>AddDownload()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>614</x>
-     <y>524</y>
+     <x>438</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>788</x>
@@ -880,12 +880,12 @@ QListWidget::item {
    <slot>ClearCache()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>659</x>
-     <y>501</y>
+     <x>575</x>
+     <y>492</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1160</x>
-     <y>394</y>
+     <x>997</x>
+     <y>400</y>
     </hint>
    </hints>
   </connection>

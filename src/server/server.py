@@ -139,7 +139,7 @@ class Server(Singleton):
                 host_table[domain] = imageAddress
             elif not imageAddress and domain in host_table:
                 host_table.pop(domain)
-                
+
         # 换一个，清空pool
         self.session = requests.session()
         return

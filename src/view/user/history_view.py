@@ -60,14 +60,16 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         self.bookList.DelCallBack = self.DelCallBack
 
     def SwitchCurrent(self, **kwargs):
-        self.bookList.clear()
-        self.bookList.page = 1
-        self.bookList.pages = len(self.history) // self.pageNums + 1
-        self.spinBox.setValue(1)
-        self.spinBox.setMaximum(self.pageNums)
-        self.bookList.UpdateState()
-        self.UpdatePageLabel()
-        self.RefreshData(self.bookList.page)
+        refresh = kwargs.get("refresh")
+        if refresh:
+            self.bookList.clear()
+            self.bookList.page = 1
+            self.bookList.pages = len(self.history) // self.pageNums + 1
+            self.spinBox.setValue(1)
+            self.spinBox.setMaximum(self.pageNums)
+            self.bookList.UpdateState()
+            self.UpdatePageLabel()
+            self.RefreshData(self.bookList.page)
 
     def GetHistory(self, bookId):
         return self.history.get(bookId)
@@ -156,10 +158,12 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
             return
         self.history.pop(bookId)
         self.DelHistory(bookId)
+        self.bookList.DelBookID(bookId)
 
-        page = 1
-        self.bookList.page = page
-        self.bookList.clear()
-        self.RefreshData(page)
-        self.UpdatePageLabel()
+        #
+        # page = 1
+        # self.bookList.page = page
+        # self.bookList.clear()
+        # self.RefreshData(page)
+        # self.UpdatePageLabel()
         return

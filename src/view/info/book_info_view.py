@@ -460,7 +460,11 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             QtOwner().favoriteView.DelAndFavoritesBack({"st": Status.Ok}, self.bookId)
 
     def ClearCache(self):
-        isClear = QMessageBox.information(self, '清除缓存', "是否清除本书所有缓存", QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+        path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
+                            "book/{}".format(self.bookId))
+        waifuPath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
+                                 "waifu2x/book/{}".format(self.bookId))
+        isClear = QMessageBox.information(self, '清除缓存', "是否清除本书所有缓存\n{}\n{}".format(path, waifuPath), QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
         if isClear == QtWidgets.QMessageBox.Yes:
             if not Setting.SavePath.value:
                 return

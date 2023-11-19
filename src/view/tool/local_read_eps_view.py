@@ -11,7 +11,6 @@ from interface.ui_index import Ui_Index
 from interface.ui_local import Ui_Local
 from interface.ui_local_eps import Ui_LocalEps
 from qt_owner import QtOwner
-from server import req, Log, User, Status
 from task.qt_task import QtTaskBase
 from task.task_local import LocalData
 from tools.str import Str

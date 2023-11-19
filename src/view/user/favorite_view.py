@@ -134,7 +134,8 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
                 self.AddSqlTask("book", sql, SqlServer.TaskTypeSql)
             if bookId in self.allFavoriteIds:
                 self.allFavoriteIds.pop(bookId)
-            self.RefreshDataFocus()
+            self.bookList.DelBookID(bookId)
+            # self.RefreshDataFocus()
 
     def AddFavorites(self, bookId):
         if bookId in self.allFavoriteIds:

@@ -105,7 +105,7 @@
          <item>
           <widget class="AnimationStackWidget" name="subStackWidget">
            <property name="currentIndex">
-            <number>22</number>
+            <number>24</number>
            </property>
            <widget class="IndexView" name="indexView"/>
            <widget class="HelpView" name="helpView"/>
@@ -130,6 +130,8 @@
            <widget class="LocalReadView" name="localReadView"/>
            <widget class="ChatNewView" name="chatNewView"/>
            <widget class="LocalReadEpsView" name="localReadEpsView"/>
+           <widget class="ConvertView" name="convertView"/>
+           <widget class="LocalReadAllView" name="localReadAllView"/>
            <widget class="BookEpsView" name="bookEpsView"/>
            <widget class="FriedView" name="friedView"/>
           </widget>
@@ -301,6 +303,12 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>ConvertView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.convert.convert_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>LocalReadEpsView</class>
    <extends>QWidget</extends>
    <header location="global">view.tool.local_read_eps_view.h</header>
@@ -310,6 +318,12 @@
    <class>TitleBarWidget</class>
    <extends>QWidget</extends>
    <header location="global">component.widget.title_bar_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalReadAllView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.local_read_all_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

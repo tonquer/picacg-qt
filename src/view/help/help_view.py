@@ -109,7 +109,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             Log.Error("Not found book.db !!!!!!!!!!!!!!!")
             from qt_owner import QtOwner
             QtOwner().SetDbError()
-            QtOwner().ShowErrOne("无法加载本地数据库data/book.db")
+            QtOwner().ShowErrOne("无法加载本地数据库db/book.db")
             return
         self.isHaveDb = True
         self.UpdateDbInfo()

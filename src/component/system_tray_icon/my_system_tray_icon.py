@@ -1,6 +1,7 @@
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
 
+from config import config
 from qt_owner import QtOwner
 from tools.str import Str
 
@@ -10,7 +11,7 @@ class MySystemTrayIcon(QSystemTrayIcon):
         super().__init__(parent)
         self.count = 0
         self.setIcon(QIcon(":/png/icon/logo_round.png"))
-        self.setToolTip("PicACG")
+        self.setToolTip(config.ProjectName)
         self.menu = QMenu()
         mainUi = QAction(Str.GetStr(Str.MainUi), self)
         mainUi.triggered.connect(self.ShowMainUi)

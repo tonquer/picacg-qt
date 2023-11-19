@@ -95,7 +95,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-1441</y>
+          <y>-541</y>
           <width>661</width>
           <height>2891</height>
          </rect>
@@ -660,7 +660,7 @@
             <item>
              <widget class="QCheckBox" name="titleBox">
               <property name="text">
-               <string>使用默认标题栏（如果标题栏出现显示异常，请勾选）</string>
+               <string>标题栏美化（多屏建议不勾选，win11可不勾选）</string>
               </property>
              </widget>
             </item>
@@ -2530,12 +2530,12 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="showCloseButtonGroup"/>
   <buttongroup name="mainScaleGroup"/>
+  <buttongroup name="proxyGroup"/>
+  <buttongroup name="logGroup"/>
   <buttongroup name="themeGroup"/>
   <buttongroup name="languageGroup"/>
-  <buttongroup name="logGroup"/>
+  <buttongroup name="showCloseButtonGroup"/>
   <buttongroup name="saveNameGroup"/>
-  <buttongroup name="proxyGroup"/>
  </buttongroups>
 </ui>

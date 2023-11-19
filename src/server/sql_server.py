@@ -49,7 +49,7 @@ class DbBook(object):
 
 class SqlServer(Singleton):
     DbInfos = dict()
-    DbInfos["book"] = "data/book.db"
+    DbInfos["book"] = "db/book.db"
 
     TaskCheck = 0
     TaskTypeSql = 1
