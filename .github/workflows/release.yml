@@ -212,6 +212,7 @@ jobs:
         asset_content_type: application/zip
 
   ubuntu:
+    needs: [setup, release]
     runs-on: ubuntu-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_x64
@@ -252,7 +253,6 @@ jobs:
       with:
         name: ${{ env.PACKAGENAME }}
         path: ${{ env.PACKAGENAME }}-x86_64.AppImage
-        retention-days: 7
     - name: upload-win
       uses: actions/upload-release-asset@v1
       env:
