@@ -158,7 +158,6 @@ jobs:
   ubuntu:
     runs-on: ubuntu-18.04
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux
       PACKAGENAME: bika_py37_linux
     steps:
     - uses: actions/checkout@v2

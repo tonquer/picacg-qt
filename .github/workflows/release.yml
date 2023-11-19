@@ -217,8 +217,7 @@ jobs:
   ubuntu:
     runs-on: ubuntu-18.04
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux
-      PACKAGENAME: bika_py37_linux
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_x64
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
