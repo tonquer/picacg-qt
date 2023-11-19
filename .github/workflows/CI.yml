@@ -164,6 +164,7 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
+        apt-get install -y fuse libfuse2
         python -m pip install --upgrade pip
         pip install pyinstaller==4.8
         pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/waifu2x_vulkan-1.1.6-cp37-cp37m-linux_x86_64.whl
