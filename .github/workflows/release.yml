@@ -85,7 +85,6 @@ jobs:
         # cp Icon.icns dist/
         # ln -s /Applications/   dist/Applications
         cp -avf db dist/PicACG.app/Contents/MacOS
-        cp -avf data dist/PicACG.app/Contents/MacOS
         xattr -cr dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
             --window-pos 200 120 \
@@ -137,7 +136,6 @@ jobs:
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py 
         mv dist bika
-        Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
         cp ..\CHANGELOG bika\
@@ -191,7 +189,6 @@ jobs:
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py
         mv dist bika
-        Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
         cp ..\CHANGELOG bika\

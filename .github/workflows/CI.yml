@@ -52,7 +52,6 @@ jobs:
         # rm -rf dist/PicACG
         # cp Icon.icns dist/
         # ln -s /Applications/   dist/Applications
-        cp -avf data dist/PicACG.app/Contents/MacOS
         cp -avf db dist/PicACG.app/Contents/MacOS
         xattr -cr dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
@@ -96,7 +95,6 @@ jobs:
 
         pyinstaller -F -w -i icon.ico start.py
         mv dist bika
-        Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
         cp ..\CHANGELOG bika\
@@ -140,7 +138,6 @@ jobs:
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py
         mv dist bika
-        Copy-Item -Verbose -Recurse -Path data -Destination bika/
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
         cp ..\CHANGELOG bika\
@@ -182,7 +179,6 @@ jobs:
         cp -r ../../res/appimage/* picacg.AppRun/
         cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
         cp -r start/* picacg.AppRun/usr/bin/
-        cp -r ../data  picacg.AppRun/
         cp -r ../db  picacg.AppRun/
 
         mv picacg.AppRun/usr/bin/start picacg.AppRun/usr/bin/PicACG
