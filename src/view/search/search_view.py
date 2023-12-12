@@ -4,7 +4,7 @@ from functools import partial
 
 from PySide6.QtCore import Qt, QEvent, QPoint
 from PySide6.QtGui import QHelpEvent
-from PySide6.QtWidgets import QWidget, QCheckBox
+from PySide6.QtWidgets import QWidget, QCheckBox, QListView
 
 from component.layout.flow_layout import FlowLayout
 from interface.ui_search import Ui_Search
@@ -36,7 +36,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.bookList.LoadCallBack = self.LoadNextPage
         self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
         self.InitCategoryList()
-        self.categoryList.setSelectionMode(self.categoryList.MultiSelection)
+        self.categoryList.setSelectionMode(QListView.MultiSelection)
         self.categoryList.setSpacing(1)
         self.comboBox.currentIndexChanged.connect(self.ChangeSort)
         self.sortKey.currentIndexChanged.connect(self.ChangeSort)
