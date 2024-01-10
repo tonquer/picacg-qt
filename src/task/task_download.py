@@ -67,7 +67,7 @@ class TaskDownload(TaskBase, QtTaskBase):
                 break
             self.HandlerDownload({"st": Status.Ok}, (v, QtDownloadTask.Waiting))
 
-    def DownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isReload=False):
+    def DownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isReload=False, resetCnt=1):
         self.taskId += 1
         data = QtDownloadTask(self.taskId)
         data.downloadCallBack = downloadCallBack
@@ -89,7 +89,7 @@ class TaskDownload(TaskBase, QtTaskBase):
         Log.Debug("add download info, cachePath:{}, loadPath:{}, savePath:{}".format(data.cachePath, data.loadPath, data.savePath))
         from server.server import Server
         from server import req
-        Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath, data.isReload), backParams=self.taskId)
+        Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath, data.isReload, resetCnt=resetCnt), backParams=self.taskId)
         return self.taskId
 
     def HandlerTask(self, downloadId, laveFileSize, data, isCallBack=True):
@@ -314,10 +314,10 @@ class TaskDownload(TaskBase, QtTaskBase):
                 assert isinstance(picInfo, Picture)
                 from server.server import Server
                 url = ToolUtil.GetRealUrl(picInfo.fileServer, picInfo.path)
-
+                resetCnt = config.ResetDownloadCnt
                 self.AddDownloadTask(
                     url, "", task.downloadCallBack, task.downloadCompleteBack, task.statusBack,
-                    task.backParam, task.loadPath, task.cachePath, task.savePath, task.cleanFlag)
+                    task.backParam, task.loadPath, task.cachePath, task.savePath, task.cleanFlag, resetCnt=resetCnt)
         except Exception as es:
             Log.Error(es)
         return

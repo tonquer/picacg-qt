@@ -69,7 +69,7 @@ class ComicListWidget(BaseListWidget):
                 if not self.isGame:
                     action = popMenu.addAction(Str.GetStr(Str.DownloadAll))
                     action.triggered.connect(self.OpenBookDownloadAll)
-
+            
             if self.isDelMenu:
                 action = popMenu.addAction(Str.GetStr(Str.Delete))
                 action.triggered.connect(partial(self.DelHandler, index))

@@ -291,8 +291,12 @@ class Server(Singleton):
         else:
             self._Download(task)
 
+    def ReDownload(self, task):
+        self._downloadQueue.put(task)
+
     def _Download(self, task):
         try:
+            task.req.resetCnt -= 1
             if not task.req.isReload:
                 if not isinstance(task.req, req.SpeedTestReq) and not task.req.savePath:
                     for cachePath in [task.req.loadPath, task.req.cachePath]:
@@ -314,7 +318,10 @@ class Server(Singleton):
 
             if request.headers is None:
                 request.headers = {}
-            Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
+            if not request.isReset:
+                Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
+            else:
+                Log.Info("request reset:{} -> backId:{}, {}".format(task.req.resetCnt, task.bakParam, task.req))
             r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, stream=True, timeout=task.timeout, verify=False)
             # task.res = res.BaseRes(r)
             # print(r.elapsed.total_seconds())
@@ -336,6 +343,10 @@ class Server(Singleton):
             else:
                 task.status = Status.NetError
             Log.Warn(task.req.url + " " + es.__repr__())
+            if (task.req.resetCnt > 0):
+                task.req.isReset = True
+                self.ReDownload(task)
+                return
         self.handler.get(task.req.__class__.__name__)(task)
         if task.res:
             task.res.close()

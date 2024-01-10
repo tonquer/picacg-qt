@@ -267,6 +267,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         assert isinstance(v, LocalData)
         newV = books[0]
         v.CopyData(newV)
+        self.db.AddLoadLocalBook(v)
         if v.eps != []:
             QtOwner().OpenLocalEpsView(v.id)
             return
@@ -326,10 +327,14 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             self.lastPath = url
         for v in books:
             if v.id in self.allBookInfos:
+                # 已存在则更新
                 alreadyNum += 1
+                self.allBookInfos[v.id].CopyData(v)
+                self.db.AddLoadLocalBook(self.allBookInfos[v.id])
             else:
                 self.allBookInfos[v.id] = v
                 addNum += 1
+                # 忽略
                 if self.curSelectCategory:
                     category = self.curSelectCategory
                     self.db.AddCategory(self.curSelectCategory, v.id)
@@ -372,6 +377,11 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
     def CheckAction4(self):
         return
 
+    # 批量导入下载目录
+    def ImportDownloadDirs(self, dirs):
+        self.AddLocalTaskLoad(LocalData.Type6, dirs, "", self.CheckAction1LoadBack)
+        return
+    
     def dragEnterEvent(self, event):
         if(event.mimeData().hasUrls()):
             event.acceptProposedAction()

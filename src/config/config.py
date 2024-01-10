@@ -15,6 +15,7 @@ Uuid = "defaultUuid"
 ProjectName = "PicACG"
 ThreadNum = 10                 # 线程
 DownloadThreadNum = 5          # 下载线程
+ResetDownloadCnt = 5           # 下载图片重试次数
 ConvertThreadNum = 3           # 同时转换数量
 ChatSavePath = "chat"
 SavePathDir = "commies"        # 下载目录
@@ -53,9 +54,9 @@ Issues1 = "https://github.com/tonquer/picacg-qt/issues"
 Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
 Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.4.7"
-RealVersion = "v1.4.7"
-TimeVersion = "2023-11-19"
+UpdateVersion = "v1.4.8"
+RealVersion = "v1.4.8"
+TimeVersion = "2024-1-10"
 
 Waifu2xVersion = "1.1.6"
 

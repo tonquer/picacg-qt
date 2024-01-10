@@ -39,6 +39,7 @@ class LocalData(object):
     Type3 = 3    # 加载目录所有
     Type4 = 4    #
     Type5 = 5    # 批量加载
+    Type6 = 6    # 批量加载目录列表
 
     AllPictureFormat = ["jpg", "jpeg", "webp", "gif", "apng", "png"]
 
@@ -224,7 +225,13 @@ class TaskLocal(TaskBase, QtTaskBase):
             st, datas = self.ParseBookInfoByFile(dir)
         elif type == LocalData.Type5:
             st, datas = self.ParseBookInfoByFileAll(dir)
-
+        elif type == LocalData.Type6:
+            datas = []
+            for d in dir:
+                st, data = self.ParseBookInfoByDirRecursion(d)
+                if st == Str.Ok:
+                    datas.append(data)
+            st = Str.Ok
         self.taskObj.localBack.emit(taskId, st, datas)
 
     def _LoadRead2(self, taskId):

@@ -251,7 +251,12 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.tableWidget.setItem(info.tableRow, 9, QTableWidgetItem("{}".format(str(info.convertTick))))
         self.tableWidget.setItem(info.tableRow, 10, QTableWidgetItem(info.GetConvertStatusMsg()))
         return
-
+    
+    def UpdateSpeed(self, info):
+        assert isinstance(info, DownloadItem)
+        self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(info.speedStr))
+        return
+    
     def RemoveRecord(self, bookId):
         task = self.downloadDict.get(bookId)
         if not task:
@@ -307,6 +312,9 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         pauseConvertAction = QAction(Str.GetStr(Str.PauseConvert), self)
         pauseConvertAction.triggered.connect(self.ClickConvertPause)
 
+        addLocalAction = QAction(Str.GetStr(Str.ImportLocal), self)
+        addLocalAction.triggered.connect(self.ClickAddLocalBook)
+        
         if index.isValid():
             selected = self.tableWidget.selectedIndexes()
             selectRows = set()
@@ -344,6 +352,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 menu.addAction(startConvertAction)
                 menu.addAction(pauseConvertAction)
 
+            menu.addAction(addLocalAction)
             menu.addAction(removeAction)
             menu.addAction(removeFileAction)
             menu.exec_(QCursor.pos())
@@ -401,6 +410,26 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             self.SetNewCovertStatus(task, task.Pause)
         return
 
+    def ClickAddLocalBook(self):
+        selected = self.tableWidget.selectedIndexes()
+        selectRows = set()
+        for index in selected:
+            selectRows.add(index.row())
+        if not selectRows:
+            return
+        allFilePath = []
+        for row in selectRows:
+            col = 0
+            bookId = self.tableWidget.item(row, col).text()
+            task = self.downloadDict.get(bookId)
+            if not task:
+                continue
+            assert isinstance(task, DownloadItem)
+            if task.savePath:
+                allFilePath.append(os.path.dirname(task.savePath))
+        QtOwner().localReadView.ImportDownloadDirs(allFilePath)
+        return
+    
     def ClickDownloadEps(self):
         selected = self.tableWidget.selectedIndexes()
         selectRows = set()

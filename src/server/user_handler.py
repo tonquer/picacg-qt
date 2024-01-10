@@ -227,16 +227,24 @@ class DownloadBookHandler(object):
                 now = time.time()
 
                 # 网速快，太卡了，优化成最多100ms一次
-                for chunk in r.iter_content(chunk_size=4096):
-                    cur = time.time()
-                    tick = cur - now
-                    if tick >= 0.1:
-                        if backData.bakParam and fileSize-getSize > 0:
-                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, b"")
-                        now = cur
+                try:
+                    for chunk in r.iter_content(chunk_size=4096):
+                        cur = time.time()
+                        tick = cur - now
+                        if tick >= 0.1:
+                            if backData.bakParam and fileSize-getSize > 0:
+                                TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, b"")
+                            now = cur
 
-                    getSize += len(chunk)
-                    data += chunk
+                        getSize += len(chunk)
+                        data += chunk
+                except Exception as es:
+                    Log.Error(es)
+                    from src.server.server import Server
+                    if backData.req.resetCnt > 0:
+                        backData.req.isReset = True
+                        Server().ReDownload(backData)
+                        return
 
                 # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
                 if config.IsUseCache and len(data) > 0:

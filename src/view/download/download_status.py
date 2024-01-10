@@ -161,7 +161,7 @@ class DownloadStatus(QtTaskBase):
             assert isinstance(task, DownloadItem)
             task.speedStr = ToolUtil.GetDownloadSize(task.speed) + "/s"
             task.speed = 0
-            self.UpdateTableItem(task)
+            self.UpdateSpeed(task)
         return
 
     def StartItemDownload(self, task):

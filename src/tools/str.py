@@ -235,6 +235,7 @@ class Str:
     SameWight = 150    # 等宽模式
     CopyFileLast = 151     # 保存上次路径
     ImportDouble = 152     # 导入多章节目录
+    ImportLocal = 153      # 导入本地漫画中
 
 
     @classmethod
@@ -459,6 +460,7 @@ class Str:
         cls.strDict[cls.SameWight] = QCoreApplication.translate("cls.obj", "等宽模式", None)
         cls.strDict[cls.CopyFileLast] = QCoreApplication.translate("cls.obj", "保存上次路径", None)
         cls.strDict[cls.ImportDouble] = QCoreApplication.translate("cls.obj", "导入多章节目录", None)
+        cls.strDict[cls.ImportLocal] = QCoreApplication.translate("cls.obj", "导入到本地漫画中", None)
 
     @classmethod
     def GetStr(cls, enumType, defualt=""):

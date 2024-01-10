@@ -82,7 +82,7 @@ class Setting:
     CoverSize = SettingValue("GeneraSetting", 100, False)  #
     CategorySize = SettingValue("GeneraSetting", 80, False)  #
     ScaleLevel = SettingValue("GeneraSetting", 0, True, ["Auto", 100, 125, 150, 175, 200])
-    IsUseTitleBar = SettingValue("GeneraSetting", 0, True)
+    IsUseTitleBar = SettingValue("GeneraSetting", 1, True)
 
     FontName = SettingValue("GeneraSetting", "", True)
     FontSize = SettingValue("GeneraSetting", "", True)
@@ -146,7 +146,7 @@ class Setting:
     AutoSign = SettingValue("Other", 1, False)
     SavePassword = SettingValue("Other", 1, False)
     IsShowCmd = SettingValue("Other", 0, False)
-    IsGrabGesture: SettingValue = SettingValue("Other", 0, True)
+    IsGrabGesture = SettingValue("Other", 0, True)
     IsShowProxy5 = SettingValue("Other", 0, False)
     IsPreUpdate = SettingValue("Other", 0, False)
     SaveCacheAddress = SettingValue("Other", "104.21.91.145", False)

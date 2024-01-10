@@ -56,7 +56,7 @@ class QtTaskBase:
     # downloadCallBack(data, laveFileSize)
     # downloadCompleteBack(data, st)
     # downloadCompleteBack(data, st, backParam)
-    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="",  cleanFlag="", isReload=False):
+    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="",  cleanFlag="", isReload=False, resetCnt=1):
         from task.task_download import TaskDownload
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
@@ -68,7 +68,7 @@ class QtTaskBase:
             if Setting.SavePath.value and path:
                 filePath2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), path)
                 cachePath = filePath2
-        return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isReload)
+        return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isReload, resetCnt)
 
     # downloadCallBack(data, laveFileSize, backParam)
     # downloadCallBack(data, laveFileSize)
