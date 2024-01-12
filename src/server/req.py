@@ -353,22 +353,33 @@ class CommentsReportReq(ServerReq):
 
 # 检查更新
 class CheckUpdateReq(ServerReq):
-    def __init__(self, url=config.UpdateUrl):
+    def __init__(self, isPre=False):
         method = "GET"
+        data = dict()
+        data["version"] = config.UpdateVersion
+        if not isPre:
+            url = config.AppUrl + "/version.txt?"
+        else:
+            url = config.AppUrl + "/version_pre.txt?"
+        url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
         self.useImgProxy = False
 
 
-# 检查Pre更新
-class CheckPreUpdateReq(ServerReq):
-    def __init__(self, url=config.UpdateUrl):
+# 检查更新
+class CheckUpdateInfoReq(ServerReq):
+    def __init__(self, newVersion):
         method = "GET"
-        super(self.__class__, self).__init__(url.replace("/latest", ""), {}, {}, method)
+        data = dict()
+        data["version"] = config.UpdateVersion
+        url = config.AppUrl + "/{}.txt?".format(newVersion)
+        url += ToolUtil.DictToUrl(data)
+        super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
         self.useImgProxy = False
-
-
+        
+        
 # 检查更新
 class CheckUpdateDatabaseReq(ServerReq):
     def __init__(self, url):
@@ -483,6 +494,8 @@ class SpeedTestReq(ServerReq):
         header['expires'] = '0'
         header['pragma'] = 'no-cache'
         self.isReload = False
+        self.resetCnt = 2
+        self.isReset = False
         super(self.__class__, self).__init__(url, header,
                                              {}, method)
 

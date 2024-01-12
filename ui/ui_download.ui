@@ -39,6 +39,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="updateNew">
+         <property name="text">
+          <string>更新所有New章节</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton">
          <property name="text">
           <string>全部开始下载</string>

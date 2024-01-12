@@ -236,6 +236,7 @@ class Str:
     CopyFileLast = 151     # 保存上次路径
     ImportDouble = 152     # 导入多章节目录
     ImportLocal = 153      # 导入本地漫画中
+    NotUpdateEps = 154      # 没有可更新的章节
 
 
     @classmethod
@@ -461,6 +462,7 @@ class Str:
         cls.strDict[cls.CopyFileLast] = QCoreApplication.translate("cls.obj", "保存上次路径", None)
         cls.strDict[cls.ImportDouble] = QCoreApplication.translate("cls.obj", "导入多章节目录", None)
         cls.strDict[cls.ImportLocal] = QCoreApplication.translate("cls.obj", "导入到本地漫画中", None)
+        cls.strDict[cls.NotUpdateEps] = QCoreApplication.translate("cls.obj", "没有可更新章节", None)
 
     @classmethod
     def GetStr(cls, enumType, defualt=""):

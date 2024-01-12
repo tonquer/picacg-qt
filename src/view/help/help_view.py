@@ -43,8 +43,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.dbCheck.clicked.connect(self.ReUpdateDatabase)
         self.verCheck.clicked.connect(self.InitUpdate)
 
-        self.updateUrl = [config.UpdateUrl, config.UpdateUrl2, config.UpdateUrl3]
-        self.updatePreUrl = [config.UpdateUrlApi, config.UpdateUrl2Api, config.UpdateUrl3Api]
+        # self.updateUrl = [config.UpdateUrl, config.UpdateUrl2, config.UpdateUrl3]
+        # self.updatePreUrl = [config.UpdateUrlApi, config.UpdateUrl2Api, config.UpdateUrl3Api]
         self.updateBackUrl = [config.UpdateUrlBack, config.UpdateUrl2Back, config.UpdateUrl3Back]
         self.checkUpdateIndex = 0
         self.helpLogWidget = HelpLogWidget()
@@ -78,29 +78,36 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.StartUpdate()
 
     def StartUpdate(self):
-        if self.checkUpdateIndex > len(self.updateUrl) -1:
-            self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
-            return
-        if Setting.IsPreUpdate.value:
-            self.AddHttpTask(req.CheckPreUpdateReq(self.updatePreUrl[self.checkUpdateIndex]), self.InitUpdateBack)
-        else:
-            self.AddHttpTask(req.CheckUpdateReq(self.updateUrl[self.checkUpdateIndex]), self.InitUpdateBack)
+        self.updateWidget.setVisible(False)
+        # if self.checkUpdateIndex > len(self.updateUrl) -1:
+        #     self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
+        #     return
+        self.AddHttpTask(req.CheckUpdateReq(Setting.IsPreUpdate.value), self.InitUpdateBack)
 
     def InitUpdateBack(self, raw):
         try:
+            st = raw.get("st")
+            if st != Str.Ok:
+                self.UpdateText(self.verCheck, st, "#d71345", True)
+                return
             data = raw.get("data")
             if not data:
-                self.checkUpdateIndex += 1
-                self.StartUpdate()
+                self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
                 return
             if data == "no":
                 self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
                 return
-            self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex], Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n" + data)
+            
+            self.AddHttpTask(req.CheckUpdateInfoReq(data), self.InitUpdateInfoBack)
             self.UpdateText(self.verCheck, Str.HaveUpdate, "#d71345", True)
         except Exception as es:
             Log.Error(es)
 
+    def InitUpdateInfoBack(self, raw):
+        data = raw.get("data")
+        self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex], Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n\n" + data)
+        
+    
     def CheckDb(self):
         self.AddSqlTask("book", "", SqlServer.TaskCheck, self.CheckDbBack)
 

@@ -6,6 +6,7 @@ import re
 import time
 import uuid
 from hashlib import sha256
+from urllib.parse import quote
 
 from config import config
 from config.setting import Setting
@@ -40,6 +41,16 @@ def time_me(fn):
 
 
 class ToolUtil(object):
+
+    @staticmethod
+    def DictToUrl(paramDict):
+        assert isinstance(paramDict, dict)
+        data = ''
+        for k, v in paramDict.items():
+            data += quote(str(k)) + '=' + quote(str(v))
+            data += '&'
+        return data.strip('&')
+    
     @classmethod
     def GetHeader(cls, _url: str, method: str) -> dict:
         now = str(int(time.time()))

@@ -225,19 +225,24 @@ class DownloadBookHandler(object):
                 data = b""
                 
                 now = time.time()
-
+                isAlreadySend = False
                 # 网速快，太卡了，优化成最多100ms一次
                 try:
                     for chunk in r.iter_content(chunk_size=4096):
                         cur = time.time()
                         tick = cur - now
                         if tick >= 0.1:
+                            isAlreadySend = True
                             if backData.bakParam and fileSize-getSize > 0:
                                 TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, b"")
                             now = cur
 
                         getSize += len(chunk)
                         data += chunk
+                    if not isAlreadySend:
+                        if backData.bakParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, getSize, b"")
+
                 except Exception as es:
                     Log.Error(es)
                     from src.server.server import Server
@@ -301,27 +306,15 @@ class CheckUpdateHandler(object):
             if task.res.raw.status_code != 200:
                 return
 
-            updateInfo = re.findall(r"<meta property=\"og:description\" content=\"([^\"]*)\"", task.res.raw.text)
-            if updateInfo:
-                rawData = updateInfo[0]
-            else:
-                rawData = ""
-
-            versionInfo = re.findall("<meta property=\"og:url\" content=\".*tag/([^\"]*)\"", task.res.raw.text)
-            if versionInfo:
-                verData = versionInfo[0]
-            else:
-                verData = ""
-
+            verData = task.res.GetText()
             info = verData.replace("v", "").split(".")
             version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
+            
             info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
             curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
-
-            rawData = "\n\nv" + ".".join(info) + "\n" + rawData
-
+            
             if version > curversion:
-                data["data"] = rawData
+                data["data"] = verData.replace("\r\n", "").replace("\n", "")
             else:
                 data["data"] = "no"
         except Exception as es:
@@ -331,8 +324,8 @@ class CheckUpdateHandler(object):
                 TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
-@handler(req.CheckPreUpdateReq)
-class CheckPreUpdateReqHandler(object):
+@handler(req.CheckUpdateInfoReq)
+class CheckUpdateInfoHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": ""}
         try:
@@ -340,29 +333,14 @@ class CheckPreUpdateReqHandler(object):
                 return
             if task.res.raw.status_code != 200:
                 return
-            rawData = json.loads(task.res.raw.text)
-            if not rawData:
-                return
-            v = rawData[0]
-            verData = v.get("tag_name")
-            info = verData.replace("v", "").split(".")
-            version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
-            info2 = re.findall(r"\d+\d*", os.path.basename(config.UpdateVersion))
-            curversion = int(info2[0]) * 100 + int(info2[1]) * 10 + int(info2[2]) * 1
 
-            rawData = v.get("body")
-
-            if version > curversion:
-                data["data"] = rawData
-            else:
-                data["data"] = "no"
-
+            data["data"] =  task.res.GetText()
         except Exception as es:
             pass
         finally:
             if task.bakParam:
                 TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
-
+                
 @handler(req.SpeedTestReq)
 class SpeedTestHandler(object):
     def __call__(self, backData):

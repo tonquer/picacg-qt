@@ -33,8 +33,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>475</width>
-        <height>463</height>
+        <width>458</width>
+        <height>483</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -191,6 +191,17 @@
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="ipv6Check">
+           <property name="text">
+            <string>优先使用IPV6分流（分流2、3支持）</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
@@ -576,8 +587,8 @@
   <slot>OpenUrl()</slot>
  </slots>
  <buttongroups>
+  <buttongroup name="radioApiGroup"/>
   <buttongroup name="radioProxyGroup"/>
   <buttongroup name="radioImgGroup"/>
-  <buttongroup name="radioApiGroup"/>
  </buttongroups>
 </ui>

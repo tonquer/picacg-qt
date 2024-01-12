@@ -1,5 +1,6 @@
 import json
 import pickle
+import socket
 import threading
 from queue import Queue
 
@@ -45,6 +46,16 @@ def patched_create_connection(address, *args, **kwargs):
 
 
 connection.create_connection = patched_create_connection
+
+# USE_IPV6 = True
+#
+# def allowed_gai_family():
+#     family = socket.AF_INET
+#     if USE_IPV6:
+#         family = socket.AF_INET6
+#     return family
+
+# urllib3.util.connection.allowed_gai_family = allowed_gai_family
 
 
 def handler(request):
@@ -292,6 +303,8 @@ class Server(Singleton):
             self._Download(task)
 
     def ReDownload(self, task):
+        task.res = ""
+        task.status = Status.Ok
         self._downloadQueue.put(task)
 
     def _Download(self, task):
@@ -322,7 +335,26 @@ class Server(Singleton):
                 Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
             else:
                 Log.Info("request reset:{} -> backId:{}, {}".format(task.req.resetCnt, task.bakParam, task.req))
-            r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, stream=True, timeout=task.timeout, verify=False)
+
+            history = []
+            for i in range(10):
+                r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout,
+                                     verify=False, allow_redirects=False, stream=True)
+                if r.status_code == 302 or r.status_code == 301:
+                    next = r.headers.get('Location')
+                    if ToolUtil.GetUrlHost(next) == "":
+                        next = "https://" + ToolUtil.GetUrlHost(request.url) + next
+                    request.url = next
+                    if not request.isReset:
+                        Log.Info("request 301 -> backId:{}, {}".format(task.bakParam, task.req))
+                    else:
+                        Log.Info("request 301 reset:{} -> backId:{}, {}".format(task.req.resetCnt, task.bakParam, task.req))
+
+                    history.append(r)
+                    self.__DealHeaders(request, "")
+                else:
+                    break
+            r.history = history
             # task.res = res.BaseRes(r)
             # print(r.elapsed.total_seconds())
             task.res = r

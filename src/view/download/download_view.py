@@ -5,7 +5,7 @@ import time
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QTimer, QUrl, QSize
 from PySide6.QtGui import QCursor, QDesktopServices, QAction, QIcon
-from PySide6.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem
+from PySide6.QtWidgets import QHeaderView, QAbstractItemView, QMenu, QTableWidgetItem, QMessageBox
 
 from config import config
 from config.setting import Setting
@@ -42,7 +42,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.tableWidget.setColumnCount(11)
         # self.tableWidget.setHorizontalHeaderLabels(HorizontalHeaderLabels)
         self.timer = QTimer(self.tableWidget)
-        self.timer.setInterval(1000)
+        self.timer.setInterval(2000)
         self.timer.timeout.connect(self.TimeOutHandler)
 
         self.failTimer = QTimer(self.tableWidget)
@@ -57,6 +57,8 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.tableWidget.doubleClicked.connect(self.OpenBookInfo)
 
         self.tableWidget.horizontalHeader().sectionClicked.connect(self.Sort)
+        self.allNewBookIds = set()
+        self.updateNew.clicked.connect(self.UpdateAllNewBook)
         self.order = {}
         self.radioButton.setChecked(Setting.DownloadAuto.value)
         datas = self.db.LoadDownload(self)
@@ -221,6 +223,36 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.db.AddDownloadDB(task)
         return True
 
+    def UpdateAllNewBook(self):
+        if not self.allNewBookIds:
+            QtOwner().ShowError(Str.GetStr(Str.NotUpdateEps))
+            return
+
+        downloadIds = {}
+        for bookId in self.allNewBookIds:
+            task = self.downloadDict.get(bookId)
+            if not task:
+                continue
+            bookInfo = BookMgr().GetBook(bookId)
+            if not bookInfo:
+                continue
+
+            if len(task.epsIds) >= bookInfo.epsCount:
+                continue
+            laveEpsId = set(range(0, bookInfo.epsCount)) - set(task.epsIds)
+            if not laveEpsId:
+                continue
+            downloadIds[bookId] = laveEpsId
+        if not downloadIds:
+            QtOwner().ShowError(Str.GetStr(Str.NotUpdateEps))
+            return
+        bookNum = len(downloadIds)
+        epsNum = sum([len(i) for i in downloadIds.values()])
+        isClear = QMessageBox.information(self, '更新章节', "共更新{}本{}章节".format(bookNum, epsNum ), QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+        if isClear == QtWidgets.QMessageBox.Yes:
+            for k, v in downloadIds.items():
+                self.AddDownload(k, list(v))
+
     def UpdateTableItem(self, info):
         assert isinstance(info, DownloadItem)
 
@@ -237,13 +269,14 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
 
         self.tableWidget.setItem(info.tableRow, 3, QTableWidgetItem("{}/{}".format(str(info.curDownloadPic), str(info.maxDownloadPic))))
         bookInfo = BookMgr().GetBook(info.bookId)
-
+        self.allNewBookIds.discard(info.bookId)
         item2 = QTableWidgetItem("{}/{}".format(str(info.curDownloadEps), str(info.epsCount)))
         if isinstance(bookInfo, Book):
             if len(info.epsIds) < bookInfo.epsCount:
                 icon2 = QIcon()
                 icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
                 item2.setIcon(icon2)
+                self.allNewBookIds.add(info.bookId)
         self.tableWidget.setItem(info.tableRow, 4, item2)
         self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(info.speedStr))
         self.tableWidget.setItem(info.tableRow, 7, QTableWidgetItem("{}/{}".format(str(info.curConvertCnt), str(info.convertCnt))))

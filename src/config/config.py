@@ -29,16 +29,10 @@ PreLook = 4                    # 预显示
 
 IsLoadingPicture = True
 
-UpdateUrl = "https://github.com/tonquer/picacg-qt/releases/latest"
-UpdateUrlApi = "https://api.github.com/repos/tonquer/picacg-qt/releases"
+AppUrl = "https://app.ggo.icu/PicACG"
+
 UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
-
-UpdateUrl2 = "https://hub.ggo.icu/tonquer/picacg-qt/releases/latest"
-UpdateUrl2Api = "https://api.ggo.icu/repos/tonquer/picacg-qt/releases"
 UpdateUrl2Back = "https://hub.ggo.icu/tonquer/picacg-qt"
-
-UpdateUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/releases/latest"
-UpdateUrl3Api = "https://api.fastgit.xyz/repos/tonquer/picacg-qt/releases"
 UpdateUrl3Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
 DatabaseUpdate = "https://raw.ggo.icu/bika-robot/picacg-database/main/version3.txt"
@@ -56,7 +50,7 @@ Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
 UpdateVersion = "v1.4.8"
 RealVersion = "v1.4.8"
-TimeVersion = "2024-1-10"
+TimeVersion = "2024-1-12"
 
 Waifu2xVersion = "1.1.6"
 
@@ -83,6 +77,7 @@ ProxyUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/discussions/48"
 Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 
 Address = ["188.114.98.153", "104.21.91.145"]  # 分类2，3 Ip列表
+AddressIpv6 = ["2606:4700:d:28:dbf4:26f3:c265:73bc", "2606:4700:130:690d:f740:eaca:ca6c:5e3"]
 
 ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
 ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器

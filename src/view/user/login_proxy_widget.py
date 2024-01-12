@@ -92,6 +92,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radio_img_5.setEnabled(enabled)
         self.radio_img_6.setEnabled(enabled)
         self.httpsBox.setEnabled(enabled)
+        self.ipv6Check.setEnabled(enabled)
         
         if not self.isShowProxy5:
             self.radio_img_5.setEnabled(False)
@@ -111,9 +112,11 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         self.speedTest = [("", "", False, False, 1)]
         i = 2
-        self.speedTest.append((config.Address[0], config.ImageServer2, False, False, i))
+        adress = config.AddressIpv6[0] if self.ipv6Check.isChecked() else config.Address[0]
+        self.speedTest.append((adress, config.ImageServer2, False, False, i))
         i += 1
-        self.speedTest.append((config.Address[1], config.ImageServer3, False, False, i))
+        adress1 = config.AddressIpv6[1] if self.ipv6Check.isChecked() else config.Address[1]
+        self.speedTest.append((adress1, config.ImageServer3, False, False, i))
         i += 1
 
         PreferCDNIP = self.cdn_api_ip.text()
@@ -287,7 +290,20 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         # config.ProxySelectIndex = QtOwner().settingView.GetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
         # config.IsUseHttps = QtOwner().settingView.GetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
         # httpProxy = QtOwner().settingView.GetSettingV("Proxy/Http", config.HttpProxy)
+        IsCanIpv6 = True
+        try:
+            from urllib3.util.connection import  HAS_IPV6
+            IsCanIpv6 = HAS_IPV6
+        except Exception as es:
+            Log.Error(es)
+            IsCanIpv6 = False
 
+        if not IsCanIpv6:
+            self.ipv6Check.setChecked(False)
+            self.ipv6Check.setEnabled(False)
+            Setting.PreIpv6.SetValue(0)
+
+        self.ipv6Check.setChecked(Setting.PreIpv6.value)
         self.httpsBox.setChecked(Setting.IsUseHttps.value)
         self.httpLine.setText(Setting.HttpProxy.value)
         self.sockEdit.setText(Setting.Sock5Proxy.value)
@@ -313,9 +329,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         if Setting.ProxySelectIndex.value == 1:
             address = ""
         elif Setting.ProxySelectIndex.value == 2:
-            address = config.Address[0]
+            address = config.AddressIpv6[0] if Setting.PreIpv6.value > 0 else config.Address[0]
         elif Setting.ProxySelectIndex.value == 3:
-            address = config.Address[1]
+            address = config.AddressIpv6[1] if Setting.PreIpv6.value > 0 else config.Address[1]
         elif Setting.ProxySelectIndex.value == 5:
             address = ""
         elif Setting.ProxySelectIndex.value == 6:
@@ -349,6 +365,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         Setting.ProxySelectIndex.SetValue(self.radioApiGroup.checkedId())
         Setting.ProxyImgSelectIndex.SetValue(self.radioImgGroup.checkedId())
         Setting.IsUseHttps.SetValue(int(self.httpsBox.isChecked()))
+        Setting.PreIpv6.SetValue(int(self.ipv6Check.isChecked()))
 
         # QtOwner().settingView.SetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
         # QtOwner().settingView.SetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)

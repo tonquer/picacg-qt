@@ -98,6 +98,7 @@ class Setting:
     ChatProxy = SettingValue("ProxySetting", 0, False)
     PreferCDNIP = SettingValue("ProxySetting", "104.18.227.172", False)
     IsUseHttps = SettingValue("ProxySetting", 1, False)
+    PreIpv6 = SettingValue("ProxySetting", 0, False)
 
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)
     ProxyImgSelectIndex = SettingValue("ProxySetting", 1, False)
