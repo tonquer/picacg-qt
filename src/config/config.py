@@ -15,7 +15,9 @@ Uuid = "defaultUuid"
 ProjectName = "PicACG"
 ThreadNum = 10                 # 线程
 DownloadThreadNum = 5          # 下载线程
-ResetDownloadCnt = 5           # 下载图片重试次数
+ResetDownloadCnt = 3           # 下载图片重试次数
+ResetDownloadCntDefault = 2           # 下载封面重试次数
+
 ConvertThreadNum = 3           # 同时转换数量
 ChatSavePath = "chat"
 SavePathDir = "commies"        # 下载目录
@@ -77,7 +79,7 @@ ProxyUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/discussions/48"
 Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 
 Address = ["188.114.98.153", "104.21.91.145"]  # 分类2，3 Ip列表
-AddressIpv6 = ["2606:4700:d:28:dbf4:26f3:c265:73bc", "2606:4700:130:690d:f740:eaca:ca6c:5e3"]
+AddressIpv6 = ["2606:4700:d:28:dbf4:26f3:c265:73bc", "2a06:98c1:3120:ca71:be2c:c721:d2b5:5dbf"]
 
 ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
 ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器

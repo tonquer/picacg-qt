@@ -73,7 +73,8 @@ class User(Singleton):
                 if Setting.ProxySelectIndex.value == 3:
                     imageServer = config.ImageServer3
                     address = config.Address[1]
-                    self.server.UpdateDns(address, imageServer)
+                    if not Setting.PreIpv6.value:
+                        self.server.UpdateDns(address, imageServer)
                 self.initRes = backData.res
                 return Status.Ok
             else:

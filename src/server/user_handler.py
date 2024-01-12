@@ -11,7 +11,7 @@ from tools.status import Status
 from tools.tool import ToolUtil
 from tools.user import User
 from . import req
-from .server import handler
+from .server import handler, Server
 
 @handler(req.InitReq)
 class InitHandler(object):
@@ -245,7 +245,6 @@ class DownloadBookHandler(object):
 
                 except Exception as es:
                     Log.Error(es)
-                    from src.server.server import Server
                     if backData.req.resetCnt > 0:
                         backData.req.isReset = True
                         Server().ReDownload(backData)
