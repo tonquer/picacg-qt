@@ -15,7 +15,7 @@ Uuid = "defaultUuid"
 ProjectName = "PicACG"
 ThreadNum = 10                 # 线程
 DownloadThreadNum = 5          # 下载线程
-ResetDownloadCnt = 3           # 下载图片重试次数
+ResetDownloadCnt = 5           # 下载图片重试次数
 ResetDownloadCntDefault = 2           # 下载封面重试次数
 
 ConvertThreadNum = 3           # 同时转换数量
