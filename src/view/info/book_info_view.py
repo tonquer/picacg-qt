@@ -5,7 +5,8 @@ import shutil
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
-from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup, QMessageBox
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup, QMessageBox, \
+    QListView
 
 from component.layout.flow_layout import FlowLayout
 from config.setting import Setting
@@ -65,17 +66,17 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         # self.tagsList.setContextMenuPolicy(Qt.CustomContextMenu)
         # self.tagsList.customContextMenuRequested.connect(self.CopyClickTagsItem)
 
-        self.epsListWidget.setFlow(self.epsListWidget.LeftToRight)
+        self.epsListWidget.setFlow(QListView.LeftToRight)
         self.epsListWidget.setWrapping(True)
-        self.epsListWidget.setFrameShape(self.epsListWidget.NoFrame)
-        self.epsListWidget.setResizeMode(self.epsListWidget.Adjust)
+        self.epsListWidget.setFrameShape(QListView.NoFrame)
+        self.epsListWidget.setResizeMode(QListView.Adjust)
 
         self.epsListWidget.clicked.connect(self.OpenReadImg)
 
-        self.listWidget.setFlow(self.listWidget.LeftToRight)
+        self.listWidget.setFlow(QListView.LeftToRight)
         self.listWidget.setWrapping(True)
-        self.listWidget.setFrameShape(self.listWidget.NoFrame)
-        self.listWidget.setResizeMode(self.listWidget.Adjust)
+        self.listWidget.setFrameShape(QListView.NoFrame)
+        self.listWidget.setResizeMode(QListView.Adjust)
 
         self.listWidget.clicked.connect(self.OpenReadImg2)
 

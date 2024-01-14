@@ -43,9 +43,9 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.changeScale.connect(self.ChangeScale)
 
         # self.setInteractive(False)
-        self.setTransformationAnchor(self.NoAnchor)
-        self.setResizeAnchor(self.NoAnchor)
-        self.setDragMode(self.NoDrag)
+        self.setTransformationAnchor(QGraphicsView.NoAnchor)
+        self.setResizeAnchor(QGraphicsView.NoAnchor)
+        self.setDragMode(QGraphicsView.NoDrag)
         self.setFrameStyle(QFrame.NoFrame)
         self.setObjectName("graphicsView")
         # self.graphicsView.setBackgroundBrush(QColor(Qt.white))

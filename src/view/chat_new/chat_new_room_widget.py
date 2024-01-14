@@ -6,7 +6,7 @@ import time
 
 from PySide6.QtCore import Signal, QTimer, Qt, QEvent, QSize
 from PySide6.QtGui import QFont, QTextCursor, QAction, QGuiApplication, QIcon
-from PySide6.QtWidgets import QMenu, QWidget, QLabel, QListWidgetItem, QScroller, QFileDialog
+from PySide6.QtWidgets import QMenu, QWidget, QLabel, QListWidgetItem, QScroller, QFileDialog, QFrame, QListView
 
 from component.dialog.loading_dialog import LoadingDialog
 from component.label.msg_label import MsgLabel
@@ -86,10 +86,10 @@ class ChatNewRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
         self.atRoleId = ""
         self.atRoleName = ""
 
-        self.listWidget.setFrameShape(self.listWidget.NoFrame)  # 无边框
-        self.listWidget.setFlow(self.listWidget.LeftToRight)  # 从左到右
+        self.listWidget.setFrameShape(QListView.NoFrame)  # 无边框
+        self.listWidget.setFlow(QListView.LeftToRight)  # 从左到右
         self.listWidget.setWrapping(True)
-        self.listWidget.setResizeMode(self.listWidget.Adjust)
+        self.listWidget.setResizeMode(QListView.Adjust)
         self.listWidget.itemClicked.connect(self.IconSelect)
         # self.listWidget.setMinimumHeight(200)
         self.cachePath = "."
