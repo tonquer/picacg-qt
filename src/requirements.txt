@@ -1,4 +1,4 @@
-PySide6>=6.2,<6.5
+PySide6>=6.1,<6.5
 Pillow>=9.5
 PySocks>=1.7
 natsort>=8.2
