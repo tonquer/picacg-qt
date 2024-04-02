@@ -2,7 +2,7 @@ from functools import partial
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QCursor
-from PySide6.QtWidgets import QListWidgetItem, QMenu, QApplication
+from PySide6.QtWidgets import QListWidgetItem, QMenu, QApplication,QListView
 
 from component.list.base_list_widget import BaseListWidget
 from component.widget.comic_item_widget import ComicItemWidget
@@ -19,10 +19,10 @@ class ComicListWidget(BaseListWidget):
         BaseListWidget.__init__(self, parent)
         self.resize(800, 600)
         # self.setMinimumHeight(400)
-        self.setFrameShape(self.NoFrame)  # 无边框
-        self.setFlow(self.LeftToRight)  # 从左到右
+        self.setFrameShape(QListView.NoFrame)  # 无边框
+        self.setFlow(QListView.LeftToRight)  # 从左到右
         self.setWrapping(True)
-        self.setResizeMode(self.Adjust)
+        self.setResizeMode(QListView.Adjust)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.SelectMenuBook)
         # self.doubleClicked.connect(self.OpenBookInfo)

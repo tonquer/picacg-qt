@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QFont, QFontMetrics
-from PySide6.QtWidgets import QListWidgetItem, QLabel, QAbstractItemView
+from PySide6.QtWidgets import QListWidgetItem, QLabel, QAbstractItemView, QListView
 
 from component.list.base_list_widget import BaseListWidget
 from component.scroll.smooth_scroll_bar import SmoothScrollBar
@@ -9,8 +9,8 @@ from component.scroll.smooth_scroll_bar import SmoothScrollBar
 class TagListWidget(BaseListWidget):
     def __init__(self, parent):
         BaseListWidget.__init__(self, parent)
-        self.setViewMode(self.ListMode)
-        self.setFlow(self.LeftToRight)
+        self.setViewMode(QListView.ListMode)
+        self.setFlow(QListView.LeftToRight)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setMaximumHeight(30)

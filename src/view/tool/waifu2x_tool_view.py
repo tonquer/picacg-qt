@@ -5,7 +5,7 @@ from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
 from PySide6.QtGui import QPainter, QPixmap, QDoubleValidator, \
     QIntValidator, QMouseEvent, QImage
-from PySide6.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog, QLabel
+from PySide6.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog, QLabel, QGraphicsView
 
 from config import config
 from interface.ui_waifu2x_tool import Ui_Waifu2xTool
@@ -34,7 +34,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.heighEdit.setValidator(validator)
         self.widthEdit.setValidator(validator)
         exp = QDoubleValidator(0.1, 64, 1)
-        exp.setNotation(exp.StandardNotation)
+        # exp.setNotation(exp.StandardNotation)
         self.scaleEdit.setValidator(exp)
         # self.setWindowFlags(Qt.FramelessWindowHint)
 
@@ -47,8 +47,8 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.graphicsView.setRenderHints(QPainter.Antialiasing |
                                          QPainter.SmoothPixmapTransform)
-        self.graphicsView.setCacheMode(self.graphicsView.CacheBackground)
-        self.graphicsView.setViewportUpdateMode(self.graphicsView.SmartViewportUpdate)
+        self.graphicsView.setCacheMode(QGraphicsView.CacheBackground)
+        self.graphicsView.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
 
         self.graphicsItem = ReadQGraphicsProxyWidget()
         self.graphicsItem.setFlags(QGraphicsPixmapItem.ItemIsFocusable |
@@ -58,7 +58,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
 
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.graphicsView.setScene(self.graphicsScene)
-        self.graphicsView.setDragMode(self.graphicsView.ScrollHandDrag)
+        self.graphicsView.setDragMode(QGraphicsView.ScrollHandDrag)
         self.graphicsItem.setWidget(QLabel())
         # self.graphicsItem.setPixmap(QPixmap())
         # self.graphicsItem.setTransformationMode(Qt.SmoothTransformation)

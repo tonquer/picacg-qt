@@ -1,7 +1,7 @@
 from functools import partial
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QListWidgetItem
+from PySide6.QtWidgets import QListWidgetItem, QListView
 
 from component.list.base_list_widget import BaseListWidget
 from component.widget.comment_item_widget import CommentItemWidget
@@ -14,6 +14,8 @@ from tools.tool import ToolUtil
 class UserListWidget(BaseListWidget):
     def __init__(self, parent):
         BaseListWidget.__init__(self, parent)
+        self.NoFrame = QListView.NoFrame
+        self.TopToBottom = QListView.TopToBottom
         self.resize(800, 600)
         # self.setMinimumHeight(400)
         # self.setFrameShape(self.NoFrame)  # 无边框

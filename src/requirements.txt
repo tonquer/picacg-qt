@@ -1,10 +1,9 @@
-PySide6==6.2.4
-websocket-client==0.59.0
-requests==2.26.0
-urllib3==1.25.11
-
-pillow==8.3.2
+PySide6>=6.1,<6.5
+Pillow>=9.5
+PySocks>=1.7
+natsort>=8.2
+requests>=2.26
+urllib3>=2
 waifu2x-vulkan==1.1.6
-Pysocks==1.7.1
-natsort==8.2.0
-# pywin32==302
+websocket-client>=1.6
+# pywin32>=302
