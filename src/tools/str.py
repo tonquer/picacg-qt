@@ -77,6 +77,7 @@ class Str:
     ErrorPath = 4005        # "错误的路径"
     NotPictureFile = 4006        # "没有发现图片文件"
     FileLock = 4007        # "文件已加密"
+    SpacePic = 4008        # "文件已加密"
 
     CvSuccess = 5001          # "完成"
     CvReading = 5002          # 获取信息
@@ -237,6 +238,7 @@ class Str:
     ImportDouble = 152     # 导入多章节目录
     ImportLocal = 153      # 导入本地漫画中
     NotUpdateEps = 154      # 没有可更新的章节
+    CurRead = 155           # 正在看
 
 
     @classmethod
@@ -311,6 +313,7 @@ class Str:
         cls.strDict[cls.ErrorPath] = QCoreApplication.translate("cls.obj",  "错误的路径", None)
         cls.strDict[cls.NotPictureFile] = QCoreApplication.translate("cls.obj",  "没有发现图片文件", None)
         cls.strDict[cls.FileLock] = QCoreApplication.translate("cls.obj",  "文件已加密", None)
+        cls.strDict[cls.SpacePic] = QCoreApplication.translate("cls.obj",  "空白章节", None)
 
         cls.strDict[cls.CvSuccess] = QCoreApplication.translate("cls.obj",  "完成", None)
         cls.strDict[cls.CvReading] = QCoreApplication.translate("cls.obj",  "获取信息", None)
@@ -463,6 +466,7 @@ class Str:
         cls.strDict[cls.ImportDouble] = QCoreApplication.translate("cls.obj", "导入多章节目录", None)
         cls.strDict[cls.ImportLocal] = QCoreApplication.translate("cls.obj", "导入到本地漫画中", None)
         cls.strDict[cls.NotUpdateEps] = QCoreApplication.translate("cls.obj", "没有可更新章节", None)
+        cls.strDict[cls.CurRead] = QCoreApplication.translate("cls.obj", "正在看", None)
 
     @classmethod
     def GetStr(cls, enumType, defualt=""):

@@ -79,7 +79,13 @@ class Setting:
     Language = SettingValue("GeneraSetting", 0, False, ["Auto", "zh", "hk", "en"])  # ch-zh ch-hk eu
     ThemeIndex = SettingValue("GeneraSetting", 0, False, ["Auto", "dark", "light"])  #
     LogIndex = SettingValue("GeneraSetting", 0, False, ["warn", "info", "debug"])  # Warn Info Debug
+
+    LogDirPath = SettingValue("GeneraSetting", "", False)
+
     CoverSize = SettingValue("GeneraSetting", 100, False)  #
+    TitleLine = SettingValue("GeneraSetting", 2, False)  #
+    NotCategoryShow = SettingValue("GeneraSetting", 0, False)  #
+
     CategorySize = SettingValue("GeneraSetting", 80, False)  #
     ScaleLevel = SettingValue("GeneraSetting", 0, True, ["Auto", 100, 125, 150, 175, 200])
     IsUseTitleBar = SettingValue("GeneraSetting", 1, True)
@@ -99,6 +105,7 @@ class Setting:
     PreferCDNIP = SettingValue("ProxySetting", "104.18.227.172", False)
     IsUseHttps = SettingValue("ProxySetting", 1, False)
     PreIpv6 = SettingValue("ProxySetting", 0, False)
+    LastProxyResult = SettingValue("ProxySetting", {}, False)
 
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)
     ProxyImgSelectIndex = SettingValue("ProxySetting", 1, False)
@@ -152,6 +159,7 @@ class Setting:
     IsPreUpdate = SettingValue("Other", 0, False)
     SaveCacheAddress = SettingValue("Other", "104.21.91.145", False)
     IsReDownload = SettingValue("Other", 0, False)
+    GlobalConfig = SettingValue("Other", "", False)
 
     @staticmethod
     def InitLoadSetting():
@@ -219,6 +227,9 @@ class Setting:
     @staticmethod
     def GetLogPath():
         import sys
+        if Setting.LogDirPath.value:
+            return Setting.LogDirPath.value
+
         if sys.platform == "win32":
             return "logs"
         else:

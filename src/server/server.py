@@ -11,6 +11,7 @@ from urllib3.util.ssl_ import is_ipaddress
 import server.req as req
 import server.res as res
 from config import config
+from config.global_config import GlobalConfig
 from qt_owner import QtOwner
 from task.qt_task import TaskBase
 from tools.log import Log
@@ -81,6 +82,7 @@ class Server(Singleton):
         self.session = requests.session()
         self.address = ""
         self.imageServer = ""
+        self.imageAddress = ""
 
         self.token = ""
         self._inQueue = Queue()
@@ -131,13 +133,14 @@ class Server(Singleton):
                 Log.Error(es)
         pass
 
-    def UpdateDns(self, address, imageAddress):
-        self.imageServer = imageAddress
+    def UpdateDns(self, address, imageUrl, imageAdress):
+        self.imageServer = imageUrl
         self.address = address
+        self.imageAddress = imageAdress
 
         AllDomain = config.ApiDomain[:]
-        AllDomain.append(config.ImageServer2)
-        AllDomain.append(config.ImageServer2Jump)
+        # AllDomain.append(config.ImageServer2)
+        # AllDomain.append(config.ImageServer2Jump)
         # AllDomain.append(config.ImageServer3Jump)
         for domain in AllDomain:
             if is_ipaddress(address):
@@ -145,10 +148,16 @@ class Server(Singleton):
             elif not address and domain in host_table:
                 host_table.pop(domain)
 
-        for domain in config.ImageDomain:
-            if is_ipaddress(imageAddress):
-                host_table[domain] = imageAddress
-            elif not imageAddress and domain in host_table:
+        for domain in GlobalConfig.ImageServerList.value:
+            if is_ipaddress(imageAdress):
+                host_table[domain] = imageAdress
+            elif not imageAdress and domain in host_table:
+                host_table.pop(domain)
+
+        for domain in GlobalConfig.ImageJumList.value:
+            if is_ipaddress(imageAdress):
+                host_table[domain] = imageAdress
+            elif not imageAdress and domain in host_table:
                 host_table.pop(domain)
 
         # 换一个，清空pool
@@ -162,7 +171,7 @@ class Server(Singleton):
             request.headers["authorization"] = token
 
         host = ToolUtil.GetUrlHost(request.url)
-        if self.imageServer and host in config.ImageDomain:
+        if self.imageServer and host in GlobalConfig.ImageServerList.value:
             if not is_ipaddress(self.imageServer):
                 request.url = request.url.replace(host, self.imageServer)
 
@@ -170,6 +179,7 @@ class Server(Singleton):
             request.url = request.url.replace("https://", "http://")
 
         if request.proxyUrl:
+            host = ToolUtil.GetUrlHost(request.url)
             request.url = request.url.replace(host, request.proxyUrl+"/"+host)
 
         # host = ToolUtil.GetUrlHost(request.url)
@@ -258,14 +268,14 @@ class Server(Singleton):
         if request.headers == None:
             request.headers = {}
 
-        task.res = res.BaseRes("", False)
+        task.res = res.BaseRes("", False, task.req.__class__.__name__)
         if request.file:
             r = self.session.post(request.url, proxies=request.proxy, headers=request.headers, files=request.file,
                                   timeout=task.timeout, verify=False)
         else:
             r = self.session.post(request.url, proxies=request.proxy, headers=request.headers,
                                   data=json.dumps(request.params), timeout=task.timeout, verify=False)
-        task.res = res.BaseRes(r, request.isParseRes)
+        task.res = res.BaseRes(r, request.isParseRes, task.req.__class__.__name__)
         return task
 
     def Put(self, task):
@@ -276,9 +286,9 @@ class Server(Singleton):
         if request.headers == None:
             request.headers = {}
 
-        task.res = res.BaseRes("", False)
+        task.res = res.BaseRes("", False, task.req.__class__.__name__)
         r = self.session.put(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=60, verify=False)
-        task.res = res.BaseRes(r, request.isParseRes)
+        task.res = res.BaseRes(r, request.isParseRes, task.req.__class__.__name__)
         return task
 
     def Get(self, task):
@@ -289,9 +299,9 @@ class Server(Singleton):
         if request.headers == None:
             request.headers = {}
 
-        task.res = res.BaseRes("", False)
+        task.res = res.BaseRes("", False, task.req.__class__.__name__)
         r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout, verify=False)
-        task.res = res.BaseRes(r, request.isParseRes)
+        task.res = res.BaseRes(r, request.isParseRes, task.req.__class__.__name__)
         return task
 
     def Download(self, request, token="", backParams="", isASync=True):
@@ -337,6 +347,7 @@ class Server(Singleton):
                 Log.Info("request reset:{} -> backId:{}, {}".format(task.req.resetCnt, task.bakParam, task.req))
 
             history = []
+            # oldHost = ToolUtil.GetUrlHost(request.url)
             for i in range(10):
                 r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout,
                                      verify=False, allow_redirects=False, stream=True)
@@ -351,7 +362,7 @@ class Server(Singleton):
                         Log.Info("request 301 reset:{} -> backId:{}, {}".format(task.req.resetCnt, task.bakParam, task.req))
 
                     history.append(r)
-                    self.__DealHeaders(request, "")
+                    # self.__DealHeaders(request, "")
                 else:
                     break
             r.history = history
@@ -387,6 +398,7 @@ class Server(Singleton):
         self.__DealHeaders(request, "")
         task = Task(request, bakParams)
         task.timeout = 5
+
         self._downloadQueue.put(task)
 
     def TestSpeedPing(self, request, bakParams=""):

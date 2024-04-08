@@ -10,6 +10,7 @@ from PySide6.QtGui import QDesktopServices, Qt
 from PySide6.QtWidgets import QWidget, QMessageBox
 
 from config import config
+from config.global_config import GlobalConfig
 from config.setting import Setting
 from interface.ui_help import Ui_Help
 from qt_owner import QtOwner
@@ -69,6 +70,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Setting.IsPreUpdate.SetValue(int(self.preCheckBox.isChecked()))
 
     def Init(self):
+        # self.InitUpdateConfig()
         self.CheckDb()
         # self.UpdateDbInfo()
 
@@ -106,8 +108,22 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
     def InitUpdateInfoBack(self, raw):
         data = raw.get("data")
         self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex], Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n\n" + data)
-        
-    
+
+    def InitUpdateConfig(self):
+        self.AddHttpTask(req.CheckUpdateConfigReq(), self.InitUpdateConfigBack)
+
+    def InitUpdateConfigBack(self, raw):
+        try:
+            st = raw.get("st")
+            if st != Str.Ok:
+                return
+            data = raw.get("data")
+            if not data:
+                return
+            GlobalConfig.UpdateSetting(data)
+        except Exception as es:
+            Log.Error(es)
+
     def CheckDb(self):
         self.AddSqlTask("book", "", SqlServer.TaskCheck, self.CheckDbBack)
 

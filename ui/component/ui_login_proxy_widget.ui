@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>495</width>
-    <height>483</height>
+    <width>577</width>
+    <height>473</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>450</width>
+    <width>550</width>
     <height>0</height>
    </size>
   </property>
@@ -33,8 +33,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>458</width>
-        <height>483</height>
+        <width>540</width>
+        <height>512</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -218,6 +218,33 @@
         </layout>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>图片地址选择：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="WheelComboBox" name="imgCombox"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QPushButton" name="testSpeedButton">
          <property name="text">
           <string>测速</string>
@@ -233,21 +260,21 @@
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="3" column="1">
-          <widget class="QLabel" name="label_api_2">
+         <item row="5" column="3">
+          <widget class="QLabel" name="label_img_5">
            <property name="text">
             <string/>
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
+         <item row="4" column="0">
+          <widget class="QRadioButton" name="radioButton_3">
            <property name="text">
-            <string>Api分流</string>
+            <string>分流3</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">radioApiGroup</string>
+           </attribute>
           </widget>
          </item>
          <item row="3" column="0">
@@ -260,63 +287,6 @@
            </attribute>
           </widget>
          </item>
-         <item row="8" column="1">
-          <widget class="QLineEdit" name="cdn_api_ip">
-           <property name="maximumSize">
-            <size>
-             <width>120</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="label_api_1">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QRadioButton" name="radioButton_5">
-           <property name="toolTip">
-            <string>所以分流不可使用时，自动解锁</string>
-           </property>
-           <property name="text">
-            <string>JP反代分流</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">radioApiGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLabel" name="label_api_3">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QRadioButton" name="radioButton_1">
-           <property name="text">
-            <string>分流1</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">radioApiGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLabel" name="label_api_5">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
          <item row="8" column="3">
           <widget class="QLineEdit" name="cdn_img_ip">
            <property name="maximumSize">
@@ -327,101 +297,20 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="1">
-          <widget class="QLabel" name="label_api_4">
+         <item row="6" column="2">
+          <widget class="QRadioButton" name="radio_img_6">
            <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="3">
-          <widget class="QLabel" name="label_img_3">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
-          <widget class="QLabel" name="label_img_5">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="2">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>CDN地址</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QRadioButton" name="radio_img_1">
-           <property name="text">
-            <string>分流1</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
+            <string>US反代分流</string>
            </property>
            <attribute name="buttonGroup">
             <string notr="true">radioImgGroup</string>
            </attribute>
           </widget>
          </item>
-         <item row="3" column="2">
-          <widget class="QRadioButton" name="radio_img_2">
+         <item row="6" column="0">
+          <widget class="QRadioButton" name="radioButton_6">
            <property name="text">
-            <string>分流2</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">radioImgGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="7" column="3">
-          <widget class="QLabel" name="label_img_4">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="2">
-          <widget class="QRadioButton" name="radio_img_4">
-           <property name="text">
-            <string>CDN分流</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">radioImgGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="5" column="2">
-          <widget class="QRadioButton" name="radio_img_5">
-           <property name="toolTip">
-            <string>所以分流不可使用时，自动解锁</string>
-           </property>
-           <property name="text">
-            <string>JP反代分流</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">radioImgGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QRadioButton" name="radioButton_4">
-           <property name="text">
-            <string>CDN分流</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">radioApiGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QRadioButton" name="radioButton_3">
-           <property name="text">
-            <string>分流3</string>
+            <string>US反代分流</string>
            </property>
            <attribute name="buttonGroup">
             <string notr="true">radioApiGroup</string>
@@ -448,18 +337,63 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="label_6">
+         <item row="7" column="0">
+          <widget class="QRadioButton" name="radioButton_4">
            <property name="text">
-            <string>延迟</string>
+            <string>CDN分流</string>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
+           <attribute name="buttonGroup">
+            <string notr="true">radioApiGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item row="6" column="3">
+          <widget class="QLabel" name="label_img_6">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
-         <item row="3" column="3">
-          <widget class="QLabel" name="label_img_2">
+         <item row="8" column="2">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>CDN地址</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QLineEdit" name="cdn_api_ip">
+           <property name="maximumSize">
+            <size>
+             <width>120</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="label_api_3">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_api_2">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="QLabel" name="label_img_3">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLabel" name="label_img_1">
            <property name="text">
             <string/>
            </property>
@@ -475,6 +409,29 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>延迟</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QRadioButton" name="radio_img_5">
+           <property name="toolTip">
+            <string>所以分流不可使用时，自动解锁</string>
+           </property>
+           <property name="text">
+            <string>JP反代分流</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">radioImgGroup</string>
+           </attribute>
+          </widget>
+         </item>
          <item row="1" column="3">
           <widget class="QLabel" name="label_4">
            <property name="text">
@@ -485,31 +442,51 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="3">
-          <widget class="QLabel" name="label_img_1">
+         <item row="2" column="0">
+          <widget class="QRadioButton" name="radioButton_1">
            <property name="text">
-            <string/>
+            <string>分流1</string>
            </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QRadioButton" name="radioButton_6">
-           <property name="text">
-            <string>US反代分流</string>
+           <property name="checked">
+            <bool>true</bool>
            </property>
            <attribute name="buttonGroup">
             <string notr="true">radioApiGroup</string>
            </attribute>
           </widget>
          </item>
-         <item row="6" column="2">
-          <widget class="QRadioButton" name="radio_img_6">
+         <item row="7" column="2">
+          <widget class="QRadioButton" name="radio_img_4">
            <property name="text">
-            <string>US反代分流</string>
+            <string>CDN分流</string>
            </property>
            <attribute name="buttonGroup">
             <string notr="true">radioImgGroup</string>
            </attribute>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="label_api_5">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Api分流</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="3">
+          <widget class="QLabel" name="label_img_4">
+           <property name="text">
+            <string/>
+           </property>
           </widget>
          </item>
          <item row="6" column="1">
@@ -519,11 +496,61 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="3">
-          <widget class="QLabel" name="label_img_6">
+         <item row="3" column="3">
+          <widget class="QLabel" name="label_img_2">
            <property name="text">
             <string/>
            </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QRadioButton" name="radio_img_1">
+           <property name="text">
+            <string>分流1</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">radioImgGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QLabel" name="label_api_4">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_api_1">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QRadioButton" name="radio_img_2">
+           <property name="text">
+            <string>分流2</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">radioImgGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QRadioButton" name="radioButton_5">
+           <property name="toolTip">
+            <string>所以分流不可使用时，自动解锁</string>
+           </property>
+           <property name="text">
+            <string>JP反代分流</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">radioApiGroup</string>
+           </attribute>
           </widget>
          </item>
         </layout>
@@ -559,6 +586,11 @@
    <header location="global">component.scroll_area.smooth_scroll_area.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>WheelComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">component.box.wheel_combo_box.h</header>
+  </customwidget>
  </customwidgets>
  <resources/>
  <connections>
@@ -588,7 +620,7 @@
  </slots>
  <buttongroups>
   <buttongroup name="radioApiGroup"/>
-  <buttongroup name="radioProxyGroup"/>
   <buttongroup name="radioImgGroup"/>
+  <buttongroup name="radioProxyGroup"/>
  </buttongroups>
 </ui>

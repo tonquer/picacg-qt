@@ -186,7 +186,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
     def AddDownload(self, bookId, downloadIds):
         if not downloadIds:
             return
-
+        Log.Info("add download, book_id={}, eps={}".format(bookId, downloadIds))
         if bookId not in self.downloadDict:
             task = DownloadItem()
             task.bookId = bookId
@@ -369,14 +369,14 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 menu.addAction(openDirAction)
                 menu.addAction(selectEpsAction)
                 assert isinstance(task, DownloadItem)
-                if task.status in [task.Pause, task.Error, task.SpaceEps]:
+                if task.status in [task.Pause, task.Error, task.SpaceEps, task.UnderReviewBook]:
                     menu.addAction(startAction)
                 elif task.status in [task.Downloading, task.Waiting]:
                     menu.addAction(pauseAction)
 
                 if task.convertStatus in [task.Converting, task.Waiting]:
                     menu.addAction(pauseConvertAction)
-                elif task.convertStatus in [task.Pause, task.Error, task.SpaceEps]:
+                elif task.convertStatus in [task.Pause, task.Error, task.SpaceEps, task.UnderReviewBook]:
                     menu.addAction(startConvertAction)
             else:
                 menu = QMenu(self.tableWidget)

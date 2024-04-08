@@ -1,6 +1,6 @@
 from functools import partial
 
-from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QTimer
+from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QTimer, QSize
 from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QFont
 from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
 
@@ -10,6 +10,7 @@ from component.label.msg_label import MsgLabel
 from component.system_tray_icon.my_system_tray_icon import MySystemTrayIcon
 from component.widget.main_widget import Main
 from config import config
+from config.global_config import GlobalConfig
 from config.setting import Setting
 from qt_owner import QtOwner
 from server import req
@@ -36,7 +37,7 @@ class MainView(Main, QtTaskBase):
         # self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_QuitOnClose, True)
         self.timer = QTimer()
-        self.timer.setInterval(10000)
+        self.timer.setInterval(1000)
         # self.timer.timeout.connect(self.AfterStartSuc)
         screens = QGuiApplication.screens()
         # print(screens[0].geometry(), screens[1].geometry())
@@ -46,6 +47,7 @@ class MainView(Main, QtTaskBase):
             desktop = screens[Setting.ScreenIndex.value].geometry()
 
         self.adjustSize()
+        self.myInitSize = QSize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
         self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
         self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
         print(desktop.size(), self.size())
@@ -64,6 +66,7 @@ class MainView(Main, QtTaskBase):
 
         self.subStackWidget.setCurrentIndex(0)
         self.settingView.LoadSetting()
+        GlobalConfig.LoadSetting()
 
         self.searchView.searchTab.hide()
         self.searchView2.searchWidget.hide()
@@ -150,6 +153,7 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.retranslateUi(self.navigationWidget)
 
     def Init(self):
+        print(self.size())
         IsCanUse = False
         self.downloadView.Init()
         self.InitApiProxy()
@@ -204,7 +208,7 @@ class MainView(Main, QtTaskBase):
 
         if Setting.IsUpdate.value:
             self.helpView.InitUpdate()
-
+        self.helpView.InitUpdateConfig()
         self.searchView.InitWord()
         self.msgLabel = MsgLabel(self)
         self.msgLabel.hide()
@@ -217,13 +221,13 @@ class MainView(Main, QtTaskBase):
         # self.timer.start()
 
     # def AfterStartSuc(self):
-    #     self.timer.stop()
-    #     QtOwner().SetFont(self)
+    #     # self.timer.stop()
+    #     self.resize(self.myInitSize.width(), self.myInitSize.height())
 
     def InitApiProxy(self):
         request = req.InitReq()
         request.proxy = {}
-        self.AddHttpTask(request)
+        # self.AddHttpTask(request)
 
     def ClearTabBar(self):
         for toolButton in self.toolButtons:

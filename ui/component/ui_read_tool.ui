@@ -41,7 +41,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-27</y>
         <width>310</width>
         <height>825</height>
        </rect>
@@ -531,7 +531,7 @@
             <string notr="true">color: #ee2a24</string>
            </property>
            <property name="text">
-            <string>自动滚动/翻页</string>
+            <string>滚动/翻页</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -549,7 +549,7 @@
               </size>
              </property>
              <property name="text">
-              <string>滚动速度（像素）：</string>
+              <string>滚动速度：</string>
              </property>
             </widget>
            </item>

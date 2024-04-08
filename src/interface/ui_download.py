@@ -23,11 +23,40 @@ class Ui_Download(object):
     def setupUi(self, Download):
         if not Download.objectName():
             Download.setObjectName(u"Download")
-        Download.resize(707, 361)
+        Download.resize(820, 361)
         self.gridLayout_2 = QGridLayout(Download)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
+        self.tableWidget = QTableWidget(Download)
+        if (self.tableWidget.columnCount() < 11):
+            self.tableWidget.setColumnCount(11)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(4, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(5, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(6, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(7, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(8, __qtablewidgetitem8)
+        __qtablewidgetitem9 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(9, __qtablewidgetitem9)
+        __qtablewidgetitem10 = QTableWidgetItem()
+        self.tableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
+        self.tableWidget.setObjectName(u"tableWidget")
+
+        self.gridLayout.addWidget(self.tableWidget, 4, 0, 1, 1)
+
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -72,36 +101,7 @@ class Ui_Download(object):
         self.horizontalLayout.addWidget(self.radioButton)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout, 2, 0, 1, 1)
-
-        self.tableWidget = QTableWidget(Download)
-        if (self.tableWidget.columnCount() < 11):
-            self.tableWidget.setColumnCount(11)
-        __qtablewidgetitem = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        __qtablewidgetitem1 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem2)
-        __qtablewidgetitem3 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(3, __qtablewidgetitem3)
-        __qtablewidgetitem4 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(4, __qtablewidgetitem4)
-        __qtablewidgetitem5 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(5, __qtablewidgetitem5)
-        __qtablewidgetitem6 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(6, __qtablewidgetitem6)
-        __qtablewidgetitem7 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(7, __qtablewidgetitem7)
-        __qtablewidgetitem8 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(8, __qtablewidgetitem8)
-        __qtablewidgetitem9 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(9, __qtablewidgetitem9)
-        __qtablewidgetitem10 = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(10, __qtablewidgetitem10)
-        self.tableWidget.setObjectName(u"tableWidget")
-
-        self.gridLayout.addWidget(self.tableWidget, 5, 0, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
 
 
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
@@ -119,13 +119,6 @@ class Ui_Download(object):
 
     def retranslateUi(self, Download):
         Download.setWindowTitle(QCoreApplication.translate("Download", u"\u4e0b\u8f7d", None))
-        self.redownloadRadio.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u5931\u8d25\u540e1\u5206\u949f\u81ea\u52a8\u91cd\u8bd5", None))
-        self.updateNew.setText(QCoreApplication.translate("Download", u"\u66f4\u65b0\u6240\u6709New\u7ae0\u8282", None))
-        self.pushButton.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u5f00\u59cb\u4e0b\u8f7d", None))
-        self.pushButton_3.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u6682\u505c\u4e0b\u8f7d", None))
-        self.pushButton_2.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u5f00\u59cb\u8f6c\u6362", None))
-        self.pushButton_4.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u6682\u505c\u8f6c\u6362", None))
-        self.radioButton.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u81ea\u52a8\u8fdb\u884cWaifu2x\u8f6c\u6362", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("Download", u"id", None));
         ___qtablewidgetitem1 = self.tableWidget.horizontalHeaderItem(1)
@@ -148,5 +141,12 @@ class Ui_Download(object):
         ___qtablewidgetitem9.setText(QCoreApplication.translate("Download", u"\u8f6c\u6362\u8017\u65f6", None));
         ___qtablewidgetitem10 = self.tableWidget.horizontalHeaderItem(10)
         ___qtablewidgetitem10.setText(QCoreApplication.translate("Download", u"\u8f6c\u6362\u72b6\u6001", None));
+        self.redownloadRadio.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u5931\u8d25\u540e1\u5206\u949f\u81ea\u52a8\u91cd\u8bd5", None))
+        self.updateNew.setText(QCoreApplication.translate("Download", u"\u66f4\u65b0\u6240\u6709New\u7ae0\u8282", None))
+        self.pushButton.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u5f00\u59cb\u4e0b\u8f7d", None))
+        self.pushButton_3.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u6682\u505c\u4e0b\u8f7d", None))
+        self.pushButton_2.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u5f00\u59cb\u8f6c\u6362", None))
+        self.pushButton_4.setText(QCoreApplication.translate("Download", u"\u5168\u90e8\u6682\u505c\u8f6c\u6362", None))
+        self.radioButton.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u81ea\u52a8\u8fdb\u884cWaifu2x\u8f6c\u6362", None))
     # retranslateUi
 

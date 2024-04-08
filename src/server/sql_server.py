@@ -511,6 +511,10 @@ class SqlServer(Singleton):
             else:
                 orWords.append(words)
 
+        if not andWords and not exclude:
+            orWords = []
+            orWords.append(wordList)
+
         data = ""
         data2 = ""
         for word in orWords:

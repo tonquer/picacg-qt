@@ -1,5 +1,6 @@
 import base64
 import os
+import platform
 import random
 import uuid
 from datetime import datetime, timedelta
@@ -57,8 +58,11 @@ class ServerReq(object):
         #     headers["authorization"] = "**********"
         params = dict()
         params.update(self.params)
-        if Setting.LogIndex.value == 1 and "password" in params:
-            params["password"] = "******"
+        ## 脱敏数据
+        # if self.__class__.__name__ in ["LoginReq", "RegisterReq"]:
+        #     params = "******"
+        # if Setting.LogIndex.value == 1 and "password" in params:
+        #     params["password"] = "******"
         return "{}, url:{}, method:{}, params:{}".format(self.__class__.__name__, self.url, self.method, params)
 
 
@@ -357,6 +361,7 @@ class CheckUpdateReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.UpdateVersion
+        data["platform"] = platform.platform()
         if not isPre:
             url = config.AppUrl + "/version.txt?"
         else:
@@ -373,13 +378,27 @@ class CheckUpdateInfoReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.UpdateVersion
+        data["platform"] = platform.platform()
         url = config.AppUrl + "/{}.txt?".format(newVersion)
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
         self.useImgProxy = False
-        
-        
+
+
+# 检查更新配置
+class CheckUpdateConfigReq(ServerReq):
+    def __init__(self):
+        method = "GET"
+        data = dict()
+        data["version"] = config.UpdateVersion
+        data["platform"] = platform.platform()
+        url = config.AppUrl + "/config.txt?"
+        url += ToolUtil.DictToUrl(data)
+        super(self.__class__, self).__init__(url, {}, {}, method)
+        self.isParseRes = False
+        self.useImgProxy = False
+
 # 检查更新
 class CheckUpdateDatabaseReq(ServerReq):
     def __init__(self, url):
@@ -489,12 +508,17 @@ class SpeedTestReq(ServerReq):
         if SpeedTestReq.Index >= len(SpeedTestReq.URLS):
             SpeedTestReq.Index = 0
         method = "Download"
+        host = ToolUtil.GetUrlHost(url)
+        if host in config.ApiDomain and Setting.ProxySelectIndex.value == 5:
+            self.headers.pop("user-agent")
+            self.proxyUrl = config.ProxyApiDomain
+
         header = ToolUtil.GetHeader(url, method)
         header['cache-control'] = 'no-cache'
         header['expires'] = '0'
         header['pragma'] = 'no-cache'
         self.isReload = False
-        self.resetCnt = 2
+        self.resetCnt = 1
         self.isReset = False
         super(self.__class__, self).__init__(url, header,
                                              {}, method)

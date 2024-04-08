@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QFrame, QHBoxLayout,
-    QLabel, QPushButton, QSizePolicy, QSpacerItem,
-    QToolButton, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCommandLinkButton, QFrame,
+    QHBoxLayout, QLabel, QPushButton, QSizePolicy,
+    QSpacerItem, QToolButton, QVBoxLayout, QWidget)
 
 from component.button.switch_button import SwitchButton
 from component.label.head_label import HeadLabel
@@ -28,7 +28,7 @@ class Ui_Navigation(object):
     def setupUi(self, Navigation):
         if not Navigation.objectName():
             Navigation.setObjectName(u"Navigation")
-        Navigation.resize(248, 496)
+        Navigation.resize(376, 772)
         Navigation.setStyleSheet(u"")
         self.verticalLayout_2 = QVBoxLayout(Navigation)
         self.verticalLayout_2.setSpacing(6)
@@ -103,7 +103,7 @@ class Ui_Navigation(object):
 
         self.horizontalLayout_3.addWidget(self.label_4)
 
-        self.proxyName = QLabel(self.widget)
+        self.proxyName = QCommandLinkButton(self.widget)
         self.proxyName.setObjectName(u"proxyName")
 
         self.horizontalLayout_3.addWidget(self.proxyName)
@@ -118,7 +118,7 @@ class Ui_Navigation(object):
 
         self.horizontalLayout_5.addWidget(self.label_6)
 
-        self.proxyImgName = QLabel(self.widget)
+        self.proxyImgName = QCommandLinkButton(self.widget)
         self.proxyImgName.setObjectName(u"proxyImgName")
 
         self.horizontalLayout_5.addWidget(self.proxyImgName)
@@ -148,12 +148,18 @@ class Ui_Navigation(object):
 
         self.verticalLayout.addWidget(self.line_4)
 
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout.addItem(self.verticalSpacer)
+
         self.scrollArea = SmoothScrollArea(self.widget)
         self.scrollArea.setObjectName(u"scrollArea")
-        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setWidgetResizable(False)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -431, 211, 792))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 339, 800))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -173,7 +179,7 @@ class Ui_Navigation(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.collectButton.sizePolicy().hasHeightForWidth())
         self.collectButton.setSizePolicy(sizePolicy1)
-        self.collectButton.setMinimumSize(QSize(150, 40))
+        self.collectButton.setMinimumSize(QSize(150, 0))
         self.collectButton.setFocusPolicy(Qt.NoFocus)
         icon = QIcon()
         icon.addFile(u":/images/menu/Contact.png", QSize(), QIcon.Normal, QIcon.Off)
@@ -189,7 +195,7 @@ class Ui_Navigation(object):
         self.myCommentButton.setObjectName(u"myCommentButton")
         sizePolicy1.setHeightForWidth(self.myCommentButton.sizePolicy().hasHeightForWidth())
         self.myCommentButton.setSizePolicy(sizePolicy1)
-        self.myCommentButton.setMinimumSize(QSize(150, 40))
+        self.myCommentButton.setMinimumSize(QSize(150, 0))
         self.myCommentButton.setFocusPolicy(Qt.NoFocus)
         self.myCommentButton.setStyleSheet(u"")
         icon1 = QIcon()
@@ -206,7 +212,7 @@ class Ui_Navigation(object):
         self.lookButton.setObjectName(u"lookButton")
         sizePolicy1.setHeightForWidth(self.lookButton.sizePolicy().hasHeightForWidth())
         self.lookButton.setSizePolicy(sizePolicy1)
-        self.lookButton.setMinimumSize(QSize(150, 40))
+        self.lookButton.setMinimumSize(QSize(150, 0))
         self.lookButton.setFocusPolicy(Qt.NoFocus)
         self.lookButton.setIcon(icon)
         self.lookButton.setIconSize(QSize(32, 32))
@@ -232,7 +238,7 @@ class Ui_Navigation(object):
         self.indexButton.setObjectName(u"indexButton")
         sizePolicy1.setHeightForWidth(self.indexButton.sizePolicy().hasHeightForWidth())
         self.indexButton.setSizePolicy(sizePolicy1)
-        self.indexButton.setMinimumSize(QSize(150, 40))
+        self.indexButton.setMinimumSize(QSize(150, 0))
         self.indexButton.setFocusPolicy(Qt.NoFocus)
         self.indexButton.setIcon(icon)
         self.indexButton.setIconSize(QSize(32, 32))
@@ -249,7 +255,7 @@ class Ui_Navigation(object):
         self.searchButton.setObjectName(u"searchButton")
         sizePolicy1.setHeightForWidth(self.searchButton.sizePolicy().hasHeightForWidth())
         self.searchButton.setSizePolicy(sizePolicy1)
-        self.searchButton.setMinimumSize(QSize(150, 40))
+        self.searchButton.setMinimumSize(QSize(150, 0))
         self.searchButton.setFocusPolicy(Qt.NoFocus)
         self.searchButton.setIcon(icon)
         self.searchButton.setIconSize(QSize(32, 32))
@@ -265,7 +271,7 @@ class Ui_Navigation(object):
         self.msgButton.setObjectName(u"msgButton")
         sizePolicy1.setHeightForWidth(self.msgButton.sizePolicy().hasHeightForWidth())
         self.msgButton.setSizePolicy(sizePolicy1)
-        self.msgButton.setMinimumSize(QSize(150, 40))
+        self.msgButton.setMinimumSize(QSize(150, 0))
         self.msgButton.setFocusPolicy(Qt.NoFocus)
         self.msgButton.setIcon(icon)
         self.msgButton.setIconSize(QSize(32, 32))
@@ -281,7 +287,7 @@ class Ui_Navigation(object):
         self.categoryButton.setObjectName(u"categoryButton")
         sizePolicy1.setHeightForWidth(self.categoryButton.sizePolicy().hasHeightForWidth())
         self.categoryButton.setSizePolicy(sizePolicy1)
-        self.categoryButton.setMinimumSize(QSize(150, 40))
+        self.categoryButton.setMinimumSize(QSize(150, 0))
         self.categoryButton.setFocusPolicy(Qt.NoFocus)
         self.categoryButton.setIcon(icon)
         self.categoryButton.setIconSize(QSize(32, 32))
@@ -295,7 +301,7 @@ class Ui_Navigation(object):
         self.rankButton.setObjectName(u"rankButton")
         sizePolicy1.setHeightForWidth(self.rankButton.sizePolicy().hasHeightForWidth())
         self.rankButton.setSizePolicy(sizePolicy1)
-        self.rankButton.setMinimumSize(QSize(150, 40))
+        self.rankButton.setMinimumSize(QSize(150, 0))
         self.rankButton.setFocusPolicy(Qt.NoFocus)
         self.rankButton.setIcon(icon)
         self.rankButton.setIconSize(QSize(32, 32))
@@ -309,7 +315,7 @@ class Ui_Navigation(object):
         self.chatButton.setObjectName(u"chatButton")
         sizePolicy1.setHeightForWidth(self.chatButton.sizePolicy().hasHeightForWidth())
         self.chatButton.setSizePolicy(sizePolicy1)
-        self.chatButton.setMinimumSize(QSize(150, 40))
+        self.chatButton.setMinimumSize(QSize(150, 0))
         self.chatButton.setFocusPolicy(Qt.NoFocus)
         self.chatButton.setIcon(icon)
         self.chatButton.setIconSize(QSize(32, 32))
@@ -323,7 +329,7 @@ class Ui_Navigation(object):
         self.chatNewButton.setObjectName(u"chatNewButton")
         sizePolicy1.setHeightForWidth(self.chatNewButton.sizePolicy().hasHeightForWidth())
         self.chatNewButton.setSizePolicy(sizePolicy1)
-        self.chatNewButton.setMinimumSize(QSize(150, 40))
+        self.chatNewButton.setMinimumSize(QSize(150, 0))
         self.chatNewButton.setFocusPolicy(Qt.NoFocus)
         self.chatNewButton.setIcon(icon)
         self.chatNewButton.setIconSize(QSize(32, 32))
@@ -337,7 +343,7 @@ class Ui_Navigation(object):
         self.gameButton.setObjectName(u"gameButton")
         sizePolicy1.setHeightForWidth(self.gameButton.sizePolicy().hasHeightForWidth())
         self.gameButton.setSizePolicy(sizePolicy1)
-        self.gameButton.setMinimumSize(QSize(150, 40))
+        self.gameButton.setMinimumSize(QSize(150, 0))
         self.gameButton.setFocusPolicy(Qt.NoFocus)
         self.gameButton.setIcon(icon)
         self.gameButton.setIconSize(QSize(32, 32))
@@ -351,7 +357,7 @@ class Ui_Navigation(object):
         self.friedButton.setObjectName(u"friedButton")
         sizePolicy1.setHeightForWidth(self.friedButton.sizePolicy().hasHeightForWidth())
         self.friedButton.setSizePolicy(sizePolicy1)
-        self.friedButton.setMinimumSize(QSize(150, 40))
+        self.friedButton.setMinimumSize(QSize(150, 0))
         self.friedButton.setFocusPolicy(Qt.NoFocus)
         self.friedButton.setIcon(icon)
         self.friedButton.setIconSize(QSize(32, 32))
@@ -377,7 +383,7 @@ class Ui_Navigation(object):
         self.downloadButton.setObjectName(u"downloadButton")
         sizePolicy1.setHeightForWidth(self.downloadButton.sizePolicy().hasHeightForWidth())
         self.downloadButton.setSizePolicy(sizePolicy1)
-        self.downloadButton.setMinimumSize(QSize(150, 40))
+        self.downloadButton.setMinimumSize(QSize(150, 0))
         self.downloadButton.setFocusPolicy(Qt.NoFocus)
         self.downloadButton.setIcon(icon)
         self.downloadButton.setIconSize(QSize(32, 32))
@@ -391,7 +397,7 @@ class Ui_Navigation(object):
         self.localReadButton.setObjectName(u"localReadButton")
         sizePolicy1.setHeightForWidth(self.localReadButton.sizePolicy().hasHeightForWidth())
         self.localReadButton.setSizePolicy(sizePolicy1)
-        self.localReadButton.setMinimumSize(QSize(0, 40))
+        self.localReadButton.setMinimumSize(QSize(150, 0))
         self.localReadButton.setFocusPolicy(Qt.NoFocus)
         self.localReadButton.setIcon(icon)
         self.localReadButton.setIconSize(QSize(32, 32))
@@ -405,7 +411,7 @@ class Ui_Navigation(object):
         self.convertButton.setObjectName(u"convertButton")
         sizePolicy1.setHeightForWidth(self.convertButton.sizePolicy().hasHeightForWidth())
         self.convertButton.setSizePolicy(sizePolicy1)
-        self.convertButton.setMinimumSize(QSize(150, 40))
+        self.convertButton.setMinimumSize(QSize(150, 0))
         self.convertButton.setFocusPolicy(Qt.NoFocus)
         self.convertButton.setIcon(icon)
         self.convertButton.setIconSize(QSize(32, 32))
@@ -419,7 +425,7 @@ class Ui_Navigation(object):
         self.waifu2xButton.setObjectName(u"waifu2xButton")
         sizePolicy1.setHeightForWidth(self.waifu2xButton.sizePolicy().hasHeightForWidth())
         self.waifu2xButton.setSizePolicy(sizePolicy1)
-        self.waifu2xButton.setMinimumSize(QSize(150, 40))
+        self.waifu2xButton.setMinimumSize(QSize(150, 0))
         self.waifu2xButton.setFocusPolicy(Qt.NoFocus)
         self.waifu2xButton.setIcon(icon)
         self.waifu2xButton.setIconSize(QSize(32, 32))
@@ -427,10 +433,6 @@ class Ui_Navigation(object):
         self.waifu2xButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
         self.verticalLayout_3.addWidget(self.waifu2xButton)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout_3.addItem(self.verticalSpacer)
 
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 

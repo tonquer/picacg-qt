@@ -27,7 +27,7 @@ class Ui_Local(object):
     def setupUi(self, Local):
         if not Local.objectName():
             Local.setObjectName(u"Local")
-        Local.resize(628, 334)
+        Local.resize(626, 327)
         self.gridLayout_2 = QGridLayout(Local)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.gridLayout_3 = QGridLayout()

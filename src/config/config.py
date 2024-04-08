@@ -50,9 +50,9 @@ Issues1 = "https://github.com/tonquer/picacg-qt/issues"
 Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
 Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.4.8"
-RealVersion = "v1.4.8"
-TimeVersion = "2024-1-12"
+UpdateVersion = "v1.4.9"
+RealVersion = "v1.4.9"
+TimeVersion = "2024-4-6"
 
 Waifu2xVersion = "1.1.6"
 
@@ -78,14 +78,14 @@ ProxyUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/discussions/48"
 # Waifu2x相关
 Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 
-Address = ["188.114.98.153", "104.21.91.145"]  # 分类2，3 Ip列表
-AddressIpv6 = ["2606:4700:d:28:dbf4:26f3:c265:73bc", "2a06:98c1:3120:ca71:be2c:c721:d2b5:5dbf"]
+# Address = ["188.114.98.153", "104.21.91.145"]  # 分类2，3 Ip列表
+# AddressIpv6 = ["2606:4700:d:28:dbf4:26f3:c265:73bc", "2a06:98c1:3120:ca71:be2c:c721:d2b5:5dbf"]
 
-ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
-ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器
+# ImageServer2 = 's3.picacomic.com'          # 分流2 使用的图片服务器
+# ImageServer2Jump = 'img.picacomic.com'          # 分流2 跳转的图片服务器
 
-ImageServer3 = 'storage.diwodiwo.xyz'          # 分流3 使用的图片服务器
-ImageServer3Jump = 'img.diwodiwo.xyz'          # 分流3 使用的图片服务器
+# ImageServer3 = 'storage.diwodiwo.xyz'          # 分流3 使用的图片服务器
+# ImageServer3Jump = 'img.diwodiwo.xyz'          # 分流3 使用的图片服务器
 
 ProxyApiDomain = "bika-api.ggo.icu"
 ProxyImgDomain = "bika-img.ggo.icu"
@@ -100,14 +100,13 @@ ApiDomain = [
 
 ImageDomain = [
     "s3.picacomic.com",
-    # "storage.diwodiwo.xyz",
+    "storage.diwodiwo.xyz",
     # "img.diwodiwo.xyz",
     "storage1.picacomic.com",
-    "img.tipatipa.xyz",
-    "img.picacomic.com",
+    # "img.tipatipa.xyz",
+    # "img.picacomic.com",
     "storage.tipatipa.xyz",
     # "pica-pica.wikawika.xyz",
     "www.picacomic.com",
     "storage-b.picacomic.com",
-
 ]

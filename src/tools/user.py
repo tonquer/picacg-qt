@@ -58,48 +58,48 @@ class User(Singleton):
     def address(self, value):
         self.server.address = value
 
-    def InitBack(self, backData):
-        try:
-            if backData.status == Status.Ok and backData.res.status == "ok":
+    # def InitBack(self, backData):
+    #     try:
+    #         if backData.status == Status.Ok and backData.res.status == "ok":
+    #
+    #             from config.setting import Setting
+    #             if len(backData.res.address) >= 1:
+    #                 # 只更新分流三 第一个地址
+    #                 config.Address[1] = backData.res.address[0]
+    #                 Setting.SaveCacheAddress.SetValue(backData.res.address[0])
+    #             #     self.address = backData.res.addresses[0]
+    #             Log.Info("初始化成功,  Ips:{}, {}".format(backData.res.address, config.Address))
+    #             # 需要更新DNS
+    #             if Setting.ProxySelectIndex.value == 3:
+    #                 imageServer = config.ImageServer3
+    #                 address = config.Address[1]
+    #                 if not Setting.PreIpv6.value:
+    #                     self.server.UpdateDns(address, imageServer)
+    #             self.initRes = backData.res
+    #             return Status.Ok
+    #         else:
+    #             Log.Info("初始化失败, info:{}".format(backData.res))
+    #             return Status.Error
+    #     except Exception as es:
+    #         Log.Error(es)
+    #         return Status.Error
 
-                from config.setting import Setting
-                if len(backData.res.addresses) >= 1:
-                    # 只更新分流三 第一个地址
-                    config.Address[1] = backData.res.addresses[0]
-                    Setting.SaveCacheAddress.SetValue(backData.res.addresses[0])
-                #     self.address = backData.res.addresses[0]
-                Log.Info("初始化成功,  Ips:{}, {}".format(backData.res.addresses, config.Address))
-                # 需要更新DNS
-                if Setting.ProxySelectIndex.value == 3:
-                    imageServer = config.ImageServer3
-                    address = config.Address[1]
-                    if not Setting.PreIpv6.value:
-                        self.server.UpdateDns(address, imageServer)
-                self.initRes = backData.res
-                return Status.Ok
-            else:
-                Log.Info("初始化失败, info:{}".format(backData.res))
-                return Status.Error
-        except Exception as es:
-            Log.Error(es)
-            return Status.Error
-
-    def InitImageServer(self, backData):
-        try:
-            if self.server.address:
-                self.server.imageServer = self.imageServer
-            if backData.res.code == 200:
-                # 选择了分流才设置
-                # if self.server.address:
-                #     self.server.imageServer = ToolUtil.GetUrlHost(backData.res.data["imageServer"])
-                #     Log.Info("初始化图片服务器成功, info:{}".format(self.server.imageServer))
-
-                return Status.Ok
-            else:
-                return Status.Error
-        except Exception as es:
-            Log.Error(es)
-            return Status.Error
+    # def InitImageServer(self, backData):
+    #     try:
+    #         if self.server.address:
+    #             self.server.imageServer = self.imageServer
+    #         if backData.res.code == 200:
+    #             # 选择了分流才设置
+    #             # if self.server.address:
+    #             #     self.server.imageServer = ToolUtil.GetUrlHost(backData.res.data["imageServer"])
+    #             #     Log.Info("初始化图片服务器成功, info:{}".format(self.server.imageServer))
+    #
+    #             return Status.Ok
+    #         else:
+    #             return Status.Error
+    #     except Exception as es:
+    #         Log.Error(es)
+    #         return Status.Error
 
     def SetUserInfo(self, userId, passwd):
         self.userId = userId

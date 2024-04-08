@@ -78,6 +78,19 @@ class QtOwner(Singleton):
         from tools.str import Str
         QtOwner().ShowMsg(Str.GetStr(Str.CopySuc))
 
+    def OpenProxy(self):
+        from view.user.login_view import LoginView
+        loginView = LoginView(QtOwner().owner, False)
+        loginView.tabWidget.setCurrentIndex(3)
+        loginView.tabWidget.removeTab(0)
+        loginView.tabWidget.removeTab(0)
+        loginView.tabWidget.removeTab(0)
+        loginView.loginButton.setText(Str.GetStr(Str.Save))
+        loginView.show()
+
+        loginView.closed.connect(QtOwner().owner.navigationWidget.UpdateProxyName)
+        return
+
     @property
     def owner(self):
         from view.main.main_view import MainView

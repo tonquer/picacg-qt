@@ -20,7 +20,9 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         super().__init__(parent)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.resize(260, 800)
+        if Setting.IsUseTitleBar.value:
+            self.scrollArea.setFixedHeight(300)
+        # self.resize(260, 800)
         self.__ani = QPropertyAnimation(self, b"geometry")
         self.__connect = None
         self.pictureData = ""
@@ -44,6 +46,12 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
             propertiesOne.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
             propertiesOne.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
             QScroller.scroller(self.scrollArea).setScrollerProperties(propertiesOne)
+        self.proxyImgName.clicked.connect(self.OpenProxy)
+        self.proxyName.clicked.connect(self.OpenProxy)
+
+    def OpenProxy(self):
+        QtOwner().OpenProxy()
+        self.UpdateProxyName()
 
     def SwitchOffline(self, state):
         QtOwner().isOfflineModel = state

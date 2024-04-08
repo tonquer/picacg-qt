@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>880</width>
+    <width>946</width>
     <height>789</height>
    </rect>
   </property>
@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-541</y>
-          <width>661</width>
-          <height>2891</height>
+          <y>0</y>
+          <width>727</width>
+          <height>3043</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -824,6 +824,109 @@
               </item>
              </layout>
             </item>
+            <item>
+             <widget class="QLabel" name="label_44">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>标题显示行数</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_34">
+              <item>
+               <widget class="WheelComboBox" name="titleLineBox">
+                <item>
+                 <property name="text">
+                  <string>不显示</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>1行</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>2行</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>3行</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>全部</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_32">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_45">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>分类显示</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_35">
+              <item>
+               <widget class="WheelComboBox" name="categoryBox">
+                <item>
+                 <property name="text">
+                  <string>显示</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>不显示</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_33">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
          </item>
@@ -882,7 +985,7 @@
             <item>
              <widget class="QRadioButton" name="logutton2">
               <property name="text">
-               <string>Debug</string>
+               <string>Debug（该设置内含敏感数据，log文件请勿分享）</string>
               </property>
               <attribute name="buttonGroup">
                <string notr="true">logGroup</string>
@@ -2279,6 +2382,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="setLogDirButton">
+                <property name="text">
+                 <string>设置日志目录</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_8">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -2493,6 +2603,59 @@
               </item>
              </layout>
             </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_31">
+              <item>
+               <widget class="QLabel" name="label_42">
+                <property name="minimumSize">
+                 <size>
+                  <width>80</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>日志</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="logLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="openLogDir">
+                <property name="text">
+                 <string>打开目录</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_28">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_30"/>
+            </item>
            </layout>
           </widget>
          </item>
@@ -2530,12 +2693,12 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="showCloseButtonGroup"/>
   <buttongroup name="mainScaleGroup"/>
   <buttongroup name="proxyGroup"/>
-  <buttongroup name="logGroup"/>
   <buttongroup name="themeGroup"/>
-  <buttongroup name="languageGroup"/>
-  <buttongroup name="showCloseButtonGroup"/>
   <buttongroup name="saveNameGroup"/>
+  <buttongroup name="logGroup"/>
+  <buttongroup name="languageGroup"/>
  </buttongroups>
 </ui>

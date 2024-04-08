@@ -19,35 +19,36 @@ class SmoothScroll:
         self.lastWheelEvent = None
         self.scrollStamps = deque()
         self.stepsLeftQueue = deque()
-        self.smoothMoveTimer = QTimer(self)
+
+        # self.smoothMoveTimer = QTimer(self)
         self.smoothMode = SmoothMode(SmoothMode.LINEAR)
-        self.smoothMoveTimer.timeout.connect(self.__smoothMove)
+        # self.smoothMoveTimer.timeout.connect(self.__smoothMove)
         self.qEventParam = []
 
     def setSMoothMode(self, smoothMode):
         """ 设置滚动模式 """
         self.smoothMode = smoothMode
 
-    def wheelEvent(self, e):
-        # 将当前时间点插入队尾
-        now = QDateTime.currentDateTime().toMSecsSinceEpoch()
-        self.scrollStamps.append(now)
-        while now - self.scrollStamps[0] > 500:
-            self.scrollStamps.popleft()
-        # 根据未处理完的事件调整移动速率增益
-        accerationRatio = min(len(self.scrollStamps) / 15, 1)
-        self.qEventParam = (e.position(), e.globalPosition(), e.buttons())
-        # 计算步数
-        self.stepsTotal = self.fps * self.duration / 1000
-        # 计算每一个事件对应的移动距离
-        delta = e.angleDelta().y() * self.stepRatio
-        if self.acceleration > 0:
-            delta += delta * self.acceleration * accerationRatio
-        # 将移动距离和步数组成列表，插入队列等待处理
-        self.stepsLeftQueue.append([delta, self.stepsTotal])
-        # 定时器的溢出时间t=1000ms/帧数
-        self.smoothMoveTimer.start(1000 // self.fps)
-        return False
+    # def wheelEvent(self, e):
+    #     # 将当前时间点插入队尾
+    #     now = QDateTime.currentDateTime().toMSecsSinceEpoch()
+    #     self.scrollStamps.append(now)
+    #     while now - self.scrollStamps[0] > 500:
+    #         self.scrollStamps.popleft()
+    #     # 根据未处理完的事件调整移动速率增益
+    #     accerationRatio = min(len(self.scrollStamps) / 15, 1)
+    #     self.qEventParam = (e.position(), e.globalPosition(), e.buttons())
+    #     # 计算步数
+    #     self.stepsTotal = self.fps * self.duration / 1000
+    #     # 计算每一个事件对应的移动距离
+    #     delta = e.angleDelta().y() * self.stepRatio
+    #     if self.acceleration > 0:
+    #         delta += delta * self.acceleration * accerationRatio
+    #     # 将移动距离和步数组成列表，插入队列等待处理
+    #     self.stepsLeftQueue.append([delta, self.stepsTotal])
+    #     # 定时器的溢出时间t=1000ms/帧数
+    #     self.smoothMoveTimer.start(1000 // self.fps)
+    #     return False
 
     def __smoothMove(self):
         """ 计时器溢出时进行平滑滚动 """

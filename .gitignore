@@ -139,3 +139,4 @@ history.db
 commies/
 test/
 src/data/cache_word
+src/data/local_read.db

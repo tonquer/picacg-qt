@@ -90,7 +90,6 @@ if __name__ == "__main__":
         if config.CanWaifu2x:
             waifu2x_vulkan.stop()
         sys.exit(-111)
-
     sts = app.exec()
     socket.close()
     main.Close()

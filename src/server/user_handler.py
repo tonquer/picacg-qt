@@ -304,7 +304,6 @@ class CheckUpdateHandler(object):
                 return
             if task.res.raw.status_code != 200:
                 return
-
             verData = task.res.GetText()
             info = verData.replace("v", "").split(".")
             version = int(info[0]) * 100 + int(info[1]) * 10 + int(info[2]) * 1
@@ -339,7 +338,26 @@ class CheckUpdateInfoHandler(object):
         finally:
             if task.bakParam:
                 TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
-                
+
+
+@handler(req.CheckUpdateConfigReq)
+class CheckUpdateConfigHandler(object):
+    def __call__(self, task):
+        data = {"st": task.status, "data": ""}
+        try:
+            if not task.res.GetText() or task.status == Status.NetError:
+                return
+            if task.res.raw.status_code != 200:
+                return
+
+            data["data"] = task.res.GetText()
+        except Exception as es:
+            pass
+        finally:
+            if task.bakParam:
+                TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
+
+
 @handler(req.SpeedTestReq)
 class SpeedTestHandler(object):
     def __call__(self, backData):

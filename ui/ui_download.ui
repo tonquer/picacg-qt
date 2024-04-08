@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>707</width>
+    <width>820</width>
     <height>361</height>
    </rect>
   </property>
@@ -16,7 +16,66 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="2" column="0">
+     <item row="4" column="0">
+      <widget class="QTableWidget" name="tableWidget">
+       <column>
+        <property name="text">
+         <string>id</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>时间</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>标题</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载进度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载章节</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载速度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>下载状态</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换进度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换章节</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换耗时</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>转换状态</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <spacer name="horizontalSpacer">
@@ -87,65 +146,6 @@
         </widget>
        </item>
       </layout>
-     </item>
-     <item row="5" column="0">
-      <widget class="QTableWidget" name="tableWidget">
-       <column>
-        <property name="text">
-         <string>id</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>时间</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>标题</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>下载进度</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>下载章节</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>下载速度</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>下载状态</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>转换进度</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>转换章节</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>转换耗时</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>转换状态</string>
-        </property>
-       </column>
-      </widget>
      </item>
     </layout>
    </item>

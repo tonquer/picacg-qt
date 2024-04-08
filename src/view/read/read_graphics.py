@@ -1,7 +1,8 @@
 import time
 
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect, QFile
-from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics, QWheelEvent
+from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics, QWheelEvent, QSurfaceFormat
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QGraphicsView, QFrame, QGraphicsItem, QGraphicsScene, \
     QGraphicsPixmapItem, QGraphicsProxyWidget, QScroller, QAbstractSlider, QApplication
 
@@ -27,15 +28,17 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         QGraphicsView.__init__(self, parent)
         SmoothScroll.__init__(self)
 
-        self.vScrollBar = ReadScroll()
+        self.vScrollBar = ReadScroll(parent)
         self.vScrollBar.setOrientation(Qt.Orientation.Vertical)
         self.setVerticalScrollBar(self.vScrollBar)
 
+
         # self.animation.finished.connect(self.Finished)
 
-        self.hScrollBar = ReadScroll()
+        self.hScrollBar = ReadScroll(parent)
         self.hScrollBar.setOrientation(Qt.Orientation.Horizontal)
         self.setHorizontalScrollBar(self.hScrollBar)
+
         # self.horizontalScrollBar().valueChanged.connect(self.HValueChange)
         self.changeLastPage.connect(self.ChangeLastPage)
         self.changeNextPage.connect(self.ChangeNextPage)
@@ -56,6 +59,11 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         self.setCacheMode(QGraphicsView.CacheBackground)
         # self.setCacheMode(QGraphicsView.CacheNone)
+        self.openGl = QOpenGLWidget()
+        f = QSurfaceFormat()
+        f.setSamples(4)
+        self.openGl.setFormat(f)
+        self.setViewport(self.openGl)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         # self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
 
@@ -91,19 +99,20 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         # QScroller.scroller(self).setScrollerProperties(properties)
 
         self.labelSize = {}  # index: value
-        self.oldValue = 0
+        # self.oldValue = 0
         self.resetImg = False
         # QScroller.scroller(self).stateChanged.connect(self.StateChanged)
 
-        self.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
+        # self.verticalScrollBar().actionTriggered.connect(self.OnActionTriggered)
 
-        self.horizontalScrollBar().actionTriggered.connect(self.OnActionTriggered)
+        # self.horizontalScrollBar().actionTriggered.connect(self.OnActionTriggered)
         self.verticalScrollBar()
         self.startPos = QPoint()
         self.labelWaifu2xState = {}
         # self.setSceneRect(-self.width()//2, -self.height()//2, self.width(), self.height())
         QtOwner().owner.WindowsSizeChange.connect(self.ResetSize)
         self.isLastPageMode = False   # 是否切换到上一页
+
 
     @property
     def readImg(self):
@@ -171,19 +180,26 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 if self.verticalScrollBar().value() <= 5:
                     self.parent().qtTool.LastPage()
                     return
-
-        return SmoothScroll.wheelEvent(self, e)
+        if e.angleDelta().y() < 0:
+            value = int(self.qtTool.scrollSpeed.value())
+        else:
+            value = - int(self.qtTool.scrollSpeed.value())
+        if self.initReadMode != ReadMode.RightLeftScroll:
+            self.vScrollBar.scrollValue(value)
+        else:
+            self.hScrollBar.scrollValue(value)
 
     def Scale(self, ratio):
+        oldValue = self.verticalScrollBar().value()
         self.scale(ratio, ratio)
         self.ScaleResetVer()
         for k, v in self.labelSize.items():
             self.labelSize[k] *= ratio
 
         if self.qtTool.stripModel == ReadMode.UpDown:
-            self.verticalScrollBar().setValue(self.verticalScrollBar().value() * ratio)
+            self.verticalScrollBar().ForceSetValue( oldValue* ratio)
         elif ReadMode.isScroll(self.qtTool.stripModel):
-            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() * ratio)
+            self.horizontalScrollBar().ForceSetValue(oldValue * ratio)
         self.ResetMaxNum()
 
     def ScaleReset(self, oldScaleCnt):
@@ -200,9 +216,9 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 else:
                     ratio = 0.9
                 if self.qtTool.stripModel == ReadMode.UpDown:
-                    self.verticalScrollBar().setValue(self.verticalScrollBar().value() * ratio)
+                    self.verticalScrollBar().ForceSetValue(self.verticalScrollBar().value() * ratio)
                 elif ReadMode.isScroll(self.qtTool.stripModel):
-                    self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() * ratio)
+                    self.horizontalScrollBar().ForceSetValue(self.horizontalScrollBar().value() * ratio)
         newV2 = self.verticalScrollBar().value()
         # print(oldV, newV, newV2)
         # if oldScaleCnt != 0:
@@ -220,14 +236,14 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     def ScaleResetVer(self):
         if not ReadMode.isScroll(self.initReadMode) or self.initReadMode == ReadMode.UpDown:
             if self.scaleCnt != 0:
-                self.horizontalScrollBar().setValue((self.horizontalScrollBar().maximum() / 2))
+                self.horizontalScrollBar().ForceSetValue((self.horizontalScrollBar().maximum() / 2))
             else:
-                self.horizontalScrollBar().setValue(0)
+                self.horizontalScrollBar().ForceSetValue(0)
         else:
             if self.scaleCnt != 0:
-                self.verticalScrollBar().setValue((self.verticalScrollBar().maximum() / 2))
+                self.verticalScrollBar().ForceSetValue((self.verticalScrollBar().maximum() / 2))
             else:
-                self.verticalScrollBar().setValue(0)
+                self.verticalScrollBar().ForceSetValue(0)
 
     def SetLabel(self, label, i):
         text = str(i + 1)
@@ -263,10 +279,10 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             if self.initReadMode == ReadMode.Samewight and self.vScrollBar.value() >= self.vScrollBar.maximum():
                 self.ScrollNextPage()
             else:
-                self.vScrollBar.Scroll(value, 100)
+                self.vScrollBar.scrollValue(value)
             # QScroller.scroller(self).scrollTo(QPoint(0, self.verticalScrollBar().value() + value), 500)
         else:
-            self.hScrollBar.Scroll(value, 100)
+            self.hScrollBar.scrollValue(value)
             # QScroller.scroller(self).scrollTo(QPoint(self.horizontalScrollBar().value() + value, 0), 500)
         return
 
@@ -353,9 +369,9 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                                 self.ScrollNextPage()
         return False
 
-    def StateChanged(self, state):
-        if state == QScroller.State.Inactive:
-            self.OnValueChange(self.GetScrollBar().value())
+    # def StateChanged(self, state):
+    #     if state == QScroller.State.Inactive:
+    #         self.OnValueChange(self.GetScrollBar().value())
         # return print(state)
 
     def GetScrollBar(self):
@@ -370,77 +386,17 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         else:
             return self.verticalScrollBar()
 
-    def OnActionTriggered(self, action):
-        if action != QAbstractSlider.SliderMove:
-            return
-        self.OnValueChange(self.GetScrollBar().value())
-
-    def OnValueChange(self, value):
-        addValue = value - self.oldValue
-        # self.UpdateScrollBar(value)
-        self.oldValue = value
-
-        if not ReadMode.isScroll(self.initReadMode):
-            return
-
-        curPictureSize = self.labelSize.get(self.readImg.curIndex)
-        nextPictureSize = self.labelSize.get(self.readImg.curIndex + 1, 0)
-        if self.initReadMode == ReadMode.RightLeftScroll:
-            while True:
-                newValue = value + self.width()
-                ## 切换上一图片
-                if addValue > 0 and value >= nextPictureSize:
-                    if self.readImg.curIndex <= 0:
-                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastPage))
-                        return
-                    self.readImg.curIndex -= 1
-                    # print(self.readImg.curIndex)
-                    self.changeLastPage.emit(self.readImg.curIndex)
-
-                ## 切换下一图片
-                elif addValue < 0 and newValue < curPictureSize:
-                    if self.readImg.curIndex >= self.readImg.maxPic - 1:
-                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
-                        return
-                    self.readImg.curIndex += 1
-                    # print(self.readImg.curIndex)
-                    self.changeNextPage.emit(self.readImg.curIndex)
-                else:
-                    break
-                curPictureSize = self.labelSize.get(self.readImg.curIndex)
-                nextPictureSize = self.labelSize.get(self.readImg.curIndex + 1, 0)
-        else:
-            while True:
-                ## 切换上一图片
-                if addValue < 0 and value < curPictureSize:
-                    if self.readImg.curIndex <= 0:
-                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyLastPage))
-                        return
-                    self.readImg.curIndex -= 1
-                    # print("last page, addv:{}, val:{}, cur:{}, next:{}".format(addValue, value, curPictureSize, nextPictureSize))
-                    self.changeLastPage.emit(self.readImg.curIndex)
-
-                ## 切换下一图片
-                elif addValue > 0 and value >= nextPictureSize:
-                    if self.readImg.curIndex >= self.readImg.maxPic - 1:
-                        QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
-                        return
-                    self.readImg.curIndex += 1
-                    # print("next page, addv:{}, val:{}, cur:{}, next:{}".format(addValue, value, curPictureSize, nextPictureSize))
-                    self.changeNextPage.emit(self.readImg.curIndex)
-                else:
-                    break
-
-                curPictureSize = self.labelSize.get(self.readImg.curIndex)
-                nextPictureSize = self.labelSize.get(self.readImg.curIndex + 1, 0)
-        return
+    # def OnActionTriggered(self, action):
+    #     if action != QAbstractSlider.SliderMove:
+    #         return
+    #     self.OnValueChange(self.GetScrollBar().value())
 
     def InitAllQLabel(self, maxNum, curIndex):
         if not maxNum:
             return
-        self.verticalScrollBar().setValue(0)
+        self.verticalScrollBar().ForceSetValue(0)
         # self.horizontalScrollBar().setValue(0)
-        self.oldValue = 0
+        # self.oldValue = 0
         self.qtTool.CloseScrollAndTurn()
         # if self.initReadMode and self.readImg.stripModel != self.initReadMode:
         if self.initReadMode:
@@ -488,8 +444,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                     proxy.setPos(value/self.GetScaleCntRatio(), 0)
 
             value = self.labelSize.get(curIndex)
-            self.oldValue = value
-            self.GetScrollBar().setValue(value)
+            # self.oldValue = value
+            self.GetScrollBar().ForceSetValue(value)
             # print(value)
             # print(self.labelSize)
         elif self.initReadMode in [ReadMode.LeftRight, ReadMode.Samewight]:
@@ -506,15 +462,20 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.ResetMaxNum()
         return
 
-    def ResetMaxNum(self):
+    def ResetMaxNum(self, addHeight=0):
         maxNum = self.maxPic
         if maxNum <= 0:
             return
         if self.initReadMode == ReadMode.RightLeftScroll:
             maxSize = max(self.width(), self.labelSize.get(-1, 0) - self.width()) + 50
 
+            oldV = self.GetScrollBar().value()
             self.graphicsScene.setSceneRect(0, 0, maxSize, self.height())
             self.GetScrollBar().setMaximum(maxSize)
+            if addHeight > 0:
+                self.GetScrollBar().ResetAniValueByAdd(oldV, addHeight)
+            else:
+                self.GetScrollBar().ForceSetValue(oldV+ addHeight)
             self.ScaleResetVer()
         elif self.initReadMode in [ReadMode.LeftRightScroll]:
             maxSize = max(self.width(), self.labelSize.get(maxNum, 0) - self.width()) + 50
@@ -522,14 +483,20 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             oldV = self.GetScrollBar().value()
             self.graphicsScene.setSceneRect(0, 0, maxSize, self.height())
             self.GetScrollBar().setMaximum(maxSize)
-            self.GetScrollBar().setValue(oldV)
+            if addHeight > 0:
+                self.GetScrollBar().ResetAniValueByAdd(oldV, addHeight)
+            else:
+                self.GetScrollBar().ForceSetValue(oldV + addHeight)
             self.ScaleResetVer()
         elif self.initReadMode in [ReadMode.UpDown]:
             maxSize = max(self.height(), self.labelSize.get(maxNum, 0) - self.height()) + 50
             oldV = self.GetScrollBar().value()
             self.graphicsScene.setSceneRect(0, 0, self.width(), maxSize)
             self.GetScrollBar().setMaximum(maxSize)
-            self.GetScrollBar().setValue(oldV)
+            if addHeight > 0:
+                self.GetScrollBar().ResetAniValueByAdd(oldV, addHeight)
+            else:
+                self.GetScrollBar().ForceSetValue(oldV)
             self.ScaleResetVer()
         else:
             self.graphicsScene.setSceneRect(0, 0, self.width(), max(self.height(),
@@ -786,29 +753,31 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             return
 
         oldValue = self.GetScrollBar().value()
-
+        needAddHeight = 0
         if self.initReadMode == ReadMode.RightLeftScroll:
             indexList = list(range(index - 1, -1, -1))
             indexList.append(-1)
             # TODO 需要重新定位
             curPixcurSize = self.labelSize.get(index)
             if curPixcurSize <= oldValue:
-                self.GetScrollBar().setValue(oldValue + addHeight2)
-                self.oldValue = self.GetScrollBar().value()
+                needAddHeight = addHeight
+                # self.GetScrollBar().ResetAniValueByAdd(oldValue, addHeight2)
+                # self.oldValue = self.GetScrollBar().value()
 
         elif self.initReadMode in [ReadMode.LeftRightScroll, ReadMode.UpDown]:
             indexList = list(range(index + 1, self.readImg.maxPic))
             indexList.append(self.readImg.maxPic)
             curPixcurSize = self.labelSize.get(index)
             # TODO 需要重新定位
-            if curPixcurSize <= oldValue:
-                self.GetScrollBar().setValue(oldValue + addHeight2)
-                self.oldValue = self.GetScrollBar().value()
+            if curPixcurSize < oldValue:
+                needAddHeight = addHeight
+                # self.GetScrollBar().ResetAniValueByAdd(oldValue, addHeight2)
+                # self.oldValue = self.GetScrollBar().value()
 
         else:
             self.ResetMaxNum()
             if self.initReadMode in [ReadMode.Samewight, ReadMode.LeftRight] and self.isLastPageMode:
-                self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
+                self.verticalScrollBar().ForceSetValue(self.verticalScrollBar().maximum())
             return
 
         for lenSize, i in enumerate(indexList):
@@ -834,13 +803,13 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                 else:
                     proxy.setPos(oldPos.x() + addHeight, oldPos.y())
 
-        self.ResetMaxNum()
+        self.ResetMaxNum(needAddHeight)
         return
 
     def ResetScrollValue(self, index):
         if ReadMode.isScroll(self.initReadMode):
             value = self.labelSize.get(index)
-            self.GetScrollBar().setValue(value)
+            self.GetScrollBar().ForceSetValue(value)
 
     # 上一页
     def ChangeLastPage(self, index):
@@ -875,7 +844,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             for newIndex in range(oldIndex + 1, min(oldIndex + config.PreLoading, self.maxPic)):
                 self.SetPixIem(newIndex, None)
             value = self.labelSize.get(index)
-            self.GetScrollBar().setValue(value)
+            self.GetScrollBar().ForceSetValue(value)
         self.isLastPageMode = False
         self.ReloadImg()
         return
@@ -914,7 +883,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     def ReloadImg(self):
         if self.initReadMode in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDouble,
                                  ReadMode.LeftRight, ReadMode.Samewight]:
-            self.verticalScrollBar().setValue(0)
+            self.verticalScrollBar().ForceSetValue(0)
         # self.UpdateAllPixIem()
         self.readImg.CheckClearProcess()
         self.readImg.ShowImgAll()
