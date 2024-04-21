@@ -14,7 +14,7 @@ class LinuxFramelessWindow(QWidget):
     BORDER_WIDTH = 5
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        QWidget.__init__(self, parent=parent)
         self.windowEffect = LinuxWindowEffect(self)
         self.titleBar = TitleBar(self)
         self._isResizeEnabled = True
@@ -26,7 +26,7 @@ class LinuxFramelessWindow(QWidget):
         self.resize(500, 500)
 
     def resizeEvent(self, e):
-        super().resizeEvent(e)
+        QWidget.resizeEvent(self, e)
         self.titleBar.resize(self.width(), self.titleBar.height())
 
     def updateFrameless(self):
@@ -82,4 +82,4 @@ class LinuxFramelessWindow(QWidget):
         elif obj in (self, self.titleBar) and et == QEvent.MouseButtonPress and edges:
             LinuxMoveResize.starSystemResize(self, event.globalPos(), edges)
 
-        return super().eventFilter(obj, event)
+        return QWidget.eventFilter(self, obj, event)

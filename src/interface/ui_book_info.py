@@ -33,7 +33,7 @@ class Ui_BookInfo(object):
     def setupUi(self, BookInfo):
         if not BookInfo.objectName():
             BookInfo.setObjectName(u"BookInfo")
-        BookInfo.resize(914, 691)
+        BookInfo.resize(943, 691)
         BookInfo.setStyleSheet(u"QToolButton\n"
 "{\n"
 "background-color:transparent;\n"
@@ -70,7 +70,7 @@ class Ui_BookInfo(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 894, 671))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 923, 671))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.gridLayout_3 = QGridLayout()

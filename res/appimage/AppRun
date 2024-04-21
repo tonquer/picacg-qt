@@ -25,9 +25,9 @@ if [ ! -f ~/.picacg/db/version ];then
 	echo "mkdir version"
 fi
 
-if [ ! -f ~/.picacg/db/book.db ] || [ "`cat ~/.picacg/db/version`" != "v1.4.8" ] ; then
+if [ ! -f ~/.picacg/db/book.db ] || [ "`cat ~/.picacg/db/version`" != "v1.4.9" ] ; then
 	cp ${HERE}/db/book.db ~/.picacg/db/
-	echo "v1.4.8" > ~/.picacg/db/version
+	echo "v1.4.9" > ~/.picacg/db/version
 	echo "copy db"
 fi
 

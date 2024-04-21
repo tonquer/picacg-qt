@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>914</width>
+    <width>943</width>
     <height>691</height>
    </rect>
   </property>
@@ -55,7 +55,7 @@ QScrollArea {background-color:transparent;}</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>894</width>
+        <width>923</width>
         <height>671</height>
        </rect>
       </property>

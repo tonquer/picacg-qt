@@ -26,7 +26,7 @@ class GlobalConfig:
     Address = GlobalItem(["104.21.91.145", "188.114.98.153"])
     AddressIpv6 = GlobalItem(["2606:4700:d:28:dbf4:26f3:c265:73bc", "2a06:98c1:3120:ca71:be2c:c721:d2b5:5dbf"])
     ImageUrl = GlobalItem("s3.picacomic.com")
-    ImageServerList = GlobalItem(["s3.picacomic.com", "storage.diwodiwo.xyz", "storage-b.picacomic.com", "storage1.picacomic.com"])
+    ImageServerList = GlobalItem(["s3.picacomic.com", "storage.diwodiwo.xyz", "s2.picacomic.com", "storage1.picacomic.com", "storage-b.picacomic.com"])
     ImageJumList = GlobalItem(["img.picacomic.com", "img.diwodiwo.xyz"])
 
     def __init__(self):

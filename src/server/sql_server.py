@@ -393,6 +393,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def Search(wordList, isTitle, isAutor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
+        wordList = Converter('zh-hans').convert(wordList)
         data = ""
         sql2Data = ""
         wordList2 = wordList.split("|")
@@ -494,7 +495,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
-
+        wordList = Converter('zh-hans').convert(wordList)
         wordList2 = wordList.split(" ")
         exclude = []
         andWords = []

@@ -21,6 +21,7 @@ if  Setting.IsUseTitleBar.value:
                 FramelessMainWindow.__init__(self)
                 Ui_MainWindows.__init__(self)
                 self.setupUi(self)
+                self.setTitleBar(self.widget)
                 self.totalStackWidget.setAttribute(Qt.WA_TranslucentBackground)
                 self.widget.setAttribute(Qt.WA_TranslucentBackground)
 

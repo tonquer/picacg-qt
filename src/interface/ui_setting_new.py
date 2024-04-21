@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 727, 3043))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -899, 727, 3096))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -520,6 +520,17 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_17.addLayout(self.horizontalLayout_35)
+
+        self.label_40 = QLabel(self.frame_14)
+        self.label_40.setObjectName(u"label_40")
+        self.label_40.setFont(font2)
+
+        self.verticalLayout_17.addWidget(self.label_40)
+
+        self.openglBox = QCheckBox(self.frame_14)
+        self.openglBox.setObjectName(u"openglBox")
+
+        self.verticalLayout_17.addWidget(self.openglBox)
 
 
         self.verticalLayout_4.addWidget(self.frame_14)
@@ -1477,6 +1488,8 @@ class Ui_SettingNew(object):
         self.categoryBox.setItemText(0, QCoreApplication.translate("SettingNew", u"\u663e\u793a", None))
         self.categoryBox.setItemText(1, QCoreApplication.translate("SettingNew", u"\u4e0d\u663e\u793a", None))
 
+        self.label_40.setText(QCoreApplication.translate("SettingNew", u"\u56fe\u7247\u6d4f\u89c8\u8bbe\u7f6e", None))
+        self.openglBox.setText(QCoreApplication.translate("SettingNew", u"\u5f00\u542fOpenGL\u52a0\u901f", None))
         self.label_10.setText(QCoreApplication.translate("SettingNew", u"\u65e5\u5fd7\u7b49\u7ea7\uff1a", None))
         self.logutton0.setText(QCoreApplication.translate("SettingNew", u"Warn", None))
         self.logutton1.setText(QCoreApplication.translate("SettingNew", u"Info", None))

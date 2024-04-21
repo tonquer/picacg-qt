@@ -23,7 +23,7 @@ class WindowsFramelessWindow(QWidget):
     BORDER_WIDTH = 5
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        QWidget.__init__(self, parent)
         self.windowEffect = WindowsWindowEffect(self)
         self.titleBar = TitleBar(self)
         self._isResizeEnabled = True
@@ -69,14 +69,14 @@ class WindowsFramelessWindow(QWidget):
         self._isResizeEnabled = isEnabled
 
     def resizeEvent(self, e):
-        super().resizeEvent(e)
+        QWidget.resizeEvent(self, e)
         self.titleBar.resize(self.width(), self.titleBar.height())
 
     def nativeEvent(self, eventType, message):
         """ Handle the Windows message """
         msg = MSG.from_address(message.__int__())
         if not msg.hWnd:
-            return super().nativeEvent(eventType, message)
+            return QWidget.nativeEvent(self, eventType, message)
 
         if msg.message == win32con.WM_NCHITTEST and self._isResizeEnabled:
             pos = QCursor.pos()
@@ -141,7 +141,7 @@ class WindowsFramelessWindow(QWidget):
             result = 0 if not msg.wParam else win32con.WVR_REDRAW
             return True, result
 
-        return super().nativeEvent(eventType, message)
+        return QWidget.nativeEvent(self, eventType, message)
 
     def __onScreenChanged(self):
         hWnd = int(self.windowHandle().winId())
@@ -153,12 +153,12 @@ class AcrylicWindow(WindowsFramelessWindow):
     """ A frameless window with acrylic effect """
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        QWidget.__init__(self, parent=parent)
         self.__closedByKey = False
         self.setStyleSheet("AcrylicWindow{background:transparent}")
 
     def updateFrameless(self):
-        super().updateFrameless()
+        WindowsFramelessWindow.updateFrameless(self)
         self.windowEffect.enableBlurBehindWindow(self.winId())
 
         if win_utils.isWin7() and self.parent():
@@ -187,12 +187,12 @@ class AcrylicWindow(WindowsFramelessWindow):
                 QApplication.sendEvent(self, QCloseEvent())
                 return False, 0
 
-        return super().nativeEvent(eventType, message)
+        return WindowsFramelessWindow.nativeEvent(self, eventType, message)
 
     def closeEvent(self, e):
         if not self.__closedByKey or QApplication.quitOnLastWindowClosed():
             self.__closedByKey = False
-            return super().closeEvent(e)
+            return WindowsFramelessWindow.closeEvent(self,e)
 
         # system tray icon
         self.__closedByKey = False

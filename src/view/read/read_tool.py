@@ -523,6 +523,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.isLastPageMode = False
         self.stripModel = ReadMode(index)
         self.scrollArea.initReadMode = self.stripModel
+        self.scrollArea.allItemsState.clear()
+
         self.ScalePicture2(100)
         if self.stripModel in [ReadMode.UpDown, ReadMode.Samewight]:
             self.ScalePicture2(80)

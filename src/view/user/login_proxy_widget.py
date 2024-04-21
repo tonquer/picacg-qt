@@ -49,6 +49,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         # config.Address[1] = Setting.SaveCacheAddress.value
 
         self.LoadSetting()
+        self.InitImgUrlList()
         self.UpdateServer()
         self.commandLinkButton.clicked.connect(self.OpenUrl)
 

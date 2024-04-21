@@ -14,7 +14,7 @@ class TitleBarBase(QWidget):
     """ Title bar base class """
 
     def __init__(self, parent):
-        super().__init__(parent)
+        QWidget.__init__(self, parent)
         self.minBtn = MinimizeButton(parent=self)
         self.closeBtn = CloseButton(parent=self)
         self.maxBtn = MaximizeButton(parent=self)
@@ -37,7 +37,7 @@ class TitleBarBase(QWidget):
                 self.maxBtn.setMaxState(self.window().isMaximized())
                 return False
 
-        return super().eventFilter(obj, e)
+        return QWidget.eventFilter(self, obj, e)
 
     def mouseDoubleClickEvent(self, event):
         """ Toggles the maximization state of the window """
@@ -98,7 +98,7 @@ class TitleBar(TitleBarBase):
     """ Title bar with minimize, maximum and close button """
 
     def __init__(self, parent):
-        super().__init__(parent)
+        TitleBarBase.__init__(self, parent)
         self.hBoxLayout = QHBoxLayout(self)
 
         # add buttons to layout
@@ -115,7 +115,7 @@ class StandardTitleBar(TitleBar):
     """ Title bar with icon and title """
 
     def __init__(self, parent):
-        super().__init__(parent)
+        TitleBar.__init__(self,parent)
         # add window icon
         self.iconLabel = QLabel(self)
         self.iconLabel.setFixedSize(20, 20)

@@ -52,6 +52,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
         self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
         self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUseTitleBar, self.titleBox))
+        self.openglBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenOpenGL, self.openglBox))
         self.grabGestureBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsGrabGesture, self.grabGestureBox))
         # self.isShowClose.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotShowCloseTip, self.isShowClose))
 
@@ -225,6 +226,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.sockEdit.setText(Setting.Sock5Proxy.value)
         self.chatProxy.setChecked(Setting.ChatProxy.value)
         self.titleBox.setChecked(Setting.IsUseTitleBar.value)
+        self.openglBox.setChecked(Setting.IsOpenOpenGL.value)
         self.grabGestureBox.setChecked(Setting.IsGrabGesture.value)
         # self.isShowClose.setChecked(Setting.IsNotShowCloseTip.value)
         for index in range(self.encodeSelect.count()):

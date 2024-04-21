@@ -6,17 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>361</height>
+    <width>920</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>下载</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
+   <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QTableWidget" name="tableWidget">
        <column>
         <property name="text">
@@ -91,61 +91,78 @@
         </spacer>
        </item>
        <item>
-        <widget class="QCheckBox" name="redownloadRadio">
-         <property name="text">
-          <string>下载失败后1分钟自动重试</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="updateNew">
          <property name="text">
-          <string>更新所有New章节</string>
+          <string>更新New章节</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton">
          <property name="text">
-          <string>全部开始下载</string>
+          <string>开始下载</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_3">
          <property name="text">
-          <string>全部暂停下载</string>
+          <string>暂停下载</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_2">
          <property name="text">
-          <string>全部开始转换</string>
+          <string>开始转换</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_4">
          <property name="text">
-          <string>全部暂停转换</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButton">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>下载自动进行Waifu2x转换</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>暂停转换</string>
          </property>
         </widget>
        </item>
       </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="redownloadRadio">
+       <property name="text">
+        <string>下载失败后自动重试</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="text">
+        <string>下载自动Waifu2x转换</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

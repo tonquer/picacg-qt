@@ -1,6 +1,6 @@
 import weakref
 
-from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QAbstractAnimation
+from PySide6.QtCore import QPropertyAnimation, QEasingCurve, QAbstractAnimation, Qt
 from PySide6.QtWidgets import QScrollBar
 
 from qt_owner import QtOwner
@@ -35,10 +35,22 @@ class ReadScroll(QScrollBar):
         # self.valueChanged.connect(self.ValueChange)
         self.oldv = 0
 
-    # def ValueChange(self,value):
-    #     self.oldv = value
-        # print("2, {}".format(value))
+    @property
+    def stripModel(self):
+        return self._owner().qtTool.stripModel
 
+    @property
+    def isCurReadModel(self):
+        if self.orientation() == Qt.Orientation.Vertical:
+            return self.stripModel == ReadMode.UpDown
+        else:
+            return True
+
+    #
+    # def ValueChange(self,value):
+    #     # self.oldv = value
+    #     print("2, {}".format(value))
+    #
     # def AniValueChange(self, value):
     #     print("1, {}".format(value))
 
@@ -57,9 +69,11 @@ class ReadScroll(QScrollBar):
             scrollTime = min(self.maxScrollTme, int(laveV / changeV * self.lastScrollTime))
         if scrollTime > 0:
             self.ani.stop()
+            # print("ani stop 5")
             self.StartAni(self.value(), self.lastAniEndV, scrollTime)
         else:
             self.ani.stop()
+            # print("ani stop 6")
             self.StartAni(self.value(), self.value(), self.scrollTime)
 
     def AniValueByAdd(self, addV):
@@ -73,14 +87,15 @@ class ReadScroll(QScrollBar):
         self.lastAniEndV = self.lastAniStartV + v
         laveV = self.lastAniEndV - self.lastAniStartV
 
-        scrollTime = 0
-        if changeV != 0:
-            scrollTime = min(self.maxScrollTme, int(laveV / changeV * self.lastScrollTime))
-        if scrollTime <= 0:
-            scrollTime = self.scrollTime
+        scrollTime = self.scrollTime
+        # if changeV != 0:
+        #     scrollTime = min(self.maxScrollTme, int(laveV / changeV * self.lastScrollTime))
+        # if scrollTime <= 0:
+        #     scrollTime = self.scrollTime
 
-        # print("add setV, {}".format(self.lastAniEndV))
+        # print("add setV, {}, {}, {}".format(scrollTime,self.value(), self.lastAniEndV))
         self.ani.stop()
+        # print("ani stop 1")
         self.StartAni(self.value(), self.lastAniEndV, scrollTime)
 
     # def AniValueChange(self, value):
@@ -108,6 +123,7 @@ class ReadScroll(QScrollBar):
 
     def StopScroll(self):
         self.ani.stop()
+        # print("ani stop 2")
     #
     # def Scroll(self, value, time=0):
     #     if self.ani.state() == QAbstractAnimation.State.Running:
@@ -123,6 +139,20 @@ class ReadScroll(QScrollBar):
 
     def ForceSetValue(self, value):
         self.ani.stop()
+        # print("ani stop 3")
+        # print("force setV, {}".format(value))
+        QScrollBar.setValue(self, value)
+        self.StartAni(value, value, self.scrollTime)
+
+    def ForceSetValue2(self, value, isAdd):
+        if value == self.value():
+            if isAdd and self.stripModel != ReadMode.RightLeftScroll:
+                self.__value = self.__value + 1
+            else:
+                self.__value = self.__value - 1
+
+        self.ani.stop()
+        # print("ani stop 3")
         # print("force setV, {}".format(value))
         QScrollBar.setValue(self, value)
         self.StartAni(value, value, self.scrollTime)
@@ -144,8 +174,11 @@ class ReadScroll(QScrollBar):
         # stop running animation
         if self.ani.state() == self.ani.State.Running:
             self.AniValueByAdd(value-self.value())
+            # print("ani stop 1")
+            # self.StartAni(self.value(), value, self.scrollTime)
         else:
             self.ani.stop()
+            # print("ani stop 4")
             self.StartAni(self.value(), value, self.scrollTime)
 
     def scrollValue(self, value: int):
@@ -167,14 +200,16 @@ class ReadScroll(QScrollBar):
         # self.UpdateScrollBar(value)
         self.__value = value
 
+        if not self.isCurReadModel:
+            return
         if not ReadMode.isScroll(self.scrollArea.initReadMode):
             return
 
-        curPictureSize = self.labelSize.get(self.readImg.curIndex)
-        nextPictureSize = self.labelSize.get(self.readImg.curIndex + 1, 0)
         changeIndex = self.readImg.curIndex
         if self.scrollArea.initReadMode == ReadMode.RightLeftScroll:
             newValue = value + self.scrollArea.width()
+            curPictureSize = self.labelSize.get(self.readImg.curIndex)
+            nextPictureSize = self.labelSize.get(self.readImg.curIndex - 1, 0)
             while True:
                 ## 切换上一图片
                 if addValue > 0 and newValue >= nextPictureSize:
@@ -195,8 +230,10 @@ class ReadScroll(QScrollBar):
                 else:
                     break
                 curPictureSize = self.labelSize.get(changeIndex)
-                nextPictureSize = self.labelSize.get(changeIndex + 1, 0)
+                nextPictureSize = self.labelSize.get(changeIndex - 1, 0)
         else:
+            curPictureSize = self.labelSize.get(self.readImg.curIndex)
+            nextPictureSize = self.labelSize.get(self.readImg.curIndex + 1, 0)
             while True:
                 ## 切换上一图片
                 if addValue < 0 and value < curPictureSize:
@@ -217,6 +254,8 @@ class ReadScroll(QScrollBar):
                     break
                 curPictureSize = self.labelSize.get(changeIndex)
                 nextPictureSize = self.labelSize.get(changeIndex + 1, 0)
+        print("change, {}->{}, {}->{}".format(self.readImg.curIndex, changeIndex, curPictureSize, nextPictureSize))
+
         if self.readImg.curIndex == changeIndex:
             return
         elif self.readImg.curIndex > changeIndex:

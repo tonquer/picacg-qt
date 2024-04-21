@@ -100,6 +100,7 @@ ApiDomain = [
 
 ImageDomain = [
     "s3.picacomic.com",
+    "s2.picacomic.com",
     "storage.diwodiwo.xyz",
     # "img.diwodiwo.xyz",
     "storage1.picacomic.com",

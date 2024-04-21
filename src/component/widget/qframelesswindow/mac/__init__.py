@@ -12,7 +12,7 @@ class MacFramelessWindow(QWidget):
     """ Frameless window for Linux system """
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        QWidget.__init__(self, parent=parent)
         self.windowEffect = MacWindowEffect(self)
         # must enable acrylic effect before creating title bar
         if isinstance(self, AcrylicWindow):
@@ -53,15 +53,15 @@ class MacFramelessWindow(QWidget):
         self._isResizeEnabled = isEnabled
 
     def resizeEvent(self, e):
-        super().resizeEvent(e)
+        QWidget.resizeEvent(self, e)
         self.titleBar.resize(self.width(), self.titleBar.height())
 
     def paintEvent(self, e):
-        super().paintEvent(e)
+        QWidget.paintEvent(self, e)
         self.__hideSystemTitleBar()
 
     def changeEvent(self, event):
-        super().changeEvent(event)
+        QWidget.changeEvent(self, event)
         if event.type() == QEvent.WindowStateChange:
             self.__hideSystemTitleBar()
 
@@ -87,7 +87,7 @@ class AcrylicWindow(MacFramelessWindow):
     """ A frameless window with acrylic effect """
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        MacFramelessWindow.__init__(self, parent)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.windowEffect.setAcrylicEffect(self.winId())
         self.setStyleSheet("background: transparent")

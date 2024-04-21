@@ -31,11 +31,16 @@ class MainView(Main, QtTaskBase):
         QtOwner().SetOwner(self)
         Main.__init__(self)
         QtTaskBase.__init__(self)
+        # self.setAttribute(Qt.WA_PaintOnScreen, False)  # 禁用屏幕缓存
+        # self.setAttribute(Qt.WA_NoSystemBackground, True)  # 去除系统背景
+        # self.setAttribute(Qt.WA_OpaquePaintEvent, True)  # 设置为不透明的paint event
         self.resize(600, 600)
         self.setWindowTitle(config.ProjectName)
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
         # self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_QuitOnClose, True)
+        # self.setAttribute(Qt.WA_NoSystemBackground,True)
+        # self.setAutoFillBackground(False)
         self.timer = QTimer()
         self.timer.setInterval(1000)
         # self.timer.timeout.connect(self.AfterStartSuc)
@@ -47,6 +52,8 @@ class MainView(Main, QtTaskBase):
             desktop = screens[Setting.ScreenIndex.value].geometry()
 
         self.adjustSize()
+        # self.downloadView.setFixedWidth(150)
+        # self.bookInfoView.setFixedWidth(150)
         self.myInitSize = QSize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
         self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
         self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())

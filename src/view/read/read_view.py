@@ -26,6 +26,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
     def __init__(self):
         super(self.__class__, self).__init__()
         QtTaskBase.__init__(self)
+
         self.bookId = ""
         self.token = ""
         self.epsId = 0
@@ -557,7 +558,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             return
         isCurIndex = index == self.curIndex
         p = self.pictureData.get(index)
-
         if not p or (not p.data) or (not p.cacheImage):
             self.scrollArea.SetPixIem(index, None)
             if isCurIndex:
@@ -573,6 +573,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             # self.frame.process.hide()
             if config.CanWaifu2x:
                 self.qtTool.modelBox.setEnabled(True)
+
         assert isinstance(p, QtFileData)
         waifu2x = False
         if not p.isWaifu2x:
@@ -602,6 +603,10 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
             self.qtTool.UpdateText(p.model)
 
+        if self.frame.scrollArea.IsAlreadLoad(index, waifu2x):
+            # print("already load, {}".format(index))
+            return
+
         if p.isGif and not ReadMode.isScroll(self.stripModel):
             if p.isWaifu2x and p.waifuData:
                 self.scrollArea.SetGifData(index, p.waifuData, p2, True)
@@ -610,6 +615,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         else:
             pixMap = QPixmap(p2)
             pixMap.setDevicePixelRatio(p2.devicePixelRatio())
+            # print("set index 1, {}".format(index))
             self.scrollArea.SetPixIem(index, pixMap, waifu2x)
         # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
         # self.frame.ScalePicture()

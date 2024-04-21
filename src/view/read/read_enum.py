@@ -28,6 +28,10 @@ class ReadMode(Enum):
         return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll]
 
     @staticmethod
+    def isUpDown(model):
+        return model not in [ReadMode.LeftRightScroll, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll]
+
+    @staticmethod
     def isScroll(model):
         return model in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll]
 
