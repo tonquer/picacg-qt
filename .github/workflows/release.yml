@@ -111,6 +111,7 @@ jobs:
         asset_path: ${{ env.PACKAGENAME }}.dmg
         asset_name: ${{ env.PACKAGENAME }}.dmg
         asset_content_type: application/gzip
+
   macos_arm:
     needs: [setup, release]
     runs-on: macos-latest
