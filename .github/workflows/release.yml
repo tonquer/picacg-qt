@@ -43,7 +43,7 @@ jobs:
 
   macos:
     needs: [setup, release]
-    runs-on: macos-11
+    runs-on: macos-12
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_x64
     steps:
