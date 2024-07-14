@@ -13,7 +13,7 @@ from qt_owner import QtOwner
 from server import req, Status, Log
 from task.qt_task import QtTaskBase
 from task.task_local import LocalData
-from tools.book import BookMgr, Book
+from tools.book import BookMgr
 from tools.str import Str
 from tools.tool import time_me, ToolUtil
 from view.download.download_item import DownloadItem, DownloadEpsItem
@@ -187,6 +187,10 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             self.qtTool.FullScreen(True)
         QtOwner().CloseReadView()
 
+    def Stop(self):
+        self.frame.process.timer.stop()
+        self.frame.process2.timer.stop()
+
     def Clear(self):
         Setting.TurnSpeed.SetValue(int(self.qtTool.turnSpeed.value() * 1000))
         Setting.ScrollSpeed.SetValue(int(self.qtTool.scrollSpeed.value()))
@@ -212,7 +216,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.isLocal = False
         self._cacheBook = None
         self.Clear()
-        info = BookMgr().books.get(bookId)
+        info = BookMgr().GetBook(bookId)
         if info:
             self.category = info.categories[::]
 
@@ -828,7 +832,6 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             if not bookInfo or not downInfo:
                 QtOwner().ShowError(Str.GetStr(Str.FileError))
             else:
-                assert isinstance(bookInfo, Book)
                 assert isinstance(downInfo, DownloadEpsItem)
                 raw = {"st": Status.Ok, "maxPic": downInfo.picCnt, "title": downInfo.epsTitle}
                 self.StartLoadPicUrlBack(raw, "")

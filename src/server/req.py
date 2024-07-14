@@ -25,17 +25,27 @@ class ServerReq(object):
         self.proxyUrl = ""
 
         host = ToolUtil.GetUrlHost(url)
-        if host in config.ApiDomain and Setting.ProxySelectIndex.value == 5:
+        self.timeout = 5
+        IsApi = False
+        IsImg = False
+        if host in config.ApiDomain:
+            IsApi = True
+            self.timeout = Setting.ApiTimeOut.GetIndexV()
+        if host in config.ImageDomain:
+            IsImg = True
+            self.timeout = Setting.ImgTimeOut.GetIndexV()
+
+        if IsApi and Setting.ProxySelectIndex.value == 5:
             self.headers.pop("user-agent")
             self.proxyUrl = config.ProxyApiDomain
-        if host in config.ImageDomain and Setting.ProxyImgSelectIndex.value == 5:
+        if IsImg and Setting.ProxyImgSelectIndex.value == 5:
             self.headers.pop("user-agent")
             self.proxyUrl = config.ProxyImgDomain
 
-        if host in config.ApiDomain and Setting.ProxySelectIndex.value == 6:
+        if IsApi and Setting.ProxySelectIndex.value == 6:
             self.headers.pop("user-agent")
             self.proxyUrl = config.ProxyApiDomain2
-        if host in config.ImageDomain and Setting.ProxyImgSelectIndex.value == 6:
+        if IsImg and Setting.ProxyImgSelectIndex.value == 6:
             self.headers.pop("user-agent")
             self.proxyUrl = config.ProxyImgDomain2
 
@@ -45,7 +55,6 @@ class ServerReq(object):
             self.proxy = {}
         else:
             self.proxy = {"http": None, "https": None}
-
 
     def __str__(self):
         # if Setting.LogIndex.value == 0:

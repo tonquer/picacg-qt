@@ -1,6 +1,9 @@
+from functools import partial
+
 from PySide6 import QtWidgets
 from PySide6.QtCore import QItemSelectionModel, Qt, QEvent
-from PySide6.QtWidgets import QHeaderView, QTableWidgetItem, QAbstractItemView
+from PySide6.QtGui import QCursor
+from PySide6.QtWidgets import QHeaderView, QTableWidgetItem, QAbstractItemView, QMenu
 
 from interface.ui_download_all import Ui_DownloadAll
 from qt_owner import QtOwner
@@ -8,6 +11,7 @@ from server import req, Status
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from tools.book import BookMgr
+from tools.str import Str
 from view.download.download_all_item import DownloadAllItem
 
 
@@ -34,6 +38,8 @@ class DownloadAllView(QtWidgets.QWidget, Ui_DownloadAll, QtTaskBase):
         self.downButton.clicked.connect(self.StartDownload)
         self.isAll = True
         self.isAllChip = True
+        self.uploadButton.clicked.connect(self.ShowMenu)
+        self.selectNasId = ""
 
     def SelectAll(self):
         self.isAll = not self.isAll
@@ -50,6 +56,10 @@ class DownloadAllView(QtWidgets.QWidget, Ui_DownloadAll, QtTaskBase):
         return
 
     def StartDownload(self):
+        self.selectNasId = ""
+        self.StartDownload2()
+
+    def StartDownload2(self):
         if not self.task:
             return
         for v in self.task.values():
@@ -85,6 +95,9 @@ class DownloadAllView(QtWidgets.QWidget, Ui_DownloadAll, QtTaskBase):
 
         self.task.clear()
         for task in books:
+            if QtOwner().IsInFilter(task.category, "", task.title):
+                task.isAll = False
+                task.isAllChip = False
             self.task[task.bookId] = task
             rowCont = self.tableWidget.rowCount()
             task.tableRow = rowCont
@@ -146,12 +159,18 @@ class DownloadAllView(QtWidgets.QWidget, Ui_DownloadAll, QtTaskBase):
             info = BookMgr().GetBook(v.bookId)
             if info and info.epsCount > 0:
                 downloadIds = list(range(info.epsCount))
-                QtOwner().downloadView.AddDownload(v.bookId, downloadIds)
+                if self.selectNasId:
+                    QtOwner().nasView.AddNasUploadCache(self.selectNasId, v.bookId)
+                else:
+                    QtOwner().downloadView.AddDownload(v.bookId, downloadIds)
                 self.StartGetEpsData()
             else:
                 self.AddSqlTask("book", v.bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack, backParam=v)
         else:
-            QtOwner().downloadView.AddDownload(v.bookId, [0])
+            if self.selectNasId:
+                QtOwner().nasView.AddNasUploadCache(self.selectNasId, v.bookId)
+            else:
+                QtOwner().downloadView.AddDownload(v.bookId, [0])
             self.StartGetEpsData()
 
     def SendLocalBack(self, books, v):
@@ -164,5 +183,29 @@ class DownloadAllView(QtWidgets.QWidget, Ui_DownloadAll, QtTaskBase):
         info = BookMgr().GetBook(v.bookId)
         if info and info.epsCount > 0:
             downloadIds = list(range(info.epsCount))
-            QtOwner().downloadView.AddDownload(v.bookId, downloadIds)
+            if self.selectNasId:
+                QtOwner().nasView.AddNasUploadCache(self.selectNasId, v.bookId)
+            else:
+                QtOwner().downloadView.AddDownload(v.bookId, downloadIds)
         self.StartGetEpsData()
+
+    def ShowMenu(self):
+        toolMenu = QMenu(self.uploadButton)
+        toolMenu.clear()
+        nasDict = QtOwner().owner.nasView.nasDict
+        action = toolMenu.addAction(Str.GetStr(Str.NetNas))
+        action.setEnabled(False)
+
+        if not nasDict:
+            action = toolMenu.addAction(Str.GetStr(Str.CvSpace))
+            action.setEnabled(False)
+        else:
+            for k, v in nasDict.items():
+                action = toolMenu.addAction(v.showTitle)
+                self.selectNasId = k
+                action.triggered.connect(partial(self.StartUpload, k))
+        toolMenu.exec(QCursor().pos())
+
+    def StartUpload(self, nasId):
+        self.selectNasId = nasId
+        self.StartDownload2()

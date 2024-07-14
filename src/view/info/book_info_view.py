@@ -1,12 +1,13 @@
 import json
 import os
 import shutil
+from functools import partial
 
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent, Signal
-from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
+from PySide6.QtGui import QColor, QFont, QPixmap, QIcon, QCursor
 from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup, QMessageBox, \
-    QListView, QWidget
+    QListView, QWidget, QMenu
 
 from component.layout.flow_layout import FlowLayout
 from config.setting import Setting
@@ -106,7 +107,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.commandLinkButton.clicked.connect(self.OpenRecommend)
         self.readOffline.clicked.connect(self.StartRead2)
         self.flowLayout = FlowLayout(self.tagList)
-
+        self.uploadButton.clicked.connect(self.ShowMenu)
 
     def UpdateFavoriteIcon(self):
         p = QPixmap()
@@ -615,6 +616,35 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             text = widget.text()
             QtOwner().CopyText(text)
 
+    def ShowMenu(self):
+        if not self.bookName:
+            return
+        if not self.bookId:
+            return
+        toolMenu = QMenu(self.uploadButton)
+        toolMenu.clear()
+        title = self.bookName
+        if not title:
+            return
+        nasDict = QtOwner().owner.nasView.nasDict
+        action = toolMenu.addAction(Str.GetStr(Str.NetNas))
+        action.setEnabled(False)
+
+        if not nasDict:
+            action = toolMenu.addAction(Str.GetStr(Str.CvSpace))
+            action.setEnabled(False)
+        else:
+            for k, v in nasDict.items():
+                action = toolMenu.addAction(v.showTitle)
+                if QtOwner().nasView.IsInUpload(k, self.bookId):
+                    action.setEnabled(False)
+                action.triggered.connect(partial(self.NasUploadHandler, k, self.bookId))
+        toolMenu.exec(QCursor().pos())
+
+    def NasUploadHandler(self, nasId, bookId):
+        QtOwner().nasView.AddNasUpload(nasId, bookId)
+        return
+    
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:

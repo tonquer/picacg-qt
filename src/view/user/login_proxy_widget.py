@@ -71,6 +71,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.InitImgUrlList()
         proxy = urllib.request.getproxies()
         if isinstance(proxy, dict) and proxy.get("http"):
+            self.proxyLabel.setText(proxy.get("http", ""))
             self.checkLabel.setVisible(False)
         else:
             self.checkLabel.setVisible(True)
@@ -370,6 +371,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.httpsBox.setChecked(Setting.IsUseHttps.value)
         self.httpLine.setText(Setting.HttpProxy.value)
         self.sockEdit.setText(Setting.Sock5Proxy.value)
+        self.apiTimeout.setCurrentIndex(Setting.ApiTimeOut.value)
+        self.imgTimeout.setCurrentIndex(Setting.ImgTimeOut.value)
+
         button = getattr(self, "radioButton_{}".format(Setting.ProxySelectIndex.value), None)
         if button:
             button.setChecked(True)
@@ -423,6 +427,8 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         # QtOwner().settingView.SetSettingV("Proxy/Http", httpProxy)
         # QtOwner().settingView.SetSettingV("Proxy/IsHttp", config.IsHttpProxy)
         # QtOwner().settingView.SetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
+        Setting.ApiTimeOut.SetValue(self.apiTimeout.currentIndex())
+        Setting.ImgTimeOut.SetValue(self.imgTimeout.currentIndex())
 
         self.UpdateServer()
         QtOwner().ShowMsg(Str.GetStr(Str.SaveSuc))

@@ -176,10 +176,10 @@ class QtFileData(object):
         else:
             return maxWidth, maxHeight
 
-        if not ReadMode.isScroll(stripModel):
-            if isToQImage:
-                toScaleH = 0
-                toScaleW = 0
+        # if not ReadMode.isScroll(stripModel):
+        if isToQImage:
+            toScaleH = 0
+            toScaleW = 0
         return toScaleW, toScaleH
 
     @staticmethod

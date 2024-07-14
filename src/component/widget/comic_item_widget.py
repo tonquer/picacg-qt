@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QSize, Signal
-from PySide6.QtGui import QPixmap, QIcon, QFont, QFontMetrics
+from PySide6.QtGui import QPixmap, QIcon, QFont, QFontMetrics, QImage
 from PySide6.QtWidgets import QWidget
 
 from config import config
@@ -11,10 +11,11 @@ from tools.str import Str
 class ComicItemWidget(QWidget, Ui_ComicItem):
     PicLoad = Signal(int)
 
-    def __init__(self, isCategory=False):
+    def __init__(self, isCategory=False, isShiled=False):
         QWidget.__init__(self)
         Ui_ComicItem.__init__(self)
         self.setupUi(self)
+        self.isShiled = isShiled
         self.picData = None
         self.id = ""
         self.title = ""
@@ -39,12 +40,22 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
 
         icon2 = QIcon()
         icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
+
         self.toolButton.setMinimumSize(QSize(0, 40))
         self.toolButton.setFocusPolicy(Qt.NoFocus)
         self.toolButton.setIcon(icon2)
         self.toolButton.setIconSize(QSize(32, 32))
 
         self.picLabel.setFixedSize(width, height)
+        if self.isShiled:
+            pic = QImage(":/png/icon/shiled.svg")
+            radio = self.devicePixelRatio()
+            pic.setDevicePixelRatio(radio)
+            newPic = pic.scaled(self.picLabel.width() * radio, self.picLabel.height() * radio, Qt.KeepAspectRatio,
+                                Qt.SmoothTransformation)
+            newPic2 = QPixmap(newPic)
+            self.picLabel.setPixmap(newPic2)
+
         # self.picLabel.setMinimumSize(300, 400)
         # self.picLabel.setMaximumSize(220, 308)
 
@@ -165,6 +176,8 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.picLabel.setText(Str.GetStr(status))
 
     def paintEvent(self, event) -> None:
+        if self.isShiled:
+            return
         if self.url and not self.isLoadPicture and config.IsLoadingPicture:
             self.isLoadPicture = True
             self.PicLoad.emit(self.index)

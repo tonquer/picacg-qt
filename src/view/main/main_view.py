@@ -138,6 +138,7 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.convertButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.convertView)))
         self.navigationWidget.friedButton.hide()
         self.navigationWidget.convertButton.hide()
+        self.navigationWidget.nasButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.nasView)))
 
     def RetranslateUi(self):
         Main.retranslateUi(self, self)
@@ -163,6 +164,7 @@ class MainView(Main, QtTaskBase):
         print(self.size())
         IsCanUse = False
         self.downloadView.Init()
+        self.nasView.Init()
         self.InitApiProxy()
         if config.CanWaifu2x:
             from waifu2x_vulkan import waifu2x_vulkan
@@ -430,6 +432,8 @@ class MainView(Main, QtTaskBase):
         self.loadingDialog.close()
         self.downloadView.Close()
         self.chatView.Stop()
+        self.nasView.Close()
+        self.readView.Stop()
         TaskWaifu2x().Stop()
         TaskQImage().Stop()
         Server().Stop()

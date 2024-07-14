@@ -1,0 +1,13 @@
+PySide6==6.1.3
+websocket-client==0.59.0
+requests==2.26.0
+urllib3==1.25.11
+
+pillow==8.3.2
+waifu2x-vulkan==1.1.6
+Pysocks==1.7.1
+natsort==8.2.0
+webdavclient3==3.14.6
+tqdm==4.66.4
+pysmb==1.2.9.1
+# pywin32==302

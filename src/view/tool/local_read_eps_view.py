@@ -65,8 +65,10 @@ class LocalReadEpsView(QWidget, Ui_LocalEps, QtTaskBase):
 
     def SwitchCurrent(self, **kwargs):
         bookId = kwargs.get("bookId")
-        if bookId == self.bookId:
+        if not bookId:
             return
+        # if bookId == self.bookId:
+        #     return
         self.bookId = bookId
         self.Init()
         return

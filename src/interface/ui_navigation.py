@@ -141,6 +141,21 @@ class Ui_Navigation(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_7 = QLabel(self.widget)
+        self.label_7.setObjectName(u"label_7")
+
+        self.horizontalLayout_6.addWidget(self.label_7)
+
+        self.hideButton = QPushButton(self.widget)
+        self.hideButton.setObjectName(u"hideButton")
+
+        self.horizontalLayout_6.addWidget(self.hideButton)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_6)
+
         self.line_4 = QFrame(self.widget)
         self.line_4.setObjectName(u"line_4")
         self.line_4.setFrameShape(QFrame.HLine)
@@ -392,6 +407,20 @@ class Ui_Navigation(object):
 
         self.verticalLayout_3.addWidget(self.downloadButton)
 
+        self.nasButton = QToolButton(self.scrollAreaWidgetContents)
+        self.buttonGroup.addButton(self.nasButton)
+        self.nasButton.setObjectName(u"nasButton")
+        sizePolicy1.setHeightForWidth(self.nasButton.sizePolicy().hasHeightForWidth())
+        self.nasButton.setSizePolicy(sizePolicy1)
+        self.nasButton.setMinimumSize(QSize(150, 0))
+        self.nasButton.setFocusPolicy(Qt.NoFocus)
+        self.nasButton.setIcon(icon)
+        self.nasButton.setIconSize(QSize(32, 32))
+        self.nasButton.setCheckable(True)
+        self.nasButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.verticalLayout_3.addWidget(self.nasButton)
+
         self.localReadButton = QToolButton(self.scrollAreaWidgetContents)
         self.buttonGroup.addButton(self.localReadButton)
         self.localReadButton.setObjectName(u"localReadButton")
@@ -498,6 +527,8 @@ class Ui_Navigation(object):
         self.label_6.setText(QCoreApplication.translate("Navigation", u"\u56fe\u7247\u5206\u6d41\uff1a", None))
         self.proxyImgName.setText("")
         self.label_5.setText(QCoreApplication.translate("Navigation", u"\u79bb\u7ebf\u6a21\u5f0f\uff1a", None))
+        self.label_7.setText(QCoreApplication.translate("Navigation", u"\u5c4f\u853d\u8bcd\uff1a", None))
+        self.hideButton.setText("")
         self.label.setText(QCoreApplication.translate("Navigation", u"\u7528\u6237", None))
         self.collectButton.setText(QCoreApplication.translate("Navigation", u"\u6211\u7684\u6536\u85cf", None))
         self.myCommentButton.setText(QCoreApplication.translate("Navigation", u"\u6211\u7684\u8bc4\u8bba", None))
@@ -514,6 +545,7 @@ class Ui_Navigation(object):
         self.friedButton.setText(QCoreApplication.translate("Navigation", u"\u9505\u8d34", None))
         self.label_3.setText(QCoreApplication.translate("Navigation", u"\u5176\u4ed6", None))
         self.downloadButton.setText(QCoreApplication.translate("Navigation", u"\u4e0b\u8f7d", None))
+        self.nasButton.setText(QCoreApplication.translate("Navigation", u"\u7f51\u7edc\u5b58\u50a8", None))
         self.localReadButton.setText(QCoreApplication.translate("Navigation", u"\u672c\u5730\u6f2b\u753b", None))
         self.convertButton.setText(QCoreApplication.translate("Navigation", u"\u8f6c\u6362", None))
         self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"Waifu2x", None))

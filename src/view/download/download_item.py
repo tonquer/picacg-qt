@@ -126,6 +126,17 @@ class DownloadItem(QtTaskBase):
             self.epsInfo[self.curDownloadEpsId] = epsInfo
         return epsInfo
 
+    def IsEpsComplete(self, epsId):
+        epsInfo = self.epsInfo.get(epsId)
+        if not epsInfo:
+            return False
+        return epsInfo.isDownloadComplete()
+
+    def IsWaifu2xComplete(self, epsId):
+        epsInfo = self.epsInfo.get(epsId)
+        if not epsInfo:
+            return False
+        return epsInfo.isConvertComplete()
     @property
     def curConvertEpsInfo(self):
         if self.curConvertEpsId < 0:

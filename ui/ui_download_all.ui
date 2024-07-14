@@ -67,6 +67,19 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QPushButton" name="uploadButton">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>网络存储</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

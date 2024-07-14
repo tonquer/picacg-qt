@@ -166,7 +166,7 @@ class User(Singleton):
             return Status.Ok
         else:
             Log.Info("签到失败！！！, userId:{}, msg:{}".format(self.userId, backData.res.message))
-            return Status.Error + backData.res.message
+            return Status.Error
 
     def RegisterBack(self, backData):
         try:

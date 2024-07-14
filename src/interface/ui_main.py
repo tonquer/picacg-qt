@@ -39,6 +39,7 @@ from view.index.index_view import IndexView
 from view.info.book_eps_view import BookEpsView
 from view.info.book_info_view import BookInfoView
 from view.info.game_info_view import GameInfoView
+from view.nas.nas_view import NasView
 from view.read.read_view import ReadView
 from view.search.search_view import SearchView
 from view.setting.setting_view import SettingView
@@ -103,6 +104,9 @@ class Ui_Main(object):
         self.indexView = IndexView()
         self.indexView.setObjectName(u"indexView")
         self.subStackWidget.addWidget(self.indexView)
+        self.nasView = NasView()
+        self.nasView.setObjectName(u"nasView")
+        self.subStackWidget.addWidget(self.nasView)
         self.localReadAllView = LocalReadAllView()
         self.localReadAllView.setObjectName(u"localReadAllView")
         self.subStackWidget.addWidget(self.localReadAllView)

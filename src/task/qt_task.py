@@ -20,6 +20,7 @@ class QtTaskQObject(QObject):
     sqlBack = Signal(int, bytes)
     localBack = Signal(int, int, list)
     localReadBack = Signal(int, int, bytes)
+    uploadBack = Signal(int, int)
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -111,6 +112,10 @@ class QtTaskBase:
     def AddLocalTaskLoadPicture(self, v, index, backparam=None, callBack=None):
         from task.task_local import TaskLocal
         return TaskLocal().AddLoadReadPicture(v, index, backparam, callBack, cleanFlag=self.__taskFlagId)
+
+    def AddUploadTask(self, nas_id, type, srcDir, desFile, upDirPath, backParam=None, callBack=None):
+        from task.task_upload import TaskUpload
+        return TaskUpload().AddLoadReadPicture(nas_id, type, srcDir, desFile, upDirPath, backParam, callBack, cleanFlag=self.__taskFlagId)
 
     def ClearQImageTaskById(self, taskId):
         from task.task_qimage import TaskQImage

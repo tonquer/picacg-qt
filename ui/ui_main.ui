@@ -87,6 +87,7 @@
           <item>
            <widget class="AnimationStackWidget" name="subStackWidget">
             <widget class="IndexView" name="indexView"/>
+            <widget class="NasView" name="nasView"/>
             <widget class="LocalReadAllView" name="localReadAllView"/>
             <widget class="ConvertView" name="convertView"/>
             <widget class="LocalEpsReadView" name="localReadEpsView"/>
@@ -298,6 +299,12 @@
    <class>LocalReadAllView</class>
    <extends>QWidget</extends>
    <header location="global">view.tool.local_read_all_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>NasView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.nas.nas_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

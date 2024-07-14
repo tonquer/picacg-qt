@@ -149,6 +149,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
 
     def UpdateDbInfoBack(self, data):
         dbVer, num, timeStr, version = data
+        config.DbVersion = dbVer
         self.curSubVersion = version
         self.curUpdateTick = ToolUtil.GetTimeTickEx(timeStr)
         self.localVer.setText(dbVer)
@@ -159,9 +160,9 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.localNum.setText(str(num))
         self.localTime.setText(timeStr)
         QtOwner().searchView.UpdateTime(timeStr)
-        if config.RealVersion != dbVer:
-            self.UpdateText(self.dbCheck, "错误的data.db版本", "#7fb80e", False)
-            return
+        # if config.RealVersion != dbVer:
+        #     self.UpdateText(self.dbCheck, "错误的data.db版本", "#7fb80e", False)
+        #     return
 
         if not self.isCheckUp:
             self.isCheckUp = True

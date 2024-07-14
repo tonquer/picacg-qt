@@ -122,7 +122,7 @@ class SqlServer(Singleton):
                 if taskType == self.TaskCheck:
                     try:
                         cur = conn.cursor()
-                        cur.execute("select * from words")
+                        cur.execute("select * from system")
                         data2 = pickle.dumps(str(int(isInit)))
                     except Exception as es:
                         Log.Error(es)
@@ -301,7 +301,7 @@ class SqlServer(Singleton):
         addData, tick, version = data
         timeArray = time.localtime(tick)
         strTime = "{}-{}-{} {}:{}:{}".format(timeArray.tm_year, timeArray.tm_mon, timeArray.tm_mday, timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
-        sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.UpdateVersion)
+        sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.DbVersion)
         cur.execute(sql)
 
         for book in addData:

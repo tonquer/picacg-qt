@@ -47,6 +47,8 @@ class SettingValue:
                     return int(v)
                 elif isinstance(defV, float):
                     return float(v)
+                elif isinstance(defV, list) and isinstance(v, str):
+                    return [v]
                 else:
                     return v
             return defV
@@ -110,6 +112,8 @@ class Setting:
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)
     ProxyImgSelectIndex = SettingValue("ProxySetting", 1, False)
     PreferCDNIPImg = SettingValue("ProxySetting", "104.18.227.172", False)
+    ApiTimeOut = SettingValue("ProxySetting", 1, False, [2, 5, 7, 10])
+    ImgTimeOut = SettingValue("ProxySetting", 1, False, [2, 5, 7, 10, 15])
 
     # 下载与缓存
     SavePath = SettingValue("DownloadSetting", "", False)
@@ -161,6 +165,11 @@ class Setting:
     SaveCacheAddress = SettingValue("Other", "104.21.91.145", False)
     IsReDownload = SettingValue("Other", 0, False)
     GlobalConfig = SettingValue("Other", "", False)
+    ForbidWords = SettingValue("Other", [], False)
+    AddForbidWords = SettingValue("Other", [], False)
+    IsForbidCategory =SettingValue("Other", True, False)
+    IsForbidTag = SettingValue("Other", False, False)
+    IsForbidTitle = SettingValue("Other", False, False)
 
     @staticmethod
     def InitLoadSetting():
