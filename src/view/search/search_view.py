@@ -34,10 +34,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.isAuthor = True
         self.isUpLoad = True
         self.bookList.LoadCallBack = self.LoadNextPage
-        self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
-        self.InitCategoryList()
-        self.categoryList.setSelectionMode(QListView.MultiSelection)
-        self.categoryList.setSpacing(1)
+        # self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
+        # self.InitCategoryList()
+        # self.categoryList.setSelectionMode(QListView.MultiSelection)
+        # self.categoryList.setSpacing(1)
         self.comboBox.currentIndexChanged.connect(self.ChangeSort)
         self.sortKey.currentIndexChanged.connect(self.ChangeSort)
         self.sortId.currentIndexChanged.connect(self.ChangeSort)
@@ -118,10 +118,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             return
         self.lineEdit.SetWordData(data)
 
-    def InitCategoryList(self):
-        self.categoryList.clear()
-        for name in ["耽美", "伪娘", "禁书", "扶她", "重口", "生肉", "纯爱", "SM", "NTR", "WEBTOON"]:
-            self.categoryList.AddItem(name, True)
+    # def InitCategoryList(self):
+    #     self.categoryList.clear()
+    #     for name in ["耽美", "伪娘", "禁书", "扶她", "重口", "生肉", "纯爱", "SM", "NTR", "WEBTOON"]:
+    #         self.categoryList.AddItem(name, True)
 
     def SwitchCurrent(self, **kwargs):
         text = kwargs.get("text")
@@ -236,7 +236,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
                 self.label.setText(self.bookList.GetPageStr())
                 for v in info.get("docs", []):
                     self.bookList.AddBookByDict(v)
-                self.CheckCategoryShowItem()
+                # self.CheckCategoryShowItem()
                 self.bookList.setFocus()
             else:
                 # QtWidgets.QMessageBox.information(self, '未搜索到结果', "未搜索到结果", QtWidgets.QMessageBox.Yes)
@@ -325,45 +325,45 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.label.setText(self.bookList.GetPageStr())
         for v in books:
             self.bookList.AddBookItemByBook(v)
-        self.CheckCategoryShowItem()
+        # self.CheckCategoryShowItem()
 
-    def ClickCategoryListItem(self, item):
+    # def ClickCategoryListItem(self, item):
         # isClick = self.categoryList.ClickItem(item)
         # item = self.categoryList.itemFromIndex(index)
-        data = item.text()
-        if item.isSelected():
-            QtOwner().ShowMsg(Str.GetStr(Str.Hidden) + data)
-        else:
-            QtOwner().ShowMsg(Str.GetStr(Str.NotHidden) + data)
-        self.CheckCategoryShowItem()
+        # data = item.text()
+        # if item.isSelected():
+        #     QtOwner().ShowMsg(Str.GetStr(Str.Hidden) + data)
+        # else:
+        #     QtOwner().ShowMsg(Str.GetStr(Str.NotHidden) + data)
+        # self.CheckCategoryShowItem()
 
-    def CheckCategoryShowItem(self):
-        data = []
-        for i in range(self.categoryList.count()):
-            item = self.categoryList.item(i)
-            if item.isSelected():
-                widget = self.categoryList.itemWidget(item)
-                data.append(widget.text())
-        # data = self.categoryList.GetAllSelectItem()
-        self.hiddenNum = 0
-        for i in range(self.bookList.count()):
-            item = self.bookList.item(i)
-            widget = self.bookList.itemWidget(item)
-            isHidden = False
-            text = widget.categoryLabel.text()
-            text2 = Converter('zh-hans').convert(text)
-            for name in data:
-                if name in text2:
-                    self.hiddenNum += 1
-                    item.setHidden(True)
-                    isHidden = True
-                    break
-            if not isHidden:
-                item.setHidden(False)
-        if self.hiddenNum > 0:
-            self.hideLabel.setText("已屏蔽{}个本子".format(self.hiddenNum))
-        else:
-            self.hideLabel.setText("")
+    # def CheckCategoryShowItem(self):
+    #     data = []
+    #     for i in range(self.categoryList.count()):
+    #         item = self.categoryList.item(i)
+    #         if item.isSelected():
+    #             widget = self.categoryList.itemWidget(item)
+    #             data.append(widget.text())
+    #     # data = self.categoryList.GetAllSelectItem()
+    #     self.hiddenNum = 0
+    #     for i in range(self.bookList.count()):
+    #         item = self.bookList.item(i)
+    #         widget = self.bookList.itemWidget(item)
+    #         isHidden = False
+    #         text = widget.categoryLabel.text()
+    #         text2 = Converter('zh-hans').convert(text)
+    #         for name in data:
+    #             if name in text2:
+    #                 self.hiddenNum += 1
+    #                 item.setHidden(True)
+    #                 isHidden = True
+    #                 break
+    #         if not isHidden:
+    #             item.setHidden(False)
+    #     if self.hiddenNum > 0:
+    #         self.hideLabel.setText("已屏蔽{}个本子".format(self.hiddenNum))
+    #     else:
+    #         self.hideLabel.setText("")
 
     def JumpPage(self):
         page = int(self.spinBox.text())

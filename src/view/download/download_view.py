@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+from functools import partial
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt, QTimer, QUrl, QSize
@@ -183,10 +184,10 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             self.UpdateTableItem(task)
         self.OpenLocalBack()
 
-    def AddDownload(self, bookId, downloadIds):
+    def AddDownload(self, bookId, downloadIds, isWaifu2x=False):
         if not downloadIds:
             return
-
+        Log.Info("add download, book_id={}, eps={}".format(bookId, downloadIds))
         if bookId not in self.downloadDict:
             task = DownloadItem()
             task.bookId = bookId
@@ -201,7 +202,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             task.tableRow = rowCont
             self.tableWidget.insertRow(rowCont)
             self.SetNewStatus(task, task.Waiting)
-            if Setting.DownloadAuto.value:
+            if Setting.DownloadAuto.value or isWaifu2x:
                 self.SetNewCovertStatus(task, task.Waiting)
         else:
             task = self.downloadDict.get(bookId)
@@ -214,7 +215,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
             if task.status == task.Success:
                 self.SetNewStatus(task, task.Waiting)
             if task.convertStatus == task.ConvertSuccess:
-                if Setting.DownloadAuto.value:
+                if Setting.DownloadAuto.value or isWaifu2x:
                     self.SetNewCovertStatus(task, task.Waiting)
                 else:
                     self.SetNewCovertStatus(task, task.Pause)
@@ -347,7 +348,17 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
 
         addLocalAction = QAction(Str.GetStr(Str.ImportLocal), self)
         addLocalAction.triggered.connect(self.ClickAddLocalBook)
-        
+
+        nas = QMenu(Str.GetStr(Str.NetNas))
+        nasDict = QtOwner().owner.nasView.nasDict
+        if not nasDict:
+            action = nas.addAction(Str.GetStr(Str.CvSpace))
+            action.setEnabled(False)
+        else:
+            for k, v in nasDict.items():
+                action = nas.addAction(v.showTitle)
+                action.triggered.connect(partial(self.NasUploadHandler, k))
+
         if index.isValid():
             selected = self.tableWidget.selectedIndexes()
             selectRows = set()
@@ -360,6 +371,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 row = selectRows.pop()
                 col = 0
                 bookId = self.tableWidget.item(row, col).text()
+                title = self.tableWidget.item(row, 2).text()
                 task = self.downloadDict.get(bookId)
                 if not task:
                     return
@@ -369,15 +381,17 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 menu.addAction(openDirAction)
                 menu.addAction(selectEpsAction)
                 assert isinstance(task, DownloadItem)
-                if task.status in [task.Pause, task.Error, task.SpaceEps]:
+                if task.status in [task.Pause, task.Error, task.SpaceEps, task.UnderReviewBook]:
                     menu.addAction(startAction)
                 elif task.status in [task.Downloading, task.Waiting]:
                     menu.addAction(pauseAction)
 
                 if task.convertStatus in [task.Converting, task.Waiting]:
                     menu.addAction(pauseConvertAction)
-                elif task.convertStatus in [task.Pause, task.Error, task.SpaceEps]:
+                elif task.convertStatus in [task.Pause, task.Error, task.SpaceEps, task.UnderReviewBook]:
                     menu.addAction(startConvertAction)
+
+
             else:
                 menu = QMenu(self.tableWidget)
                 menu.addAction(startAction)
@@ -385,11 +399,31 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 menu.addAction(startConvertAction)
                 menu.addAction(pauseConvertAction)
 
+            menu.addMenu(nas)
             menu.addAction(addLocalAction)
             menu.addAction(removeAction)
             menu.addAction(removeFileAction)
             menu.exec_(QCursor.pos())
         pass
+    
+    # def NasUploadHandler(self, title, nasId, bookId):
+    #     QtOwner().nasView.AddNasUpload2(title, nasId, bookId)
+    #     return
+
+    def NasUploadHandler(self, nasId):
+        selected = self.tableWidget.selectedIndexes()
+        selectRows = set()
+        for index in selected:
+            selectRows.add(index.row())
+        if not selectRows:
+            return
+        for row in selectRows:
+            col = 0
+            bookId = self.tableWidget.item(row, col).text()
+            task = self.downloadDict.get(bookId)
+            if not task:
+                continue
+            QtOwner().nasView.AddNasUpload2(task.title, nasId, bookId)
 
     def ClickOpenFilePath(self):
         selected = self.tableWidget.selectedIndexes()
@@ -525,6 +559,9 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         for index in selected:
             selectRows.add(index.row())
         if not selectRows:
+            return
+        isRun = QMessageBox.information(self, '删除', "是否删除记录", QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+        if isRun != QtWidgets.QMessageBox.Yes:
             return
         for row in sorted(selectRows, reverse=True):
             col = 0

@@ -23,7 +23,7 @@ class FrameLessWidget(QWidget):
     BORDER_WIDTH = 10
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        QWidget.__init__(self, parent)
         self.setWindowFlags(Qt.FramelessWindowHint |
                             Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         # self.setWindowFlags(Qt.FramelessWindowHint)

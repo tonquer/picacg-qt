@@ -28,6 +28,10 @@ class ReadMode(Enum):
         return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll]
 
     @staticmethod
+    def isUpDown(model):
+        return model not in [ReadMode.LeftRightScroll, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll]
+
+    @staticmethod
     def isScroll(model):
         return model in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll]
 
@@ -172,10 +176,10 @@ class QtFileData(object):
         else:
             return maxWidth, maxHeight
 
-        if not ReadMode.isScroll(stripModel):
-            if isToQImage:
-                toScaleH = 0
-                toScaleW = 0
+        # if not ReadMode.isScroll(stripModel):
+        if isToQImage:
+            toScaleH = 0
+            toScaleW = 0
         return toScaleW, toScaleH
 
     @staticmethod

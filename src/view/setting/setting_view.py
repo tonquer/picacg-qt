@@ -52,6 +52,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
         self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
         self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUseTitleBar, self.titleBox))
+        self.openglBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenOpenGL, self.openglBox))
         self.grabGestureBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsGrabGesture, self.grabGestureBox))
         # self.isShowClose.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotShowCloseTip, self.isShowClose))
 
@@ -71,6 +72,9 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.downNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadNoise))
         self.encodeSelect.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.SelectEncodeGpu))
         self.threadSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.Waifu2xCpuCore))
+        self.titleLineBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.TitleLine))
+        self.categoryBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.NotCategoryShow))
+
         self.fontBox.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.FontName))
         self.fontSize.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.FontSize))
         self.fontStyle.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.FontStyle))
@@ -93,12 +97,14 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.downloadButton.clicked.connect(partial(self.MoveToLabel, self.downloadLabel))
 
         self.setDirButton.clicked.connect(self.SelectSavePath)
+        self.setLogDirButton.clicked.connect(self.SelectSaveLogPath)
         self.openDownloadDir.clicked.connect(partial(self.OpenDir, self.downloadDir))
         self.openChatDir.clicked.connect(partial(self.OpenDir, self.chatDir))
         self.openCacheDir.clicked.connect(partial(self.OpenDir, self.cacheDir))
         self.openWaifu2xDir.clicked.connect(partial(self.OpenDir, self.waifu2xDir))
+        self.openLogDir.clicked.connect(partial(self.OpenDir, self.logLabel))
 
-        self.openProxy.clicked.connect(self.OpenProxy)
+        self.openProxy.clicked.connect(QtOwner().OpenProxy)
         # TODO
         # self.languageButton3.setVisible(False)
 
@@ -220,6 +226,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.sockEdit.setText(Setting.Sock5Proxy.value)
         self.chatProxy.setChecked(Setting.ChatProxy.value)
         self.titleBox.setChecked(Setting.IsUseTitleBar.value)
+        self.openglBox.setChecked(Setting.IsOpenOpenGL.value)
         self.grabGestureBox.setChecked(Setting.IsGrabGesture.value)
         # self.isShowClose.setChecked(Setting.IsNotShowCloseTip.value)
         for index in range(self.encodeSelect.count()):
@@ -242,6 +249,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.readScale.setValue(Setting.LookScale.value)
         self.readModel.setCurrentIndex(Setting.LookModel.value)
 
+        self.categoryBox.setCurrentIndex(Setting.NotCategoryShow.value)
+        self.titleLineBox.setCurrentIndex(Setting.TitleLine.value)
         self.tileComboBox.setCurrentIndex(Setting.Waifu2xTileSize.value)
         self.coverCheckBox.setChecked(Setting.CoverIsOpenWaifu.value)
         self.coverNoise.setCurrentIndex(Setting.CoverLookNoise.value)
@@ -253,18 +262,6 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.downScale.setValue(Setting.DownloadScale.value)
         self.downModel.setCurrentIndex(Setting.DownloadModel.value)
         self.SetDownloadLabel()
-
-    def OpenProxy(self):
-        loginView = LoginView(QtOwner().owner, False)
-        loginView.tabWidget.setCurrentIndex(3)
-        loginView.tabWidget.removeTab(0)
-        loginView.tabWidget.removeTab(0)
-        loginView.tabWidget.removeTab(0)
-        loginView.loginButton.setText(Str.GetStr(Str.Save))
-        loginView.show()
-
-        loginView.closed.connect(QtOwner().owner.navigationWidget.UpdateProxyName)
-        return
 
     def retranslateUi(self, SettingNew):
         Ui_SettingNew.retranslateUi(self, SettingNew)
@@ -417,6 +414,14 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             Setting.SavePath.SetValue(url)
         self.SetDownloadLabel()
 
+    def SelectSaveLogPath(self):
+        url = QFileDialog.getExistingDirectory(self, Str.GetStr(Str.SelectFold))
+        if url:
+            Setting.LogDirPath.SetValue(url)
+            Log.Init()
+
+        self.SetDownloadLabel()
+
     def SetDownloadLabel(self):
         url = Setting.SavePath.value
         if not url:
@@ -425,6 +430,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.chatDir.setText(os.path.join(url, config.ChatSavePath))
         self.cacheDir.setText(os.path.join(url, config.CachePathDir))
         self.waifu2xDir.setText(os.path.join(os.path.join(url, config.CachePathDir), config.Waifu2xPath))
+
+        self.logLabel.setText(Setting.GetLogPath())
 
     def OpenDir(self, label):
         QDesktopServices.openUrl(QUrl.fromLocalFile(label.text()))

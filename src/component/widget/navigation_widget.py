@@ -1,3 +1,5 @@
+import re
+
 from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent, QSize
 from PySide6.QtGui import QPixmap, Qt, QIcon
 from PySide6.QtWidgets import QWidget, QScroller, QScrollerProperties
@@ -13,14 +15,17 @@ from tools.str import Str
 from tools.tool import ToolUtil
 from tools.user import User
 from view.user.login_view import LoginView
-
+from tools.langconv import Converter
 
 class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
     def __init__(self, parent=None):
         super().__init__(parent)
         QtTaskBase.__init__(self)
+        self.allFilterStr = set()
         self.setupUi(self)
-        self.resize(260, 800)
+        if Setting.IsUseTitleBar.value:
+            self.scrollArea.setFixedHeight(380)
+        # self.resize(260, 800)
         self.__ani = QPropertyAnimation(self, b"geometry")
         self.__connect = None
         self.pictureData = ""
@@ -36,7 +41,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.picData = None
         self.offlineButton.SetState(False)
         self.offlineButton.Switch.connect(self.SwitchOffline)
-
+        
         if Setting.IsGrabGesture.value:
             QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
             propertiesOne = QScroller.scroller(self).scrollerProperties()
@@ -44,6 +49,46 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
             propertiesOne.setScrollMetric(QScrollerProperties.VerticalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
             propertiesOne.setScrollMetric(QScrollerProperties.HorizontalOvershootPolicy, QScrollerProperties.OvershootAlwaysOff)
             QScroller.scroller(self.scrollArea).setScrollerProperties(propertiesOne)
+        self.proxyImgName.clicked.connect(self.OpenProxy)
+        self.proxyName.clicked.connect(self.OpenProxy)
+        self.hideButton.clicked.connect(self.OpenForbidWords)
+
+    def IsInFilter(self, categoryList, tagList, title):
+        categoryList2 = Converter('zh-hans').convert(categoryList)
+        tagList2 = Converter('zh-hans').convert(tagList)
+        title2 = Converter('zh-hans').convert(title)
+        if Setting.IsForbidCategory.value:
+            for v in re.split(r"[,，]", categoryList2):
+                if v in self.allFilterStr:
+                    return True
+
+        if Setting.IsForbidTag.value:
+            for v in re.split(r"[,，]", tagList2):
+                if v in self.allFilterStr:
+                    return True
+
+        if Setting.IsForbidTitle.value:
+            for v in self.allFilterStr:
+                if v in title2:
+                    return True
+        return False
+
+    def retranslateUi(self, View):
+        Ui_Navigation.retranslateUi(self, self)
+        self.UpdateFilterStr()
+
+    def UpdateFilterStr(self):
+        self.allFilterStr.clear()
+        num = 0
+        for v in Setting.ForbidWords.value:
+            v2 = Converter('zh-hans').convert(v)
+            self.allFilterStr.add(v2)
+            num += 1
+        self.hideButton.setText("已选{}个".format(num))
+
+    def OpenProxy(self):
+        QtOwner().OpenProxy()
+        self.UpdateProxyName()
 
     def SwitchOffline(self, state):
         QtOwner().isOfflineModel = state
@@ -203,4 +248,42 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         icon2 = QIcon()
         icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.helpButton.setIcon(icon2)
+        return
+
+    def OpenForbidWords(self, bookId=""):
+        from view.tool.forbid_words_view import ForbidWordsView
+        w = ForbidWordsView(QtOwner().owner, self, bookId)
+
+        w.show()
+        w.AddFold.connect(self.AddCategory)
+        w.DelFold.connect(self.DelCategory)
+        w.MoveOkBack.connect(self.MoveCategory)
+
+    def AddCategory(self, words):
+        if words in Setting.AddForbidWords.value:
+            return
+        newList = Setting.AddForbidWords.value[::]
+        newList.append(words)
+        Setting.AddForbidWords.SetValue(newList)
+        self.UpdateFilterStr()
+        return
+
+    def DelCategory(self, words):
+        if words not in Setting.AddForbidWords.value:
+            return
+        newList = Setting.AddForbidWords.value[::]
+        newList.remove(words)
+        Setting.AddForbidWords.SetValue(newList)
+
+        words2 = Converter('zh-hans').convert(words)
+        if words2 not in Setting.ForbidWords.value:
+            return
+        newList = Setting.ForbidWords.value[::]
+        newList.remove(words2)
+        Setting.ForbidWords.SetValue(newList)
+        self.UpdateFilterStr()
+        return
+
+    def MoveCategory(self, words, list):
+        self.UpdateFilterStr()
         return

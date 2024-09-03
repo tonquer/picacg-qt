@@ -45,7 +45,19 @@ class ComicListWidget(BaseListWidget):
             if not self.isLocal:
                 action = popMenu.addAction(Str.GetStr(Str.Open))
                 action.triggered.connect(partial(self.OpenBookInfoHandler, index))
-
+                nas = QMenu(Str.GetStr(Str.NetNas))
+                nasDict = QtOwner().owner.nasView.nasDict
+                if not nasDict:
+                    action = nas.addAction(Str.GetStr(Str.CvSpace))
+                    action.setEnabled(False)
+                else:
+                    for k, v in nasDict.items():
+                        action = nas.addAction(v.showTitle)
+                        if QtOwner().nasView.IsInUpload(k, widget.id):
+                            action.setEnabled(False)
+                        action.triggered.connect(partial(self.NasUploadHandler, k, index))
+                popMenu.addMenu(nas)
+                
             action = popMenu.addAction(Str.GetStr(Str.LookCover))
             action.triggered.connect(partial(self.OpenPicture, index))
             action = popMenu.addAction(Str.GetStr(Str.ReDownloadCover))
@@ -100,7 +112,8 @@ class ComicListWidget(BaseListWidget):
         likesCount = str(v.get("totalLikes", ""))
         finished = v.get("finished")
         pagesCount = v.get("pagesCount")
-        self.AddBookItem(_id, title, categoryStr, url, path, likesCount, "", pagesCount, finished)
+        isShiled = QtOwner().IsInFilter(categoryStr, "", title)
+        self.AddBookItem(_id, title, categoryStr, url, path, likesCount, "", pagesCount, finished, isShiled=isShiled)
 
     def AddBookByLocal(self, v, category=""):
         from task.task_local import LocalData
@@ -115,9 +128,9 @@ class ComicListWidget(BaseListWidget):
         widget.picNum = v.picCnt
         widget.url = v.file
         if len(v.eps) > 0:
-            title += "<font color=#d5577c>{}</font>".format("(" + str(len(v.eps)) + "E)")
+            fontColor = "<font color=#d5577c>{}</font>".format("(" + str(len(v.eps)) + "E)")
         else:
-            title += "<font color=#d5577c>{}</font>".format("(" + str(v.picCnt) + "P)")
+            fontColor = "<font color=#d5577c>{}</font>".format("(" + str(v.picCnt) + "P)")
         if v.lastReadTime:
             categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.lastReadTime), Str.GetStr(Str.Looked))
 
@@ -132,7 +145,9 @@ class ComicListWidget(BaseListWidget):
             widget.categoryLabel.setVisible(True)
 
         widget.toolButton.setVisible(False)
-        widget.nameLable.setText(title)
+        # widget.nameLable.setText(title)
+        widget.SetTitle(title,fontColor)
+
         item = QListWidgetItem(self)
         item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
         item.setSizeHint(widget.sizeHint())
@@ -158,7 +173,14 @@ class ComicListWidget(BaseListWidget):
                     isShowToolButton = True
 
                 categories = Str.GetStr(Str.LastLook) + str(info.epsId + 1) + Str.GetStr(Str.Chapter) + "/" + str(v.epsCount) + Str.GetStr(Str.Chapter)
-        self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished, isShowToolButton=isShowToolButton)
+        if hasattr(v, "tags") and isinstance(v.tags, list):
+            tags = ",".join(v.tags)
+        elif hasattr(v, "tags") and isinstance(v.tags, str):
+            tags = v.tags
+        else:
+            tags = ""
+        isShiled = QtOwner().IsInFilter(categories, tags, title)
+        self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished, isShowToolButton=isShowToolButton, isShiled=isShiled)
 
     def AddBookItemByHistory(self, v):
         _id = v.bookId
@@ -168,9 +190,9 @@ class ComicListWidget(BaseListWidget):
         categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.tick), Str.GetStr(Str.Looked))
         self.AddBookItem(_id, title, categories, url, path)
 
-    def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished="", isShowToolButton=False):
+    def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished="", isShowToolButton=False, isShiled=False):
         index = self.count()
-        widget = ComicItemWidget()
+        widget = ComicItemWidget(isShiled=isShiled)
         widget.setFocusPolicy(Qt.NoFocus)
         widget.id = _id
         widget.title = title
@@ -200,18 +222,21 @@ class ComicListWidget(BaseListWidget):
             widget.starButton.setVisible(True)
         else:
             widget.starButton.setVisible(False)
-
+        fontColor = ""
         if pagesCount:
-            title += "<font color=#d5577c>{}</font>".format("("+str(pagesCount)+"P)")
-        if finished:
-            title += "<font color=#d5577c>{}</font>".format("({})".format(Str.GetStr(Str.ComicFinished)))
+            fontColor += "<font color=#d5577c>{}</font>".format("("+str(pagesCount)+"P)")
+        # if finished:
+        #     fontColor += "<font color=#d5577c>{}</font>".format("({})".format(Str.GetStr(Str.ComicFinished)))
 
-        widget.nameLable.setText(title)
+        # widget.nameLable.setText(title)
+
+        widget.SetTitle(title,fontColor)
         item = QListWidgetItem(self)
         item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
         item.setSizeHint(widget.sizeHint())
         self.setItemWidget(item, widget)
-        widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
+        if not isShiled:
+            widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
         widget.PicLoad.connect(self.LoadingPicture)
         # if url and config.IsLoadingPicture:
         #     self.AddDownloadTask(url, path, completeCallBack=self.LoadingPictureComplete, backParam=index)
@@ -257,6 +282,9 @@ class ComicListWidget(BaseListWidget):
         assert isinstance(item, QListWidgetItem)
         widget = self.itemWidget(item)
         assert isinstance(widget, ComicItemWidget)
+        if widget.isShiled:
+            QtOwner().ShowError(Str.GetStr(Str.Hidden))
+            return
         if self.isGame:
             QtOwner().OpenGameInfo(widget.id)
         elif self.isLocalEps:
@@ -351,5 +379,11 @@ class ComicListWidget(BaseListWidget):
     def MoveHandler(self, index):
         return
 
+    def NasUploadHandler(self, nasId, index):
+        widget = self.indexWidget(index)
+        if widget:
+            QtOwner().nasView.AddNasUpload(nasId, widget.id)
+        pass
+    
     def OpenDirHandler(self, index):
         return

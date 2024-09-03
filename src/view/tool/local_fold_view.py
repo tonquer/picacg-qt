@@ -121,7 +121,7 @@ class LocalFoldView(BaseMaskDialog, Ui_LocalFold, QtTaskBase):
             for i in range(self.listWidget.count()):
                 item = self.listWidget.item(i)
                 w = self.listWidget.itemWidget(item)
-                if i == 0:
+                if i <= 0:
                     continue
                 w.SetEditEnable(True)
                 # item.setFlags(item.flags() & ~Qt.ItemIsSelectable)
@@ -195,6 +195,13 @@ class LocalFoldView(BaseMaskDialog, Ui_LocalFold, QtTaskBase):
         name = w.lineEdit.text()
         if not name:
             return
+        if name == Str.GetStr(Str.All):
+            QtOwner().ShowError(Str.GetStr(Str.AlreadyHave))
+            return
+        if name == Str.GetStr(Str.CurRead):
+            QtOwner().ShowError(Str.GetStr(Str.AlreadyHave))
+            return
+
         if name in self.categoryBook:
             QtOwner().ShowError(Str.GetStr(Str.AlreadyHave))
             return

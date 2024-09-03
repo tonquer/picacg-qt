@@ -52,6 +52,7 @@ class ReadFrame(QFrame):
         self.baseValue = 0
 
 
+
     @property
     def readImg(self):
         return self._readImg()

@@ -29,6 +29,7 @@ except Exception as es:
     if hasattr(es, "msg"):
         config.ErrorMsg = es.msg
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QFontDatabase
 from PySide6 import QtWidgets  # 导入PySide6部件
 from PySide6.QtNetwork import QLocalSocket, QLocalServer
@@ -90,7 +91,6 @@ if __name__ == "__main__":
         if config.CanWaifu2x:
             waifu2x_vulkan.stop()
         sys.exit(-111)
-
     sts = app.exec()
     socket.close()
     main.Close()

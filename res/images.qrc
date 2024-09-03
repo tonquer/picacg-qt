@@ -85,6 +85,8 @@
     <file>icon/icon_picacg.png</file>
     <file>icon/clear_on.png</file>
     <file>icon/clear_off.png</file>
+    <file>icon/upload.svg</file>
+    <file>icon/shiled.svg</file>
   </qresource>
   <qresource prefix="icon">
     <file>theme/dark_pink/disabled/base.svg</file>

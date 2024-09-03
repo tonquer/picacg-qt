@@ -29,7 +29,7 @@ class Ui_SettingNew(object):
     def setupUi(self, SettingNew):
         if not SettingNew.objectName():
             SettingNew.setObjectName(u"SettingNew")
-        SettingNew.resize(880, 789)
+        SettingNew.resize(946, 789)
         SettingNew.setStyleSheet(u"")
         self.verticalLayout_2 = QVBoxLayout(SettingNew)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -541, 661, 2891))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -899, 727, 3096))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -470,6 +470,67 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_17.addLayout(self.horizontalLayout_22)
+
+        self.label_44 = QLabel(self.frame_14)
+        self.label_44.setObjectName(u"label_44")
+        font2 = QFont()
+        font2.setPointSize(12)
+        font2.setBold(True)
+        self.label_44.setFont(font2)
+
+        self.verticalLayout_17.addWidget(self.label_44)
+
+        self.horizontalLayout_34 = QHBoxLayout()
+        self.horizontalLayout_34.setObjectName(u"horizontalLayout_34")
+        self.titleLineBox = WheelComboBox(self.frame_14)
+        self.titleLineBox.addItem("")
+        self.titleLineBox.addItem("")
+        self.titleLineBox.addItem("")
+        self.titleLineBox.addItem("")
+        self.titleLineBox.addItem("")
+        self.titleLineBox.setObjectName(u"titleLineBox")
+
+        self.horizontalLayout_34.addWidget(self.titleLineBox)
+
+        self.horizontalSpacer_32 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_34.addItem(self.horizontalSpacer_32)
+
+
+        self.verticalLayout_17.addLayout(self.horizontalLayout_34)
+
+        self.label_45 = QLabel(self.frame_14)
+        self.label_45.setObjectName(u"label_45")
+        self.label_45.setFont(font2)
+
+        self.verticalLayout_17.addWidget(self.label_45)
+
+        self.horizontalLayout_35 = QHBoxLayout()
+        self.horizontalLayout_35.setObjectName(u"horizontalLayout_35")
+        self.categoryBox = WheelComboBox(self.frame_14)
+        self.categoryBox.addItem("")
+        self.categoryBox.addItem("")
+        self.categoryBox.setObjectName(u"categoryBox")
+
+        self.horizontalLayout_35.addWidget(self.categoryBox)
+
+        self.horizontalSpacer_33 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_35.addItem(self.horizontalSpacer_33)
+
+
+        self.verticalLayout_17.addLayout(self.horizontalLayout_35)
+
+        self.label_40 = QLabel(self.frame_14)
+        self.label_40.setObjectName(u"label_40")
+        self.label_40.setFont(font2)
+
+        self.verticalLayout_17.addWidget(self.label_40)
+
+        self.openglBox = QCheckBox(self.frame_14)
+        self.openglBox.setObjectName(u"openglBox")
+
+        self.verticalLayout_17.addWidget(self.openglBox)
 
 
         self.verticalLayout_4.addWidget(self.frame_14)
@@ -1192,6 +1253,11 @@ class Ui_SettingNew(object):
 
         self.horizontalLayout_10.addWidget(self.setDirButton)
 
+        self.setLogDirButton = QPushButton(self.frame_11)
+        self.setLogDirButton.setObjectName(u"setLogDirButton")
+
+        self.horizontalLayout_10.addWidget(self.setLogDirButton)
+
         self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_10.addItem(self.horizontalSpacer_8)
@@ -1303,6 +1369,37 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_13.addLayout(self.horizontalLayout_19)
 
+        self.horizontalLayout_31 = QHBoxLayout()
+        self.horizontalLayout_31.setObjectName(u"horizontalLayout_31")
+        self.label_42 = QLabel(self.frame_11)
+        self.label_42.setObjectName(u"label_42")
+        self.label_42.setMinimumSize(QSize(80, 0))
+
+        self.horizontalLayout_31.addWidget(self.label_42)
+
+        self.logLabel = QLabel(self.frame_11)
+        self.logLabel.setObjectName(u"logLabel")
+        self.logLabel.setMinimumSize(QSize(150, 0))
+
+        self.horizontalLayout_31.addWidget(self.logLabel)
+
+        self.openLogDir = QPushButton(self.frame_11)
+        self.openLogDir.setObjectName(u"openLogDir")
+
+        self.horizontalLayout_31.addWidget(self.openLogDir)
+
+        self.horizontalSpacer_28 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_31.addItem(self.horizontalSpacer_28)
+
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_31)
+
+        self.horizontalLayout_30 = QHBoxLayout()
+        self.horizontalLayout_30.setObjectName(u"horizontalLayout_30")
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_30)
+
 
         self.verticalLayout_4.addWidget(self.frame_11)
 
@@ -1380,10 +1477,23 @@ class Ui_SettingNew(object):
         self.showCloseButton1.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u6700\u5c0f\u5316\u5230\u6258\u76d8", None))
         self.label_2.setText(QCoreApplication.translate("SettingNew", u"\u5c01\u9762\u663e\u793a\u5927\u5c0f\uff08\u9ed8\u8ba4\u4e3a100%\uff09\uff1a", None))
         self.label_29.setText(QCoreApplication.translate("SettingNew", u"\u5206\u7c7b\u5c01\u9762\u5927\u5c0f\uff1a", None))
+        self.label_44.setText(QCoreApplication.translate("SettingNew", u"\u6807\u9898\u663e\u793a\u884c\u6570", None))
+        self.titleLineBox.setItemText(0, QCoreApplication.translate("SettingNew", u"\u4e0d\u663e\u793a", None))
+        self.titleLineBox.setItemText(1, QCoreApplication.translate("SettingNew", u"1\u884c", None))
+        self.titleLineBox.setItemText(2, QCoreApplication.translate("SettingNew", u"2\u884c", None))
+        self.titleLineBox.setItemText(3, QCoreApplication.translate("SettingNew", u"3\u884c", None))
+        self.titleLineBox.setItemText(4, QCoreApplication.translate("SettingNew", u"\u5168\u90e8", None))
+
+        self.label_45.setText(QCoreApplication.translate("SettingNew", u"\u5206\u7c7b\u663e\u793a", None))
+        self.categoryBox.setItemText(0, QCoreApplication.translate("SettingNew", u"\u663e\u793a", None))
+        self.categoryBox.setItemText(1, QCoreApplication.translate("SettingNew", u"\u4e0d\u663e\u793a", None))
+
+        self.label_40.setText(QCoreApplication.translate("SettingNew", u"\u56fe\u7247\u6d4f\u89c8\u8bbe\u7f6e", None))
+        self.openglBox.setText(QCoreApplication.translate("SettingNew", u"\u5f00\u542fOpenGL\u52a0\u901f", None))
         self.label_10.setText(QCoreApplication.translate("SettingNew", u"\u65e5\u5fd7\u7b49\u7ea7\uff1a", None))
         self.logutton0.setText(QCoreApplication.translate("SettingNew", u"Warn", None))
         self.logutton1.setText(QCoreApplication.translate("SettingNew", u"Info", None))
-        self.logutton2.setText(QCoreApplication.translate("SettingNew", u"Debug", None))
+        self.logutton2.setText(QCoreApplication.translate("SettingNew", u"Debug\uff08\u8be5\u8bbe\u7f6e\u5185\u542b\u654f\u611f\u6570\u636e\uff0clog\u6587\u4ef6\u8bf7\u52ff\u5206\u4eab\uff09", None))
         self.proxyLabel.setText(QCoreApplication.translate("SettingNew", u"\u4ee3\u7406", None))
         self.label_7.setText(QCoreApplication.translate("SettingNew", u"Http\u4ee3\u7406\uff1a", None))
         self.proxy0.setText(QCoreApplication.translate("SettingNew", u"\u65e0\u4ee3\u7406", None))
@@ -1461,6 +1571,7 @@ class Ui_SettingNew(object):
         self.saveNameButton2.setText(QCoreApplication.translate("SettingNew", u"\u4f5c\u8005\u540d\u5355\u72ec\u76ee\u5f55\uff08\u5982\u65e0\u4f5c\u8005\u540d\u5c06\u653e\u5165default\u76ee\u5f55\uff09", None))
         self.label_21.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84\uff08\u7f13\u5b58\u6587\u4ef6\u9700\u81ea\u5df1\u624b\u52a8\u6e05\u9664\uff09", None))
         self.setDirButton.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u76ee\u5f55", None))
+        self.setLogDirButton.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u65e5\u5fd7\u76ee\u5f55", None))
         self.label_3.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d", None))
         self.downloadDir.setText("")
         self.openDownloadDir.setText(QCoreApplication.translate("SettingNew", u"\u6253\u5f00\u76ee\u5f55", None))
@@ -1473,5 +1584,8 @@ class Ui_SettingNew(object):
         self.label_5.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u7f13\u5b58", None))
         self.waifu2xDir.setText("")
         self.openWaifu2xDir.setText(QCoreApplication.translate("SettingNew", u"\u6253\u5f00\u76ee\u5f55", None))
+        self.label_42.setText(QCoreApplication.translate("SettingNew", u"\u65e5\u5fd7", None))
+        self.logLabel.setText("")
+        self.openLogDir.setText(QCoreApplication.translate("SettingNew", u"\u6253\u5f00\u76ee\u5f55", None))
     # retranslateUi
 

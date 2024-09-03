@@ -4,8 +4,9 @@ from tools.tool import ToolUtil
 
 
 class BaseRes(object):
-    def __init__(self, data, isParseRes) -> None:
+    def __init__(self, data, isParseRes, reqName) -> None:
         super().__init__()
+        self.reqName = reqName
         self.raw = data
         self.data = {}
         self.code = 0
@@ -25,6 +26,9 @@ class BaseRes(object):
             data = self.GetText()
         else:
             data = ""
+        # 脱敏数据
+        # if self.reqName in ["LoginReq", "RegisterReq"]:
+        #     return "code:{}, raw:{}".format(self.code, data.replace("\n", "")[:20])
         return "code:{}, raw:{}".format(self.code, data.replace("\n", ""))
 
     def GetText(self):

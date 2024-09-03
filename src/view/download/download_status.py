@@ -28,11 +28,15 @@ class DownloadStatus(QtTaskBase):
             self._SetTaskWait(task)
         elif status == task.Pause:
             self._SetTaskPause(task)
-        elif status == task.Error or status == task.SpaceEps:
+        elif status == task.Error or status == task.SpaceEps or status == task.UnderReviewBook:
+            task.speedStr = ""
+            task.speed = 0
             self._SetDownloadTaskNone(task)
         elif status == task.Downloading:
             self._SetTaskDownloading(task)
         elif status == task.Success:
+            task.speedStr = ""
+            task.speed = 0
             self._SetDownloadTaskNone(task)
         else:
             assert False
@@ -48,7 +52,7 @@ class DownloadStatus(QtTaskBase):
             self._SetTaskConvertWait(task)
         elif status == task.Pause:
             self._SetTaskConvertPause(task)
-        elif status == task.Error or status == task.SpaceEps:
+        elif status == task.Error or status == task.SpaceEps or status == task.UnderReviewBook:
             self._SetTaskConvertNone(task)
         elif status == task.Converting:
             self._SetTaskConverting(task)
@@ -207,6 +211,12 @@ class DownloadStatus(QtTaskBase):
             self.UpdateTableItem(task)
         elif st == Str.SpaceEps:
             self.SetNewStatus(task, task.SpaceEps)
+        elif st == Str.UnderReviewBook:
+            from tools.book import BookMgr
+            info = BookMgr().GetBook(task.bookId)
+            if info:
+                task.title = info.title
+            self.SetNewStatus(task, task.UnderReviewBook)
         else:
             self.SetNewStatus(task, task.Error)
         return

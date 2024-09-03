@@ -122,7 +122,7 @@ class SqlServer(Singleton):
                 if taskType == self.TaskCheck:
                     try:
                         cur = conn.cursor()
-                        cur.execute("select * from words")
+                        cur.execute("select * from system")
                         data2 = pickle.dumps(str(int(isInit)))
                     except Exception as es:
                         Log.Error(es)
@@ -301,7 +301,7 @@ class SqlServer(Singleton):
         addData, tick, version = data
         timeArray = time.localtime(tick)
         strTime = "{}-{}-{} {}:{}:{}".format(timeArray.tm_year, timeArray.tm_mon, timeArray.tm_mday, timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
-        sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.UpdateVersion)
+        sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.DbVersion)
         cur.execute(sql)
 
         for book in addData:
@@ -393,6 +393,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def Search(wordList, isTitle, isAutor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
+        wordList = Converter('zh-hans').convert(wordList)
         data = ""
         sql2Data = ""
         wordList2 = wordList.split("|")
@@ -494,7 +495,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
-
+        wordList = Converter('zh-hans').convert(wordList)
         wordList2 = wordList.split(" ")
         exclude = []
         andWords = []
@@ -510,6 +511,10 @@ class SqlServer(Singleton):
                 exclude.append(words[1:])
             else:
                 orWords.append(words)
+
+        if not andWords and not exclude:
+            orWords = []
+            orWords.append(wordList)
 
         data = ""
         data2 = ""

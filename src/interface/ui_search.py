@@ -16,13 +16,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
-    QLabel, QListView, QListWidgetItem, QPushButton,
-    QSizePolicy, QSpacerItem, QSpinBox, QVBoxLayout,
-    QWidget)
+    QLabel, QListWidgetItem, QPushButton, QSizePolicy,
+    QSpacerItem, QSpinBox, QVBoxLayout, QWidget)
 
 from component.line_edit.search_line_edit import SearchLineEdit
 from component.list.comic_list_widget import ComicListWidget
-from component.list.tag_list_widget import TagListWidget
 
 class Ui_Search(object):
     def setupUi(self, Search):
@@ -79,30 +77,6 @@ class Ui_Search(object):
 
 
         self.verticalLayout.addWidget(self.searchWidget)
-
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.label_4 = QLabel(Search)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setMinimumSize(QSize(80, 0))
-        self.label_4.setMaximumSize(QSize(80, 40))
-
-        self.horizontalLayout_3.addWidget(self.label_4)
-
-        self.categoryList = TagListWidget(Search)
-        self.categoryList.setObjectName(u"categoryList")
-        self.categoryList.setMaximumSize(QSize(16777215, 40))
-        self.categoryList.setStyleSheet(u"QListWidget {background-color:transparent;}")
-        self.categoryList.setFrameShape(QFrame.StyledPanel)
-        self.categoryList.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.categoryList.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.categoryList.setFlow(QListView.LeftToRight)
-        self.categoryList.setSpacing(6)
-
-        self.horizontalLayout_3.addWidget(self.categoryList)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
@@ -270,7 +244,6 @@ class Ui_Search(object):
 #endif // QT_CONFIG(tooltip)
         self.searchLabel.setText(QCoreApplication.translate("Search", u"?", None))
         self.searchButton.setText(QCoreApplication.translate("Search", u"\u641c\u7d22", None))
-        self.label_4.setText(QCoreApplication.translate("Search", u"\u5c4f\u853d\uff1a", None))
         self.label_3.setText(QCoreApplication.translate("Search", u"\u5206\u7c7b\u8fc7\u6ee4\uff1a", None))
         self.unfoldButton.setText(QCoreApplication.translate("Search", u"\u5c55\u5f00", None))
         self.selectAllButton.setText(QCoreApplication.translate("Search", u"\u5168\u9009", None))

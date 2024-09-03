@@ -1,16 +1,18 @@
 import json
 import os
 import shutil
+from functools import partial
 
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QSize, QEvent, Signal
-from PySide6.QtGui import QColor, QFont, QPixmap, QIcon
+from PySide6.QtGui import QColor, QFont, QPixmap, QIcon, QCursor
 from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup, QMessageBox, \
-    QListView
+    QListView, QWidget, QMenu
 
 from component.layout.flow_layout import FlowLayout
 from config.setting import Setting
 from interface.ui_book_info import Ui_BookInfo
+from interface.ui_book_right import Ui_BookRight
 from qt_owner import QtOwner
 from server import req, ToolUtil, config, Status, Log
 from server.sql_server import SqlServer
@@ -36,16 +38,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.pictureData = None
         self.isFavorite = False
         self.isLike = False
-
         self.picture.installEventFilter(self)
-        self.title.setWordWrap(True)
-        self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.autorList.clicked.connect(self.ClickAutorItem)
-        self.autorList.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.autorList.customContextMenuRequested.connect(self.CopyClickAutorItem)
-
-        self.idLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
 
         self.starButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.starButton.setIconSize(QSize(50, 50))
@@ -55,12 +48,6 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.favoriteButton.setIconSize(QSize(50, 50))
         self.commentButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.commentButton.setIconSize(QSize(50, 50))
-        self.description.adjustSize()
-        self.title.adjustSize()
-
-        self.categoriesList.clicked.connect(self.ClickCategoriesItem)
-        self.categoriesList.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.categoriesList.customContextMenuRequested.connect(self.CopyClickCategoriesItem)
 
         # self.tagsList.clicked.connect(self.ClickTagsItem)
         # self.tagsList.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -96,6 +83,23 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.commentButton.clicked.connect(self.OpenComment)
         # self.epsListWidget.verticalScrollBar().rangeChanged.connect(self.ChageMaxNum)
         self.epsListWidget.setMinimumHeight(300)
+
+        self.title.setWordWrap(True)
+        self.title.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.autorList.clicked.connect(self.ClickAutorItem)
+        self.autorList.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.autorList.customContextMenuRequested.connect(self.CopyClickAutorItem)
+
+        self.idLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
+
+        self.description.adjustSize()
+        self.title.adjustSize()
+
+        self.categoriesList.clicked.connect(self.ClickCategoriesItem)
+        self.categoriesList.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.categoriesList.customContextMenuRequested.connect(self.CopyClickCategoriesItem)
+
         self.ReloadHistory.connect(self.LoadHistory)
 
         self.pageBox.currentIndexChanged.connect(self.UpdateEpsPageData)
@@ -103,6 +107,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.commandLinkButton.clicked.connect(self.OpenRecommend)
         self.readOffline.clicked.connect(self.StartRead2)
         self.flowLayout = FlowLayout(self.tagList)
+        self.uploadButton.clicked.connect(self.ShowMenu)
 
     def UpdateFavoriteIcon(self):
         p = QPixmap()
@@ -611,6 +616,35 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             text = widget.text()
             QtOwner().CopyText(text)
 
+    def ShowMenu(self):
+        if not self.bookName:
+            return
+        if not self.bookId:
+            return
+        toolMenu = QMenu(self.uploadButton)
+        toolMenu.clear()
+        title = self.bookName
+        if not title:
+            return
+        nasDict = QtOwner().owner.nasView.nasDict
+        action = toolMenu.addAction(Str.GetStr(Str.NetNas))
+        action.setEnabled(False)
+
+        if not nasDict:
+            action = toolMenu.addAction(Str.GetStr(Str.CvSpace))
+            action.setEnabled(False)
+        else:
+            for k, v in nasDict.items():
+                action = toolMenu.addAction(v.showTitle)
+                if QtOwner().nasView.IsInUpload(k, self.bookId):
+                    action.setEnabled(False)
+                action.triggered.connect(partial(self.NasUploadHandler, k, self.bookId))
+        toolMenu.exec(QCursor().pos())
+
+    def NasUploadHandler(self, nasId, bookId):
+        QtOwner().nasView.AddNasUpload(nasId, bookId)
+        return
+    
     def eventFilter(self, obj, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.LeftButton:

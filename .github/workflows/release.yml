@@ -43,28 +43,22 @@ jobs:
 
   macos:
     needs: [setup, release]
-    runs-on: macos-11
+    runs-on: macos-12
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_x64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.7
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller==4.5.1
-        pip install PySide6==6.1.3
-        pip install websocket-client==0.59.0
-        pip install requests==2.26.0
-        pip install urllib3==1.25.11
-        pip install pillow==8.3.2
-        pip install Pysocks==1.7.1
-        pip install natsort==8.2.0
+        pip install pyinstaller==4.6
         pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/waifu2x_vulkan-1.1.6-cp37-cp37m-macosx_10_15_x86_64.whl
+        pip install -r src/requirements_macos.txt
         brew install create-dmg
     - name: Build
       run: |
@@ -182,9 +176,9 @@ jobs:
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.7
 
@@ -228,25 +222,18 @@ jobs:
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows7_x64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.7
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller==4.5.1
+        pip install pyinstaller==4.6
         pip install pywin32==302
-        pip install PySide6==6.1.3
-        pip install websocket-client==0.59.0
-        pip install requests==2.26.0
-        pip install urllib3==1.25.11
-        pip install pillow==8.3.2
-        pip install waifu2x-vulkan==1.1.6
-        pip install Pysocks==1.7.1
-        pip install natsort==8.2.0
+        pip install -r src\requirements_win7.txt
     - name: Build
       run: |
         cd src
@@ -281,9 +268,9 @@ jobs:
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_x64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.7
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.7
     - name: Install dependencies

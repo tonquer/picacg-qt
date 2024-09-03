@@ -77,12 +77,30 @@ class Str:
     ErrorPath = 4005        # "错误的路径"
     NotPictureFile = 4006        # "没有发现图片文件"
     FileLock = 4007        # "文件已加密"
+    SpacePic = 4008        # "文件已加密"
 
+    NetNas = 5000             # 网络存储
     CvSuccess = 5001          # "完成"
-    CvReading = 5002          # 获取信息
-    CvWaifu2x = 5003          # 转换中
-    CvCompose = 5004          # 压缩中
-    CvError = 5005            # 出错了
+    CvWaitDown = 5002         # 等待下载
+    CvWaifu2x = 5003          # 等待Waifu2x
+    CvCompose = 5004          # 正在打包
+    CvUpload = 5005           # 正在上传
+    CvError = 5006            # 出错了
+    CvPause = 5007            # 暂停
+    CvLink = 5008             # 连接中
+    CvNotNet = 5009           # 没有网络存储
+    CvSpace = 5010            # 空
+    CvZipError = 5011         # 打包出错了
+
+    CvAuthError = 5101        # 验证失败
+    CvFileNotFound = 5102     # 本地文件未找到
+    CvNotSpace = 5103         # 空间不足
+    CvNotConnect = 5104       # 连接失败
+    CvNeedReset = 5105        # 需重新设置存储
+    CvNotFound = 5106         # 未找到网络存储
+    CvNotSupport = 5107         # 不支持该方法
+    CvMkdirFail = 5108         # 创建目录失败
+    CvAddUpload = 5109         # 添加上传成功
 
     LoadingPicture = 1     # "图片加载中..."
     LoadingFail = 2        # "图片加载失败"
@@ -237,6 +255,8 @@ class Str:
     ImportDouble = 152     # 导入多章节目录
     ImportLocal = 153      # 导入本地漫画中
     NotUpdateEps = 154      # 没有可更新的章节
+    CurRead = 155           # 正在看
+    CopyIdAndTitle = 156    # 复制ID和标题
 
 
     @classmethod
@@ -311,12 +331,29 @@ class Str:
         cls.strDict[cls.ErrorPath] = QCoreApplication.translate("cls.obj",  "错误的路径", None)
         cls.strDict[cls.NotPictureFile] = QCoreApplication.translate("cls.obj",  "没有发现图片文件", None)
         cls.strDict[cls.FileLock] = QCoreApplication.translate("cls.obj",  "文件已加密", None)
+        cls.strDict[cls.SpacePic] = QCoreApplication.translate("cls.obj",  "空白章节", None)
 
+        cls.strDict[cls.NetNas] = QCoreApplication.translate("cls.obj",  "网络存储", None)
         cls.strDict[cls.CvSuccess] = QCoreApplication.translate("cls.obj",  "完成", None)
-        cls.strDict[cls.CvReading] = QCoreApplication.translate("cls.obj",  "获取信息", None)
-        cls.strDict[cls.CvWaifu2x] = QCoreApplication.translate("cls.obj",  "转换中", None)
-        cls.strDict[cls.CvCompose] = QCoreApplication.translate("cls.obj",  "压缩中", None)
+        cls.strDict[cls.CvWaitDown] = QCoreApplication.translate("cls.obj",  "等待下载", None)
+        cls.strDict[cls.CvWaifu2x] = QCoreApplication.translate("cls.obj",  "等待Waifu2x", None)
+        cls.strDict[cls.CvCompose] = QCoreApplication.translate("cls.obj",  "正在打包", None)
+        cls.strDict[cls.CvUpload] = QCoreApplication.translate("cls.obj",  "正在上传", None)
         cls.strDict[cls.CvError] = QCoreApplication.translate("cls.obj",  "出错了", None)
+        cls.strDict[cls.CvPause] = QCoreApplication.translate("cls.obj",  "暂停", None)
+        cls.strDict[cls.CvLink] = QCoreApplication.translate("cls.obj",  "连接中", None)
+        cls.strDict[cls.CvNotNet] = QCoreApplication.translate("cls.obj",  "没有网络存储", None)
+        cls.strDict[cls.CvSpace] = QCoreApplication.translate("cls.obj",  "空", None)
+        cls.strDict[cls.CvZipError] = QCoreApplication.translate("cls.obj",  "打包出错了", None)
+        cls.strDict[cls.CvAuthError] = QCoreApplication.translate("cls.obj",  "验证失败", None)
+        cls.strDict[cls.CvFileNotFound] = QCoreApplication.translate("cls.obj",  "本地文件未找到", None)
+        cls.strDict[cls.CvNotSpace] = QCoreApplication.translate("cls.obj",  "空间不足", None)
+        cls.strDict[cls.CvNotConnect] = QCoreApplication.translate("cls.obj",  "连接失败", None)
+        cls.strDict[cls.CvNeedReset] = QCoreApplication.translate("cls.obj",  "需重新设置存储", None)
+        cls.strDict[cls.CvNotFound] = QCoreApplication.translate("cls.obj",  "未找到网络存储", None)
+        cls.strDict[cls.CvNotSupport] = QCoreApplication.translate("cls.obj",  "不支持该方法", None)
+        cls.strDict[cls.CvMkdirFail] = QCoreApplication.translate("cls.obj",  "创建目录失败", None)
+        cls.strDict[cls.CvAddUpload] = QCoreApplication.translate("cls.obj",  "添加上传成功", None)
 
         cls.strDict[cls.Menu] = QCoreApplication.translate("cls.obj",  "菜单", None)
         cls.strDict[cls.FullSwitch] = QCoreApplication.translate("cls.obj",  "全屏切换", None)
@@ -463,6 +500,8 @@ class Str:
         cls.strDict[cls.ImportDouble] = QCoreApplication.translate("cls.obj", "导入多章节目录", None)
         cls.strDict[cls.ImportLocal] = QCoreApplication.translate("cls.obj", "导入到本地漫画中", None)
         cls.strDict[cls.NotUpdateEps] = QCoreApplication.translate("cls.obj", "没有可更新章节", None)
+        cls.strDict[cls.CurRead] = QCoreApplication.translate("cls.obj", "正在看", None)
+        cls.strDict[cls.CopyIdAndTitle] = QCoreApplication.translate("cls.obj", "复制ID和标题", None)
 
     @classmethod
     def GetStr(cls, enumType, defualt=""):

@@ -50,6 +50,12 @@ class Ui_DownloadAll(object):
 
         self.horizontalLayout_4.addWidget(self.downButton)
 
+        self.uploadButton = QPushButton(DownloadAll)
+        self.uploadButton.setObjectName(u"uploadButton")
+        self.uploadButton.setMaximumSize(QSize(150, 30))
+
+        self.horizontalLayout_4.addWidget(self.uploadButton)
+
 
         self.verticalLayout.addLayout(self.horizontalLayout_4)
 
@@ -97,6 +103,7 @@ class Ui_DownloadAll(object):
 #if QT_CONFIG(shortcut)
         self.downButton.setShortcut(QCoreApplication.translate("DownloadAll", u"Return", None))
 #endif // QT_CONFIG(shortcut)
+        self.uploadButton.setText(QCoreApplication.translate("DownloadAll", u"\u7f51\u7edc\u5b58\u50a8", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("DownloadAll", u"\u9009\u62e9", None));
         ___qtablewidgetitem1 = self.tableWidget.horizontalHeaderItem(1)

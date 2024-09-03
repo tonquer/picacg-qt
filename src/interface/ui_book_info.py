@@ -33,7 +33,7 @@ class Ui_BookInfo(object):
     def setupUi(self, BookInfo):
         if not BookInfo.objectName():
             BookInfo.setObjectName(u"BookInfo")
-        BookInfo.resize(914, 691)
+        BookInfo.resize(892, 719)
         BookInfo.setStyleSheet(u"QToolButton\n"
 "{\n"
 "background-color:transparent;\n"
@@ -70,7 +70,7 @@ class Ui_BookInfo(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 894, 671))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 872, 699))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.gridLayout_3 = QGridLayout()
@@ -360,12 +360,23 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_2.addWidget(self.downloadButton)
 
+        self.uploadButton = QToolButton(self.tab)
+        self.uploadButton.setObjectName(u"uploadButton")
+        self.uploadButton.setMinimumSize(QSize(40, 40))
+        icon4 = QIcon()
+        icon4.addFile(u":/png/icon/upload.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.uploadButton.setIcon(icon4)
+        self.uploadButton.setIconSize(QSize(50, 50))
+        self.uploadButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+
+        self.horizontalLayout_2.addWidget(self.uploadButton)
+
         self.clearButton = QToolButton(self.tab)
         self.clearButton.setObjectName(u"clearButton")
         self.clearButton.setMinimumSize(QSize(40, 40))
-        icon4 = QIcon()
-        icon4.addFile(u":/png/icon/clear_off.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.clearButton.setIcon(icon4)
+        icon5 = QIcon()
+        icon5.addFile(u":/png/icon/clear_off.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.clearButton.setIcon(icon5)
         self.clearButton.setIconSize(QSize(50, 50))
         self.clearButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
 
@@ -522,6 +533,7 @@ class Ui_BookInfo(object):
         self.favoriteButton.setText(QCoreApplication.translate("BookInfo", u"\u6536\u85cf", None))
         self.commentButton.setText(QCoreApplication.translate("BookInfo", u"\u8bc4\u8bba", None))
         self.downloadButton.setText(QCoreApplication.translate("BookInfo", u"\u4e0b\u8f7d", None))
+        self.uploadButton.setText(QCoreApplication.translate("BookInfo", u"\u5b58\u50a8", None))
         self.clearButton.setText(QCoreApplication.translate("BookInfo", u"\u6e05\u7406", None))
         self.startRead.setText(QCoreApplication.translate("BookInfo", u"\u5f00\u59cb\u9605\u8bfb", None))
         self.pageLabel.setText(QCoreApplication.translate("BookInfo", u"\u5206\u9875\uff1a", None))

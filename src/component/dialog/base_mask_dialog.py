@@ -66,7 +66,7 @@ class BaseMaskDialog(QDialog):
         opacityAni.setEasingCurve(QEasingCurve.InSine)
         opacityAni.finished.connect(opacityEffect.deleteLater)
         opacityAni.start()
-        super().showEvent(e)
+        QWidget.showEvent(self, e)
 
     # def closeEvent(self, e):
     #     """ 淡出 """

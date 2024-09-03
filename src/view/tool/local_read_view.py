@@ -10,7 +10,7 @@ from natsort import natsorted
 from interface.ui_index import Ui_Index
 from interface.ui_local import Ui_Local
 from qt_owner import QtOwner
-from server import  Status, time
+from server import Status, time
 from task.qt_task import QtTaskBase
 from task.task_local import LocalData
 from tools.str import Str
@@ -63,14 +63,16 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.bookList.ReDownloadPicture = self.LoadingPicture
         self.bookList.LoadCallBack = self.LoadNextPage
         self.lastPath = ""
-
+        self.sortKeyCombox.setCurrentIndex(1)
         self.sortIdCombox.currentIndexChanged.connect(self.Init)
         self.sortKeyCombox.currentIndexChanged.connect(self.Init)
+
         self.setAcceptDrops(True)
         self.categoryBook = {}
         self.bookCategory = {}
         self.tagsList.clicked.connect(self.ClickTagsItem)
         self.curSelectCategory = ""
+        self.isCurRead = False
         self.bookList.isMoveMenu = True
         self.bookList.MoveHandler = self.MoveCallBack
         self.bookList.openMenu = True
@@ -78,6 +80,8 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.lineEdit.textChanged.connect(self.SearchTextChange)
         self.delAll.clicked.connect(self.ShowDelAll)
         self.searchText = ""
+
+        self.sortAllBookIds = []
 
     def SearchTextChange(self, text):
         self.searchText = text
@@ -87,6 +91,9 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         self.categoryBook, self.bookCategory = self.db.LoadCategory()
         self.tagsList.clear()
         self.tagsList.AddItem(Str.GetStr(Str.All), True)
+        item = self.tagsList.AddItem(Str.GetStr(Str.CurRead), True)
+        if self.isCurRead:
+            item.setSelected(True)
 
         for category in self.categoryBook.keys():
             item = self.tagsList.AddItem(category, True)
@@ -107,44 +114,56 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             oldV = oldDict.get(v.id)
             if oldV:
                 v.CopyData(oldV)
+        self.ResetSortBookIds()
         self.ShowPages()
 
-    @time_me
-    def ShowPages(self, page=1):
+    def ResetSortBookIds(self):
         if self.curSelectCategory:
             allBookId = self.categoryBook.get(self.curSelectCategory, [])
         else:
             allBookId = self.allBookInfos.keys()
-
         allBookId2 = self.db.Search(self.searchText)
         showIds = list(set(allBookId) & set(allBookId2))
+        self.sortAllBookIds = []
+        allBookInfos = []
+        for i in showIds:
+            v = self.allBookInfos.get(i)
+            if v:
+                if self.isCurRead:
+                    if v.lastReadTime > 0:
+                        allBookInfos.append(v)
+                else:
+                    allBookInfos.append(v)
+
+        for v in self.ToSortData(allBookInfos):
+            if v.id in showIds:
+                self.sortAllBookIds.append(v.id)
+
+    @time_me
+    def ShowPages(self, page=1):
         showLen = 30
-        maxPage = len(showIds) // showLen + 1
-        showStart = (page-1)*showLen
-        showEnd = page * showLen - 1
+        maxPage = len(self.sortAllBookIds) // showLen + 1
+        showStart = (page - 1) * showLen
+        showEnd = page * showLen
+
         self.spinBox.setValue(page)
         self.spinBox.setMaximum(maxPage)
         self.bookList.UpdatePage(page, maxPage)
         self.pages.setText(self.bookList.GetPageStr())
-        self.nums.setText("{}：{} ".format(Str.GetStr(Str.FavoriteNum), len(self.allBookInfos)))
-        sortShowIds = []
-        for v in self.ToSortData(list(self.allBookInfos.values())):
-            if v.id in showIds:
-                sortShowIds.append(v.id)
+        self.nums.setText("{}：{} ".format(Str.GetStr(Str.FavoriteNum), len(self.sortAllBookIds)))
 
-        showIds2 = sortShowIds[showStart:showEnd]
+        showIds2 = self.sortAllBookIds[showStart:showEnd]
         for id in showIds2:
             v = self.allBookInfos.get(id)
             if v:
                 categoryList = self.bookCategory.get(v.id, [])
                 categoryStr = ",".join(categoryList)
-
                 if not self.searchText or self.searchText in v.title:
                     self.bookList.AddBookByLocal(v, categoryStr)
         return
 
     def LoadNextPage(self):
-        self.ShowPages(self.bookList.page+1)
+        self.ShowPages(self.bookList.page + 1)
 
     def JumpPage(self):
         page = int(self.spinBox.text())
@@ -162,11 +181,20 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         widget = self.tagsList.itemWidget(item)
         text = widget.text()
         # print(text)
+        self.isCurRead = False
         if text == "+":
             self.OpenFavoriteFold()
-        elif text == Str.GetStr(Str.All):
+        elif index == 0:
             self.curSelectCategory = ""
             self.Init()
+            self.sortIdCombox.setCurrentIndex(0)
+            self.sortKeyCombox.setCurrentIndex(1)
+        elif index == 1:
+            self.curSelectCategory = ""
+            self.isCurRead = True
+            self.Init()
+            self.sortIdCombox.setCurrentIndex(0)
+            self.sortKeyCombox.setCurrentIndex(0)
         else:
             self.curSelectCategory = text
             self.Init()
@@ -182,7 +210,7 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         if sortKeyID == 0:
             datas.sort(key=lambda a: a.lastReadTime, reverse=isRevert)
         elif sortKeyID == 2:
-            datas = natsorted(datas, key=lambda a:a.title, reverse=isRevert)
+            datas = natsorted(datas, key=lambda a: a.title, reverse=isRevert)
         else:
             datas.sort(key=lambda a: a.addTime, reverse=isRevert)
         return datas
@@ -344,8 +372,10 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
                 self.AddDataToDB(v.id)
         QtOwner().ShowMsg("已添加{}本到书架, {}本存在已忽略".format(addNum, alreadyNum))
         self.lineEdit.setText("")
+        self.isCurRead = False
         self.sortIdCombox.setCurrentIndex(0)
         self.sortKeyCombox.setCurrentIndex(1)
+        self.Init()
         return
 
     # 导入单本Zip
@@ -379,11 +409,12 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
     # 批量导入下载目录
     def ImportDownloadDirs(self, dirs):
+        self.curSelectCategory = ""
         self.AddLocalTaskLoad(LocalData.Type6, dirs, "", self.CheckAction1LoadBack)
         return
-    
+
     def dragEnterEvent(self, event):
-        if(event.mimeData().hasUrls()):
+        if (event.mimeData().hasUrls()):
             event.acceptProposedAction()
         else:
             event.ignore()
@@ -392,8 +423,8 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
         return
 
     def dropEvent(self, event):
-        mimeData  = event.mimeData()
-        if(mimeData.hasUrls()):
+        mimeData = event.mimeData()
+        if (mimeData.hasUrls()):
             urls = mimeData.urls()
             QtOwner().ShowLoading()
             fileNames = [str(i.toLocalFile()) for i in urls]

@@ -22,6 +22,8 @@ class QtDownloadTask(object):
     Error = Str.Error
     Cache = Str.Cache
     SpaceEps = Str.SpaceEps
+    UnderReviewBook = Str.UnderReviewBook
+    # Str.UnderReviewBook
 
     def __init__(self, downloadId=0):
         self.downloadId = downloadId
@@ -204,32 +206,45 @@ class TaskDownload(TaskBase, QtTaskBase):
                 return
 
             isReset = False
+            st = data['st']
             if data["st"] != Status.Ok:
                 task.resetCnt += 1
 
+                if data['st'] == Status.UnderReviewBook:
+                    self.SetTaskStatus(taskId, backData, task.UnderReviewBook)
+                    return
+
                 # 失败了
-                if task.resetCnt >= 5:
+                if task.resetCnt >= 10:
                     self.SetTaskStatus(taskId, backData, task.Error)
                     return
 
                 isReset = True
             else:
+                # 防止死循环
+                if task.resetCnt >= 50:
+                    self.SetTaskStatus(taskId, backData, task.Error)
+                    return
                 task.status = newStatus
+
             info = BookMgr().GetBook(task.bookId)
             if task.status == task.Waiting:
-                isReset or self.SetTaskStatus(taskId, backData, task.Reading)
+                # isReset or self.SetTaskStatus(taskId, backData, task.Reading)
                 if not info:
                     if task.isLocal:
                         task.isLocal = False
+                        task.resetCnt += 1
                         self.AddSqlTask("book", task.bookId, SqlServer.TaskTypeCacheBook, self.HandlerDownload, (taskId, task.Waiting))
                     else:
+                        task.resetCnt += 1
                         self.AddHttpTask(req.GetComicsBookReq(task.bookId), self.HandlerDownload, (taskId, task.Reading), task.cleanFlag)
                     return
 
                 task.status = task.Reading
             if task.status == task.Reading:
-                isReset or self.SetTaskStatus(taskId, backData, task.ReadingEps)
+                # isReset or self.SetTaskStatus(taskId, backData, task.ReadingEps)
                 if info.maxLoadEps <= 0:
+                    task.resetCnt += 1
                     self.AddHttpTask(req.GetComicsBookEpsReq(task.bookId), self.HandlerDownload, (taskId, task.Reading), task.cleanFlag)
                     return
 
@@ -239,13 +254,16 @@ class TaskDownload(TaskBase, QtTaskBase):
 
                 if task.epsId not in info.epsDict:
                     loadPage = (info.epsCount - task.epsId - 1) // info.epsLimit
+
+                    task.resetCnt += 1
                     self.AddHttpTask(req.GetComicsBookEpsReq(task.bookId, loadPage+1), self.HandlerDownload, (taskId, task.Reading), task.cleanFlag)
                     return
 
                 task.status = task.ReadingEps
             if task.status == task.ReadingEps:
-                isReset or self.SetTaskStatus(taskId, backData, task.ReadingPicture)
+                # isReset or self.SetTaskStatus(taskId, backData, task.ReadingPicture)
                 if task.epsId not in info.epsDict:
+                    Log.Warn("eps space error, book_id:{}, eps_id:{}".format(task.bookId, task.epsId))
                     self.SetTaskStatus(taskId, backData, task.SpaceEps)
                     return
 
@@ -253,14 +271,17 @@ class TaskDownload(TaskBase, QtTaskBase):
                 assert isinstance(epsInfo, BookEps)
 
                 if epsInfo.isSpace:
+                    Log.Warn("eps space error, book_id:{}, eps:{}".format(task.bookId, epsInfo))
                     self.SetTaskStatus(taskId, backData, task.SpaceEps)
                     return
 
                 if epsInfo.maxPicPages <= 0:
+                    task.resetCnt += 1
                     self.AddHttpTask(req.GetComicsBookOrderReq(task.bookId, task.epsId+1), self.HandlerDownload, (taskId, task.ReadingEps), task.cleanFlag)
                     return
                 if task.index not in epsInfo.pics:
                     loadPage = task.index // epsInfo.picLimit + 1
+                    task.resetCnt += 1
                     self.AddHttpTask(req.GetComicsBookOrderReq(task.bookId, task.epsId+1, loadPage), self.HandlerDownload, (taskId, task.ReadingPicture), task.cleanFlag)
                     return
 
@@ -269,6 +290,11 @@ class TaskDownload(TaskBase, QtTaskBase):
                 epsInfo = info.epsDict[task.epsId]
                 assert isinstance(epsInfo, BookEps)
                 if epsInfo.isSpace:
+                    Log.Warn("eps space error, book_id:{}, eps:{}".format(task.bookId, epsInfo))
+                    self.SetTaskStatus(taskId, backData, task.SpaceEps)
+                    return
+                if epsInfo.maxPics <= 0:
+                    Log.Warn("eps maxPics error, book_id:{}, eps:{}".format(task.bookId, epsInfo))
                     self.SetTaskStatus(taskId, backData, task.SpaceEps)
                     return
 
@@ -351,7 +377,7 @@ class TaskDownload(TaskBase, QtTaskBase):
                 task.status = st
             # print("st:{} {}".format(task.status, data))
             status = task.status
-            if status == task.Downloading or status == task.Error or status == task.SpaceEps or status == task.Cache:
+            if status == task.Downloading or status == task.Error or status == task.SpaceEps or status == task.Cache or status == task.UnderReviewBook:
                 self.ClearDownloadTask(downloadId)
         except Exception as es:
             Log.Error(es)

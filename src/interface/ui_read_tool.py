@@ -40,7 +40,7 @@ class Ui_ReadImg(object):
         self.scrollArea22.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 310, 825))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 309, 827))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
@@ -62,28 +62,54 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.label_4)
 
-        self.resolutionLabel = QLabel(self.scrollAreaWidgetContents)
-        self.resolutionLabel.setObjectName(u"resolutionLabel")
-        self.resolutionLabel.setStyleSheet(u"")
-
-        self.verticalLayout.addWidget(self.resolutionLabel)
-
-        self.sizeLabel = QLabel(self.scrollAreaWidgetContents)
-        self.sizeLabel.setObjectName(u"sizeLabel")
-
-        self.verticalLayout.addWidget(self.sizeLabel)
-
-        self.stateLable = QLabel(self.scrollAreaWidgetContents)
-        self.stateLable.setObjectName(u"stateLable")
-
-        self.verticalLayout.addWidget(self.stateLable)
-
+        self.gridLayout_3 = QGridLayout()
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.epsLabel = QLabel(self.scrollAreaWidgetContents)
         self.epsLabel.setObjectName(u"epsLabel")
         self.epsLabel.setMinimumSize(QSize(0, 20))
         self.epsLabel.setMaximumSize(QSize(16777215, 20))
 
-        self.verticalLayout.addWidget(self.epsLabel)
+        self.gridLayout_3.addWidget(self.epsLabel, 2, 0, 1, 1)
+
+        self.stateLable = QLabel(self.scrollAreaWidgetContents)
+        self.stateLable.setObjectName(u"stateLable")
+
+        self.gridLayout_3.addWidget(self.stateLable, 1, 0, 1, 1)
+
+        self.sizeLabel = QLabel(self.scrollAreaWidgetContents)
+        self.sizeLabel.setObjectName(u"sizeLabel")
+
+        self.gridLayout_3.addWidget(self.sizeLabel, 0, 0, 1, 1)
+
+        self.resolutionLabel = QLabel(self.scrollAreaWidgetContents)
+        self.resolutionLabel.setObjectName(u"resolutionLabel")
+        self.resolutionLabel.setMaximumSize(QSize(40, 16777215))
+        self.resolutionLabel.setStyleSheet(u"")
+
+        self.gridLayout_3.addWidget(self.resolutionLabel, 3, 0, 1, 1)
+
+        self.sizeLabel2 = QLabel(self.scrollAreaWidgetContents)
+        self.sizeLabel2.setObjectName(u"sizeLabel2")
+
+        self.gridLayout_3.addWidget(self.sizeLabel2, 0, 1, 1, 1)
+
+        self.stateLable2 = QLabel(self.scrollAreaWidgetContents)
+        self.stateLable2.setObjectName(u"stateLable2")
+
+        self.gridLayout_3.addWidget(self.stateLable2, 1, 1, 1, 1)
+
+        self.epsLabel2 = QLabel(self.scrollAreaWidgetContents)
+        self.epsLabel2.setObjectName(u"epsLabel2")
+
+        self.gridLayout_3.addWidget(self.epsLabel2, 2, 1, 1, 1)
+
+        self.resolutionLabel2 = QLabel(self.scrollAreaWidgetContents)
+        self.resolutionLabel2.setObjectName(u"resolutionLabel2")
+
+        self.gridLayout_3.addWidget(self.resolutionLabel2, 3, 1, 1, 1)
+
+
+        self.verticalLayout.addLayout(self.gridLayout_3)
 
         self.line = QFrame(self.scrollAreaWidgetContents)
         self.line.setObjectName(u"line")
@@ -489,10 +515,14 @@ class Ui_ReadImg(object):
     def retranslateUi(self, ReadImg):
         ReadImg.setWindowTitle(QCoreApplication.translate("ReadImg", u"\u5de5\u5177", None))
         self.label_4.setText(QCoreApplication.translate("ReadImg", u"\u56fe\u7247\u4fe1\u606f", None))
-        self.resolutionLabel.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
-        self.sizeLabel.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
-        self.stateLable.setText(QCoreApplication.translate("ReadImg", u"\u72b6\u6001\uff1a", None))
         self.epsLabel.setText(QCoreApplication.translate("ReadImg", u"\u4f4d\u7f6e\uff1a", None))
+        self.stateLable.setText(QCoreApplication.translate("ReadImg", u"\u72b6\u6001\uff1a", None))
+        self.sizeLabel.setText(QCoreApplication.translate("ReadImg", u"\u5927\u5c0f\uff1a", None))
+        self.resolutionLabel.setText(QCoreApplication.translate("ReadImg", u"\u5206\u8fa8\u7387\uff1a", None))
+        self.sizeLabel2.setText("")
+        self.stateLable2.setText("")
+        self.epsLabel2.setText("")
+        self.resolutionLabel2.setText("")
         self.label.setText(QCoreApplication.translate("ReadImg", u"Waifu2x\u53c2\u6570", None))
         self.modelLabel.setText(QCoreApplication.translate("ReadImg", u"CUNET", None))
         self.modelBox.setItemText(0, QCoreApplication.translate("ReadImg", u"\u81ea\u52a8", None))

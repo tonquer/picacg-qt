@@ -20,13 +20,16 @@ class BookEps(object):
         self.title = ""    # 章节名
         self.order = 0     # 排序
         self.id = ""       # id
-        self.maxPics = 1   # 总页数
+        self.maxPics = 0   # 总页数
         self.pics = {}     # 图片
 
         self.curLoadPicPages = set()
         self.maxPicPages = 0
         self.isSpace = False   # 某些章节出现了空白的问题,导致死循环了
         self.picLimit = 0
+
+    def __str__(self):
+        return "order:{}, maxPics:{}, pics:{}, curLoadPicPages:{}, maxPicPages:{}, picLimit:{}".format(self.order, self.maxPics, len(self.pics), self.curLoadPicPages, self.maxPicPages, self.picLimit)
 
 
 # 一本书
@@ -197,6 +200,7 @@ class BookMgr(Singleton):
 
             # 空白章节
             if epsInfo.maxPics == 0:
+                Log.Warn("eps space, book_id:{}, data:{}".format(bookId, r.GetText()))
                 epsInfo.isSpace = True
 
             # 重新初始化

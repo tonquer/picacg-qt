@@ -126,57 +126,6 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>屏蔽：</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="TagListWidget" name="categoryList">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QListWidget {background-color:transparent;}</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="verticalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-       <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
-       </property>
-       <property name="flow">
-        <enum>QListView::LeftToRight</enum>
-       </property>
-       <property name="spacing">
-        <number>6</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -448,11 +397,6 @@
    <class>ComicListWidget</class>
    <extends>QListWidget</extends>
    <header location="global">component.list.comic_list_widget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>TagListWidget</class>
-   <extends>QListWidget</extends>
-   <header location="global">component.list.tag_list_widget.h</header>
   </customwidget>
   <customwidget>
    <class>SearchLineEdit</class>

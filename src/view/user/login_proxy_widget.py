@@ -6,6 +6,7 @@ from PySide6.QtCore import QUrl
 from PySide6.QtGui import QDesktopServices
 
 from config import config
+from config.global_config import GlobalConfig
 from config.setting import Setting
 from interface.ui_login_proxy_widget import Ui_LoginProxyWidget
 from qt_owner import QtOwner
@@ -34,6 +35,8 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radioApiGroup.setId(self.radioButton_4, 4)
         self.radioApiGroup.setId(self.radioButton_5, 5)
         self.radioApiGroup.setId(self.radioButton_6, 6)
+        # self.radioApiGroup.setId(self.radioButton_7, 7)
+        # self.radioApiGroup.setId(self.radioButton_8, 8)
 
         self.radioImgGroup.setId(self.radio_img_1, 1)
         self.radioImgGroup.setId(self.radio_img_2, 2)
@@ -41,9 +44,12 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radioImgGroup.setId(self.radio_img_4, 4)
         self.radioImgGroup.setId(self.radio_img_5, 5)
         self.radioImgGroup.setId(self.radio_img_6, 6)
-        config.Address[1] = Setting.SaveCacheAddress.value
+        # self.radioImgGroup.setId(self.radio_img_7, 7)
+        # self.radioImgGroup.setId(self.radio_img_8, 8)
+        # config.Address[1] = Setting.SaveCacheAddress.value
 
         self.LoadSetting()
+        self.InitImgUrlList()
         self.UpdateServer()
         self.commandLinkButton.clicked.connect(self.OpenUrl)
 
@@ -57,14 +63,42 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.radio_img_5.setEnabled(True)
 
         self.maxNum = 6
+        self.lastResult = {}
+        self.LoadHistory()
 
     def Init(self):
         self.LoadSetting()
+        self.InitImgUrlList()
         proxy = urllib.request.getproxies()
         if isinstance(proxy, dict) and proxy.get("http"):
+            self.proxyLabel.setText(proxy.get("http", ""))
             self.checkLabel.setVisible(False)
         else:
             self.checkLabel.setVisible(True)
+
+    def InitImgUrlList(self):
+        self.imgCombox.clear()
+        self.imgCombox.addItem("")
+        if GlobalConfig.ImageUrl.value not in  GlobalConfig.ImageServerList.value:
+            GlobalConfig.ImageUrl.value = ""
+        for index, name in enumerate(GlobalConfig.ImageServerList.value):
+            self.imgCombox.addItem(name)
+            if name == GlobalConfig.ImageUrl.value:
+                self.imgCombox.setCurrentIndex(index+1)
+        return
+
+    def LoadHistory(self):
+        if not Setting.LastProxyResult.value:
+            return
+        try:
+            for k, v in Setting.LastProxyResult.value.items():
+                if hasattr(self, k):
+                    getattr(self, k).setText(str(v))
+        except Exception as es:
+            Log.Error(es)
+
+    def SaveHistory(self):
+        Setting.LastProxyResult.SetValue(dict(self.lastResult))
 
     def ClickButton(self):
         self.SaveSetting()
@@ -85,14 +119,19 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radioButton_4.setEnabled(enabled)
         self.radioButton_5.setEnabled(enabled)
         self.radioButton_6.setEnabled(enabled)
+        # self.radioButton_7.setEnabled(enabled)
+        # self.radioButton_8.setEnabled(enabled)
         self.radio_img_1.setEnabled(enabled)
         self.radio_img_2.setEnabled(enabled)
         self.radio_img_3.setEnabled(enabled)
         self.radio_img_4.setEnabled(enabled)
         self.radio_img_5.setEnabled(enabled)
         self.radio_img_6.setEnabled(enabled)
+        # self.radio_img_7.setEnabled(enabled)
+        # self.radio_img_8.setEnabled(enabled)
         self.httpsBox.setEnabled(enabled)
         self.ipv6Check.setEnabled(enabled)
+        self.imgCombox.setEnabled(enabled)
         
         if not self.isShowProxy5:
             self.radio_img_5.setEnabled(False)
@@ -112,11 +151,15 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         self.speedTest = [("", "", False, False, 1)]
         i = 2
-        adress = config.AddressIpv6[0] if self.ipv6Check.isChecked() else config.Address[0]
-        self.speedTest.append((adress, config.ImageServer2, False, False, i))
+
+        adress = GlobalConfig.GetAddress(2)
+        image = GlobalConfig.GetImageAdress(2)
+        self.speedTest.append((adress, image, False, False, i))
         i += 1
-        adress1 = config.AddressIpv6[1] if self.ipv6Check.isChecked() else config.Address[1]
-        self.speedTest.append((adress1, config.ImageServer3, False, False, i))
+
+        adress1 = GlobalConfig.GetAddress(3)
+        image = GlobalConfig.GetImageAdress(3)
+        self.speedTest.append((adress1, image, False, False, i))
         i += 1
 
         PreferCDNIP = self.cdn_api_ip.text()
@@ -132,9 +175,21 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.speedTest.append(("", "", False, (config.ProxyApiDomain2, config.ProxyImgDomain2), i))
         i += 1
 
+        # adress1 = GlobalConfig.GetAddress(7)
+        # image = GlobalConfig.GetImageServer(7)
+        # self.speedTest.append((adress1, image, False, False, i))
+        # i += 1
+        #
+        # adress1 = GlobalConfig.GetAddress(8)
+        # image = GlobalConfig.GetImageServer(8)
+        # self.speedTest.append((adress1, image, False, False, i))
+        # i += 1
+
         self.SetEnabled(False)
         self.needBackNum = 0
         self.speedPingNum = 0
+
+        self.lastResult.clear()
         self.StartSpeedPing()
 
     def StartSpeedPing(self):
@@ -176,7 +231,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         else:
             self.SetSock5Proxy(False)
 
-        Server().UpdateDns(address, imageProxy)
+        # imageAdress = GlobalConfig.GetImageAdress(i)
+        imgUrl = self.imgCombox.currentText()
+        Server().UpdateDns(address, imgUrl, imageProxy)
         self.pingBackNumCnt[i] = 0
         self.pingBackNumDict[i] = [0, 0, 0]
         request1 = deepcopy(request)
@@ -191,7 +248,8 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         i, backNum = v
         data = raw["data"]
         st = raw["st"]
-        label = getattr(self, "label_api_" + str(i))
+        objectName = "label_api_" + str(i)
+        label = getattr(self, objectName)
         if float(data) > 0.0:
             self.pingBackNumDict[i][backNum] = int(float(data))
             label.setText("<font color=#7fb80e>{}</font>".format(str(int(float(data))) + "ms"))
@@ -211,10 +269,12 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
                 else:
                     sumSt = data
             if sumCnt >= 1:
-                label.setText("<font color=#7fb80e>{}</font>".format(str(int(float(sumData/sumCnt))) + "ms") )
+                text = "<font color=#7fb80e>{}</font>".format(str(int(float(sumData/sumCnt))) + "ms")
+                label.setText(text)
             else:
-                label.setText("<font color=#d71345>{}</font>".format(Str.GetStr(int(sumSt))) )
-
+                text = "<font color=#d71345>{}</font>".format(Str.GetStr(int(sumSt)))
+                label.setText(text)
+            self.lastResult[objectName] = text
             self.speedPingNum += 1
             self.StartSpeedPing()
             return
@@ -234,6 +294,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.UpdateServer()
             self.SetEnabled(True)
             self.CheckShow5()
+            self.SaveHistory()
             return
 
         address, imageProxy, isHttpProxy, isProxyUrl, i = self.speedTest[self.speedIndex]
@@ -267,8 +328,8 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.SetSock5Proxy(True)
         else:
             self.SetSock5Proxy(False)
-
-        Server().UpdateDns(address, imageProxy)
+        imgUrl = self.imgCombox.currentText()
+        Server().UpdateDns(address, imgUrl, imageProxy)
         self.AddHttpTask(lambda x: Server().TestSpeed(request, x), self.SpeedTestBack, i)
         return
 
@@ -279,7 +340,10 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             data = "<font color=#d71345>{}</font>".format(Str.GetStr(st))
         else:
             data = "<font color=#7fb80e>{}</font>".format(data)
-        label = getattr(self, "label_img_" + str(i))
+        objectName = "label_img_" + str(i)
+        label = getattr(self, objectName)
+        self.lastResult[objectName] = data
+
         label.setText(data)
         self.speedIndex += 1
         self.StartSpeedTest()
@@ -307,12 +371,18 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.httpsBox.setChecked(Setting.IsUseHttps.value)
         self.httpLine.setText(Setting.HttpProxy.value)
         self.sockEdit.setText(Setting.Sock5Proxy.value)
-        button = getattr(self, "radioButton_{}".format(Setting.ProxySelectIndex.value))
-        button.setChecked(True)
-        button = getattr(self, "proxy_{}".format(int(Setting.IsHttpProxy.value)))
-        button.setChecked(True)
-        button = getattr(self, "radio_img_{}".format(int(Setting.ProxyImgSelectIndex.value)))
-        button.setChecked(True)
+        self.apiTimeout.setCurrentIndex(Setting.ApiTimeOut.value)
+        self.imgTimeout.setCurrentIndex(Setting.ImgTimeOut.value)
+
+        button = getattr(self, "radioButton_{}".format(Setting.ProxySelectIndex.value), None)
+        if button:
+            button.setChecked(True)
+        button = getattr(self, "proxy_{}".format(int(Setting.IsHttpProxy.value)), None)
+        if button:
+            button.setChecked(True)
+        button = getattr(self, "radio_img_{}".format(int(Setting.ProxyImgSelectIndex.value)), None)
+        if button:
+            button.setChecked(True)
 
         self.cdn_api_ip.setText(Setting.PreferCDNIP.value)
         self.cdn_img_ip.setText(Setting.PreferCDNIPImg.value)
@@ -326,35 +396,20 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.radio_img_5.setEnabled(True)
 
     def UpdateServer(self):
-        if Setting.ProxySelectIndex.value == 1:
-            address = ""
-        elif Setting.ProxySelectIndex.value == 2:
-            address = config.AddressIpv6[0] if Setting.PreIpv6.value > 0 else config.Address[0]
-        elif Setting.ProxySelectIndex.value == 3:
-            address = config.AddressIpv6[1] if Setting.PreIpv6.value > 0 else config.Address[1]
-        elif Setting.ProxySelectIndex.value == 5:
-            address = ""
-        elif Setting.ProxySelectIndex.value == 6:
-            address = ""
-        else:
+        address = GlobalConfig.GetAddress(Setting.ProxySelectIndex.value)
+        # imageServer = GlobalConfig.GetImageServer(Setting.ProxyImgSelectIndex.value)
+        imageAdress = GlobalConfig.GetImageAdress(Setting.ProxyImgSelectIndex.value)
+        imageServer = GlobalConfig.ImageUrl.value
+        if Setting.ProxySelectIndex.value == 4:
             address = Setting.PreferCDNIP.value
 
-        if Setting.ProxyImgSelectIndex.value == 1:
-            imageServer = ""
-        elif Setting.ProxyImgSelectIndex.value == 2:
-            imageServer = config.ImageServer2
-        elif Setting.ProxyImgSelectIndex.value == 3:
-            imageServer = config.ImageServer3
-        elif Setting.ProxyImgSelectIndex.value == 5:
-            imageServer = ""
-        elif Setting.ProxyImgSelectIndex.value == 6:
-            imageServer = ""
-        else:
-            imageServer = Setting.PreferCDNIPImg.value
+        if Setting.ProxyImgSelectIndex.value == 4:
+            # imageServer = Setting.PreferCDNIPImg.value
+            imageAdress = Setting.PreferCDNIPImg.value
 
         QtOwner().settingView.SetSock5Proxy()
-        Server().UpdateDns(address, imageServer)
-        Log.Info("update proxy, apiSetId:{}, imgSetID:{}, image server:{}, address:{}".format(Setting.ProxySelectIndex.value, Setting.ProxyImgSelectIndex.value, Server().imageServer, Server().address))
+        Server().UpdateDns(address, imageServer, imageAdress)
+        Log.Info("update proxy, apiSetId:{}, imgSetID:{}, image server:{}:{}, address:{}".format(Setting.ProxySelectIndex.value, Setting.ProxyImgSelectIndex.value, Server().imageServer, Server().imageAddress, Server().address))
 
     def SaveSetting(self):
         Setting.PreferCDNIP.SetValue(self.cdn_api_ip.text())
@@ -366,12 +421,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         Setting.ProxyImgSelectIndex.SetValue(self.radioImgGroup.checkedId())
         Setting.IsUseHttps.SetValue(int(self.httpsBox.isChecked()))
         Setting.PreIpv6.SetValue(int(self.ipv6Check.isChecked()))
-
+        GlobalConfig.SetSetting("ImageUrl", self.imgCombox.currentText())
         # QtOwner().settingView.SetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
         # QtOwner().settingView.SetSettingV("Proxy/PreferCDNIP", config.PreferCDNIP)
         # QtOwner().settingView.SetSettingV("Proxy/Http", httpProxy)
         # QtOwner().settingView.SetSettingV("Proxy/IsHttp", config.IsHttpProxy)
         # QtOwner().settingView.SetSettingV("Proxy/IsUseHttps", config.IsUseHttps)
+        Setting.ApiTimeOut.SetValue(self.apiTimeout.currentIndex())
+        Setting.ImgTimeOut.SetValue(self.imgTimeout.currentIndex())
 
         self.UpdateServer()
         QtOwner().ShowMsg(Str.GetStr(Str.SaveSuc))

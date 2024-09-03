@@ -10,33 +10,35 @@ MainType = 1
 
 Main = None
 
-if sys.platform == "win32" and Setting.IsUseTitleBar.value:
+if  Setting.IsUseTitleBar.value:
     try:
         from interface.ui_main_windows import Ui_MainWindows
-        from .windows.frame_less_widget import FrameLessWidget
+        # from .windows.frame_less_widget import FrameLessWidget
+        from .qframelesswindow import FramelessMainWindow
 
-        class MainWidget(FrameLessWidget, Ui_MainWindows):
+        class MainWidget(FramelessMainWindow, Ui_MainWindows):
             def __init__(self):
-                FrameLessWidget.__init__(self)
+                FramelessMainWindow.__init__(self)
                 Ui_MainWindows.__init__(self)
                 self.setupUi(self)
+                self.setTitleBar(self.widget)
                 self.totalStackWidget.setAttribute(Qt.WA_TranslucentBackground)
                 self.widget.setAttribute(Qt.WA_TranslucentBackground)
 
             def showFullScreen(self):
                 self.widget.setVisible(False)
                 self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-                return FrameLessWidget.showFullScreen(self)
+                return FramelessMainWindow.showFullScreen(self)
 
             def showNormal(self):
                 self.widget.setVisible(True)
                 self.verticalLayout.setContentsMargins(3, 3, 3, 3)
-                return FrameLessWidget.showNormal(self)
+                return FramelessMainWindow.showNormal(self)
 
             def showMaximized(self):
                 self.widget.setVisible(True)
                 self.verticalLayout.setContentsMargins(3, 3, 3, 3)
-                return FrameLessWidget.showMaximized(self)
+                return FramelessMainWindow.showMaximized(self)
 
             def setSubTitle(self, text):
                 self.widget.subTitle.setText(text)

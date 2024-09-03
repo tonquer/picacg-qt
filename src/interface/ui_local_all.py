@@ -25,7 +25,7 @@ class Ui_LocalAll(object):
     def setupUi(self, LocalAll):
         if not LocalAll.objectName():
             LocalAll.setObjectName(u"LocalAll")
-        LocalAll.resize(543, 300)
+        LocalAll.resize(541, 293)
         self.verticalLayout = QVBoxLayout(LocalAll)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout_4 = QHBoxLayout()

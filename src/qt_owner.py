@@ -32,6 +32,9 @@ class QtOwner(Singleton):
     def ShowMsg(self, msg):
         return MsgLabel.ShowMsgEx(self.owner, msg)
 
+    def IsInFilter(self, name1, name2, name3):
+        return self.owner.navigationWidget.IsInFilter(name1, name2, name3)
+    
     def CheckShowMsg(self, raw):
         msg = raw.get("st")
         code = raw.get("code")
@@ -71,12 +74,28 @@ class QtOwner(Singleton):
         self.owner.loadingDialog.close()
         return
 
+    def GetNasInfo(self, nasId):
+        return self.owner.nasView.nasDict.get(nasId)
+
     def CopyText(self, text):
         from PySide6.QtWidgets import QApplication
         clipboard = QApplication.clipboard()
         clipboard.setText(text)
         from tools.str import Str
         QtOwner().ShowMsg(Str.GetStr(Str.CopySuc))
+
+    def OpenProxy(self):
+        from view.user.login_view import LoginView
+        loginView = LoginView(QtOwner().owner, False)
+        loginView.tabWidget.setCurrentIndex(3)
+        loginView.tabWidget.removeTab(0)
+        loginView.tabWidget.removeTab(0)
+        loginView.tabWidget.removeTab(0)
+        loginView.loginButton.setText(Str.GetStr(Str.Save))
+        loginView.show()
+
+        loginView.closed.connect(QtOwner().owner.navigationWidget.UpdateProxyName)
+        return
 
     @property
     def owner(self):
@@ -91,6 +110,14 @@ class QtOwner(Singleton):
     @property
     def localServer(self):
         return self._localServer()
+
+    @property
+    def localFavoriteView(self):
+        return self.owner.localFavoriteView
+
+    @property
+    def nasView(self):
+        return self.owner.nasView
 
     @property
     def downloadView(self):
