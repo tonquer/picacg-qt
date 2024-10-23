@@ -106,6 +106,7 @@ jobs:
         asset_path: ${{ env.PACKAGENAME }}.dmg
         asset_name: ${{ env.PACKAGENAME }}.dmg
         asset_content_type: application/gzip
+
   macos-arm:
     needs: [setup, release]
     runs-on: macos-13
@@ -123,7 +124,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         # pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.1/waifu2x_vulkan-1.1.1-cp39-cp39-macosx_10_9_universal2.whl
-        pip install -r src/requirements_macos.txt
+        pip install -r src/requirements_macos_arm.txt
         brew install create-dmg
     - name: Build
       run: |
