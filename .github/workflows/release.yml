@@ -109,7 +109,7 @@ jobs:
 
   macos-arm:
     needs: [setup, release]
-    runs-on: macos-13
+    runs-on: macos-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_arm64
     steps:
