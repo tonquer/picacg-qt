@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
 jobs:
   setup:
     runs-on: ubuntu-latest
