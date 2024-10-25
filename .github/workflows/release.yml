@@ -164,10 +164,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ needs.release.outputs.Up_Url }}
-        asset_path: ${{ env.PACKAGENAME }}.dmg
-        asset_name: ${{ env.PACKAGENAME }}.dmg
-        asset_content_type: application/gzip
+        files: ${{ env.PACKAGENAME }}.dmg
 
   windows:
     needs: [setup, release]
