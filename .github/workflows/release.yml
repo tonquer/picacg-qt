@@ -12,7 +12,7 @@ jobs:
       TAG_NAME: ${{ steps.get-package_prefix.outputs.TAG_NAME }}
       HEAD_SHA_SHORT: ${{ steps.get-package_prefix.outputs.HEAD_SHA_SHORT }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
       - name: get-package_prefix
