@@ -125,7 +125,7 @@ jobs:
         pip install pyinstaller
         # pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.1/waifu2x_vulkan-1.1.1-cp39-cp39-macosx_10_9_universal2.whl
         pip install -r src/requirements_macos_arm.txt
-        brew install create-dmg
+        brew install create-dmg upx
     - name: Build
       run: |
         cd src
