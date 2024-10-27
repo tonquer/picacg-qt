@@ -527,9 +527,9 @@ class SqlServer(Singleton):
         data2 = ""
         for word in andWords:
             whereSql = SqlServer._GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, True)
-            data2 += "{} or ".format(whereSql)
+            data2 += "{} and ".format(whereSql)
         if data2:
-            data += "and ({})".format(data2.strip("or "))
+            data += "and ({})".format(data2.strip("and "))
 
         data2 = ""
         for word in exclude:
