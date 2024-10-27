@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -11,7 +12,7 @@ jobs:
       TAG_NAME: ${{ steps.get-package_prefix.outputs.TAG_NAME }}
       HEAD_SHA_SHORT: ${{ steps.get-package_prefix.outputs.HEAD_SHA_SHORT }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
       - name: get-package_prefix
@@ -105,6 +106,65 @@ jobs:
         asset_path: ${{ env.PACKAGENAME }}.dmg
         asset_name: ${{ env.PACKAGENAME }}.dmg
         asset_content_type: application/gzip
+
+  macos-arm:
+    needs: [setup, release]
+    runs-on: macos-latest
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_arm64
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        # pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.1/waifu2x_vulkan-1.1.1-cp39-cp39-macosx_10_9_universal2.whl
+        pip install -r src/requirements_macos_arm.txt
+        brew install create-dmg
+    - name: Build
+      run: |
+        cd src
+        cp ../res/icon/Icon.icns ./
+        pyinstaller --clean --onedir --name PicACG \
+            --hidden-import waifu2x_vulkan --hidden-import PySide6 --hidden-import requests \
+            --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
+            --hidden-import config \
+            --hidden-import component \
+            --hidden-import server \
+            --hidden-import task \
+            --hidden-import tools \
+            --hidden-import view \
+            --strip --windowed -i Icon.icns \
+            start.py
+        cp -avf db dist/PicACG.app/Contents/MacOS
+        xattr -cr dist/PicACG.app
+        create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --hide-extension "PicACG.app" --app-drop-link 600 185 \
+            ${{ env.PACKAGENAME }}.dmg dist/PicACG.app
+
+        zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
+        mv ${{ env.PACKAGENAME }}.dmg ..
+        mv bika.zip ..
+        cd ..
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: bika.zip
+    - name: upload-macos-arm
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ${{ env.PACKAGENAME }}.dmg
 
   windows:
     needs: [setup, release]

@@ -1,0 +1,12 @@
+PySide6==6.4.3
+websocket-client
+requests
+urllib3
+pillow
+# waifu2x-vulkan
+Pysocks
+natsort
+webdavclient3
+tqdm
+pysmb
+# pywin32==302
