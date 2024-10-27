@@ -42,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>309</width>
-        <height>827</height>
+        <width>301</width>
+        <height>841</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -190,100 +190,38 @@
          </item>
          <item>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="6" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
-             <item>
-              <widget class="QLabel" name="modelLabel">
-               <property name="text">
-                <string>CUNET</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="WheelComboBox" name="modelBox">
-               <item>
-                <property name="text">
-                 <string>自动</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>cunet</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>photo</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>anime_style_art_rgb</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
+           <item row="8" column="0">
+            <widget class="QLabel" name="sizeWaifu">
+             <property name="text">
+              <string>大小：</string>
+             </property>
+            </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="maximumSize">
-              <size>
-               <width>35</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>模型：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>放大倍数：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
               <string>转换模式：</string>
              </property>
             </widget>
            </item>
-           <item row="10" column="0">
-            <widget class="QLabel" name="tickLabel">
-             <property name="text">
-              <string>耗时：</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="1">
-            <widget class="QLabel" name="waifu2xTick">
+           <item row="8" column="1">
+            <widget class="QLabel" name="waifu2xSize">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item row="7" column="1">
-            <widget class="QLabel" name="gpuLabel">
-             <property name="text">
-              <string>GPU</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
             <widget class="QLabel" name="waifu2xRes">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="11" column="1">
-            <widget class="QLabel" name="waifu2xStatus">
+           <item row="1" column="1">
+            <widget class="QCheckBox" name="curWaifu2x">
              <property name="text">
-              <string/>
+              <string>本张图开启Waifu2x (F2)</string>
              </property>
             </widget>
            </item>
@@ -294,28 +232,23 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_9">
-             <item>
-              <widget class="QPushButton" name="waifu2xCancle">
-               <property name="text">
-                <string>保存</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="9" column="1">
-            <widget class="QLabel" name="waifu2xSize">
+           <item row="10" column="1">
+            <widget class="QLabel" name="waifu2xStatus">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_2">
+           <item row="5" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="maximumSize">
+              <size>
+               <width>35</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
-              <string>去噪等级：</string>
+              <string>模型：</string>
              </property>
             </widget>
            </item>
@@ -332,28 +265,55 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QCheckBox" name="curWaifu2x">
+           <item row="3" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <item>
+              <widget class="QPushButton" name="waifu2xCancle">
+               <property name="text">
+                <string>保存</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="6" column="1">
+            <widget class="QLabel" name="gpuLabel">
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
-              <string>本张图开启Waifu2x (F2)</string>
+              <string>GPU</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="11" column="0">
-            <widget class="QLabel" name="stateWaifu">
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_3">
              <property name="text">
-              <string>状态：</string>
+              <string>放大倍数：</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
+           <item row="7" column="0">
             <widget class="QLabel" name="resolutionWaifu">
              <property name="text">
               <string>分辨率：</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="10" column="0">
+            <widget class="QLabel" name="stateWaifu">
+             <property name="text">
+              <string>状态：</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
             <layout class="QHBoxLayout" name="horizontalLayout_6">
              <item>
               <widget class="QLabel" name="scaleLabel">
@@ -380,52 +340,19 @@
              </item>
             </layout>
            </item>
-           <item row="9" column="0">
-            <widget class="QLabel" name="sizeWaifu">
+           <item row="9" column="1">
+            <widget class="QLabel" name="waifu2xTick">
              <property name="text">
-              <string>大小：</string>
+              <string/>
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QLabel" name="noiseLabel">
-               <property name="text">
-                <string>3</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="WheelComboBox" name="noiseBox">
-               <item>
-                <property name="text">
-                 <string>自动</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>0</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>1</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>2</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>3</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
+           <item row="9" column="0">
+            <widget class="QLabel" name="tickLabel">
+             <property name="text">
+              <string>耗时：</string>
+             </property>
+            </widget>
            </item>
            <item row="2" column="1">
             <widget class="QCheckBox" name="preDownWaifu2x">
@@ -433,6 +360,17 @@
               <string>优先使用下载转换好的</string>
              </property>
             </widget>
+           </item>
+           <item row="5" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <item>
+              <widget class="QPushButton" name="modelNameButton">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>
@@ -818,8 +756,8 @@
    <slot>OpenNextEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>285</x>
-     <y>667</y>
+     <x>294</x>
+     <y>738</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -834,8 +772,8 @@
    <slot>LastPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>707</y>
+     <x>119</x>
+     <y>779</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -850,8 +788,8 @@
    <slot>NextPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>285</x>
-     <y>707</y>
+     <x>294</x>
+     <y>779</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -866,8 +804,8 @@
    <slot>OpenLastEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>83</x>
-     <y>667</y>
+     <x>89</x>
+     <y>738</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -882,8 +820,8 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>165</x>
-     <y>537</y>
+     <x>170</x>
+     <y>630</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
@@ -898,8 +836,8 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>202</x>
-     <y>595</y>
+     <x>207</x>
+     <y>690</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -930,8 +868,8 @@
    <slot>FullScreen()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>566</y>
+     <x>118</x>
+     <y>660</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -946,8 +884,8 @@
    <slot>Waifu2xSave()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
-     <y>186</y>
+     <x>117</x>
+     <y>248</y>
     </hint>
     <hint type="destinationlabel">
      <x>296</x>
@@ -962,8 +900,8 @@
    <slot>Waifu2xCancle()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>284</x>
-     <y>186</y>
+     <x>285</x>
+     <y>248</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -978,8 +916,8 @@
    <slot>ScalePicture()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>208</x>
-     <y>469</y>
+     <x>294</x>
+     <y>500</y>
     </hint>
     <hint type="destinationlabel">
      <x>298</x>
@@ -994,8 +932,8 @@
    <slot>ChangeReadMode()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>285</x>
-     <y>427</y>
+     <x>294</x>
+     <y>479</y>
     </hint>
     <hint type="destinationlabel">
      <x>402</x>

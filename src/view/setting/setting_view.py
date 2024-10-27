@@ -51,7 +51,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.preDownWaifu2x.clicked.connect(partial(self.CheckButtonEvent, Setting.PreDownWaifu2x, self.preDownWaifu2x))
         self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
         self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
-        self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUseTitleBar, self.titleBox))
+        # self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUseTitleBar, self.titleBox))
         self.openglBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenOpenGL, self.openglBox))
         self.grabGestureBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsGrabGesture, self.grabGestureBox))
         # self.isShowClose.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotShowCloseTip, self.isShowClose))
@@ -64,12 +64,16 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
 
         # comboBox:
         # self.encodeSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, "LookReadMode"))
-        self.readModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookModel))
-        self.readNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookNoise))
-        self.coverModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookModel))
-        self.coverNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookNoise))
-        self.downModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadModel))
-        self.downNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadNoise))
+        # self.readModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookModel))
+        # self.readNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookNoise))
+        # self.coverModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookModel))
+        # self.coverNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookNoise))
+        # self.downModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadModel))
+        # self.downNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadNoise))
+
+        self.readModelName.clicked.connect(partial(self.CheckOpenSrSelect, Setting.LookModelName, self.readModelName))
+        self.coverModelName.clicked.connect(partial(self.CheckOpenSrSelect, Setting.CoverLookModelName, self.coverModelName))
+        self.downModelName.clicked.connect(partial(self.CheckOpenSrSelect, Setting.DownloadModelName, self.downModelName))
         self.encodeSelect.currentTextChanged.connect(partial(self.CheckRadioEvent, Setting.SelectEncodeGpu))
         self.threadSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.Waifu2xCpuCore))
         self.titleLineBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.TitleLine))
@@ -172,7 +176,31 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
         self.CheckMsgLabel()
         return
+    
+    def CheckOpenSrSelect(self, setItem, button):
+        if button == self.coverModelName:
+            QtOwner().OpenSrSelectModel(setItem.value, self.CheckOpenSrSelectCoverBack)
+        elif button == self.readModelName:
+            QtOwner().OpenSrSelectModel(setItem.value, self.CheckOpenSrSelectReadBack)
+        elif button == self.downModelName:
+            QtOwner().OpenSrSelectModel(setItem.value, self.CheckOpenSrSelectDownBack)
+        pass
 
+    def CheckOpenSrSelectCoverBack(self, modelName):
+        Setting.CoverLookModelName.SetValue(modelName)
+        self.coverModelName.setText(modelName)
+        return modelName
+
+    def CheckOpenSrSelectReadBack(self, modelName):
+        Setting.LookModelName.SetValue(modelName)
+        self.readModelName.setText(modelName)
+        return modelName
+
+    def CheckOpenSrSelectDownBack(self, modelName):
+        Setting.DownloadModelName.SetValue(modelName)
+        self.downModelName.setText(modelName)
+        return modelName
+    
     def CheckRadioEvent(self, setItem, value):
         assert isinstance(setItem, SettingValue)
         setItem.SetValue(value)
@@ -225,7 +253,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         self.httpEdit.setText(Setting.HttpProxy.value)
         self.sockEdit.setText(Setting.Sock5Proxy.value)
         self.chatProxy.setChecked(Setting.ChatProxy.value)
-        self.titleBox.setChecked(Setting.IsUseTitleBar.value)
+        # self.titleBox.setChecked(Setting.IsUseTitleBar.value)
         self.openglBox.setChecked(Setting.IsOpenOpenGL.value)
         self.grabGestureBox.setChecked(Setting.IsGrabGesture.value)
         # self.isShowClose.setChecked(Setting.IsNotShowCloseTip.value)
@@ -245,27 +273,33 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
 
         self.readCheckBox.setChecked(Setting.IsOpenWaifu.value)
         self.preDownWaifu2x.setChecked(Setting.PreDownWaifu2x.value)
-        self.readNoise.setCurrentIndex(Setting.LookNoise.value)
+        # self.readNoise.setCurrentIndex(Setting.LookNoise.value)
         self.readScale.setValue(Setting.LookScale.value)
-        self.readModel.setCurrentIndex(Setting.LookModel.value)
+        # self.readModel.setCurrentIndex(Setting.LookModel.value)
 
         self.categoryBox.setCurrentIndex(Setting.NotCategoryShow.value)
         self.titleLineBox.setCurrentIndex(Setting.TitleLine.value)
         self.tileComboBox.setCurrentIndex(Setting.Waifu2xTileSize.value)
         self.coverCheckBox.setChecked(Setting.CoverIsOpenWaifu.value)
-        self.coverNoise.setCurrentIndex(Setting.CoverLookNoise.value)
+        # self.coverNoise.setCurrentIndex(Setting.CoverLookNoise.value)
         self.coverScale.setValue(Setting.CoverLookScale.value)
-        self.coverModel.setCurrentIndex(Setting.CoverLookModel.value)
+        # self.coverModel.setCurrentIndex(Setting.CoverLookModel.value)
 
         self.downAuto.setChecked(Setting.DownloadAuto.value)
-        self.downNoise.setCurrentIndex(Setting.DownloadNoise.value)
+        # self.downNoise.setCurrentIndex(Setting.DownloadNoise.value)
         self.downScale.setValue(Setting.DownloadScale.value)
-        self.downModel.setCurrentIndex(Setting.DownloadModel.value)
+        # self.downModel.setCurrentIndex(Setting.DownloadModel.value)
+        self.coverModelName.setText(Setting.CoverLookModelName.value)
+        self.readModelName.setText(Setting.LookModelName.value)
+        self.downModelName.setText(Setting.DownloadModelName.value)
         self.SetDownloadLabel()
 
     def retranslateUi(self, SettingNew):
         Ui_SettingNew.retranslateUi(self, SettingNew)
         self.SetDownloadLabel()
+        self.coverModelName.setText(Setting.CoverLookModelName.value)
+        self.readModelName.setText(Setting.LookModelName.value)
+        self.downModelName.setText(Setting.DownloadModelName.value)
 
     def SetRadioGroup(self, text, index):
         radio = getattr(self, text+str(index))

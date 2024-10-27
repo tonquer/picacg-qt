@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QGridLayout, QHBoxLayout,
-    QHeaderView, QPushButton, QRadioButton, QSizePolicy,
-    QSpacerItem, QTableWidget, QTableWidgetItem, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
+    QHBoxLayout, QHeaderView, QLineEdit, QPushButton,
+    QRadioButton, QSizePolicy, QSpacerItem, QTableWidget,
+    QTableWidgetItem, QWidget)
 
 class Ui_Download(object):
     def setupUi(self, Download):
@@ -26,6 +27,45 @@ class Ui_Download(object):
         Download.resize(920, 440)
         self.gridLayout_2 = QGridLayout(Download)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
+
+        self.redownloadRadio = QCheckBox(Download)
+        self.redownloadRadio.setObjectName(u"redownloadRadio")
+
+        self.horizontalLayout_2.addWidget(self.redownloadRadio)
+
+        self.radioButton = QRadioButton(Download)
+        self.radioButton.setObjectName(u"radioButton")
+        self.radioButton.setEnabled(True)
+        self.radioButton.setChecked(True)
+
+        self.horizontalLayout_2.addWidget(self.radioButton)
+
+
+        self.gridLayout_2.addLayout(self.horizontalLayout_2, 2, 0, 1, 1)
+
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.comboBox = QComboBox(Download)
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.setObjectName(u"comboBox")
+
+        self.horizontalLayout_5.addWidget(self.comboBox)
+
+        self.lineEdit = QLineEdit(Download)
+        self.lineEdit.setObjectName(u"lineEdit")
+
+        self.horizontalLayout_5.addWidget(self.lineEdit)
+
+
+        self.gridLayout_2.addLayout(self.horizontalLayout_5, 0, 0, 1, 1)
+
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.tableWidget = QTableWidget(Download)
@@ -56,6 +96,9 @@ class Ui_Download(object):
         self.tableWidget.setObjectName(u"tableWidget")
 
         self.gridLayout.addWidget(self.tableWidget, 5, 0, 1, 1)
+
+
+        self.gridLayout_2.addLayout(self.gridLayout, 3, 0, 1, 1)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -89,31 +132,7 @@ class Ui_Download(object):
         self.horizontalLayout.addWidget(self.pushButton_4)
 
 
-        self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
-
-
-        self.gridLayout_2.addLayout(self.gridLayout, 1, 0, 1, 1)
-
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
-
-        self.redownloadRadio = QCheckBox(Download)
-        self.redownloadRadio.setObjectName(u"redownloadRadio")
-
-        self.horizontalLayout_2.addWidget(self.redownloadRadio)
-
-        self.radioButton = QRadioButton(Download)
-        self.radioButton.setObjectName(u"radioButton")
-        self.radioButton.setEnabled(True)
-        self.radioButton.setChecked(True)
-
-        self.horizontalLayout_2.addWidget(self.radioButton)
-
-
-        self.gridLayout_2.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
+        self.gridLayout_2.addLayout(self.horizontalLayout, 1, 0, 1, 1)
 
 
         self.retranslateUi(Download)
@@ -128,6 +147,12 @@ class Ui_Download(object):
 
     def retranslateUi(self, Download):
         Download.setWindowTitle(QCoreApplication.translate("Download", u"\u4e0b\u8f7d", None))
+        self.redownloadRadio.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u5931\u8d25\u540e\u81ea\u52a8\u91cd\u8bd5", None))
+        self.radioButton.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u81ea\u52a8Waifu2x\u8f6c\u6362", None))
+        self.comboBox.setItemText(0, QCoreApplication.translate("Download", u"\u5168\u90e8", None))
+        self.comboBox.setItemText(1, QCoreApplication.translate("Download", u"\u672a\u5b8c\u6210", None))
+        self.comboBox.setItemText(2, QCoreApplication.translate("Download", u"\u5df2\u5b8c\u6210", None))
+
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("Download", u"id", None));
         ___qtablewidgetitem1 = self.tableWidget.horizontalHeaderItem(1)
@@ -155,7 +180,5 @@ class Ui_Download(object):
         self.pushButton_3.setText(QCoreApplication.translate("Download", u"\u6682\u505c\u4e0b\u8f7d", None))
         self.pushButton_2.setText(QCoreApplication.translate("Download", u"\u5f00\u59cb\u8f6c\u6362", None))
         self.pushButton_4.setText(QCoreApplication.translate("Download", u"\u6682\u505c\u8f6c\u6362", None))
-        self.redownloadRadio.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u5931\u8d25\u540e\u81ea\u52a8\u91cd\u8bd5", None))
-        self.radioButton.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u81ea\u52a8Waifu2x\u8f6c\u6362", None))
     # retranslateUi
 

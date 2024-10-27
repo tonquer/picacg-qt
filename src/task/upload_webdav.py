@@ -69,7 +69,12 @@ class WebdavClient(UpLoadBase):
     def Init(self, nasInfo):
         from view.nas.nas_item import NasInfoItem
         assert isinstance(nasInfo, NasInfoItem)
-        self.address = nasInfo.address + ":" + str(nasInfo.port)
+        from tools.tool import ToolUtil
+        if nasInfo.port:
+            host = ToolUtil.GetUrlHost(nasInfo.address)
+            self.address = nasInfo.address.replace(host, host + ":" + str(nasInfo.port))
+        else:
+            self.address = nasInfo.address
         self.password = nasInfo.passwd
         self.username = nasInfo.user
 
@@ -122,14 +127,31 @@ class WebdavClient(UpLoadBase):
             return Str.CvNotSupport
         elif isinstance(es, Unauthorized):
             return Str.CvAuthError
+        elif hasattr(es, "exception") and isinstance(es.exception, requests.exceptions.ConnectTimeout):
+            return Status.ConnectErr
+        elif hasattr(es, "exception") and isinstance(es.exception, requests.exceptions.ReadTimeout):
+            return Status.TimeOut
+        elif hasattr(es, "exception") and isinstance(es.exception, requests.exceptions.SSLError):
+            if "WSAECONNRESET" in es.__repr__():
+                return Status.ResetErr
+            else:
+                return Status.SSLErr
+        elif hasattr(es, "exception") and isinstance(es.exception, requests.exceptions.ProxyError):
+            return Status.ProxyError
+        elif hasattr(es, "exception") and isinstance(es.exception, ConnectionResetError):
+            return Status.ResetErr
         else:
             return Str.Error
 
 
 if __name__ == "__main__":
-    a = WebdavClient()
-    a.address = "http://101.35.89.244:16000"
-    a.username = "tonquer"
-    a.password = "123"
-    a.Init()
-    a.Upload("qt-unified-windows-x64-4.7.0-online.exe", "test")
+    w = WebdavClient()
+    from view.nas.nas_item import NasInfoItem
+    a = NasInfoItem()
+    a.address = "https://app.koofr.net/dav/onedrive"
+    a.user = "test"
+    a.passwd = "test"
+    a.port = 0
+    w.Init(a)
+    w.Connect()
+    w.CheckAndCreateDir("test")

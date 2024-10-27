@@ -174,7 +174,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(False)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 339, 800))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -521, 339, 800))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -548,7 +548,7 @@ class Ui_Navigation(object):
         self.nasButton.setText(QCoreApplication.translate("Navigation", u"\u7f51\u7edc\u5b58\u50a8", None))
         self.localReadButton.setText(QCoreApplication.translate("Navigation", u"\u672c\u5730\u6f2b\u753b", None))
         self.convertButton.setText(QCoreApplication.translate("Navigation", u"\u8f6c\u6362", None))
-        self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"Waifu2x", None))
+        self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"\u56fe\u7247\u8d85\u5206", None))
         self.helpButton.setText(QCoreApplication.translate("Navigation", u"\u5e2e\u52a9", None))
         self.settingButton.setText(QCoreApplication.translate("Navigation", u"\u8bbe\u7f6e", None))
     # retranslateUi

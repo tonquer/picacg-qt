@@ -82,6 +82,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
     def retranslateUi(self, View):
         self.qtTool.retranslateUi(self.qtTool)
+        self.qtTool.modelNameButton.setText(ToolUtil.GetShowModelName(Setting.LookModelName.value))
+        self.qtTool.modelNameButton.setToolTip(Setting.LookModelName.value)
 
     def SelectMenu(self):
         popMenu = QMenu(self)
@@ -570,13 +572,13 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                 else:
                     self.qtTool.SetData(state=QtFileData.Converting)
 
-                self.qtTool.modelBox.setEnabled(False)
+                # self.qtTool.modelBox.setEnabled(False)
                 # self.frame.process.show()
             return
-        if isCurIndex:
-            # self.frame.process.hide()
-            if config.CanWaifu2x:
-                self.qtTool.modelBox.setEnabled(True)
+        # if isCurIndex:
+        #     # self.frame.process.hide()
+        #     if config.CanWaifu2x:
+        #         self.qtTool.modelBox.setEnabled(True)
 
         assert isinstance(p, QtFileData)
         waifu2x = False

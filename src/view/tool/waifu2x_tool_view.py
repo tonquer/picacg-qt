@@ -8,6 +8,7 @@ from PySide6.QtGui import QPainter, QPixmap, QDoubleValidator, \
 from PySide6.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog, QLabel, QGraphicsView
 
 from config import config
+from config.setting import Setting
 from interface.ui_waifu2x_tool import Ui_Waifu2xTool
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
@@ -28,13 +29,16 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.curIndex = 0
         # self.resize(800, 900)
         self.checkBox.setChecked(True)
-        self.index = 0
-        self.comboBox.setCurrentIndex(self.index)
+        from config.setting import Setting
+        self.modelName.setText(ToolUtil.GetShowModelName(Setting.LookModelName.value))
+        self.modelName.setToolTip(Setting.LookModelName.value)
+
+        # self.comboBox.setCurrentIndex(self.index)
         validator = QIntValidator(0, 9999999)
         self.heighEdit.setValidator(validator)
         self.widthEdit.setValidator(validator)
         exp = QDoubleValidator(0.1, 64, 1)
-        # exp.setNotation(exp.StandardNotation)
+        exp.setNotation(QDoubleValidator.StandardNotation)
         self.scaleEdit.setValidator(exp)
         # self.setWindowFlags(Qt.FramelessWindowHint)
 
@@ -58,7 +62,6 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
 
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.graphicsView.setScene(self.graphicsScene)
-        self.graphicsView.setDragMode(QGraphicsView.ScrollHandDrag)
         self.graphicsItem.setWidget(QLabel())
         # self.graphicsItem.setPixmap(QPixmap())
         # self.graphicsItem.setTransformationMode(Qt.SmoothTransformation)
@@ -84,6 +87,28 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.data = ""
         self.waifu2xData = ""
         self.backStatus = ""
+        self.modelName.clicked.connect(self.OpenSrSelect)
+        self.fmtComboBox.currentIndexChanged.connect(self.CheckStatus)
+
+    def retranslateUi(self, SettingNew):
+        oldName = self.modelName.toolTip()
+        Ui_Waifu2xTool.retranslateUi(self, SettingNew)
+        self.modelName.setText(ToolUtil.GetShowModelName(oldName))
+        self.modelName.setToolTip(oldName)
+
+    def OpenSrSelect(self):
+        QtOwner().OpenSrSelectModel(self.modelName.text(), self.OpenSrSelectBack)
+
+    def OpenSrSelectBack(self, newModName):
+        self.modelName.setText(ToolUtil.GetShowModelName(newModName))
+        self.modelName.setToolTip(newModName)
+        self.CheckStatus()
+
+    def CheckStatus(self):
+        data = self.GetStatus()
+        if self.backStatus != data:
+            self.changeButton.setText(Str.GetStr(Str.Convert))
+            self.changeButton.setEnabled(True)
 
     def SwitchCurrent(self, **kwargs):
         data = kwargs.get("data")
@@ -93,7 +118,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
             self.waifu2xData = None
             self.ClearConvert()
             if config.CanWaifu2x:
-                self.comboBox.setEnabled(True)
+                self.modelName.setEnabled(True)
                 self.changeButton.setEnabled(True)
             self.changeButton.setText(Str.GetStr(Str.Convert))
             self.backStatus = ""
@@ -280,34 +305,27 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
             return
         if not config.CanWaifu2x:
             return
-        from waifu2x_vulkan import waifu2x_vulkan
-        self.comboBox.setEnabled(False)
+        from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+        self.modelName.setEnabled(False)
+        # self.comboBox.setEnabled(False)
         self.changeButton.setEnabled(False)
         self.SetStatus(False)
-        self.index = self.comboBox.currentIndex()
-        index = self.comboBox.currentIndex()
-        noise = int(self.noiseCombox.currentText())
-        if index == 0:
-            modelName = "CUNET"
-        elif index == 1:
-            modelName = "PHOTO"
-        elif index == 2:
-            modelName = "ANIME_STYLE_ART_RGB"
+        if self.fmtComboBox.currentIndex() == 0:
+            fmt = ""
         else:
-            return
-        if noise == -1:
-            noiseName = "NO_NOISE"
-        else:
-            noiseName = "NOISE"+str(noise)
-        if modelName == "CUNET" and self.scaleRadio.isChecked() and round(float(self.scaleEdit.text()), 1) <= 1:
-            modelInsence = "MODEL_{}_NO_SCALE_{}".format(modelName, noiseName)
-        else:
-            modelInsence = "MODEL_{}_{}".format(modelName, noiseName)
+            fmt = str(self.fmtComboBox.currentText()).lower()
+        # self.index = self.modelName.text()
+        # self.index = self.comboBox.currentIndex()
+        # index = self.comboBox.currentIndex()
+        # noise = int(self.noiseCombox.currentText())
+
+        modelInsence = self.modelName.toolTip()
         if self.ttaModel.isChecked():
             modelInsence += "_TTA"
 
         model = {
-            "model":  getattr(waifu2x_vulkan, modelInsence),
+            "model":  getattr(sr, modelInsence),
+            "format": fmt
         }
         if self.scaleRadio.isChecked():
             model['scale'] = round(float(self.scaleEdit.text()), 1)
@@ -332,7 +350,8 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         else:
             self.changeButton.setEnabled(True)
         self.SetStatus(True)
-        self.comboBox.setEnabled(True)
+        self.modelName.setEnabled(True)
+        # self.comboBox.setEnabled(True)
         return
 
     def SavePicture(self):
@@ -360,22 +379,22 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
             self.ShowImg(self.data)
         return
 
-    def ChangeModel(self, index):
-        if self.comboBox.currentIndex() == self.index:
-            return
-        # self.index = self.comboBox.currentIndex()
-        self.changeButton.setText(Str.GetStr(Str.Convert))
-        self.changeButton.setEnabled(True)
-        return
+    # def ChangeModel(self, index):
+    #     if self.comboBox.currentIndex() == self.index:
+    #         return
+    #     # self.index = self.comboBox.currentIndex()
+    #     self.changeButton.setText(Str.GetStr(Str.Convert))
+    #     self.changeButton.setEnabled(True)
+    #     return
 
     def GetStatus(self):
-        data = str(self.noiseCombox.currentText()) + \
+        data = \
             str(self.buttonGroup_2.checkedId()) + \
             str(self.scaleEdit.text()) + \
             str(self.heighEdit.text()) + \
             str(int(self.ttaModel.isChecked())) + \
             str(self.widthEdit.text()) + \
-            str(self.comboBox.currentIndex())
+            str(self.modelName.toolTip()) + str(self.fmtComboBox.currentText())
         return data
 
     def SetStatus(self, status):
@@ -384,7 +403,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.scaleEdit.setEnabled(status)
         self.widthEdit.setEnabled(status)
         self.heighEdit.setEnabled(status)
-        self.noiseCombox.setEnabled(status)
+        # self.noiseCombox.setEnabled(status)
         # self.radioButton_4.setEnabled(status)
         # self.radioButton_5.setEnabled(status)
         # self.radioButton_6.setEnabled(status)
@@ -423,31 +442,3 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         QtOwner().owner.navigationWidget.UpdatePictureData(data)
         QtOwner().ShowMsg(Str.GetStr(Str.HeadUpload))
         # QtImgMgr().SetHeadStatus(not self.isHeadUp)
-
-    # def dragEnterEvent(self, event):
-    #     if(event.mimeData().hasUrls()):
-    #         event.acceptProposedAction()
-    #     else:
-    #         event.ignore()
-    #
-    # def dragMoveEvent(self, evemt):
-    #     return
-    #
-    # def dropEvent(self, event):
-    #     mimeData  = event.mimeData()
-    #     if(mimeData.hasUrls()):
-    #         urls = mimeData.urls()
-    #         QtOwner().ShowLoading()
-    #         fileNames = [str(i.toLocalFile()) for i in urls]
-    #         if not fileNames:
-    #             return
-    #         name = fileNames[0]
-    #         if os.path.isfile(name):
-    #             f = open(name, "rb")
-    #             data = f.read()
-    #             f.close()
-    #             self.data = data
-    #             self.waifu2xData = None
-    #             self.ClearConvert()
-    #             self.backStatus = ""
-    #             self.ShowImg(data)

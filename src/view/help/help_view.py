@@ -59,12 +59,14 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.updateButton.clicked.connect(self.OpenUpdateUrl)
         self.preCheckBox.setChecked(bool(Setting.IsPreUpdate.value))
         self.preCheckBox.clicked.connect(self.SwitchCheckPre)
+        self.configVer.setText("{}({})".format(GlobalConfig.Ver.value, GlobalConfig.VerTime.value))
 
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)
         self.version.setText(config.RealVersion)
         self.upTimeLabel.setText(config.TimeVersion)
         self.waifu2x.setText(config.Waifu2xVersion)
+        self.configVer.setText("{}({})".format(GlobalConfig.Ver.value, GlobalConfig.VerTime.value))
 
     def SwitchCheckPre(self):
         Setting.IsPreUpdate.SetValue(int(self.preCheckBox.isChecked()))
@@ -139,6 +141,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         return
 
     def SwitchCurrent(self, **kwargs):
+        self.configVer.setText("{}({})".format(GlobalConfig.Ver.value, GlobalConfig.VerTime.value))
         self.UpdateDbInfo()
         return
 

@@ -22,6 +22,7 @@ class GlobalItem(object):
 
 class GlobalConfig:
     Ver = GlobalItem(0)
+    VerTime = GlobalItem("2024-10-15")
     LocalProxyIndex = [2, 3]
     Address = GlobalItem(["104.21.91.145", "188.114.98.153"])
     AddressIpv6 = GlobalItem(["2606:4700:d:28:dbf4:26f3:c265:73bc", "2a06:98c1:3120:ca71:be2c:c721:d2b5:5dbf"])
@@ -65,11 +66,18 @@ class GlobalConfig:
     @staticmethod
     def LoadSetting():
         try:
+            newKv = {}
             for k, v in dict(Setting.GlobalConfig.value).items():
                 Log.Debug("load global setting, k={}, v={}".format(k, v))
-                value = getattr(GlobalConfig, k)
-                if isinstance(value, GlobalItem) :
-                    value.set_value(v)
+                newKv[k] = v
+            oldV = newKv.get("Ver", 0)
+            if GlobalConfig.Ver.value > oldV:
+                Log.Debug("can not load old config, ver:{}->{}".format(oldV, GlobalConfig.Ver.value))
+            else:
+                for k, v in newKv.items():
+                    value = getattr(GlobalConfig, k, "")
+                    if isinstance(value, GlobalItem):
+                        value.set_value(v)
         except Exception as es:
             Log.Error(es)
         pass

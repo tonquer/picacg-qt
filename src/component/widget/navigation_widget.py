@@ -23,8 +23,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         QtTaskBase.__init__(self)
         self.allFilterStr = set()
         self.setupUi(self)
-        if Setting.IsUseTitleBar.value:
-            self.scrollArea.setFixedHeight(380)
+        # if Setting.IsUseTitleBar.value:
+            # self.scrollArea.setFixedHeight(380)
         # self.resize(260, 800)
         self.__ani = QPropertyAnimation(self, b"geometry")
         self.__connect = None

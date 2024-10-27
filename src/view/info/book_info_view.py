@@ -321,7 +321,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             if Setting.CoverIsOpenWaifu.value:
                 w, h, mat,_ = ToolUtil.GetPictureSize(self.pictureData)
                 if max(w, h) <= Setting.CoverMaxNum.value:
-                    model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value, mat)
+                    model = ToolUtil.GetModelByIndex(Setting.CoverLookModelName.value, Setting.CoverLookScale.value, mat)
                     self.AddConvertTask(self.path, self.pictureData, model, self.Waifu2xPictureBack)
         else:
             self.picture.setText(Str.GetStr(status))

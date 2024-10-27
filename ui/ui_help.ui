@@ -29,7 +29,7 @@ QScrollArea {background-color:transparent;}</string>
         <x>0</x>
         <y>0</y>
         <width>736</width>
-        <height>744</height>
+        <height>771</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -108,7 +108,7 @@ QScrollArea {background-color:transparent;}</string>
             <item>
              <widget class="QWidget" name="widget_2" native="true">
               <layout class="QGridLayout" name="gridLayout">
-               <item row="3" column="0">
+               <item row="4" column="0">
                 <widget class="QLabel" name="label_5">
                  <property name="minimumSize">
                   <size>
@@ -126,10 +126,65 @@ QScrollArea {background-color:transparent;}</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="2">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_9">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>上次更新时间：</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QCheckBox" name="preCheckBox">
+                 <property name="text">
+                  <string>接受Beta版本更新</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="minimumSize">
+                  <size>
+                   <width>80</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>图片超分版本:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="2">
                 <widget class="QPushButton" name="dbCheck">
                  <property name="text">
                   <string>检测更新</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_10">
+                 <property name="minimumSize">
+                  <size>
+                   <width>80</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>本地库版本：</string>
                  </property>
                 </widget>
                </item>
@@ -151,48 +206,6 @@ QScrollArea {background-color:transparent;}</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="1">
-                <widget class="QLabel" name="localTime">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_6">
-                 <property name="minimumSize">
-                  <size>
-                   <width>80</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>waifu2x版本:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QLabel" name="upTimeLabel">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>2021-11-27</string>
-                 </property>
-                </widget>
-               </item>
                <item row="1" column="2">
                 <widget class="QPushButton" name="verCheck">
                  <property name="text">
@@ -200,64 +213,7 @@ QScrollArea {background-color:transparent;}</string>
                  </property>
                 </widget>
                </item>
-               <item row="3" column="1">
-                <widget class="QLabel" name="localNum">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="1">
-                <widget class="QPushButton" name="openCmd">
-                 <property name="text">
-                  <string>打开控制台</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QCheckBox" name="preCheckBox">
-                 <property name="text">
-                  <string>接受Beta版本更新</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="version">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>v1.2.8</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLabel" name="label_9">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>上次更新时间：</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="2">
-                <widget class="QPushButton" name="logButton">
-                 <property name="text">
-                  <string>打开日志目录</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
+               <item row="8" column="0">
                 <widget class="QLabel" name="label_7">
                  <property name="minimumSize">
                   <size>
@@ -275,15 +231,53 @@ QScrollArea {background-color:transparent;}</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_11">
+               <item row="6" column="1">
+                <widget class="QLabel" name="localVer">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
                   </font>
                  </property>
                  <property name="text">
-                  <string>本地数据上次更新:</string>
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="2">
+                <widget class="QPushButton" name="logButton">
+                 <property name="text">
+                  <string>打开日志目录</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="version">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>v1.2.8</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLabel" name="localNum">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QPushButton" name="openCmd">
+                 <property name="text">
+                  <string>打开控制台</string>
                  </property>
                 </widget>
                </item>
@@ -299,26 +293,56 @@ QScrollArea {background-color:transparent;}</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0">
-                <widget class="QLabel" name="label_10">
-                 <property name="minimumSize">
-                  <size>
-                   <width>80</width>
-                   <height>50</height>
-                  </size>
-                 </property>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_11">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
                   </font>
                  </property>
                  <property name="text">
-                  <string>本地库版本：</string>
+                  <string>本地数据上次更新:</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="1">
-                <widget class="QLabel" name="localVer">
+               <item row="1" column="1">
+                <widget class="QLabel" name="upTimeLabel">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>2021-11-27</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QLabel" name="localTime">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_12">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>配置版本</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QLabel" name="configVer">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>

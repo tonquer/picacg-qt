@@ -14,6 +14,7 @@ from interface.ui_download import Ui_Download
 from qt_owner import QtOwner
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
+from tools.langconv import Converter
 from tools.book import BookMgr, Book
 from tools.log import Log
 from tools.status import Status
@@ -84,6 +85,9 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         # self.tableWidget.setColumnWidth(0, 40)
         print(self.width())
         self.tableWidget.setColumnWidth(1, 300)
+        self.comboBox.currentIndexChanged.connect(self.CheckHideItem)
+        self.lineEdit.textChanged.connect(self.SearchTextChange)
+        self.searchText = ""
 
     # 修复下数据
     def RepairData(self, task):
@@ -256,7 +260,8 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
 
     def UpdateTableItem(self, info):
         assert isinstance(info, DownloadItem)
-
+        if info.tableRow < 0:
+            return
         localTime = time.localtime(info.tick)
 
         strTime = time.strftime("%Y-%m-%d %H:%M:%S", localTime)
@@ -305,7 +310,8 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         if task in self.convertingList:
             self.convertingList.remove(task)
         self.downloadDict.pop(bookId)
-        self.tableWidget.removeRow(task.tableRow)
+        if task.tableRow >= 0:
+            self.tableWidget.removeRow(task.tableRow)
         self.db.DelDownloadDB(bookId)
 
     def UpdateTableRow(self):
@@ -682,3 +688,42 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
                 reDownload.append(download)
         for download in reDownload:
             self.SetNewStatus(download, DownloadItem.Waiting)
+
+    def SearchTextChange(self, text):
+        self.searchText = Converter('zh-hans').convert(text)
+        self.CheckHideItem()
+
+    def CheckHideItem(self):
+        sortId = self.comboBox.currentIndex()
+        count = self.tableWidget.rowCount()
+        for i in range(count):
+            bookId = self.tableWidget.item(i, 0).text()
+            info = self.downloadDict.get(bookId)
+            if info:
+                assert isinstance(info, DownloadItem)
+                isFind = False
+                if self.searchText:
+                    if self.searchText in str(info.bookId):
+                        isFind = True
+                    if self.searchText in Converter('zh-hans').convert(info.title):
+                        isFind = True
+                    if self.searchText in Converter('zh-hans').convert(info.author):
+                        isFind = True
+                else:
+                    isFind = True
+
+                if sortId == 0:
+                    if isFind:
+                        self.tableWidget.setRowHidden(i, False)
+                    else:
+                        self.tableWidget.setRowHidden(i, True)
+                elif sortId == 1:
+                    if info.status == DownloadItem.Success or not isFind:
+                        self.tableWidget.setRowHidden(i, True)
+                    else:
+                        self.tableWidget.setRowHidden(i, False)
+                elif sortId == 2:
+                    if info.status == DownloadItem.Success and isFind:
+                        self.tableWidget.setRowHidden(i, False)
+                    else:
+                        self.tableWidget.setRowHidden(i, True)

@@ -22,8 +22,13 @@ if sys.platform == 'darwin':
 #     sys.path.insert(0, "lib")
 
 try:
-    from waifu2x_vulkan import waifu2x_vulkan
+    from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
     config.CanWaifu2x = True
+except ModuleNotFoundError as es:
+    config.CanWaifu2x = False
+    config.CloseWaifu2x = True
+    if hasattr(es, "msg"):
+        config.ErrorMsg = es.msg
 except Exception as es:
     config.CanWaifu2x = False
     if hasattr(es, "msg"):
@@ -56,7 +61,7 @@ if __name__ == "__main__":
         showError(traceback.format_exc(), app)
 
         if config.CanWaifu2x:
-            waifu2x_vulkan.stop()
+            sr.stop()
         sys.exit(-111)
 
     app = QtWidgets.QApplication(sys.argv)  # 建立application对象
@@ -89,13 +94,13 @@ if __name__ == "__main__":
         Log.Error(es)
         showError(traceback.format_exc(), app)
         if config.CanWaifu2x:
-            waifu2x_vulkan.stop()
+            sr.stop()
         sys.exit(-111)
     sts = app.exec()
     socket.close()
     main.Close()
     if config.CanWaifu2x:
-        waifu2x_vulkan.stop()
+        sr.stop()
     time.sleep(2)
     print(sts)
     sys.exit(sts)  # 运行程序

@@ -61,6 +61,9 @@ class MainView(Main, QtTaskBase):
         self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.loadingDialog = LoadingDialog(self)
+        self.navigationWidget.helpButton.click()
+        self.subStackWidget.setCurrentIndex(self.subStackWidget.indexOf(self.helpView))
+
         self.__initWidget()
 
         # 窗口切换相关
@@ -71,7 +74,7 @@ class MainView(Main, QtTaskBase):
         self.menuButton.clicked.connect(self.CheckShowMenu)
         self.UpdateTabBar()
 
-        self.subStackWidget.setCurrentIndex(0)
+        # self.subStackWidget.setCurrentIndex(0)
         self.settingView.LoadSetting()
         GlobalConfig.LoadSetting()
 
@@ -167,10 +170,9 @@ class MainView(Main, QtTaskBase):
         self.nasView.Init()
         self.InitApiProxy()
         if config.CanWaifu2x:
-            from waifu2x_vulkan import waifu2x_vulkan
-            
-            stat = waifu2x_vulkan.init()
-            waifu2x_vulkan.setDebug(True)
+            from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+            stat = sr.init()
+            sr.setDebug(True)
             if stat < 0:
                 pass
                 # QtOwner().ShowMsg(self.tr("未发现支持VULKAN的GPU, Waiuf2x当前为CPU模式, " + ", code:{}".format(str(stat))))
@@ -180,24 +182,26 @@ class MainView(Main, QtTaskBase):
                 # self.qtReadImg.frame.qtTool.checkBox.setEnabled(False)
 
             IsCanUse = True
-            gpuInfo = waifu2x_vulkan.getGpuInfo()
-            cpuNum = waifu2x_vulkan.getCpuCoreNum()
-            gpuNum = waifu2x_vulkan.getGpuCoreNum()
+            gpuInfo = sr.getGpuInfo()
+            cpuNum = sr.getCpuCoreNum()
+            gpuNum = sr.getGpuCoreNum()
             self.settingView.SetGpuInfos(gpuInfo, cpuNum)
             # if not gpuInfo or (gpuInfo and config.Encode < 0) or (gpuInfo and config.Encode >= len(gpuInfo)):
             #     config.Encode = 0
 
-            sts = waifu2x_vulkan.initSet(config.Encode, config.UseCpuNum)
+            sts = sr.initSet(config.Encode, config.UseCpuNum)
             TaskWaifu2x().Start()
-            version = waifu2x_vulkan.getVersion()
+            version = sr.getVersion()
             config.Waifu2xVersion = version
             self.helpView.waifu2x.setText(config.Waifu2xVersion)
+            import sys, os
             Log.Warn("Waifu2x init:{}, encode:{}, version:{}, code:{}, cpuNum:{}/{}, gpuNum:{}, gpuList:{}".format(
                 stat, config.Encode, version, sts, config.UseCpuNum, cpuNum, gpuNum, gpuInfo
             ))
 
         else:
-            QtOwner().ShowError("Waifu2x Error, " + config.ErrorMsg)
+            if not config.CloseWaifu2x:
+                QtOwner().ShowError("Waifu2x Error, " + config.ErrorMsg)
             Log.Warn("Waifu2x Error: " + str(config.ErrorMsg))
 
         if not IsCanUse:
@@ -211,7 +215,7 @@ class MainView(Main, QtTaskBase):
             self.waifu2xToolView.checkBox.setEnabled(False)
             self.waifu2xToolView.changeButton.setEnabled(False)
             self.waifu2xToolView.changeButton.setEnabled(False)
-            self.waifu2xToolView.comboBox.setEnabled(False)
+            self.waifu2xToolView.modelName.setEnabled(False)
             self.waifu2xToolView.SetStatus(False)
             Setting.IsOpenWaifu.SetValue(0)
 

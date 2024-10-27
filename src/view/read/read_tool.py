@@ -116,7 +116,18 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.gpuLabel.setMaximumWidth(250)
         self.curWaifu2x.clicked.connect(self.OpenCurWaifu)
         self.preDownWaifu2x.clicked.connect(self.OpenPreDownloadWaifu2x)
+        self.modelNameButton.setText(ToolUtil.GetShowModelName(Setting.LookModelName.value))
+        self.modelNameButton.setToolTip(Setting.LookModelName.value)
+        self.modelNameButton.clicked.connect(self.OpenSrSelect)
+        self.modelNameButton.setEnabled(False)
+        
+    def OpenSrSelect(self):
+        QtOwner().OpenSrSelectModel(self.modelNameButton.toolTip(), self.OpenSrSelectBack)
 
+    def OpenSrSelectBack(self, newModName):
+        Setting.LookModelName.SetValue(newModName)
+        self.modelNameButton.setText(ToolUtil.GetShowModelName(Setting.LookModelName.value))
+        self.modelNameButton.setToolTip(Setting.LookModelName.value)
 
     @property
     def imgFrame(self):
@@ -336,10 +347,20 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         return
 
     def UpdateText(self, model):
-        model, noise, scale = ToolUtil.GetModelAndScale(model)
-        self.modelLabel.setText(model)
-        self.noiseLabel.setText(str(noise))
-        self.scaleLabel.setText(str(scale))
+        if not model:
+            self.scaleLabel.setText(str(Setting.LookScale.value))
+            self.modelNameButton.setText(ToolUtil.GetShowModelName(Setting.LookModelName.value))
+            self.modelNameButton.setToolTip(Setting.LookModelName.value)
+        else:
+            scale = model.get('scale', 0)
+            modelName = model.get('model_name', 0)
+            self.scaleLabel.setText(str(scale))
+            self.modelNameButton.setText(ToolUtil.GetShowModelName(modelName))
+            self.modelNameButton.setToolTip(modelName)
+        # model, noise, scale = ToolUtil.GetModelAndScale(model)
+        # self.modelLabel.setText(model)
+        # self.noiseLabel.setText(str(noise))
+        # self.scaleLabel.setText(str(scale))
         self.gpuLabel.setText(QtOwner().settingView.GetGpuName())
 
     def OpenLastEps(self):
@@ -442,9 +463,11 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.SetWaifu2xCancle(True)
 
     def Waifu2xCancle(self):
-        Setting.LookNoise.SetValue(self.noiseBox.currentIndex() -1)
+        if self.modelNameButton.toolTip():
+            Setting.LookModelName.SetValue(self.modelNameButton.toolTip())
+        # Setting.LookNoise.SetValue(self.noiseBox.currentIndex() -1)
         Setting.LookScale.SetValue(self.scaleBox.value())
-        Setting.LookModel.SetValue(self.modelBox.currentIndex())
+        # Setting.LookModel.SetValue(self.modelBox.currentIndex())
 
         for data in self.readImg.pictureData.values():
 
@@ -478,14 +501,15 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def SetWaifu2xCancle(self, isVisibel=False):
         self.waifu2xSave.setVisible(not isVisibel)
-        self.noiseLabel.setVisible(not isVisibel)
+        # self.noiseLabel.setVisible(not isVisibel)
         self.scaleLabel.setVisible(not isVisibel)
-        self.modelLabel.setVisible(not isVisibel)
-
+        # self.modelLabel.setVisible(not isVisibel)
+        # self.modelNameButton.setVisible(isVisibel)
+        self.modelNameButton.setEnabled(isVisibel)
         self.waifu2xCancle.setVisible(isVisibel)
-        self.noiseBox.setVisible(isVisibel)
+        # self.noiseBox.setVisible(isVisibel)
         self.scaleBox.setVisible(isVisibel)
-        self.modelBox.setVisible(isVisibel)
+        # self.modelBox.setVisible(isVisibel)
 
     def ScalePicture2(self, value):
         self.zoomSlider.setValue(value)

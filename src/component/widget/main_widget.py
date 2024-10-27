@@ -10,7 +10,7 @@ MainType = 1
 
 Main = None
 
-if  Setting.IsUseTitleBar.value:
+if  False:
     try:
         from interface.ui_main_windows import Ui_MainWindows
         # from .windows.frame_less_widget import FrameLessWidget

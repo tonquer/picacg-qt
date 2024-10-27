@@ -291,7 +291,7 @@ class ToolUtil(object):
 
     @staticmethod
     def GetLookScaleModel(category, w, h, mat="jpg"):
-        data = ToolUtil.GetModelByIndex(Setting.LookNoise.value, Setting.LookScale.value, ToolUtil.GetLookModel(category), mat)
+        data = ToolUtil.GetModelByIndex(Setting.LookModelName.value, Setting.LookScale.value, mat)
         # 放大倍数不能过大，如果图片超过4k了，QImage无法显示出来，bug
         if min(w, h) > 3000:
             data["scale"] = 1
@@ -305,7 +305,7 @@ class ToolUtil(object):
         # 条漫不放大
         if not config.CanWaifu2x:
             return {}
-        return ToolUtil.GetModelByIndex(Setting.DownloadNoise.value, Setting.DownloadScale.value, Setting.DownloadModel.value, mat)
+        return ToolUtil.GetModelByIndex(Setting.DownloadModelName.value, Setting.DownloadScale.value, mat)
 
     @staticmethod
     def GetAnimationFormat(data):
@@ -348,55 +348,68 @@ class ToolUtil(object):
             Log.Error(es)
         return 0, 0, "jpg", False
 
-    @staticmethod
-    def GetLookModel(category):
-        if Setting.LookModel.value == 0:
-            if "Cosplay" in category or "cosplay" in category or "CosPlay" in category or "COSPLAY" in category:
-                return 2
-            return 3
-        else:
-            return Setting.LookModel.value
+    # @staticmethod
+    # def GetLookModel(category):
+    #     if Setting.LookModel.value == 0:
+    #         if "Cosplay" in category or "cosplay" in category or "CosPlay" in category or "COSPLAY" in category:
+    #             return 2
+    #         return 3
+    #     else:
+    #         return Setting.LookModel.value
+
+    # @staticmethod
+    # def GetModelAndScale(model):
+    #     if not model:
+    #         return "cunet", 1, 1
+    #     index = model.get('index', 0)
+    #     scale = model.get('scale', 0)
+    #     noise = model.get('noise', 0)
+    #     if index == 0:
+    #         model = "anime_style_art_rgb"
+    #     elif index == 1:
+    #         model = "cunet"
+    #     elif index == 2:
+    #         model = "photo"
+    #     else:
+    #         model = "anime_style_art_rgb"
+    #     return model, noise, scale
 
     @staticmethod
-    def GetModelAndScale(model):
-        if not model:
-            return "cunet", 1, 1
-        index = model.get('index', 0)
-        scale = model.get('scale', 0)
-        noise = model.get('noise', 0)
-        if index == 0:
-            model = "anime_style_art_rgb"
-        elif index == 1:
-            model = "cunet"
-        elif index == 2:
-            model = "photo"
-        else:
-            model = "anime_style_art_rgb"
-        return model, noise, scale
-
-    @staticmethod
-    def GetModelByIndex(noise, scale, index, mat="jpg"):
+    def GetModelByIndex(modelName, scale, mat="jpg"):
         if not config.CanWaifu2x:
             return {}
-        if noise < 0:
-            noise = 3
-        data = {"format": mat, "noise": noise, "scale": scale, "index": index}
-        from waifu2x_vulkan import waifu2x_vulkan
-        if index == 0:
-            data["model"] = getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise))
-        elif index == 1:
-            data["model"] = getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise))
-        elif index == 2:
-            data["model"] = getattr(waifu2x_vulkan, "MODEL_PHOTO_NOISE" + str(noise))
-        elif index == 3:
-            data["model"] = getattr(waifu2x_vulkan, "MODEL_ANIME_STYLE_ART_RGB_NOISE"+str(noise))
-        else:
-            data["model"] = getattr(waifu2x_vulkan, "MODEL_CUNET_NOISE"+str(noise))
+        data = {"scale": scale}
+        from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+        data["model"] = getattr(sr, modelName, 0)
+        data["model_name"] = modelName
         return data
-
+    
+    @staticmethod
+    def GetShowModelName(name):
+        if "WAIFU2X_CUNET" in name:
+            return "Waifu2x(cunet)"
+        elif "WAIFU2X_ANIME" in name:
+            return "Waifu2x(anime)"
+        elif "WAIFU2X_PHOTO" in name:
+            return "Waifu2x(photo)"
+        elif "REALCUGAN_PRO" in name:
+            return "Realcugan(pro)"
+        elif "REALCUGAN_SE" in name:
+            return "Realcugan(se)"
+        elif "REALSR" in name:
+            return "RealSR"
+        elif "REALESRGAN_X4PLUSANIME" in name:
+            return "X4plusAnime"
+        elif "REALESRGAN_X4PLUS" in name:
+            return "X4Plus"
+        elif "REALESRGAN_ANIMAVIDEOV3" in name:
+            return "AnimaVideoV3"
+        return name
+    
     @staticmethod
     def GetCanSaveName(name):
-        return re.sub('[\\\/:*?"<>|\0\r\n]', '', name).rstrip(".").strip(" ")
+        # 限制文件夹名称为255/3的长度
+        return str(re.sub('[\\\/:*?"<>|\0\r\n]', '', name).rstrip(".").strip(" "))[:254//3-1]
 
     @staticmethod
     def LoadCachePicture(filePath):

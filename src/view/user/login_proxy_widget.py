@@ -409,7 +409,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         QtOwner().settingView.SetSock5Proxy()
         Server().UpdateDns(address, imageServer, imageAdress)
-        Log.Info("update proxy, apiSetId:{}, imgSetID:{}, image server:{}:{}, address:{}".format(Setting.ProxySelectIndex.value, Setting.ProxyImgSelectIndex.value, Server().imageServer, Server().imageAddress, Server().address))
+        Log.Warn("update proxy, ver:{}, apiSetId:{}, imgSetID:{}, image server:{}:{}, address:{}".format(config.UpdateVersion, Setting.ProxySelectIndex.value, Setting.ProxyImgSelectIndex.value, Server().imageServer, Server().imageAddress, Server().address))
 
     def SaveSetting(self):
         Setting.PreferCDNIP.SetValue(self.cdn_api_ip.text())

@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QCommandLinkButton,
     QFrame, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
-    QVBoxLayout, QWidget)
+    QToolButton, QVBoxLayout, QWidget)
 
 from component.box.wheel_combo_box import WheelComboBox
 from component.box.wheel_double_spin_box import WheelDoubleSpinBox
@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -899, 727, 3096))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -601, 727, 2937))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -365,26 +365,6 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_4.addWidget(self.frame_13)
-
-        self.frame = QFrame(self.scrollAreaWidgetContents)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_14 = QVBoxLayout(self.frame)
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
-        self.label_30 = QLabel(self.frame)
-        self.label_30.setObjectName(u"label_30")
-        self.label_30.setFont(font1)
-
-        self.verticalLayout_14.addWidget(self.label_30)
-
-        self.titleBox = QCheckBox(self.frame)
-        self.titleBox.setObjectName(u"titleBox")
-
-        self.verticalLayout_14.addWidget(self.titleBox)
-
-
-        self.verticalLayout_4.addWidget(self.frame)
 
         self.frame_17 = QFrame(self.scrollAreaWidgetContents)
         self.frame_17.setObjectName(u"frame_17")
@@ -876,32 +856,6 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_21)
 
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.label_13 = QLabel(self.frame_8)
-        self.label_13.setObjectName(u"label_13")
-        self.label_13.setMinimumSize(QSize(60, 0))
-        self.label_13.setMaximumSize(QSize(156, 16777215))
-
-        self.horizontalLayout_4.addWidget(self.label_13)
-
-        self.readNoise = WheelComboBox(self.frame_8)
-        self.readNoise.addItem("")
-        self.readNoise.addItem("")
-        self.readNoise.addItem("")
-        self.readNoise.addItem("")
-        self.readNoise.setObjectName(u"readNoise")
-        self.readNoise.setMinimumSize(QSize(150, 0))
-
-        self.horizontalLayout_4.addWidget(self.readNoise)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_2)
-
-
-        self.verticalLayout_10.addLayout(self.horizontalLayout_4)
-
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.label_14 = QLabel(self.frame_8)
@@ -911,15 +865,10 @@ class Ui_SettingNew(object):
 
         self.horizontalLayout_5.addWidget(self.label_14)
 
-        self.readModel = WheelComboBox(self.frame_8)
-        self.readModel.addItem("")
-        self.readModel.addItem("")
-        self.readModel.addItem("")
-        self.readModel.addItem("")
-        self.readModel.setObjectName(u"readModel")
-        self.readModel.setMinimumSize(QSize(150, 0))
+        self.readModelName = QToolButton(self.frame_8)
+        self.readModelName.setObjectName(u"readModelName")
 
-        self.horizontalLayout_5.addWidget(self.readModel)
+        self.horizontalLayout_5.addWidget(self.readModelName)
 
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -998,32 +947,6 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_15.addLayout(self.horizontalLayout_11)
 
-        self.horizontalLayout_12 = QHBoxLayout()
-        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
-        self.label_23 = QLabel(self.frame_12)
-        self.label_23.setObjectName(u"label_23")
-        self.label_23.setMinimumSize(QSize(60, 0))
-        self.label_23.setMaximumSize(QSize(156, 16777215))
-
-        self.horizontalLayout_12.addWidget(self.label_23)
-
-        self.coverNoise = WheelComboBox(self.frame_12)
-        self.coverNoise.addItem("")
-        self.coverNoise.addItem("")
-        self.coverNoise.addItem("")
-        self.coverNoise.addItem("")
-        self.coverNoise.setObjectName(u"coverNoise")
-        self.coverNoise.setMinimumSize(QSize(150, 0))
-
-        self.horizontalLayout_12.addWidget(self.coverNoise)
-
-        self.horizontalSpacer_10 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_12.addItem(self.horizontalSpacer_10)
-
-
-        self.verticalLayout_15.addLayout(self.horizontalLayout_12)
-
         self.horizontalLayout_13 = QHBoxLayout()
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
         self.label_25 = QLabel(self.frame_12)
@@ -1033,15 +956,10 @@ class Ui_SettingNew(object):
 
         self.horizontalLayout_13.addWidget(self.label_25)
 
-        self.coverModel = WheelComboBox(self.frame_12)
-        self.coverModel.addItem("")
-        self.coverModel.addItem("")
-        self.coverModel.addItem("")
-        self.coverModel.addItem("")
-        self.coverModel.setObjectName(u"coverModel")
-        self.coverModel.setMinimumSize(QSize(150, 0))
+        self.coverModelName = QToolButton(self.frame_12)
+        self.coverModelName.setObjectName(u"coverModelName")
 
-        self.horizontalLayout_13.addWidget(self.coverModel)
+        self.horizontalLayout_13.addWidget(self.coverModelName)
 
         self.horizontalSpacer_11 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -1098,32 +1016,6 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_11.addWidget(self.downAuto)
 
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.label_17 = QLabel(self.frame_9)
-        self.label_17.setObjectName(u"label_17")
-        self.label_17.setMinimumSize(QSize(60, 0))
-        self.label_17.setMaximumSize(QSize(156, 16777215))
-
-        self.horizontalLayout_8.addWidget(self.label_17)
-
-        self.downNoise = WheelComboBox(self.frame_9)
-        self.downNoise.addItem("")
-        self.downNoise.addItem("")
-        self.downNoise.addItem("")
-        self.downNoise.addItem("")
-        self.downNoise.setObjectName(u"downNoise")
-        self.downNoise.setMinimumSize(QSize(150, 0))
-
-        self.horizontalLayout_8.addWidget(self.downNoise)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_8.addItem(self.horizontalSpacer_5)
-
-
-        self.verticalLayout_11.addLayout(self.horizontalLayout_8)
-
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.label_18 = QLabel(self.frame_9)
@@ -1133,15 +1025,10 @@ class Ui_SettingNew(object):
 
         self.horizontalLayout_9.addWidget(self.label_18)
 
-        self.downModel = WheelComboBox(self.frame_9)
-        self.downModel.addItem("")
-        self.downModel.addItem("")
-        self.downModel.addItem("")
-        self.downModel.addItem("")
-        self.downModel.setObjectName(u"downModel")
-        self.downModel.setMinimumSize(QSize(150, 0))
+        self.downModelName = QToolButton(self.frame_9)
+        self.downModelName.setObjectName(u"downModelName")
 
-        self.horizontalLayout_9.addWidget(self.downModel)
+        self.horizontalLayout_9.addWidget(self.downModelName)
 
         self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -1470,8 +1357,6 @@ class Ui_SettingNew(object):
         self.mainScaleButton3.setText(QCoreApplication.translate("SettingNew", u"150%", None))
         self.mainScaleButton4.setText(QCoreApplication.translate("SettingNew", u"175%", None))
         self.mainScaleButton5.setText(QCoreApplication.translate("SettingNew", u"200%", None))
-        self.label_30.setText(QCoreApplication.translate("SettingNew", u"\u6807\u9898\u680f\u8bbe\u7f6e\uff08\u9700\u91cd\u542f\uff09", None))
-        self.titleBox.setText(QCoreApplication.translate("SettingNew", u"\u6807\u9898\u680f\u7f8e\u5316\uff08\u591a\u5c4f\u5efa\u8bae\u4e0d\u52fe\u9009\uff0cwin11\u53ef\u4e0d\u52fe\u9009\uff09", None))
         self.label_38.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u8bbe\u7f6e", None))
         self.showCloseButton0.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u9000\u51fa", None))
         self.showCloseButton1.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u6700\u5c0f\u5316\u5230\u6258\u76d8", None))
@@ -1520,49 +1405,19 @@ class Ui_SettingNew(object):
         self.readCheckBox.setText(QCoreApplication.translate("SettingNew", u"\u662f\u5426\u542f\u7528", None))
         self.preDownWaifu2x.setText(QCoreApplication.translate("SettingNew", u"\u4f18\u5148\u4f7f\u7528\u4e0b\u8f7d\u8f6c\u6362\u597d\u7684\u7f13\u5b58", None))
         self.label_28.setText(QCoreApplication.translate("SettingNew", u"\u4e3a\u4e86\u4fdd\u8bc1\u901f\u5ea6\uff0c\u56fe\u7247\u5206\u8fa8\u7387\u5c0f\u4e8e\u7b49\u4e8e\u8be5\u503c\u65f6\u624d\u8fdb\u884c\u8f6c\u6362\uff08\u9ed8\u8ba44096P\uff09", None))
-        self.label_13.setText(QCoreApplication.translate("SettingNew", u"\u53bb\u566a\u7b49\u7ea7", None))
-        self.readNoise.setItemText(0, QCoreApplication.translate("SettingNew", u"0", None))
-        self.readNoise.setItemText(1, QCoreApplication.translate("SettingNew", u"1", None))
-        self.readNoise.setItemText(2, QCoreApplication.translate("SettingNew", u"2", None))
-        self.readNoise.setItemText(3, QCoreApplication.translate("SettingNew", u"3", None))
-
         self.label_14.setText(QCoreApplication.translate("SettingNew", u"\u6a21\u578b", None))
-        self.readModel.setItemText(0, QCoreApplication.translate("SettingNew", u"\u81ea\u52a8", None))
-        self.readModel.setItemText(1, QCoreApplication.translate("SettingNew", u"cunet", None))
-        self.readModel.setItemText(2, QCoreApplication.translate("SettingNew", u"photo", None))
-        self.readModel.setItemText(3, QCoreApplication.translate("SettingNew", u"anime_style_art_rgb", None))
-
+        self.readModelName.setText("")
         self.label_15.setText(QCoreApplication.translate("SettingNew", u"\u653e\u5927\u500d\u6570", None))
         self.label_24.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u5c01\u9762\u6a21\u5f0f\uff08\u5f00\u542f\u540e\u6240\u6709\u5c01\u9762\u4f1a\u7ecf\u8fc7Waifu2x\u5904\u7406\uff09", None))
         self.coverCheckBox.setText(QCoreApplication.translate("SettingNew", u"\u662f\u5426\u542f\u7528", None))
         self.label_22.setText(QCoreApplication.translate("SettingNew", u"\u4e3a\u4e86\u4fdd\u8bc1\u901f\u5ea6\uff0c\u5c01\u9762\u5206\u8fa8\u7387\u5c0f\u4e8e\u7b49\u4e8e\u8be5\u503c\u65f6\u624d\u8fdb\u884c\u8f6c\u6362\uff08\u9ed8\u8ba4400P\uff09", None))
-        self.label_23.setText(QCoreApplication.translate("SettingNew", u"\u53bb\u566a\u7b49\u7ea7", None))
-        self.coverNoise.setItemText(0, QCoreApplication.translate("SettingNew", u"0", None))
-        self.coverNoise.setItemText(1, QCoreApplication.translate("SettingNew", u"1", None))
-        self.coverNoise.setItemText(2, QCoreApplication.translate("SettingNew", u"2", None))
-        self.coverNoise.setItemText(3, QCoreApplication.translate("SettingNew", u"3", None))
-
         self.label_25.setText(QCoreApplication.translate("SettingNew", u"\u6a21\u578b", None))
-        self.coverModel.setItemText(0, QCoreApplication.translate("SettingNew", u"\u81ea\u52a8", None))
-        self.coverModel.setItemText(1, QCoreApplication.translate("SettingNew", u"cunet", None))
-        self.coverModel.setItemText(2, QCoreApplication.translate("SettingNew", u"photo", None))
-        self.coverModel.setItemText(3, QCoreApplication.translate("SettingNew", u"anime_style_art_rgb", None))
-
+        self.coverModelName.setText("")
         self.label_26.setText(QCoreApplication.translate("SettingNew", u"\u653e\u5927\u500d\u6570", None))
         self.label_16.setText(QCoreApplication.translate("SettingNew", u"waifu2x\u4e0b\u8f7d\u6a21\u5f0f\uff08\u5f00\u542f\u540e\u4e0b\u8f7d\u5b8c\u6210\u4f1a\u7ecf\u8fc7Waifu2x\u5904\u7406\uff09", None))
         self.downAuto.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u5b8c\u540e\u81ea\u52a8\u8f6c\u6362", None))
-        self.label_17.setText(QCoreApplication.translate("SettingNew", u"\u53bb\u566a\u7b49\u7ea7", None))
-        self.downNoise.setItemText(0, QCoreApplication.translate("SettingNew", u"0", None))
-        self.downNoise.setItemText(1, QCoreApplication.translate("SettingNew", u"1", None))
-        self.downNoise.setItemText(2, QCoreApplication.translate("SettingNew", u"2", None))
-        self.downNoise.setItemText(3, QCoreApplication.translate("SettingNew", u"3", None))
-
         self.label_18.setText(QCoreApplication.translate("SettingNew", u"\u6a21\u578b", None))
-        self.downModel.setItemText(0, QCoreApplication.translate("SettingNew", u"\u81ea\u52a8", None))
-        self.downModel.setItemText(1, QCoreApplication.translate("SettingNew", u"cunet", None))
-        self.downModel.setItemText(2, QCoreApplication.translate("SettingNew", u"photo", None))
-        self.downModel.setItemText(3, QCoreApplication.translate("SettingNew", u"anime_style_art_rgb", None))
-
+        self.downModelName.setText("")
         self.label_19.setText(QCoreApplication.translate("SettingNew", u"\u653e\u5927\u500d\u6570", None))
         self.downloadLabel.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u4e0e\u7f13\u5b58", None))
         self.label_36.setText(QCoreApplication.translate("SettingNew", u"\u4fdd\u5b58\u8def\u5f84\u683c\u5f0f\u8bbe\u7f6e\uff08\u65b0\u4e0b\u8f7d\u7684\u6587\u4ef6\u624d\u80fd\u751f\u6548\uff09", None))

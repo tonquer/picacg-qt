@@ -168,7 +168,14 @@ class QtOwner(Singleton):
         data = f.readAll()
         f.close()
         return bytes(data)
-
+    
+    def OpenSrSelectModel(self, curModelName, callBack):
+        from view.setting.setting_sr_select_view import SettingSrSelectView
+        loginView = SettingSrSelectView(QtOwner().owner, curModelName)
+        loginView.show()
+        loginView.Close.connect(callBack)
+        return
+    
     def AddLocalHistory(self, bookId):
         self.owner.localReadView.AddDataToDB(bookId)
 
@@ -269,7 +276,11 @@ class QtOwner(Singleton):
         # self.owner.subCommentView.SetOpenEvent(commentId, widget)
         arg = {"bookId": bookId}
         self.owner.SwitchWidget(self.owner.bookInfoView, **arg)
-
+        
+    def OpenSomeDownload(self, bookList=None):
+        arg = {"bookList": bookList}
+        self.owner.SwitchWidget(self.owner.downloadSomeView, **arg)
+        
     def OpenLocalBook(self, bookId):
         self.owner.localReadView.OpenLocalBook(bookId)
 

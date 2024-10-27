@@ -82,7 +82,7 @@ class Str:
     NetNas = 5000             # 网络存储
     CvSuccess = 5001          # "完成"
     CvWaitDown = 5002         # 等待下载
-    CvWaifu2x = 5003          # 等待Waifu2x
+    CvWaifu2x = 5003          # 等待图片超分
     CvCompose = 5004          # 正在打包
     CvUpload = 5005           # 正在上传
     CvError = 5006            # 出错了
@@ -90,7 +90,7 @@ class Str:
     CvLink = 5008             # 连接中
     CvNotNet = 5009           # 没有网络存储
     CvSpace = 5010            # 空
-    CvZipError = 5011         # 打包出错了
+    CvZipError = 5010         # 打包出错了
 
     CvAuthError = 5101        # 验证失败
     CvFileNotFound = 5102     # 本地文件未找到
@@ -191,7 +191,7 @@ class Str:
     Open = 87                # 打开
     LookCover = 88           # 查看封面
     ReDownloadCover = 89     # 重下封面
-    Waifu2xConvert = 90      # Waifu2x转换
+    Waifu2xConvert = 90      # 图片超分
     CopyTitle = 91           # 复制标题
     Download = 92            # 下载
     Delete = 93              # 删除
@@ -207,7 +207,7 @@ class Str:
     Looked = 103             # 看过
     PressEnter = 104         # 按Enter发送消息
     PressCtrlEnter = 105     # 按Ctrl+Enter发送消息
-    DelWaifu2xConvert = 106     # 取消Waifu2x转换
+    DelWaifu2xConvert = 106     # 取消图片超分
     NeedResetSave = 107      # 需要重启保存
     CheckUp = 108            # 检查更新
     DailyUpdated = 109            # 今日已更新
@@ -336,7 +336,7 @@ class Str:
         cls.strDict[cls.NetNas] = QCoreApplication.translate("cls.obj",  "网络存储", None)
         cls.strDict[cls.CvSuccess] = QCoreApplication.translate("cls.obj",  "完成", None)
         cls.strDict[cls.CvWaitDown] = QCoreApplication.translate("cls.obj",  "等待下载", None)
-        cls.strDict[cls.CvWaifu2x] = QCoreApplication.translate("cls.obj",  "等待Waifu2x", None)
+        cls.strDict[cls.CvWaifu2x] = QCoreApplication.translate("cls.obj",  "等待图片超分", None)
         cls.strDict[cls.CvCompose] = QCoreApplication.translate("cls.obj",  "正在打包", None)
         cls.strDict[cls.CvUpload] = QCoreApplication.translate("cls.obj",  "正在上传", None)
         cls.strDict[cls.CvError] = QCoreApplication.translate("cls.obj",  "出错了", None)
@@ -383,7 +383,7 @@ class Str:
         cls.strDict[cls.Size] = QCoreApplication.translate("cls.obj",  "大小", None)
         cls.strDict[cls.State] = QCoreApplication.translate("cls.obj",  "状态", None)
         cls.strDict[cls.DownloadNot] = QCoreApplication.translate("cls.obj",  "下载未完成", None)
-        cls.strDict[cls.NotRecommendWaifu2x] = QCoreApplication.translate("cls.obj",  "Waifu2x当前为CPU模式，看图模式下不推荐开启", None)
+        cls.strDict[cls.NotRecommendWaifu2x] = QCoreApplication.translate("cls.obj",  "图片超分当前为CPU模式，看图模式下不推荐开启", None)
         cls.strDict[cls.StopAutoScroll] = QCoreApplication.translate("cls.obj",  "自动滚动/翻页已停止", None)
         cls.strDict[cls.LastPage] = QCoreApplication.translate("cls.obj",  "上一页", None)
         cls.strDict[cls.NextPage] = QCoreApplication.translate("cls.obj",  "下一页", None)
@@ -436,7 +436,7 @@ class Str:
         cls.strDict[cls.Open] = QCoreApplication.translate("cls.obj",  "打开", None)
         cls.strDict[cls.LookCover] = QCoreApplication.translate("cls.obj",  "查看封面", None)
         cls.strDict[cls.ReDownloadCover] = QCoreApplication.translate("cls.obj",  "重下封面", None)
-        cls.strDict[cls.Waifu2xConvert] = QCoreApplication.translate("cls.obj",  "Waifu2x转换", None)
+        cls.strDict[cls.Waifu2xConvert] = QCoreApplication.translate("cls.obj",  "图片超分", None)
         cls.strDict[cls.CopyTitle] = QCoreApplication.translate("cls.obj",  "复制标题", None)
         cls.strDict[cls.Download] = QCoreApplication.translate("cls.obj",  "下载", None)
         cls.strDict[cls.Delete] = QCoreApplication.translate("cls.obj",  "删除", None)
@@ -452,7 +452,7 @@ class Str:
         cls.strDict[cls.Looked] = QCoreApplication.translate("cls.obj",  "看过", None)
         cls.strDict[cls.PressEnter] = QCoreApplication.translate("cls.obj",  "按Enter发送消息", None)
         cls.strDict[cls.PressCtrlEnter] = QCoreApplication.translate("cls.obj",  "按Ctrl+Enter发送消息", None)
-        cls.strDict[cls.DelWaifu2xConvert] = QCoreApplication.translate("cls.obj",  "取消Waifu2x转换", None)
+        cls.strDict[cls.DelWaifu2xConvert] = QCoreApplication.translate("cls.obj",  "取消图片超分", None)
         cls.strDict[cls.NeedResetSave] = QCoreApplication.translate("cls.obj",  "需要重启保存", None)
         cls.strDict[cls.CheckUp] = QCoreApplication.translate("cls.obj",  "检查更新", None)
         cls.strDict[cls.DailyUpdated] = QCoreApplication.translate("cls.obj",  "今日已更新", None)
@@ -478,10 +478,10 @@ class Str:
         cls.strDict[cls.MyComment] = QCoreApplication.translate("cls.obj",  "我的评论", None)
         cls.strDict[cls.LoginOut] = QCoreApplication.translate("cls.obj",  "登出", None)
         cls.strDict[cls.Sock5Error] = QCoreApplication.translate("cls.obj",  "Sock5设置出错", None)
-        cls.strDict[cls.OpenAutoWaifu2x] = QCoreApplication.translate("cls.obj", "开启自动waifu2x", None)
-        cls.strDict[cls.CloseAutoWaifu2x] = QCoreApplication.translate("cls.obj", "关闭自动waifu2x", None)
-        cls.strDict[cls.OpenCurWaifu2x] = QCoreApplication.translate("cls.obj", "开启本张图waifu2x", None)
-        cls.strDict[cls.CloseCurWaifu2x] = QCoreApplication.translate("cls.obj", "关闭本张图waifu2x", None)
+        cls.strDict[cls.OpenAutoWaifu2x] = QCoreApplication.translate("cls.obj", "开启自动超分", None)
+        cls.strDict[cls.CloseAutoWaifu2x] = QCoreApplication.translate("cls.obj", "关闭自动超分", None)
+        cls.strDict[cls.OpenCurWaifu2x] = QCoreApplication.translate("cls.obj", "开启本张图超分", None)
+        cls.strDict[cls.CloseCurWaifu2x] = QCoreApplication.translate("cls.obj", "关闭本张图超分", None)
         cls.strDict[cls.RightLeftDouble2] = QCoreApplication.translate("cls.obj", "右左双页(滚轮正序)", None)
         cls.strDict[cls.Copy] = QCoreApplication.translate("cls.obj", "复制", None)
         cls.strDict[cls.CopyPicture] = QCoreApplication.translate("cls.obj", "复制图片到剪贴板", None)
