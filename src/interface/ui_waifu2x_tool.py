@@ -42,7 +42,7 @@ class Ui_Waifu2xTool(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 275, 480))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 281, 480))
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_2 = QVBoxLayout()
@@ -156,7 +156,6 @@ class Ui_Waifu2xTool(object):
         self.fmtComboBox.addItem("")
         self.fmtComboBox.addItem("")
         self.fmtComboBox.addItem("")
-        self.fmtComboBox.addItem("")
         self.fmtComboBox.setObjectName(u"fmtComboBox")
 
         self.horizontalLayout_7.addWidget(self.fmtComboBox)
@@ -215,7 +214,7 @@ class Ui_Waifu2xTool(object):
         self.label_9.setObjectName(u"label_9")
         self.label_9.setMaximumSize(QSize(60, 16777215))
 
-        self.horizontalLayout_11.addWidget(self.label_9)
+        self.horizontalLayout_11.addWidget(self.label_9, 0, Qt.AlignLeft)
 
         self.gpuLabel = QLabel(self.scrollAreaWidgetContents)
         self.gpuLabel.setObjectName(u"gpuLabel")
@@ -298,7 +297,7 @@ class Ui_Waifu2xTool(object):
         self.headButton.setObjectName(u"headButton")
         self.headButton.setMaximumSize(QSize(100, 16777215))
 
-        self.verticalLayout_3.addWidget(self.headButton, 0, Qt.AlignLeft)
+        self.verticalLayout_3.addWidget(self.headButton, 0, Qt.AlignHCenter)
 
 
         self.verticalLayout_4.addLayout(self.verticalLayout_3)
@@ -352,7 +351,6 @@ class Ui_Waifu2xTool(object):
         self.fmtComboBox.setItemText(2, QCoreApplication.translate("Waifu2xTool", u"PNG", None))
         self.fmtComboBox.setItemText(3, QCoreApplication.translate("Waifu2xTool", u"BMP", None))
         self.fmtComboBox.setItemText(4, QCoreApplication.translate("Waifu2xTool", u"WEBP", None))
-        self.fmtComboBox.setItemText(5, QCoreApplication.translate("Waifu2xTool", u"GIF", None))
 
         self.changeButton.setText(QCoreApplication.translate("Waifu2xTool", u"\u8f6c\u6362", None))
         self.label_8.setText(QCoreApplication.translate("Waifu2xTool", u"\u5206\u8fa8\u7387\uff1a", None))

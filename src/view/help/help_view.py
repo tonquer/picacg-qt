@@ -65,7 +65,10 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.retranslateUi(self, Help)
         self.version.setText(config.RealVersion)
         self.upTimeLabel.setText(config.TimeVersion)
-        self.waifu2x.setText(config.Waifu2xVersion)
+        if config.CanWaifu2x:
+            self.waifu2x.setText(config.Waifu2xVersion)
+        else:
+            self.waifu2x.setText("")
         self.configVer.setText("{}({})".format(GlobalConfig.Ver.value, GlobalConfig.VerTime.value))
 
     def SwitchCheckPre(self):

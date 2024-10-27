@@ -216,6 +216,8 @@ class MainView(Main, QtTaskBase):
             self.waifu2xToolView.changeButton.setEnabled(False)
             self.waifu2xToolView.changeButton.setEnabled(False)
             self.waifu2xToolView.modelName.setEnabled(False)
+            self.waifu2xToolView.ttaModel.setEnabled(False)
+            self.waifu2xToolView.changeButton.setEnabled(False)
             self.waifu2xToolView.SetStatus(False)
             Setting.IsOpenWaifu.SetValue(0)
 

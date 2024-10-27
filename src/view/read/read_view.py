@@ -92,20 +92,21 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         action = popMenu.addAction(Str.GetStr(Str.FullSwitch)+"(F11)")
         action.triggered.connect(self.qtTool.FullScreen)
-
-        if Setting.IsOpenWaifu.value:
-            action = popMenu.addAction(Str.GetStr(Str.CloseAutoWaifu2x))
-        else:
-            action = popMenu.addAction(Str.GetStr(Str.OpenAutoWaifu2x))
-        action.triggered.connect(self.qtTool.checkBox.click)
+        if config.CanWaifu2x:
+            if Setting.IsOpenWaifu.value:
+                action = popMenu.addAction(Str.GetStr(Str.CloseAutoWaifu2x))
+            else:
+                action = popMenu.addAction(Str.GetStr(Str.OpenAutoWaifu2x))
+            action.triggered.connect(self.qtTool.checkBox.click)
 
         p = self.pictureData.get(self.curIndex)
-        if p:
-            if p.isWaifu2x:
-                action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x)+"(F2)")
-            else:
-                action = popMenu.addAction(Str.GetStr(Str.OpenCurWaifu2x)+"(F2)")
-            action.triggered.connect(self.qtTool.curWaifu2x.click)
+        if config.CanWaifu2x:
+            if p:
+                if p.isWaifu2x:
+                    action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x)+"(F2)")
+                else:
+                    action = popMenu.addAction(Str.GetStr(Str.OpenCurWaifu2x)+"(F2)")
+                action.triggered.connect(self.qtTool.curWaifu2x.click)
 
         menu2 = popMenu.addMenu(Str.GetStr(Str.ReadMode))
         action = menu2.addAction("切换双页对齐(F10)")

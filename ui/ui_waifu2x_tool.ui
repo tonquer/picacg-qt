@@ -35,7 +35,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>275</width>
+          <width>281</width>
           <height>480</height>
          </rect>
         </property>
@@ -256,11 +256,6 @@
                  <string>WEBP</string>
                 </property>
                </item>
-               <item>
-                <property name="text">
-                 <string>GIF</string>
-                </property>
-               </item>
               </widget>
              </item>
             </layout>
@@ -344,7 +339,7 @@
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_11">
-             <item>
+             <item alignment="Qt::AlignLeft">
               <widget class="QLabel" name="label_9">
                <property name="maximumSize">
                 <size>
@@ -489,7 +484,7 @@
              </item>
             </layout>
            </item>
-           <item alignment="Qt::AlignLeft">
+           <item alignment="Qt::AlignHCenter">
             <widget class="QPushButton" name="headButton">
              <property name="maximumSize">
               <size>
