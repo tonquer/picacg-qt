@@ -90,7 +90,7 @@ class Str:
     CvLink = 5008             # 连接中
     CvNotNet = 5009           # 没有网络存储
     CvSpace = 5010            # 空
-    CvZipError = 5010         # 打包出错了
+    CvZipError = 5011        # 打包出错了
 
     CvAuthError = 5101        # 验证失败
     CvFileNotFound = 5102     # 本地文件未找到

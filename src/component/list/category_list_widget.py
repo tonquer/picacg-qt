@@ -125,7 +125,7 @@ class CategoryListWidget(BaseListWidget):
             assert isinstance(widget, ComicItemWidget)
             w, h, mat,_ = ToolUtil.GetPictureSize(widget.picData)
             if max(w, h) <= Setting.CoverMaxNum.value or not isIfSize:
-                model = ToolUtil.GetModelByIndex(Setting.CoverLookNoise.value, Setting.CoverLookScale.value, Setting.CoverLookModel.value, mat)
+                model = ToolUtil.GetModelByIndex(Setting.CoverLookModelName.value, Setting.CoverLookScale.value, mat)
                 widget.isWaifu2xLoading = True
                 self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index)
 

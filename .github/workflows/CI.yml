@@ -80,6 +80,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller==4.8
+        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/waifu2x_vulkan-1.1.6-cp37-cp37m-macosx_10_15_x86_64.whl
         pip install -r src\requirements.txt
     - name: Build
       run: |
@@ -102,10 +103,82 @@ jobs:
         path: ${{ env.PACKAGENAME }}
         retention-days: 7
         
+  windows-nosr:
+    runs-on: windows-latest
+    env:
+      PACKAGENAME: bika_py37_nosr_windows_x64
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller==4.8
+        pip install -r src\requirements.txt
+    - name: Build
+      run: |
+        cd src
+        cp ..\res\icon\icon.ico .\
+
+        pyinstaller -F -w -i icon.ico start.py
+        mv dist bika
+        Copy-Item -Verbose -Recurse -Path db -Destination bika/
+        cp ..\LICENSE bika\
+        cp ..\CHANGELOG bika\
+        cd ..
+        mkdir ${{ env.PACKAGENAME }}
+        mv src\bika ${{ env.PACKAGENAME }}
+        7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}
+        retention-days: 7
+
   windows7:
     runs-on: windows-latest
     env:
       PACKAGENAME: bika_py37_windows7_x64
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller==4.6
+        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/waifu2x_vulkan-1.1.6-cp37-cp37m-macosx_10_15_x86_64.whl
+        pip install -r src\requirements_win7.txt
+    - name: Build
+      run: |
+        cd src
+        cp ..\res\icon\icon.ico .\
+        pyinstaller -F -w -i icon.ico start.py
+        mv dist bika
+        Copy-Item -Verbose -Recurse -Path db -Destination bika/
+        cp ..\LICENSE bika\
+        cp ..\CHANGELOG bika\
+        cd ..
+        mkdir ${{ env.PACKAGENAME }}
+        mv src\bika ${{ env.PACKAGENAME }}
+        7z a -r "$($Env:PACKAGENAME + '.zip')" "bika"
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}
+        retention-days: 7
+
+  windows7-nosr:
+    runs-on: windows-latest
+    env:
+      PACKAGENAME: bika_py37_nosr_windows7_x64
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.7
