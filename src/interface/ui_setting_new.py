@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_setting_new.ui'
+## Form generated from reading UI file 'ui_setting_new1.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.2.4
 ##
@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -601, 727, 2937))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -296, 727, 3012))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -365,6 +365,25 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_4.addWidget(self.frame_13)
+
+        self.frame = QFrame(self.scrollAreaWidgetContents)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.StyledPanel)
+        self.frame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_14 = QVBoxLayout(self.frame)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.label_13 = QLabel(self.frame)
+        self.label_13.setObjectName(u"label_13")
+
+        self.verticalLayout_14.addWidget(self.label_13)
+
+        self.windowsize = QCheckBox(self.frame)
+        self.windowsize.setObjectName(u"windowsize")
+
+        self.verticalLayout_14.addWidget(self.windowsize)
+
+
+        self.verticalLayout_4.addWidget(self.frame)
 
         self.frame_17 = QFrame(self.scrollAreaWidgetContents)
         self.frame_17.setObjectName(u"frame_17")
@@ -1357,6 +1376,8 @@ class Ui_SettingNew(object):
         self.mainScaleButton3.setText(QCoreApplication.translate("SettingNew", u"150%", None))
         self.mainScaleButton4.setText(QCoreApplication.translate("SettingNew", u"175%", None))
         self.mainScaleButton5.setText(QCoreApplication.translate("SettingNew", u"200%", None))
+        self.label_13.setText(QCoreApplication.translate("SettingNew", u"<html><head/><body><p><span style=\" font-size:12pt;\">\u4fdd\u5b58\u7a97\u53e3\u4f4d\u7f6e\u548c\u5927\u5c0f</span></p></body></html>", None))
+        self.windowsize.setText(QCoreApplication.translate("SettingNew", u"\u542f\u7528\u540e\u7acb\u5373\u751f\u6548", None))
         self.label_38.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u8bbe\u7f6e", None))
         self.showCloseButton0.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u9000\u51fa", None))
         self.showCloseButton1.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u6700\u5c0f\u5316\u5230\u6258\u76d8", None))
