@@ -57,15 +57,17 @@ class MainView(Main, QtTaskBase):
         self.adjustSize()
         # self.downloadView.setFixedWidth(150)
         # self.bookInfoView.setFixedWidth(150)
-        #self.myInitSize = QSize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+        self.myInitSize = QSize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
         settings = QSettings('data/config.ini', QSettings.IniFormat)
         settings.beginGroup('GeneraSetting')
-        if settings.value('ScaleLevel', type=int) == 0:
-            self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-            self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
-        print(desktop.size(), self.size())
-        if settings.value('IsUsewindowsize', type=int) == 1:
-            self.restore_window_size()
+        keys = ['ScaleLevel', 'IsUsewindowsize']
+        if all(settings.contains(key) for key in keys):
+            if settings.value('ScaleLevel', type=int) == 0:
+                self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+                self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
+            print(desktop.size(), self.size())
+            if settings.value('IsUsewindowsize', type=int) == 1:
+                self.restore_window_size()
         self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.loadingDialog = LoadingDialog(self)
