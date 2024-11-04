@@ -95,9 +95,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-601</y>
+          <y>-296</y>
           <width>727</width>
-          <height>2937</height>
+          <height>3012</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -631,6 +631,32 @@
               <attribute name="buttonGroup">
                <string notr="true">mainScaleGroup</string>
               </attribute>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_14">
+            <item>
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;保存窗口位置和大小&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="windowsize">
+              <property name="text">
+               <string>启用后立即生效</string>
+              </property>
              </widget>
             </item>
            </layout>
@@ -2415,12 +2441,12 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="showCloseButtonGroup"/>
-  <buttongroup name="saveNameGroup"/>
-  <buttongroup name="themeGroup"/>
+  <buttongroup name="mainScaleGroup"/>
   <buttongroup name="proxyGroup"/>
   <buttongroup name="logGroup"/>
-  <buttongroup name="mainScaleGroup"/>
+  <buttongroup name="saveNameGroup"/>
   <buttongroup name="languageGroup"/>
+  <buttongroup name="showCloseButtonGroup"/>
+  <buttongroup name="themeGroup"/>
  </buttongroups>
 </ui>
