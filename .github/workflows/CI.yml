@@ -44,10 +44,7 @@ jobs:
             --hidden-import view \
             --strip --windowed -i Icon.icns \
             start.py
-        # rm -rf dist/PicACG
-        # cp Icon.icns dist/
-        # ln -s /Applications/   dist/Applications
-        cp -avf db dist/PicACG.app/Contents/MacOS
+        cp -avf db dist/PicACG.app/Contents/Frameworks
         xattr -cr dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
             --window-pos 200 120 \
@@ -99,10 +96,7 @@ jobs:
             --hidden-import view \
             --strip --windowed -i Icon.icns \
             start.py
-        # rm -rf dist/PicACG
-        # cp Icon.icns dist/
-        # ln -s /Applications/   dist/Applications
-        cp -avf db dist/PicACG.app/Contents/MacOS
+        cp -avf db dist/PicACG.app/Contents/Frameworks
         xattr -cr dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
             --window-pos 200 120 \
