@@ -180,11 +180,14 @@ jobs:
         pip install pyinstaller==4.8
         pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
         pip install -r src\requirements.txt
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
     - name: Build
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py 
+        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
@@ -225,11 +228,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller==4.8
         pip install -r src\requirements.txt
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
     - name: Build
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py 
+        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
@@ -271,11 +277,14 @@ jobs:
         pip install pyinstaller==4.6
         pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
         pip install -r src\requirements_win7.txt
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
     - name: Build
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py
+        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
@@ -316,11 +325,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller==4.6
         pip install -r src\requirements_win7.txt
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v4.2.4/upx-4.2.4-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
     - name: Build
       run: |
         cd src
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py
+        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
