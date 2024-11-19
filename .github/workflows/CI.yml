@@ -26,7 +26,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311.cp312.cp313-none-macosx_10_9_universal2.whl
-        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/Pillow-9.1.1-cp310-cp310-macosx_10_10_universal2.whl
+        cd script
+        pip install delocate wheel_filename
+        python build_universal2.py pillow
+        pip install *.whl
+        cd ..
+
         pip install -r src/requirements_macos.txt
         brew install create-dmg
     - name: Build
@@ -78,7 +83,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/Pillow-9.1.1-cp310-cp310-macosx_10_10_universal2.whl
+        cd script
+        pip install delocate wheel_filename
+        python build_universal2.py pillow
+        pip install *.whl
+        cd ..
         pip install -r src/requirements_macos.txt
         brew install create-dmg
     - name: Build
@@ -129,7 +138,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller==4.8
+        pip install pyinstaller
         pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
         pip install -r src\requirements.txt
     - name: Build
@@ -166,7 +175,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller==4.8
+        pip install pyinstaller
         pip install -r src\requirements.txt
     - name: Build
       run: |
@@ -274,8 +283,8 @@ jobs:
       run: |
         sudo apt-get install -y fuse libfuse2
         python -m pip install --upgrade pip
-        pip install pyinstaller==4.8
-        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp37-cp37m-linux_x86_64.whl
+        pip install pyinstaller
+        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp37-abi3-linux_x86_64.whl
         pip install -r src/requirements.txt
     - name: Build
       run: |
