@@ -409,7 +409,7 @@ class ToolUtil(object):
     @staticmethod
     def GetCanSaveName(name):
         # 限制文件夹名称为255/3的长度
-        return str(re.sub('[\\\/:*?"<>|\0\r\n]', '', name).rstrip(".").strip(" "))[:254//3-1]
+        return str(re.sub('[\\\/:*?"<>|\0\t\r\n]', '', name).rstrip(".").strip(" "))[:254//3-1]
 
     @staticmethod
     def LoadCachePicture(filePath):
