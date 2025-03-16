@@ -37,6 +37,10 @@ jobs:
     - name: Build
       run: |
         cd src
+        cd db
+        rm -rf data.db
+        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db
+        cd ..
         cp ../res/icon/Icon.icns ./
         pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
             --hidden-import sr_ncnn_vulkan --hidden-import PySide6 --hidden-import requests \
@@ -93,6 +97,10 @@ jobs:
     - name: Build
       run: |
         cd src
+        cd db
+        rm -rf data.db
+        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db
+        cd ..
         cp ../res/icon/Icon.icns ./
         pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
             --hidden-import sr_ncnn_vulkan --hidden-import PySide6 --hidden-import requests \
@@ -144,6 +152,11 @@ jobs:
     - name: Build
       run: |
         cd src
+        cd db
+        Remove-Item data.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        cd ..
+
         cp ..\res\icon\icon.ico .\
 
         pyinstaller -F -w -i icon.ico start.py
@@ -180,6 +193,11 @@ jobs:
     - name: Build
       run: |
         cd src
+        cd db
+        Remove-Item data.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        cd ..
+
         cp ..\res\icon\icon.ico .\
 
         pyinstaller -F -w -i icon.ico start.py
@@ -217,6 +235,10 @@ jobs:
     - name: Build
       run: |
         cd src
+        cd db
+        Remove-Item data.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py
         mv dist bika
@@ -252,6 +274,10 @@ jobs:
     - name: Build
       run: |
         cd src
+        cd db
+        Remove-Item data.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py
         mv dist bika
@@ -290,6 +316,10 @@ jobs:
       run: |
         cd src
         pyinstaller -w start.py
+        cd db
+        rm -rf data.db
+        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db
+        cd ..
         cd dist
         mkdir -p picacg.AppRun/usr/bin
         wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
