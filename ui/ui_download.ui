@@ -30,6 +30,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QCheckBox" name="skipSpaceRadio">
+       <property name="text">
+        <string>跳过空白章节</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="redownloadRadio">
        <property name="text">
         <string>下载失败后自动重试</string>

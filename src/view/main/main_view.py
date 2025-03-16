@@ -3,8 +3,6 @@ from functools import partial
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QTimer, QSize
 from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QFont
 from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
-from PySide6.QtWidgets import QApplication, QMainWindow
-from PySide6.QtCore import QSettings
 
 from component.dialog.loading_dialog import LoadingDialog
 from component.dialog.show_close_dialog import ShowCloseDialog
@@ -36,8 +34,7 @@ class MainView(Main, QtTaskBase):
         # self.setAttribute(Qt.WA_PaintOnScreen, False)  # 禁用屏幕缓存
         # self.setAttribute(Qt.WA_NoSystemBackground, True)  # 去除系统背景
         # self.setAttribute(Qt.WA_OpaquePaintEvent, True)  # 设置为不透明的paint event
-
-        #self.resize(600, 600)
+        self.resize(600, 600)
         self.setWindowTitle(config.ProjectName)
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
         # self.setAttribute(Qt.WA_TranslucentBackground)
@@ -58,16 +55,9 @@ class MainView(Main, QtTaskBase):
         # self.downloadView.setFixedWidth(150)
         # self.bookInfoView.setFixedWidth(150)
         self.myInitSize = QSize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-        settings = QSettings('data/config.ini', QSettings.IniFormat)
-        settings.beginGroup('GeneraSetting')
-        keys = ['ScaleLevel', 'IsUsewindowsize']
-        if all(settings.contains(key) for key in keys):
-            if settings.value('ScaleLevel', type=int) == 0:
-                self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
-                self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
-            print(desktop.size(), self.size())
-            if settings.value('IsUsewindowsize', type=int) == 1:
-                self.restore_window_size()
+        self.resize(desktop.width() // 4 * 3, desktop.height() // 4 * 3)
+        self.move(self.width() // 8+desktop.x(), max(0, desktop.height()-self.height()) // 2+desktop.y())
+        print(desktop.size(), self.size())
         self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.loadingDialog = LoadingDialog(self)
@@ -151,6 +141,8 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.convertButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.convertView)))
         self.navigationWidget.friedButton.hide()
         self.navigationWidget.convertButton.hide()
+        self.navigationWidget.chatNewButton.hide()
+        self.navigationWidget.chatButton.hide()
         self.navigationWidget.nasButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.nasView)))
 
     def RetranslateUi(self):
@@ -379,36 +371,6 @@ class MainView(Main, QtTaskBase):
         # 点击关闭按钮或者点击退出事件会出现图标无法消失的bug，需要手动将图标内存清除
         # self.myTrayIcon = None
         a0.accept()
-
-    def closeEvent(self, event):
-        self.save_window_size()
-        super().closeEvent(event)
-
-    def save_window_size(self):
-        settings = QSettings('data/windowsize.ini',QSettings.IniFormat)
-
-        settings.setValue('size', self.width())
-        settings.setValue('size1', self.height())
-
-        settings.setValue('position',self.geometry().x())
-        settings.setValue('position1', self.geometry().y())
-
-    def restore_window_size(self):
-        settings = QSettings('data/windowsize.ini', QSettings.IniFormat)
-        if settings.contains("size"):
-            size = int(settings.value('size'))
-        if settings.contains("size1"):
-            size1 = int(settings.value('size1'))
-
-        if settings.contains("position"):
-            position = int(settings.value('position'))
-        if settings.contains("position1"):
-            position1 = int(settings.value('position1'))
-
-        keys_to_check = ['size', 'size1', 'position', 'position1']
-        if all(settings.contains(key) for key in keys_to_check):
-            self.setGeometry(position, position1, size, size1)
-        settings.endGroup()
 
     def GetExitScreen(self):
         screens = QGuiApplication.screens()

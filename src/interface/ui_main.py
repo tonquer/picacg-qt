@@ -43,8 +43,8 @@ from view.nas.nas_view import NasView
 from view.read.read_view import ReadView
 from view.search.search_view import SearchView
 from view.setting.setting_view import SettingView
-from view.tool.local_eps_read_view import LocalEpsReadView
 from view.tool.local_read_all_view import LocalReadAllView
+from view.tool.local_read_eps_view import LocalReadEpsView
 from view.tool.local_read_view import LocalReadView
 from view.tool.waifu2x_tool_view import Waifu2xToolView
 from view.user.favorite_view import FavoriteView
@@ -113,7 +113,7 @@ class Ui_Main(object):
         self.convertView = ConvertView()
         self.convertView.setObjectName(u"convertView")
         self.subStackWidget.addWidget(self.convertView)
-        self.localReadEpsView = LocalEpsReadView()
+        self.localReadEpsView = LocalReadEpsView()
         self.localReadEpsView.setObjectName(u"localReadEpsView")
         self.subStackWidget.addWidget(self.localReadEpsView)
         self.chatNewView = ChatNewView()

@@ -247,6 +247,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 self.AddHttpTask(req.DownloadDatabaseReq(url, self.curUpdateTick+offset), self.DownloadDataBack, backParam=(ToolUtil.GetCurZeroDatatime(self.curUpdateTick + 24*3600), newTick))
             return
         else:
+            self.curSubVersion = 0
             curEndTime = curTime + timedelta(7 - curTime.weekday())
             curEndTime = datetime(curEndTime.year, curEndTime.month, curEndTime.day)
             weekTick = int(curEndTime.timestamp()-offset)

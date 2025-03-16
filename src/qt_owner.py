@@ -322,8 +322,9 @@ class QtOwner(Singleton):
     def SetDirty(self):
         pass
 
+
     @staticmethod
-    def SetFont(app):
+    def SetFont():
         try:
             from tools.log import Log
             from config.setting import Setting
@@ -348,14 +349,14 @@ class QtOwner(Singleton):
             if Setting.FontName.value:
                 f = QFont(Setting.FontName.value)
 
-            if Setting.FontSize.value:
+            if Setting.FontSize.value and Setting.FontSize.value != "Defalut":
                 f.setPointSize(int(Setting.FontSize.value))
 
             if Setting.FontStyle.value:
                 fontStyleList = [QFont.Light, QFont.Normal, QFont.DemiBold, QFont.Bold, QFont.Black]
                 f.setWeight(fontStyleList[Setting.FontStyle.value - 1])
 
-            app.setFont(f)
+            QtOwner().app.setFont(f)
 
         except Exception as es:
             Log.Error(es)

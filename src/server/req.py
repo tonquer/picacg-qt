@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from urllib.parse import quote
 
 from config import config
+from config.global_config import GlobalConfig
 from config.setting import Setting
 from tools.tool import ToolUtil
 
@@ -37,17 +38,17 @@ class ServerReq(object):
 
         if IsApi and Setting.ProxySelectIndex.value == 5:
             self.headers.pop("user-agent")
-            self.proxyUrl = config.ProxyApiDomain
+            self.proxyUrl = GlobalConfig.ProxyApiDomain.value
         if IsImg and Setting.ProxyImgSelectIndex.value == 5:
             self.headers.pop("user-agent")
-            self.proxyUrl = config.ProxyImgDomain
+            self.proxyUrl = GlobalConfig.ProxyImgDomain.value
 
         if IsApi and Setting.ProxySelectIndex.value == 6:
             self.headers.pop("user-agent")
-            self.proxyUrl = config.ProxyApiDomain2
+            self.proxyUrl = GlobalConfig.ProxyApiDomain2.value
         if IsImg and Setting.ProxyImgSelectIndex.value == 6:
             self.headers.pop("user-agent")
-            self.proxyUrl = config.ProxyImgDomain2
+            self.proxyUrl = GlobalConfig.ProxyImgDomain2.value
 
         if Setting.IsHttpProxy.value == 1:
             self.proxy = {"http": Setting.HttpProxy.value, "https": Setting.HttpProxy.value}
@@ -520,7 +521,7 @@ class SpeedTestReq(ServerReq):
         host = ToolUtil.GetUrlHost(url)
         if host in config.ApiDomain and Setting.ProxySelectIndex.value == 5:
             self.headers.pop("user-agent")
-            self.proxyUrl = config.ProxyApiDomain
+            self.proxyUrl = GlobalConfig.ProxyApiDomain.value
 
         header = ToolUtil.GetHeader(url, method)
         header['cache-control'] = 'no-cache'

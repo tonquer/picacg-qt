@@ -36,7 +36,7 @@ class Ui_Help(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 736, 771))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 736, 815))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout = QHBoxLayout()
@@ -77,6 +77,20 @@ class Ui_Help(object):
         self.pushButton.setObjectName(u"pushButton")
 
         self.verticalLayout_2.addWidget(self.pushButton, 0, Qt.AlignHCenter)
+
+        self.label_13 = QLabel(self.widget)
+        self.label_13.setObjectName(u"label_13")
+        font1 = QFont()
+        font1.setItalic(True)
+        self.label_13.setFont(font1)
+
+        self.verticalLayout_2.addWidget(self.label_13, 0, Qt.AlignHCenter)
+
+        self.label_14 = QLabel(self.widget)
+        self.label_14.setObjectName(u"label_14")
+        self.label_14.setFont(font1)
+
+        self.verticalLayout_2.addWidget(self.label_14, 0, Qt.AlignHCenter)
 
         self.widget_2 = QWidget(self.widget)
         self.widget_2.setObjectName(u"widget_2")
@@ -211,9 +225,9 @@ class Ui_Help(object):
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.label_8 = QLabel(self.updateWidget)
         self.label_8.setObjectName(u"label_8")
-        font1 = QFont()
-        font1.setPointSize(16)
-        self.label_8.setFont(font1)
+        font2 = QFont()
+        font2.setPointSize(16)
+        self.label_8.setFont(font2)
 
         self.verticalLayout_4.addWidget(self.label_8)
 
@@ -262,7 +276,9 @@ class Ui_Help(object):
         self.label.setText("")
         self.label_2.setText(QCoreApplication.translate("Help", u"\u9700\u8981\u53cd\u9988\u4f7f\u7528\u8fc7\u7a0b\u4e2d\u7684\u95ee\u9898\uff1f", None))
         self.label_3.setText(QCoreApplication.translate("Help", u"\u60f3\u63d0\u4f9b\u4e00\u4e9b\u5efa\u8bae\uff1f", None))
-        self.pushButton.setText(QCoreApplication.translate("Help", u"Github Issue", None))
+        self.pushButton.setText(QCoreApplication.translate("Help", u"\u524d\u5f80Github Issue", None))
+        self.label_13.setText(QCoreApplication.translate("Help", u"\u672c\u8f6f\u4ef6\u5728Github\u5f00\u6e90\uff0c\u8bf7\u52ff\u7528\u4e8e\u4efb\u4f55\u5546\u4e1a\u884c\u4e3a", None))
+        self.label_14.setText(QCoreApplication.translate("Help", u"by@tonquer", None))
         self.label_5.setText(QCoreApplication.translate("Help", u"\u672c\u5730\u5e93\u6570\u91cf:", None))
         self.label_9.setText(QCoreApplication.translate("Help", u"\u4e0a\u6b21\u66f4\u65b0\u65f6\u95f4\uff1a", None))
         self.preCheckBox.setText(QCoreApplication.translate("Help", u"\u63a5\u53d7Beta\u7248\u672c\u66f4\u65b0", None))

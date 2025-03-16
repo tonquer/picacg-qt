@@ -65,6 +65,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.radioButton.setChecked(Setting.DownloadAuto.value)
         datas = self.db.LoadDownload(self)
         self.redownloadRadio.clicked.connect(self.SwitchReDownload)
+        self.skipSpaceRadio.clicked.connect(self.SwitchSkipSpace)
         self.needLoadBookID = []
         self.tableWidget.setColumnHidden(0, True)
         for task in datas.values():
@@ -126,6 +127,8 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.failTimer.start()
         self.redownloadRadio.setCheckable(True)
         self.redownloadRadio.setChecked(bool(Setting.IsReDownload.value))
+        self.skipSpaceRadio.setCheckable(True)
+        self.skipSpaceRadio.setChecked(bool(Setting.IsSkipSpace.value))
 
     def GetDownloadEpsInfo(self, bookId, epsId):
         info = self.GetDownloadInfo(bookId)
@@ -576,6 +579,9 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.UpdateTableRow()
 
     def DelRecordingAndFile(self):
+        isClear = QMessageBox.information(self, '删除记录', "是否删除记录和文件", QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
+        if isClear != QtWidgets.QMessageBox.Yes:
+            return
         selected = self.tableWidget.selectedIndexes()
         selectRows = set()
         for index in selected:
@@ -677,6 +683,9 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
 
     def SwitchReDownload(self):
         Setting.IsReDownload.SetValue(int(self.redownloadRadio.isChecked()))
+
+    def SwitchSkipSpace(self):
+        Setting.IsSkipSpace.SetValue(int(self.skipSpaceRadio.isChecked()))
 
     def CheckFailReDownload(self):
         if not Setting.IsReDownload.value:

@@ -1,10 +1,12 @@
 from config import config
+from config.setting import Setting
 from task.qt_task import QtTaskBase
 from tools.status import Status
 from tools.str import Str
 from tools.tool import ToolUtil
 from view.download.download_db import DownloadDb
 from view.download.download_item import DownloadItem
+from tools.log import Log
 
 
 class DownloadStatus(QtTaskBase):
@@ -210,7 +212,23 @@ class DownloadStatus(QtTaskBase):
             task.statusMsg = st
             self.UpdateTableItem(task)
         elif st == Str.SpaceEps:
-            self.SetNewStatus(task, task.SpaceEps)
+            if Setting.IsSkipSpace.value:
+                index = task.epsIds.index(task.curDownloadEpsId)
+                Log.Warn(f"skip space eps, book_id:{task.bookId}, eps_id:{task.curDownloadEpsId}, index:{index}")
+                if index + 1 >= len(task.epsIds):
+                    newStatus = task.Success
+                else:
+                    newStatus = task.Downloading
+                    task.curDownloadEpsId = task.epsIds[index + 1]
+                self.SetNewStatus(task, newStatus)
+                if newStatus == task.Downloading:
+                    epsId, index, savePath, isInit = task.GetDownloadPath()
+                    self.AddDownloadBook(task.bookId, epsId, index, self.DownloadStCallBack, self.DownloadCallBack,
+                                         self.DownloadCompleteCallBack, task.bookId, savePath=savePath,
+                                         cleanFlag=task.cleanFlag, isInit=isInit)
+                return
+            else:
+                self.SetNewStatus(task, task.SpaceEps)
         elif st == Str.UnderReviewBook:
             from tools.book import BookMgr
             info = BookMgr().GetBook(task.bookId)

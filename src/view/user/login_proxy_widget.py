@@ -169,10 +169,10 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         else:
             i += 1
 
-        self.speedTest.append(("", "", False, (config.ProxyApiDomain, config.ProxyImgDomain), i))
+        self.speedTest.append(("", "", False, (GlobalConfig.ProxyApiDomain.value, GlobalConfig.ProxyImgDomain.value), i))
         i += 1
 
-        self.speedTest.append(("", "", False, (config.ProxyApiDomain2, config.ProxyImgDomain2), i))
+        self.speedTest.append(("", "", False, (GlobalConfig.ProxyApiDomain2.value, GlobalConfig.ProxyImgDomain2.value), i))
         i += 1
 
         # adress1 = GlobalConfig.GetAddress(7)

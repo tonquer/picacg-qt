@@ -8,6 +8,7 @@ from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon, QCursor
 from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup, QMessageBox, \
     QListView, QWidget, QMenu
+from win32ctypes.pywin32.pywintypes import datetime
 
 from component.layout.flow_layout import FlowLayout
 from config.setting import Setting
@@ -19,6 +20,7 @@ from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from tools.book import BookMgr, Book, BookEps
 from tools.str import Str
+import time
 
 
 class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
@@ -274,7 +276,18 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             name = info.thumb.get("originalName")
             self.url = fileServer
             dayStr = ToolUtil.GetUpdateStr(info.updated_at)
-            self.updateTick.setText(str(dayStr) + Str.GetStr(Str.Updated))
+            self.updateTick.setText(str(dayStr) + Str.GetStr(Str.Update))
+
+            if info.created_at:
+                timeArray = time.strptime(info.created_at, "%Y-%m-%dT%H:%M:%S.%f%z")
+                tick = int(time.mktime(timeArray) - time.timezone)
+                date = datetime.fromtimestamp(tick)
+                self.upTime.setText(f"{date.year}-{date.month}-{date.day} {date.hour}:{date.minute}:{date.second}")
+            if info.updated_at:
+                timeArray = time.strptime(info.updated_at, "%Y-%m-%dT%H:%M:%S.%f%z")
+                tick = int(time.mktime(timeArray) - time.timezone)
+                date = datetime.fromtimestamp(tick)
+                self.lastUpTime.setText(f"{date.year}-{date.month}-{date.day} {date.hour}:{date.minute}:{date.second}")
             if config.IsLoadingPicture:
                 url = ToolUtil.GetRealUrl(fileServer, path)
                 self.path = ToolUtil.GetRealPath(self.bookId, "cover")

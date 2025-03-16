@@ -2,7 +2,7 @@ PySide6==6.2.4
 websocket-client==0.59.0
 requests==2.26.0
 urllib3==1.25.11
-pillow==8.3.2
+pillow
 Pysocks==1.7.1
 natsort==8.2.0
 webdavclient3==3.14.6

@@ -246,6 +246,15 @@ class DownloadItem(QtTaskBase):
             self.curConvertEpsId = min(self.epsIds)
 
         while True:
+            if self.isSkipEps(self.curConvertEpsId):
+                index = self.epsIds.index(self.curConvertEpsId)
+                if index + 1 >= len(self.epsIds):
+                    return self.ConvertSuccess
+                self.curConvertEpsId = self.epsIds[index + 1]
+            else:
+                break
+
+        while True:
             if self.curConvertEpsInfo.isConvertComplete():
                 index = self.epsIds.index(self.curConvertEpsId)
                 if index + 1 >= len(self.epsIds):
@@ -304,6 +313,22 @@ class DownloadItem(QtTaskBase):
         savePath = os.path.join(convertPath, "{:04}.{}".format(self.curConvertEpsInfo.curPreConvertId + 1, "jpg"))
         return loadPath, savePath
 
+    def isSkipEps(self, epsId):
+        if epsId not in self.epsIds:
+            return False
+        if epsId not in self.epsInfo:
+            return False
+        epsInfo = self.epsInfo[epsId]
+        if self.status == self.Success and not epsInfo.epsTitle:
+            return True
+        if self.curDownloadEpsId not in self.epsIds:
+            return False
+        downIndex = self.epsIds.index(self.curDownloadEpsId)
+        curIndex = self.epsIds.index(epsId)
+        if downIndex > curIndex and not epsInfo.epsTitle:
+            return True
+        return False
+
 
 class DownloadEpsItem(QtTaskBase):
     def __init__(self):
@@ -323,6 +348,7 @@ class DownloadEpsItem(QtTaskBase):
         if self.picCnt <= 0:
             return False
         return self.curPreDownloadIndex >= self.picCnt
+
 
     def isConvertComplete(self):
         if not self.epsTitle:

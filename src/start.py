@@ -5,10 +5,11 @@ import sys
 # macOS 修复
 import time
 import traceback
+import signal
 
 from config import config
-from config.setting import Setting
-from qt_error import showError
+from config.setting import Setting, SettingValue
+from qt_error import showError, showError2
 from qt_owner import QtOwner
 from tools.log import Log
 from tools.str import Str
@@ -18,11 +19,10 @@ if sys.platform == 'darwin':
     current_path = os.path.abspath(__file__)
     current_dir = os.path.abspath(os.path.dirname(current_path) + os.path.sep + '.')
     os.chdir(current_dir)
-# else:
-#     sys.path.insert(0, "lib")
 
 try:
     from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+
     config.CanWaifu2x = True
 except ModuleNotFoundError as es:
     config.CanWaifu2x = False
@@ -34,32 +34,30 @@ except Exception as es:
     if hasattr(es, "msg"):
         config.ErrorMsg = es.msg
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QFontDatabase
-from PySide6 import QtWidgets  # 导入PySide6部件
+from PySide6.QtGui import QFont
+from PySide6 import QtWidgets, QtGui  # 导入PySide6部件
 from PySide6.QtNetwork import QLocalSocket, QLocalServer
-
 # 此处不能删除
 import images_rc
 from server.sql_server import DbBook as DbBook
 DbBook()
 
-
 if __name__ == "__main__":
     try:
-        Setting.Init()
         Log.Init()
+        Setting.Init()
         Setting.InitLoadSetting()
-        indexV = Setting.ScaleLevel.GetIndexV()
-        if indexV and indexV != "Auto":
-            os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
+        os.environ['QT_IMAGEIO_MAXALLOC'] = "10000000000000000000000000000000000000000000000000000000000000000"
+        QtGui.QImageReader.setAllocationLimit(0)
+        if Setting.IsUseScaleFactor.value > 0:
+            indexV = Setting.ScaleFactor.value
+            # os.environ["QT_ENABLE_HIGHDPI_SCALING"] = "0"
             os.environ["QT_SCALE_FACTOR"] = str(indexV / 100)
 
     except Exception as es:
         Log.Error(es)
         app = QtWidgets.QApplication(sys.argv)
         showError(traceback.format_exc(), app)
-
         if config.CanWaifu2x:
             sr.stop()
         sys.exit(-111)
@@ -84,8 +82,9 @@ if __name__ == "__main__":
         Str.Reload()
         QtOwner().SetApp(app)
         QtOwner().SetLocalServer(localServer)
-        QtOwner().SetFont(app)
+        QtOwner().SetFont()
         from view.main.main_view import MainView
+
         main = MainView()
         main.show()  # 显示窗体
         main.Init()
@@ -96,11 +95,25 @@ if __name__ == "__main__":
         if config.CanWaifu2x:
             sr.stop()
         sys.exit(-111)
+
+    oldHook = sys.excepthook
+
+
+    def excepthook(exc_type, exc_value, exc_tb):
+        tb = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        Log.Error(tb)
+        showError2(tb, app)
+
+
+    sys.excepthook = excepthook
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     sts = app.exec()
+    sys.excepthook = oldHook
     socket.close()
     main.Close()
     if config.CanWaifu2x:
         sr.stop()
     time.sleep(2)
     print(sts)
-    sys.exit(sts)  # 运行程序
+    sys.exit(sts)

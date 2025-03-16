@@ -29,7 +29,7 @@ QScrollArea {background-color:transparent;}</string>
         <x>0</x>
         <y>0</y>
         <width>736</width>
-        <height>771</height>
+        <height>815</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -101,7 +101,31 @@ QScrollArea {background-color:transparent;}</string>
             <item alignment="Qt::AlignHCenter">
              <widget class="QPushButton" name="pushButton">
               <property name="text">
-               <string>Github Issue</string>
+               <string>前往Github Issue</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_13">
+              <property name="font">
+               <font>
+                <italic>true</italic>
+               </font>
+              </property>
+              <property name="text">
+               <string>本软件在Github开源，请勿用于任何商业行为</string>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignHCenter">
+             <widget class="QLabel" name="label_14">
+              <property name="font">
+               <font>
+                <italic>true</italic>
+               </font>
+              </property>
+              <property name="text">
+               <string>by@tonquer</string>
               </property>
              </widget>
             </item>

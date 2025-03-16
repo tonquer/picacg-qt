@@ -1,3 +1,4 @@
+import math
 from enum import Enum
 
 from PySide6.QtCore import QSize, QPoint
@@ -188,14 +189,14 @@ class QtFileData(object):
             return QPoint(maxWidth // 2 - toWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
         elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
             if index == curIndex:
-                return QPoint(maxWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
+                return QPoint(math.trunc(maxWidth / 2), max(0, maxHeight / 2 - toHeight / 2))
             else:
-                return QPoint(maxWidth // 2 - toWidth, max(0, maxHeight // 2 - toHeight // 2))
+                return QPoint(math.ceil(maxWidth / 2 - toWidth), max(0, maxHeight // 2 - toHeight // 2))
         elif stripModel in [ReadMode.LeftRightDouble]:
             if index != curIndex:
-                return QPoint(maxWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
+                return QPoint(math.trunc(maxWidth / 2), max(0, maxHeight // 2 - toHeight // 2))
             else:
-                return QPoint(maxWidth // 2 - toWidth, max(0, maxHeight // 2 - toHeight // 2))
+                return QPoint(math.ceil(maxWidth / 2 - toWidth), max(0, maxHeight // 2 - toHeight // 2))
         elif stripModel in [ReadMode.LeftRightScroll]:
             return QPoint(oldPos.x(), max(0, maxHeight // 2 - toHeight // 2))
 

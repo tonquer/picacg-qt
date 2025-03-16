@@ -380,7 +380,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
                 QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
                 return
         else:
-            if lastEps >= bookInfo.epsCount:
+            if lasEps >= bookInfo.epsCount:
                 return
 
         if lasEps < 0:

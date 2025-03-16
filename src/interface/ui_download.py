@@ -33,6 +33,11 @@ class Ui_Download(object):
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
 
+        self.skipSpaceRadio = QCheckBox(Download)
+        self.skipSpaceRadio.setObjectName(u"skipSpaceRadio")
+
+        self.horizontalLayout_2.addWidget(self.skipSpaceRadio)
+
         self.redownloadRadio = QCheckBox(Download)
         self.redownloadRadio.setObjectName(u"redownloadRadio")
 
@@ -147,6 +152,7 @@ class Ui_Download(object):
 
     def retranslateUi(self, Download):
         Download.setWindowTitle(QCoreApplication.translate("Download", u"\u4e0b\u8f7d", None))
+        self.skipSpaceRadio.setText(QCoreApplication.translate("Download", u"\u8df3\u8fc7\u7a7a\u767d\u7ae0\u8282", None))
         self.redownloadRadio.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u5931\u8d25\u540e\u81ea\u52a8\u91cd\u8bd5", None))
         self.radioButton.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u81ea\u52a8Waifu2x\u8f6c\u6362", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("Download", u"\u5168\u90e8", None))

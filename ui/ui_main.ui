@@ -90,7 +90,7 @@
             <widget class="NasView" name="nasView"/>
             <widget class="LocalReadAllView" name="localReadAllView"/>
             <widget class="ConvertView" name="convertView"/>
-            <widget class="LocalEpsReadView" name="localReadEpsView"/>
+            <widget class="LocalReadEpsView" name="localReadEpsView"/>
             <widget class="ChatNewView" name="chatNewView"/>
             <widget class="HelpView" name="helpView"/>
             <widget class="MyCommentView" name="myCommentView"/>
@@ -284,12 +284,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LocalEpsReadView</class>
-   <extends>QWidget</extends>
-   <header location="global">view.tool.local_eps_read_view.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ConvertView</class>
    <extends>QWidget</extends>
    <header location="global">view.convert.convert_view.h</header>
@@ -305,6 +299,12 @@
    <class>NasView</class>
    <extends>QWidget</extends>
    <header location="global">view.nas.nas_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LocalReadEpsView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.local_read_eps_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

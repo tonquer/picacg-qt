@@ -21,14 +21,24 @@ class GlobalItem(object):
 
 
 class GlobalConfig:
-    Ver = GlobalItem(0)
+    Ver = GlobalItem(6)
     VerTime = GlobalItem("2024-10-15")
+    # web url
+    WebDnsList = GlobalItem([])
+
+
     LocalProxyIndex = [2, 3]
     Address = GlobalItem(["104.21.91.145", "188.114.98.153"])
     AddressIpv6 = GlobalItem(["2606:4700:d:28:dbf4:26f3:c265:73bc", "2a06:98c1:3120:ca71:be2c:c721:d2b5:5dbf"])
     ImageUrl = GlobalItem("s3.picacomic.com")
     ImageServerList = GlobalItem(["s3.picacomic.com", "storage.diwodiwo.xyz", "s2.picacomic.com", "storage1.picacomic.com", "storage-b.picacomic.com"])
     ImageJumList = GlobalItem(["img.picacomic.com", "img.diwodiwo.xyz"])
+
+    ProxyApiDomain = GlobalItem("bika-api.ggo.icu")
+    ProxyImgDomain = GlobalItem("bika-img.ggo.icu")
+
+    ProxyApiDomain2 = GlobalItem("bika2-api.ggo.icu")
+    ProxyImgDomain2 = GlobalItem("bika21-img.ggo.icu")
 
     def __init__(self):
         pass

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ui_setting_new1.ui'
+## Form generated from reading UI file 'ui_setting_new.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.2.4
 ##
@@ -83,7 +83,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -296, 727, 3012))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -406, 727, 2834))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -312,78 +312,44 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_4.addWidget(self.frame_7)
 
-        self.frame_13 = QFrame(self.scrollAreaWidgetContents)
-        self.frame_13.setObjectName(u"frame_13")
-        self.frame_13.setFont(font1)
-        self.frame_13.setStyleSheet(u"")
-        self.verticalLayout_16 = QVBoxLayout(self.frame_13)
-        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.label = QLabel(self.frame_13)
-        self.label.setObjectName(u"label")
-        self.label.setFont(font1)
-
-        self.verticalLayout_16.addWidget(self.label)
-
-        self.mainScaleButton0 = QRadioButton(self.frame_13)
-        self.mainScaleGroup = QButtonGroup(SettingNew)
-        self.mainScaleGroup.setObjectName(u"mainScaleGroup")
-        self.mainScaleGroup.addButton(self.mainScaleButton0)
-        self.mainScaleButton0.setObjectName(u"mainScaleButton0")
-        self.mainScaleButton0.setChecked(True)
-
-        self.verticalLayout_16.addWidget(self.mainScaleButton0)
-
-        self.mainScaleButton1 = QRadioButton(self.frame_13)
-        self.mainScaleGroup.addButton(self.mainScaleButton1)
-        self.mainScaleButton1.setObjectName(u"mainScaleButton1")
-
-        self.verticalLayout_16.addWidget(self.mainScaleButton1)
-
-        self.mainScaleButton2 = QRadioButton(self.frame_13)
-        self.mainScaleGroup.addButton(self.mainScaleButton2)
-        self.mainScaleButton2.setObjectName(u"mainScaleButton2")
-
-        self.verticalLayout_16.addWidget(self.mainScaleButton2)
-
-        self.mainScaleButton3 = QRadioButton(self.frame_13)
-        self.mainScaleGroup.addButton(self.mainScaleButton3)
-        self.mainScaleButton3.setObjectName(u"mainScaleButton3")
-
-        self.verticalLayout_16.addWidget(self.mainScaleButton3)
-
-        self.mainScaleButton4 = QRadioButton(self.frame_13)
-        self.mainScaleGroup.addButton(self.mainScaleButton4)
-        self.mainScaleButton4.setObjectName(u"mainScaleButton4")
-
-        self.verticalLayout_16.addWidget(self.mainScaleButton4)
-
-        self.mainScaleButton5 = QRadioButton(self.frame_13)
-        self.mainScaleGroup.addButton(self.mainScaleButton5)
-        self.mainScaleButton5.setObjectName(u"mainScaleButton5")
-
-        self.verticalLayout_16.addWidget(self.mainScaleButton5)
-
-
-        self.verticalLayout_4.addWidget(self.frame_13)
-
-        self.frame = QFrame(self.scrollAreaWidgetContents)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_14 = QVBoxLayout(self.frame)
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
-        self.label_13 = QLabel(self.frame)
+        self.frame_18 = QFrame(self.scrollAreaWidgetContents)
+        self.frame_18.setObjectName(u"frame_18")
+        self.frame_18.setFont(font1)
+        self.frame_18.setStyleSheet(u"")
+        self.verticalLayout_22 = QVBoxLayout(self.frame_18)
+        self.verticalLayout_22.setObjectName(u"verticalLayout_22")
+        self.label_13 = QLabel(self.frame_18)
         self.label_13.setObjectName(u"label_13")
+        self.label_13.setFont(font1)
 
-        self.verticalLayout_14.addWidget(self.label_13)
+        self.verticalLayout_22.addWidget(self.label_13)
 
-        self.windowsize = QCheckBox(self.frame)
-        self.windowsize.setObjectName(u"windowsize")
+        self.mainScaleBox = QCheckBox(self.frame_18)
+        self.mainScaleBox.setObjectName(u"mainScaleBox")
 
-        self.verticalLayout_14.addWidget(self.windowsize)
+        self.verticalLayout_22.addWidget(self.mainScaleBox)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.label_17 = QLabel(self.frame_18)
+        self.label_17.setObjectName(u"label_17")
+        self.label_17.setMaximumSize(QSize(150, 16777215))
+
+        self.horizontalLayout_4.addWidget(self.label_17)
+
+        self.scaleBox = WheelSpinBox(self.frame_18)
+        self.scaleBox.setObjectName(u"scaleBox")
+        self.scaleBox.setMinimum(50)
+        self.scaleBox.setMaximum(300)
+        self.scaleBox.setValue(100)
+
+        self.horizontalLayout_4.addWidget(self.scaleBox)
 
 
-        self.verticalLayout_4.addWidget(self.frame)
+        self.verticalLayout_22.addLayout(self.horizontalLayout_4)
+
+
+        self.verticalLayout_4.addWidget(self.frame_18)
 
         self.frame_17 = QFrame(self.scrollAreaWidgetContents)
         self.frame_17.setObjectName(u"frame_17")
@@ -1369,15 +1335,9 @@ class Ui_SettingNew(object):
         self.fontStyle.setItemText(4, QCoreApplication.translate("SettingNew", u"\u7c97\u4f53", None))
         self.fontStyle.setItemText(5, QCoreApplication.translate("SettingNew", u"\u9ed1\u4f53", None))
 
-        self.label.setText(QCoreApplication.translate("SettingNew", u"\u754c\u9762\u7f29\u653e\u663e\u793a\uff08\u9700\u91cd\u542f\u751f\u6548\uff09\uff1a", None))
-        self.mainScaleButton0.setText(QCoreApplication.translate("SettingNew", u"\u6839\u636e\u7cfb\u7edf\u7f29\u653e", None))
-        self.mainScaleButton1.setText(QCoreApplication.translate("SettingNew", u"100%\uff08\u4e0d\u7f29\u653e\uff09", None))
-        self.mainScaleButton2.setText(QCoreApplication.translate("SettingNew", u"125%", None))
-        self.mainScaleButton3.setText(QCoreApplication.translate("SettingNew", u"150%", None))
-        self.mainScaleButton4.setText(QCoreApplication.translate("SettingNew", u"175%", None))
-        self.mainScaleButton5.setText(QCoreApplication.translate("SettingNew", u"200%", None))
-        self.label_13.setText(QCoreApplication.translate("SettingNew", u"<html><head/><body><p><span style=\" font-size:12pt;\">\u4fdd\u5b58\u7a97\u53e3\u4f4d\u7f6e\u548c\u5927\u5c0f</span></p></body></html>", None))
-        self.windowsize.setText(QCoreApplication.translate("SettingNew", u"\u542f\u7528\u540e\u7acb\u5373\u751f\u6548", None))
+        self.label_13.setText(QCoreApplication.translate("SettingNew", u"\u754c\u9762\u7f29\u653e\u663e\u793a\uff08\u9700\u91cd\u542f\u751f\u6548\uff09\uff1a", None))
+        self.mainScaleBox.setText(QCoreApplication.translate("SettingNew", u"\u662f\u5426\u4f7f\u7528\u81ea\u5b9a\u4e49\u7f29\u653e\u6bd4\u4f8b", None))
+        self.label_17.setText(QCoreApplication.translate("SettingNew", u"\u7f29\u653e\u6bd4\u4f8b\uff1a", None))
         self.label_38.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u8bbe\u7f6e", None))
         self.showCloseButton0.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u9000\u51fa", None))
         self.showCloseButton1.setText(QCoreApplication.translate("SettingNew", u"\u5173\u95ed\u540e\u6700\u5c0f\u5316\u5230\u6258\u76d8", None))
