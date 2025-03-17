@@ -70,7 +70,7 @@ jobs:
       run: |
         cd src
         cd db
-        rm -rf data.db
+        rm -rf book.db
         wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db
         cd ..
         cp ../res/icon/Icon.icns ./
@@ -138,7 +138,7 @@ jobs:
       run: |
         cd src
         cd db
-        rm -rf data.db
+        rm -rf book.db
         wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db
         cd ..
         cp ../res/icon/Icon.icns ./
@@ -203,8 +203,8 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item data.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        Remove-Item book.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
@@ -255,8 +255,8 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item data.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        Remove-Item book.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
@@ -308,8 +308,8 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item data.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        Remove-Item book.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
@@ -360,8 +360,8 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item data.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "data.db"
+        Remove-Item book.db
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.2/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-4.2.4-win64"
