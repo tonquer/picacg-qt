@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt, QSize, QEvent, Signal
 from PySide6.QtGui import QColor, QFont, QPixmap, QIcon, QCursor
 from PySide6.QtWidgets import QListWidgetItem, QLabel, QApplication, QScroller, QPushButton, QButtonGroup, QMessageBox, \
     QListView, QWidget, QMenu
-from win32ctypes.pywin32.pywintypes import datetime
+from datetime import datetime
 
 from component.layout.flow_layout import FlowLayout
 from config.setting import Setting
