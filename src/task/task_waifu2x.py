@@ -153,9 +153,13 @@ class TaskWaifu2x(TaskBase):
                 lenData = len(data)
             if lenData <= 0:
                 info.status = Status.FileFormatError
-                Log.Warn("convert error, taskId: {}, dataLen:{}, sts:{} tick:{}".format(str(taskId), lenData,
+                Log.Warn("convert error, taskId: {}, dataLen:{}, sts:{} tick:{}, skip:{}".format(str(taskId), lenData,
                                                                                           str(format),
-                                                                                          str(tick)))
+                                                                                          str(tick), str(Setting.IsSkipPic.value)))
+                if info.savePath and Setting.IsSkipPic.value:
+                    info.status = Status.Ok
+                    data = info.imgData
+
             assert isinstance(info, QConvertTask)
             info.saveData = data
             info.tick = tick

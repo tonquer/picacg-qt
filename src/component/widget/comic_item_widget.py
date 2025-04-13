@@ -21,6 +21,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.title = ""
         self.picNum = 0
         self.category = ""
+        self.tags = ""
 
         self.index = 0
         self.url = ""

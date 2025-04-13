@@ -180,7 +180,7 @@ class ComicListWidget(BaseListWidget):
         else:
             tags = ""
         isShiled = QtOwner().IsInFilter(categories, tags, title)
-        self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished, isShowToolButton=isShowToolButton, isShiled=isShiled)
+        self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished, isShowToolButton=isShowToolButton, isShiled=isShiled, tags=tags)
 
     def AddBookItemByHistory(self, v):
         _id = v.bookId
@@ -190,7 +190,7 @@ class ComicListWidget(BaseListWidget):
         categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.tick), Str.GetStr(Str.Looked))
         self.AddBookItem(_id, title, categories, url, path)
 
-    def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished="", isShowToolButton=False, isShiled=False):
+    def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished="", isShowToolButton=False, isShiled=False, tags=""):
         index = self.count()
         widget = ComicItemWidget(isShiled=isShiled)
         widget.setFocusPolicy(Qt.NoFocus)
@@ -198,6 +198,7 @@ class ComicListWidget(BaseListWidget):
         widget.title = title
         widget.picNum = pagesCount
         widget.category = categoryStr
+        widget.tags = tags
 
         widget.url = ToolUtil.GetRealUrl(url, path)
         if self.isGame:

@@ -11,6 +11,7 @@ class DownloadAllItem:
         self.title = ""
         self.pages = ""
         self.category = ""
+        self.tags = ""
 
     @staticmethod
     def MakeAllItem(self):
@@ -23,6 +24,7 @@ class DownloadAllItem:
             if isinstance(widget, ComicItemWidget):
                 data = DownloadAllItem()
                 data.bookId = widget.id
+                data.tags = widget.tags
                 data.pages = widget.picNum
                 data.category = widget.category
                 data.title = widget.title

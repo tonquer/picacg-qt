@@ -395,7 +395,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                     if len(data) < 2:
                         continue
                     mat = data[-1]
-                    if mat == "zip":
+                    if mat == "zip" or mat == "cbz":
                         zipFile.append(v.name)
                     if mat in LocalData.AllPictureFormat:
                         picNum += 1
@@ -462,7 +462,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                 l.path = nextPath
                 l.id = hashlib.md5(fileName.encode("utf-8")).hexdigest()
                 l.main_id = l.id
-                l.title = os.path.basename(fileName).replace(".zip", "")
+                l.title = os.path.basename(fileName).replace(".zip", "").replace(".cbz", "")
                 l.isZipFile = True
                 l.addTime = int(time.time())
                 l.pic = allPictureName

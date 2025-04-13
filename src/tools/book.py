@@ -41,6 +41,8 @@ class Book(object):
         self.description = ""     # 描述
         self.epsCount = 0         # 章节数
         self.finished = False     # 是否完本
+        self.updated_at = ""
+        self.created_at = ""
         self.categories = []      # 分类
         self.tags = []            # tag
         self.eps = []             # 章节列表BookEps

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_login_proxy_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.4
+## Created by: Qt User Interface Compiler version 6.5.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -27,7 +27,7 @@ class Ui_LoginProxyWidget(object):
     def setupUi(self, LoginProxyWidget):
         if not LoginProxyWidget.objectName():
             LoginProxyWidget.setObjectName(u"LoginProxyWidget")
-        LoginProxyWidget.resize(577, 473)
+        LoginProxyWidget.resize(577, 428)
         LoginProxyWidget.setMinimumSize(QSize(550, 0))
         self.gridLayout = QGridLayout(LoginProxyWidget)
         self.gridLayout.setSpacing(12)
@@ -37,7 +37,7 @@ class Ui_LoginProxyWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 540, 541))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 540, 533))
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout_11 = QHBoxLayout()
@@ -64,14 +64,14 @@ class Ui_LoginProxyWidget(object):
 
         self.line = QFrame(self.scrollAreaWidgetContents)
         self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.VLine)
+        self.line.setFrameShape(QFrame.HLine)
         self.line.setFrameShadow(QFrame.Sunken)
 
         self.horizontalLayout.addWidget(self.line)
 
         self.label = QLabel(self.scrollAreaWidgetContents)
         self.label.setObjectName(u"label")
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout.addWidget(self.label)
 
@@ -94,7 +94,7 @@ class Ui_LoginProxyWidget(object):
 
         self.line_2 = QFrame(self.scrollAreaWidgetContents)
         self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.VLine)
+        self.line_2.setFrameShape(QFrame.HLine)
         self.line_2.setFrameShadow(QFrame.Sunken)
 
         self.horizontalLayout_10.addWidget(self.line_2)
@@ -197,11 +197,11 @@ class Ui_LoginProxyWidget(object):
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.httpsBox = QCheckBox(self.scrollAreaWidgetContents)
-        self.httpsBox.setObjectName(u"httpsBox")
-        self.httpsBox.setChecked(True)
+        self.sniBox = QCheckBox(self.scrollAreaWidgetContents)
+        self.sniBox.setObjectName(u"sniBox")
+        self.sniBox.setChecked(True)
 
-        self.horizontalLayout_9.addWidget(self.httpsBox)
+        self.horizontalLayout_9.addWidget(self.sniBox)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_9)
@@ -286,7 +286,7 @@ class Ui_LoginProxyWidget(object):
 
         self.label_11 = QLabel(self.scrollAreaWidgetContents)
         self.label_11.setObjectName(u"label_11")
-        self.label_11.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_11.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_11, 8, 0, 1, 1)
 
@@ -334,13 +334,13 @@ class Ui_LoginProxyWidget(object):
 
         self.label_7 = QLabel(self.scrollAreaWidgetContents)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setAlignment(Qt.AlignCenter)
+        self.label_7.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_7, 1, 2, 1, 1)
 
         self.label_6 = QLabel(self.scrollAreaWidgetContents)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setAlignment(Qt.AlignCenter)
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_6, 1, 1, 1, 1)
 
@@ -352,7 +352,7 @@ class Ui_LoginProxyWidget(object):
 
         self.label_4 = QLabel(self.scrollAreaWidgetContents)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setAlignment(Qt.AlignCenter)
+        self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_4, 1, 3, 1, 1)
 
@@ -376,7 +376,7 @@ class Ui_LoginProxyWidget(object):
 
         self.label_2 = QLabel(self.scrollAreaWidgetContents)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_2.addWidget(self.label_2, 1, 0, 1, 1)
 
@@ -484,7 +484,7 @@ class Ui_LoginProxyWidget(object):
         self.imgTimeout.setItemText(4, QCoreApplication.translate("LoginProxyWidget", u"15", None))
 
         self.ipv6Check.setText(QCoreApplication.translate("LoginProxyWidget", u"\u4f18\u5148\u4f7f\u7528IPV6\u5206\u6d41\uff08\u5206\u6d412\u30013\u652f\u6301\uff09", None))
-        self.httpsBox.setText(QCoreApplication.translate("LoginProxyWidget", u"\u542f\u7528Https\uff08\u5982\u679c\u51fa\u73b0\u8fde\u63a5\u88ab\u91cd\u7f6e\uff0c\u5efa\u8bae\u5173\u95ed\u8bd5\u8bd5\uff09", None))
+        self.sniBox.setText(QCoreApplication.translate("LoginProxyWidget", u"\u4f7f\u7528SNI\u4f2a\u88c5\uff08\u89e3\u51b3\u57df\u540d\u88ab\u5c4f\u853d\u95ee\u9898\uff09", None))
         self.label_9.setText(QCoreApplication.translate("LoginProxyWidget", u"\u56fe\u7247\u5730\u5740\u9009\u62e9\uff1a", None))
         self.testSpeedButton.setText(QCoreApplication.translate("LoginProxyWidget", u"\u6d4b\u901f", None))
         self.label_img_5.setText("")

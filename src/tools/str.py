@@ -91,6 +91,7 @@ class Str:
     CvNotNet = 5009           # 没有网络存储
     CvSpace = 5010            # 空
     CvZipError = 5011        # 打包出错了
+    CvXMLInfo = 5012         # 获取XML信息
 
     CvAuthError = 5101        # 验证失败
     CvFileNotFound = 5102     # 本地文件未找到
@@ -101,6 +102,7 @@ class Str:
     CvNotSupport = 5107         # 不支持该方法
     CvMkdirFail = 5108         # 创建目录失败
     CvAddUpload = 5109         # 添加上传成功
+    DirNotFound = 5110         # 目录不存在
 
     LoadingPicture = 1     # "图片加载中..."
     LoadingFail = 2        # "图片加载失败"
@@ -345,6 +347,7 @@ class Str:
         cls.strDict[cls.CvNotNet] = QCoreApplication.translate("cls.obj",  "没有网络存储", None)
         cls.strDict[cls.CvSpace] = QCoreApplication.translate("cls.obj",  "空", None)
         cls.strDict[cls.CvZipError] = QCoreApplication.translate("cls.obj",  "打包出错了", None)
+        cls.strDict[cls.CvXMLInfo] = QCoreApplication.translate("cls.obj", "获取XML信息", None)
         cls.strDict[cls.CvAuthError] = QCoreApplication.translate("cls.obj",  "验证失败", None)
         cls.strDict[cls.CvFileNotFound] = QCoreApplication.translate("cls.obj",  "本地文件未找到", None)
         cls.strDict[cls.CvNotSpace] = QCoreApplication.translate("cls.obj",  "空间不足", None)
@@ -354,6 +357,8 @@ class Str:
         cls.strDict[cls.CvNotSupport] = QCoreApplication.translate("cls.obj",  "不支持该方法", None)
         cls.strDict[cls.CvMkdirFail] = QCoreApplication.translate("cls.obj",  "创建目录失败", None)
         cls.strDict[cls.CvAddUpload] = QCoreApplication.translate("cls.obj",  "添加上传成功", None)
+        cls.strDict[cls.DirNotFound] = QCoreApplication.translate("cls.obj",  "目录不存在", None)
+
 
         cls.strDict[cls.Menu] = QCoreApplication.translate("cls.obj",  "菜单", None)
         cls.strDict[cls.FullSwitch] = QCoreApplication.translate("cls.obj",  "全屏切换", None)

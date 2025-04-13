@@ -14,15 +14,22 @@ from tools.tool import ToolUtil
 
 class ServerReq(object):
     def __init__(self, url, header=None, params=None, method="POST") -> None:
+        self.resetCnt = 0
+        self.isReload = False
         self.url = url
         self.file = ""
         self.token = ""
         self.headers = header
-        self.params = params
+
+        if not params:
+            self.params = {}
+        else:
+            self.params = params
         self.method = method
         self.isParseRes = True
         self.useImgProxy = True
-        self.isUseHttps = bool(Setting.IsUseHttps.value)
+        self.isUseHttps = True
+        self.extend = {}
         self.proxyUrl = ""
 
         host = ToolUtil.GetUrlHost(url)
@@ -332,11 +339,11 @@ class DownloadBookReq(ServerReq):
         self.loadPath = loadPath
         self.cachePath = cachePath
         self.savePath = savePath
-        self.isReload = isReload
-        self.resetCnt = resetCnt
         self.isReset = False
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
+        self.resetCnt = resetCnt
+        self.isReload = isReload
 
 # 获得评论
 class GetCommentsReq(ServerReq):
@@ -527,11 +534,11 @@ class SpeedTestReq(ServerReq):
         header['cache-control'] = 'no-cache'
         header['expires'] = '0'
         header['pragma'] = 'no-cache'
-        self.isReload = False
-        self.resetCnt = 1
         self.isReset = False
         super(self.__class__, self).__init__(url, header,
                                              {}, method)
+        self.resetCnt = 1
+        self.isReload = False
 
 
 # 测试Ping

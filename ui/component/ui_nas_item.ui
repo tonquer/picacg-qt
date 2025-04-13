@@ -55,6 +55,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="compress">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="waifu2x">
        <property name="text">
         <string>waifu2x</string>

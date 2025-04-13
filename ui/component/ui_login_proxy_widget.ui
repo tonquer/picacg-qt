@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>577</width>
-    <height>473</height>
+    <height>428</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -34,7 +34,7 @@
         <x>0</x>
         <y>0</y>
         <width>540</width>
-        <height>541</height>
+        <height>533</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -73,7 +73,7 @@
          <item>
           <widget class="Line" name="line">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
           </widget>
          </item>
@@ -83,7 +83,7 @@
             <string>代理地址</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -120,7 +120,7 @@
          <item>
           <widget class="Line" name="line_2">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
           </widget>
          </item>
@@ -180,7 +180,7 @@
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -195,7 +195,7 @@
        <item>
         <widget class="Line" name="line_3">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -266,7 +266,7 @@
          <item>
           <spacer name="horizontalSpacer_4">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -292,9 +292,9 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
-          <widget class="QCheckBox" name="httpsBox">
+          <widget class="QCheckBox" name="sniBox">
            <property name="text">
-            <string>启用Https（如果出现连接被重置，建议关闭试试）</string>
+            <string>使用SNI伪装（解决域名被屏蔽问题）</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -318,7 +318,7 @@
          <item>
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -340,7 +340,7 @@
        <item>
         <widget class="Line" name="line_4">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -419,7 +419,7 @@
             <string> CDN地址 </string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
            </property>
           </widget>
          </item>
@@ -491,7 +491,7 @@
             <string>图片分流</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -501,7 +501,7 @@
             <string>延迟</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -524,7 +524,7 @@
             <string>速度</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -564,7 +564,7 @@
             <string>Api分流</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -705,8 +705,8 @@
   <slot>OpenUrl()</slot>
  </slots>
  <buttongroups>
-  <buttongroup name="radioImgGroup"/>
-  <buttongroup name="radioProxyGroup"/>
   <buttongroup name="radioApiGroup"/>
+  <buttongroup name="radioProxyGroup"/>
+  <buttongroup name="radioImgGroup"/>
  </buttongroups>
 </ui>

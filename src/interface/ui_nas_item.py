@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_nas_item.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.4
+## Created by: Qt User Interface Compiler version 6.5.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -56,6 +56,11 @@ class Ui_NasItem(object):
 
         self.horizontalLayout_3.addWidget(self.address)
 
+        self.compress = QLabel(NasItem)
+        self.compress.setObjectName(u"compress")
+
+        self.horizontalLayout_3.addWidget(self.compress)
+
         self.waifu2x = QLabel(NasItem)
         self.waifu2x.setObjectName(u"waifu2x")
 
@@ -81,6 +86,7 @@ class Ui_NasItem(object):
         self.editButton.setText(QCoreApplication.translate("NasItem", u"\u7f16\u8f91", None))
         self.delButton.setText(QCoreApplication.translate("NasItem", u"\u5220\u9664", None))
         self.address.setText("")
+        self.compress.setText("")
         self.waifu2x.setText(QCoreApplication.translate("NasItem", u"waifu2x", None))
         self.user.setText("")
     # retranslateUi

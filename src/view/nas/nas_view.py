@@ -197,9 +197,15 @@ class NasView(QtWidgets.QWidget, Ui_Nas, NasStatus):
         index = self.listWidget.count()
         widget = NasItemWidget()
         widget.title.setText(v.title)
-        widget.address.setText(v.address + ":" + str(v.port))
+        if v.type == 2:
+            widget.address.setText("")
+        elif v.type == 0:
+            widget.address.setText("webdav:/" + v.address + ":" + str(v.port))
+        elif v.type == 1:
+            widget.address.setText("smb:/" + v.address + ":" + str(v.port))
         widget.waifu2x.setEnabled(bool(v.is_waifu2x))
         widget.user.setText(v.user)
+        widget.compress.setText(v.GetCompressName())
         widget.editButton.clicked.connect(partial(self.OpenNasInfo, v.nasId))
         widget.delButton.clicked.connect(partial(self.DelNasInfo, v.nasId))
         item = QListWidgetItem(self.listWidget)
@@ -314,7 +320,7 @@ class NasView(QtWidgets.QWidget, Ui_Nas, NasStatus):
                 assert isinstance(task, NasUploadItem)
                 if task.status in [task.Success, task.Pause, task.Error]:
                     menu.addAction(startAction)
-                elif task.status in [task.Uploading, task.Waiting, task.WaitWaifu2x]:
+                elif task.status in [task.WaitXmlInfo, task.Uploading, task.Waiting, task.WaitWaifu2x]:
                     menu.addAction(pauseAction)
 
             else:

@@ -214,65 +214,72 @@ class DownloadBookHandler(object):
                 TaskBase.taskObj.downloadBack.emit(backData.bakParam, -backData.status, b"")
         else:
             r = backData.res
+                # if r.status_code != 200:
+                #     if backData.bakParam:
+                #         TaskBase.taskObj.downloadBack.emit(backData.bakParam, -Status.Error, b"")
+                #     return
+            request = backData.req
+            index = backData.index
             try:
-                if r.status_code != 200:
-                    if backData.bakParam:
-                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, -Status.Error, b"")
-                    return
-                
-                fileSize = int(r.headers.get('Content-Length', 0))
-                getSize = 0
-                data = b""
-                
-                now = time.time()
-                isAlreadySend = False
-                # 网速快，太卡了，优化成最多100ms一次
-                try:
-                    for chunk in r.iter_content(chunk_size=4096):
-                        cur = time.time()
-                        tick = cur - now
-                        if tick >= 0.1:
-                            isAlreadySend = True
-                            if backData.bakParam and fileSize-getSize > 0:
-                                TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize-getSize, b"")
-                            now = cur
+                with Server().downloadSession[index].stream("GET", request.url, follow_redirects=True, headers=request.headers,
+                                    timeout=backData.timeout, extensions=request.extend) as r:
 
-                        getSize += len(chunk)
-                        data += chunk
-                    if not isAlreadySend:
-                        if backData.bakParam:
-                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, getSize, b"")
+                    fileSize = int(r.headers.get('Content-Length', 0))
+                    getSize = 0
+                    data = b""
 
-                except Exception as es:
-                    Log.Error(es)
-                    if backData.req.resetCnt > 0:
-                        backData.req.isReset = True
-                        Server().ReDownload(backData)
-                        return
-
-                # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
-                if config.IsUseCache and len(data) > 0:
+                    now = time.time()
+                    isAlreadySend = False
+                    # 网速快，太卡了，优化成最多100ms一次
                     try:
-                        for path in [backData.req.cachePath, backData.req.savePath]:
-                            filePath = path
-                            if not path:
-                                continue
-                            fileDir = os.path.dirname(filePath)
-                            if not os.path.isdir(fileDir):
-                                os.makedirs(fileDir)
+                        # from tqdm import tqdm
+                        # with tqdm(total=fileSize, unit_scale=True, unit_divisor=1024, unit="B") as progress:
+                        #     num_bytes_downloaded = r.num_bytes_downloaded
+                        for chunk in r.iter_bytes(chunk_size=1024):
+                            cur = time.time()
+                            tick = cur - now
+                            getSize += len(chunk)
+                            data += chunk
+                            if tick >= 0.1:
+                                isAlreadySend = True
+                                if backData.bakParam and fileSize - getSize > 0:
+                                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, fileSize - getSize, b"")
+                                now = cur
 
-                            with open(filePath, "wb+") as f:
-                                f.write(data)
-                            Log.Debug("add download cache, cachePath:{}".format(filePath))
+                        if not isAlreadySend:
+                            if backData.bakParam:
+                                TaskBase.taskObj.downloadBack.emit(backData.bakParam, getSize, b"")
+
                     except Exception as es:
                         Log.Error(es)
-                        # 保存失败了
-                        if backData.bakParam:
-                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, -2, b"")
+                        if backData.req.resetCnt > 0:
+                            backData.req.isReset = True
+                            Server().ReDownload(backData)
+                            return
 
-                if backData.bakParam:
-                    TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, data)
-                    
+                    # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
+                    if config.IsUseCache and len(data) > 0:
+                        try:
+                            for path in [backData.req.cachePath, backData.req.savePath]:
+                                filePath = path
+                                if not path:
+                                    continue
+                                fileDir = os.path.dirname(filePath)
+                                if not os.path.isdir(fileDir):
+                                    os.makedirs(fileDir)
+
+                                with open(filePath, "wb+") as f:
+                                    f.write(data)
+                                Log.Debug("add download cache, cachePath:{}".format(filePath))
+                        except Exception as es:
+                            Log.Error(es)
+                            # 保存失败了
+                            if backData.bakParam:
+                                TaskBase.taskObj.downloadBack.emit(backData.bakParam, -2, b"")
+
+                    if backData.bakParam:
+                        TaskBase.taskObj.downloadBack.emit(backData.bakParam, 0, data)
+
             except Exception as es:
                 backData.status = Status.DownloadFail
                 Log.Error(es)
@@ -366,23 +373,26 @@ class SpeedTestHandler(object):
             if backData.bakParam:
                 TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
         else:
-            r = backData.res
+            request = backData.req
+            index = backData.index
             try:
-                if r.status_code != 200:
-                    data["st"] = Status.Error
-                    if backData.bakParam:
-                        data["st"] = Status.Error
-                        TaskBase.taskObj.taskBack.emit(backData.bakParam, pickle.dumps(data))
-                    return
+                with Server().downloadSession[index].stream("GET", request.url, follow_redirects=True, headers=request.headers,
+                                    timeout=backData.timeout, extensions=request.extend) as r:
 
-                fileSize = int(r.headers.get('Content-Length', 0))
-                getSize = 0
-                now = time.time()
-                for chunk in r.iter_content(chunk_size=1024):
-                    getSize += len(chunk)
-                    consume = time.time() - now
-                    if consume >= 3.0:
-                        break
+                    fileSize = int(r.headers.get('Content-Length', 0))
+                    getSize = 0
+                    now = time.time()
+                    # 网速快，太卡了，优化成最多100ms一次
+                    try:
+                        for chunk in r.iter_bytes(chunk_size=1024):
+                            getSize += len(chunk)
+                            consume = time.time() - now
+                            if consume >= 3.0:
+                                break
+
+                    except Exception as es:
+                        Log.Error(es)
+
                 consume = time.time() - now
                 downloadSize = getSize / consume
                 speed = ToolUtil.GetDownloadSize(downloadSize)

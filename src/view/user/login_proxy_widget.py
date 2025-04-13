@@ -14,6 +14,7 @@ from server import req, Log
 from server.server import Server
 from task.qt_task import QtTaskBase
 from tools.str import Str
+from tools.tool import ToolUtil
 
 
 class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
@@ -57,6 +58,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radioProxyGroup.setId(self.proxy_1, 1)
         self.radioProxyGroup.setId(self.proxy_2, 2)
         self.radioProxyGroup.setId(self.proxy_3, 3)
+        # self.httpsBox.setVisible(False)
         if not self.isShowProxy5:
             self.radio_img_5.setEnabled(False)
         if Setting.ProxyImgSelectIndex.value == 5:
@@ -129,7 +131,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.radio_img_6.setEnabled(enabled)
         # self.radio_img_7.setEnabled(enabled)
         # self.radio_img_8.setEnabled(enabled)
-        self.httpsBox.setEnabled(enabled)
+        self.sniBox.setEnabled(enabled)
         self.ipv6Check.setEnabled(enabled)
         self.imgCombox.setEnabled(enabled)
         
@@ -197,9 +199,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.StartSpeedTest()
             return
         # for v in self.speedTest:
-        address, imageProxy, isHttpProxy, isProxyUrl, i = self.speedTest[self.speedPingNum]
-        httpProxy = self.httpLine.text()
-        isHttpProxy = True
+        address, imageProxy, _, isProxyUrl, i = self.speedTest[self.speedPingNum]
+
+        # isHttpProxy = True
 
         if ((self.radioProxyGroup.checkedId() == 1 and not self.httpLine.text()) or
                             (self.radioProxyGroup.checkedId() == 2 and not self.sockEdit.text())):
@@ -210,14 +212,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             return
 
         request = req.SpeedTestPingReq()
-        request.isUseHttps = self.httpsBox.isChecked()
+        # request.isUseHttps = self.httpsBox.isChecked()
 
-        if self.radioProxyGroup.checkedId() == 1:
-            request.proxy = {"http": httpProxy, "https": httpProxy}
-        elif self.radioProxyGroup.checkedId() == 3:
-            request.proxy = ""
-        else:
-            request.proxy = {"http": None, "https": None}
+        # if self.radioProxyGroup.checkedId() == 1:
+        #     request.proxy = {"http": httpProxy, "https": httpProxy}
+        # elif self.radioProxyGroup.checkedId() == 3:
+        #     request.proxy = ""
+        # else:
+        #     request.proxy = {"http": None, "https": None}
 
         if isProxyUrl:
             if "user-agent" in request.headers:
@@ -226,18 +228,22 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         else:
             request.proxyUrl = ""
 
-        if self.radioProxyGroup.checkedId() == 2:
-            self.SetSock5Proxy(True)
-        else:
-            self.SetSock5Proxy(False)
+        # if self.radioProxyGroup.checkedId() == 2:
+        #     self.SetSock5Proxy(True)
+        # else:
+        #     self.SetSock5Proxy(False)
 
         # imageAdress = GlobalConfig.GetImageAdress(i)
         imgUrl = self.imgCombox.currentText()
         Server().UpdateDns(address, imgUrl, imageProxy)
+        Server().UpdateProxy2(self.radioProxyGroup.checkedId(), self.httpLine.text(), self.sockEdit.text())
+
         self.pingBackNumCnt[i] = 0
         self.pingBackNumDict[i] = [0, 0, 0]
         request1 = deepcopy(request)
         request2 = deepcopy(request)
+
+
         self.AddHttpTask(lambda x: Server().TestSpeedPing(request, x), self.SpeedTestPingBack, (i, 0))
         self.AddHttpTask(lambda x: Server().TestSpeedPing(request1, x), self.SpeedTestPingBack, (i, 1))
         self.AddHttpTask(lambda x: Server().TestSpeedPing(request2, x), self.SpeedTestPingBack, (i, 2))
@@ -308,14 +314,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             return
 
         request = req.SpeedTestReq()
-        request.isUseHttps = self.httpsBox.isChecked()
+        # request.isUseHttps = self.httpsBox.isChecked()
 
-        if self.radioProxyGroup.checkedId() == 1:
-            request.proxy = {"http": httpProxy, "https": httpProxy}
-        elif self.radioProxyGroup.checkedId() == 3:
-            request.proxy = ""
-        else:
-            request.proxy = {"http": None, "https": None}
+        # if self.radioProxyGroup.checkedId() == 1:
+        #     request.proxy = {"http": httpProxy, "https": httpProxy}
+        # elif self.radioProxyGroup.checkedId() == 3:
+        #     request.proxy = ""
+        # else:
+        #     request.proxy = {"http": None, "https": None}
 
         if isProxyUrl:
             if "user-agent" in request.headers:
@@ -324,12 +330,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         else:
             request.proxyUrl = ""
 
-        if self.radioProxyGroup.checkedId() == 2:
-            self.SetSock5Proxy(True)
-        else:
-            self.SetSock5Proxy(False)
+        # if self.radioProxyGroup.checkedId() == 2:
+        #     self.SetSock5Proxy(True)
+        # else:
+        #     self.SetSock5Proxy(False)
         imgUrl = self.imgCombox.currentText()
         Server().UpdateDns(address, imgUrl, imageProxy)
+        Server().UpdateProxy2(self.radioProxyGroup.checkedId(), self.httpLine.text(), self.sockEdit.text())
+
         self.AddHttpTask(lambda x: Server().TestSpeed(request, x), self.SpeedTestBack, i)
         return
 
@@ -356,8 +364,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         # httpProxy = QtOwner().settingView.GetSettingV("Proxy/Http", config.HttpProxy)
         IsCanIpv6 = True
         try:
-            from urllib3.util.connection import  HAS_IPV6
-            IsCanIpv6 = HAS_IPV6
+            IsCanIpv6 = ToolUtil.HasIpv6()
         except Exception as es:
             Log.Error(es)
             IsCanIpv6 = False
@@ -368,7 +375,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             Setting.PreIpv6.SetValue(0)
 
         self.ipv6Check.setChecked(Setting.PreIpv6.value)
-        self.httpsBox.setChecked(Setting.IsUseHttps.value)
+        self.sniBox.setChecked(Setting.IsUseSniPretend.value)
         self.httpLine.setText(Setting.HttpProxy.value)
         self.sockEdit.setText(Setting.Sock5Proxy.value)
         self.apiTimeout.setCurrentIndex(Setting.ApiTimeOut.value)
@@ -407,8 +414,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             # imageServer = Setting.PreferCDNIPImg.value
             imageAdress = Setting.PreferCDNIPImg.value
 
-        QtOwner().settingView.SetSock5Proxy()
+        # QtOwner().settingView.SetSock5Proxy()
         Server().UpdateDns(address, imageServer, imageAdress)
+        Server().UpdateProxy()
         Log.Warn("update proxy, ver:{}, apiSetId:{}, imgSetID:{}, image server:{}:{}, address:{}".format(config.UpdateVersion, Setting.ProxySelectIndex.value, Setting.ProxyImgSelectIndex.value, Server().imageServer, Server().imageAddress, Server().address))
 
     def SaveSetting(self):
@@ -419,7 +427,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         Setting.HttpProxy.SetValue(self.httpLine.text())
         Setting.ProxySelectIndex.SetValue(self.radioApiGroup.checkedId())
         Setting.ProxyImgSelectIndex.SetValue(self.radioImgGroup.checkedId())
-        Setting.IsUseHttps.SetValue(int(self.httpsBox.isChecked()))
+        Setting.IsUseSniPretend.SetValue(int(self.sniBox.isChecked()))
         Setting.PreIpv6.SetValue(int(self.ipv6Check.isChecked()))
         GlobalConfig.SetSetting("ImageUrl", self.imgCombox.currentText())
         # QtOwner().settingView.SetSettingV("Proxy/ProxySelectIndex", config.ProxySelectIndex)
@@ -437,19 +445,18 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
     def OpenUrl(self):
         QtOwner().owner.helpView.OpenProxyUrl()
 
-    def SetSock5Proxy(self, isProxy):
-        import socket
-        import socks
-        if not QtOwner().backSock:
-            QtOwner().backSock = socket.socket
-        if isProxy:
-            data = self.sockEdit.text().replace("http://", "").replace("https://", "").replace("sock5://", "")
-            data = data.split(":")
-            if len(data) == 2:
-                host = data[0]
-                port = data[1]
-                socks.set_default_proxy(socks.SOCKS5, host, int(port))
-                socket.socket = socks.socksocket
-        else:
-            socks.set_default_proxy()
-            socket.socket = QtOwner().backSock
+    # def SetSock5Proxy(self, isProxy):
+    #     import socket
+    #     if not QtOwner().backSock:
+    #         QtOwner().backSock = socket.socket
+    #     if isProxy:
+    #         data = self.sockEdit.text().replace("http://", "").replace("https://", "").replace("sock5://", "")
+    #         data = data.split(":")
+    #         if len(data) == 2:
+    #             host = data[0]
+    #             port = data[1]
+    #             socks.set_default_proxy(socks.SOCKS5, host, int(port))
+    #             socket.socket = socks.socksocket
+    #     else:
+    #         socks.set_default_proxy()
+    #         socket.socket = QtOwner().backSock

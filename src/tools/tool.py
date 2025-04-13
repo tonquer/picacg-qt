@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import io
 import json
 import os
 import re
@@ -7,6 +8,8 @@ import time
 import uuid
 from hashlib import sha256
 from urllib.parse import quote
+
+from lxml import etree
 
 from config import config
 from config.setting import Setting
@@ -532,3 +535,153 @@ class ToolUtil(object):
 
         except Exception as es:
             Log.Error(es)
+
+    @staticmethod
+    def GetComicInfoXml(epsId, picNum, bookInfo):
+        from lxml import etree
+        from tools.book import Book
+        assert isinstance(bookInfo, Book)
+        root = etree.Element("ComicInfo")
+
+        title = etree.SubElement(root, "Title")  # 标题
+        title.text = bookInfo.title
+
+        publish = etree.SubElement(root, "Publisher")  # 标题
+        publish.text = config.ProjectName
+
+        writer = etree.SubElement(root, "Writer")  # 作者
+        writer.text = bookInfo.author
+
+        desc = etree.SubElement(root, "Summary")  # 摘要
+        desc.text = bookInfo.description
+
+        bookId = etree.SubElement(root, "BookId")  # 当前章节
+        bookId.text = str(bookInfo.id)
+
+        series = etree.SubElement(root, "Series")  # 当前章节
+        series.text = str(bookInfo.title)
+
+        number = etree.SubElement(root, "Number")  # 当前章节
+        number.text = str(epsId+1)
+
+        count = etree.SubElement(root, "Count")  # 总章节
+        count.text = str(bookInfo.epsCount)
+        if bookInfo.created_at:
+            timeArray = time.strptime(bookInfo.created_at, "%Y-%m-%dT%H:%M:%S.%f%z")
+            year = etree.SubElement(root, "Year")  # 年
+            year.text = str(timeArray.tm_year)
+            month = etree.SubElement(root, "Month")  # 月
+            month.text = str(timeArray.tm_mon)
+            day = etree.SubElement(root, "Day")  # 日
+            day.text = str(timeArray.tm_mday)
+
+        genre = etree.SubElement(root, "Genre")  # 分类
+        genre.text = ",".join(bookInfo.categories)
+
+        tags = etree.SubElement(root, "Tags")
+        tags.text = ",".join(bookInfo.tags)
+
+        everyoneTags = ["无h", "無h"]
+        isNotH = ToolUtil.IsHaveAssignTag(tags, everyoneTags)
+        ageRating = etree.SubElement(root, "AgeRating")  # R18+  Everyone
+        if isNotH:
+            ageRating.text = "Everyone"
+        else:
+            ageRating.text = "R18+"
+
+        pageCount = etree.SubElement(root, "PageCount")  # ue
+        pageCount.text = str(picNum)
+
+        blackAndWhite = etree.SubElement(root, "BlackAndWhite")  # Yes No
+        everyoneTags = ["全彩", "cosplay"]
+        isColor = ToolUtil.IsHaveAssignTag(bookInfo.tags, everyoneTags)
+        if isColor:
+            blackAndWhite.text = "No"
+        else:
+            blackAndWhite.text = "Yes"
+
+        manga = etree.SubElement(root, "Manga")  # Yes No
+        everyoneTags = ["cosplay"]
+        isCos = ToolUtil.IsHaveAssignTag(bookInfo.tags, everyoneTags)
+        if isCos:
+            manga.text = "No"
+        else:
+            manga.text = "Yes"
+
+        tree = etree.ElementTree(root)
+        buffer = io.BytesIO()
+        tree.write(buffer, pretty_print=True, xml_declaration=True, encoding='UTF-8')
+        data = buffer.getvalue()
+        buffer.close()
+        return data
+
+    @staticmethod
+    def IsHaveAssignTag(tagList, assignList):
+        isHave = False
+        for tag in tagList:
+            for noHtag in assignList:
+                if noHtag.lower() in tag.lower():
+                    isHave = True
+                    break
+        return  isHave
+
+    @staticmethod
+    def IsipAddress(hostname) -> bool:
+        if isinstance(hostname, bytes):
+            # IDN A-label bytes are ASCII compatible.
+            hostname = hostname.decode("ascii")
+        _IPV4_PAT = r"(?:[0-9]{1,3}\.){3}[0-9]{1,3}"
+        _IPV4_RE = re.compile("^" + _IPV4_PAT + "$")
+        _HEX_PAT = "[0-9A-Fa-f]{1,4}"
+        _LS32_PAT = "(?:{hex}:{hex}|{ipv4})".format(hex=_HEX_PAT, ipv4=_IPV4_PAT)
+        _subs = {"hex": _HEX_PAT, "ls32": _LS32_PAT}
+        _variations = [
+            #                            6( h16 ":" ) ls32
+            "(?:%(hex)s:){6}%(ls32)s",
+            #                       "::" 5( h16 ":" ) ls32
+            "::(?:%(hex)s:){5}%(ls32)s",
+            # [               h16 ] "::" 4( h16 ":" ) ls32
+            "(?:%(hex)s)?::(?:%(hex)s:){4}%(ls32)s",
+            # [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
+            "(?:(?:%(hex)s:)?%(hex)s)?::(?:%(hex)s:){3}%(ls32)s",
+            # [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
+            "(?:(?:%(hex)s:){0,2}%(hex)s)?::(?:%(hex)s:){2}%(ls32)s",
+            # [ *3( h16 ":" ) h16 ] "::"    h16 ":"   ls32
+            "(?:(?:%(hex)s:){0,3}%(hex)s)?::%(hex)s:%(ls32)s",
+            # [ *4( h16 ":" ) h16 ] "::"              ls32
+            "(?:(?:%(hex)s:){0,4}%(hex)s)?::%(ls32)s",
+            # [ *5( h16 ":" ) h16 ] "::"              h16
+            "(?:(?:%(hex)s:){0,5}%(hex)s)?::%(hex)s",
+            # [ *6( h16 ":" ) h16 ] "::"
+            "(?:(?:%(hex)s:){0,6}%(hex)s)?::",
+        ]
+        _IPV6_PAT = "(?:" + "|".join([x % _subs for x in _variations]) + ")"
+        _UNRESERVED_PAT = r"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._\-~"
+        _ZONE_ID_PAT = "(?:%25|%)(?:[" + _UNRESERVED_PAT + "]|%[a-fA-F0-9]{2})+"
+        _IPV6_ADDRZ_PAT = r"\[" + _IPV6_PAT + r"(?:" + _ZONE_ID_PAT + r")?\]"
+        _BRACELESS_IPV6_ADDRZ_RE = re.compile("^" + _IPV6_ADDRZ_PAT[2:-2] + "$")
+        return bool(_IPV4_RE.match(hostname) or _BRACELESS_IPV6_ADDRZ_RE.match(hostname))
+
+    @staticmethod
+    def HasIpv6() -> bool:
+        """Returns True if the system can bind an IPv6 address."""
+        host = "::1"
+        sock = None
+        has_ipv6 = False
+        import socket
+        if socket.has_ipv6:
+            # has_ipv6 returns true if cPython was compiled with IPv6 support.
+            # It does not tell us if the system has IPv6 support enabled. To
+            # determine that we must bind to an IPv6 address.
+            # https://github.com/urllib3/urllib3/pull/611
+            # https://bugs.python.org/issue658327
+            try:
+                sock = socket.socket(socket.AF_INET6)
+                sock.bind((host, 0))
+                has_ipv6 = True
+            except Exception:
+                pass
+
+        if sock:
+            sock.close()
+        return has_ipv6

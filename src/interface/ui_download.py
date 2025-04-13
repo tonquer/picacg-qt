@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_download.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.4
+## Created by: Qt User Interface Compiler version 6.5.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -42,6 +42,11 @@ class Ui_Download(object):
         self.redownloadRadio.setObjectName(u"redownloadRadio")
 
         self.horizontalLayout_2.addWidget(self.redownloadRadio)
+
+        self.skipPic = QCheckBox(Download)
+        self.skipPic.setObjectName(u"skipPic")
+
+        self.horizontalLayout_2.addWidget(self.skipPic)
 
         self.radioButton = QRadioButton(Download)
         self.radioButton.setObjectName(u"radioButton")
@@ -154,7 +159,8 @@ class Ui_Download(object):
         Download.setWindowTitle(QCoreApplication.translate("Download", u"\u4e0b\u8f7d", None))
         self.skipSpaceRadio.setText(QCoreApplication.translate("Download", u"\u8df3\u8fc7\u7a7a\u767d\u7ae0\u8282", None))
         self.redownloadRadio.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u5931\u8d25\u540e\u81ea\u52a8\u91cd\u8bd5", None))
-        self.radioButton.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u81ea\u52a8Waifu2x\u8f6c\u6362", None))
+        self.skipPic.setText(QCoreApplication.translate("Download", u"\u8d85\u5206\u8df3\u8fc7\u635f\u574f\u56fe\u7247", None))
+        self.radioButton.setText(QCoreApplication.translate("Download", u"\u4e0b\u8f7d\u81ea\u52a8\u8d85\u5206\u8f6c\u6362", None))
         self.comboBox.setItemText(0, QCoreApplication.translate("Download", u"\u5168\u90e8", None))
         self.comboBox.setItemText(1, QCoreApplication.translate("Download", u"\u672a\u5b8c\u6210", None))
         self.comboBox.setItemText(2, QCoreApplication.translate("Download", u"\u5df2\u5b8c\u6210", None))

@@ -95,7 +95,13 @@ class DownloadAllView(QtWidgets.QWidget, Ui_DownloadAll, QtTaskBase):
 
         self.task.clear()
         for task in books:
-            if QtOwner().IsInFilter(task.category, "", task.title):
+            if hasattr(task, "tags") and isinstance(task.tags, list):
+                tags = ",".join(task.tags)
+            elif hasattr(task, "tags") and isinstance(task.tags, str):
+                tags = task.tags
+            else:
+                tags = ""
+            if QtOwner().IsInFilter(task.category, tags, task.title):
                 task.isAll = False
                 task.isAllChip = False
             self.task[task.bookId] = task

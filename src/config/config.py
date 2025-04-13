@@ -13,7 +13,7 @@ Uuid = "defaultUuid"
 
 
 ProjectName = "PicACG"
-ThreadNum = 10                 # 线程
+ThreadNum = 5                 # 线程
 DownloadThreadNum = 5          # 下载线程
 ResetDownloadCnt = 5           # 下载图片重试次数
 ResetDownloadCntDefault = 2           # 下载封面重试次数
@@ -52,7 +52,7 @@ Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
 UpdateVersion = "v1.5.2"
 RealVersion = "v1.5.2"
-TimeVersion = "2025-3-16"
+TimeVersion = "2025-4-13"
 DbVersion = ""
 
 Waifu2xVersion = "1.2.0"
@@ -113,3 +113,5 @@ ImageDomain = [
     "www.picacomic.com",
     "storage-b.picacomic.com",
 ]
+
+

@@ -22,6 +22,7 @@ class NasUploadItem(QtTaskBase):
     Uploading = Str.CvUpload
     Pause = Str.CvPause
     Error = Str.CvError
+    WaitXmlInfo = Str.CvXMLInfo
 
     def __init__(self):
         QtTaskBase.__init__(self)
@@ -37,6 +38,13 @@ class NasUploadItem(QtTaskBase):
         self.curPreUpIndex = -1       # 当前正在下载的章节, 不是索引
         self.type = 1
         self.dirty = True
+
+    @property
+    def isCbz(self):
+        nasInfo = QtOwner().owner.nasView.nasDict.get(self.nasId)
+        if not nasInfo:
+            return False
+        return nasInfo.compress_index == 1
 
     @property
     def completeNum(self):
@@ -82,7 +90,17 @@ class NasUploadItem(QtTaskBase):
         if self.curPreUpIndex not in downloadInfo.epsInfo:
             return Str.CvWaitDown
 
+        if self.IsNeedGetXml():
+            return self.WaitXmlInfo
         return self.Uploading
+
+    def IsNeedGetXml(self):
+        if self.isCbz:
+            from tools.book import BookMgr
+            book = BookMgr().GetBook(self.bookId)
+            if not book:
+                return True
+        return False
 
     def UploadSucCallBack(self):
         self.type += 1
@@ -161,6 +179,8 @@ class NasUploadItem(QtTaskBase):
             tick = int(time.time())
             day = time.strftime('%Y-%m-%d', time.localtime(tick))
             upPath = nasInfo.path + "/" + day + "/"
+        if self.isCbz:
+            desFile = desFile.replace(".zip", ".cbz")
 
         return Str.CvUpload, (nasInfo, srcDir, desFile, upPath)
 
@@ -203,7 +223,7 @@ class NasInfoItem(QtTaskBase):
         self.type = 0
         self.user = ""
         self.passwd = ""
-        self.compress_index = 0  # 压缩方式
+        self.compress_index = 0  # 压缩方式 0: zip, 1: cbz
         self.save_index = 0      #
         self.dir_index = 0       # 目录设置
         self.is_waifu2x = 0
@@ -212,7 +232,16 @@ class NasInfoItem(QtTaskBase):
         self.dirty = True
 
     @property
+    def isCbz(self):
+        return self.compress_index == 1
+
+    @property
     def showTitle(self):
         if self.is_waifu2x:
             return self.title + "(waifu2x)"
         return self.title
+
+    def GetCompressName(self):
+        if self.compress_index == 0:
+            return "zip"
+        return "cbz"

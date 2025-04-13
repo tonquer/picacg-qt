@@ -113,9 +113,9 @@ class QtTaskBase:
         from task.task_local import TaskLocal
         return TaskLocal().AddLoadReadPicture(v, index, backparam, callBack, cleanFlag=self.__taskFlagId)
 
-    def AddUploadTask(self, nas_id, type, srcDir, desFile, upDirPath, backParam=None, callBack=None):
+    def AddUploadTask(self, nas_id, type, srcDir, desFile, upDirPath, bookId, epsId, backParam=None, callBack=None):
         from task.task_upload import TaskUpload
-        return TaskUpload().AddLoadReadPicture(nas_id, type, srcDir, desFile, upDirPath, backParam, callBack, cleanFlag=self.__taskFlagId)
+        return TaskUpload().AddLoadReadPicture(nas_id, type, srcDir, desFile, upDirPath, bookId, epsId, backParam, callBack, cleanFlag=self.__taskFlagId)
 
     def ClearQImageTaskById(self, taskId):
         from task.task_qimage import TaskQImage

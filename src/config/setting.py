@@ -111,6 +111,7 @@ class Setting:
     IsUseHttps = SettingValue("ProxySetting", 1, False)
     PreIpv6 = SettingValue("ProxySetting", 0, False)
     LastProxyResult = SettingValue("ProxySetting", {}, False)
+    IsUseSniPretend = SettingValue("ProxySetting", 1, False)
 
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)
     ProxyImgSelectIndex = SettingValue("ProxySetting", 1, False)
@@ -178,6 +179,7 @@ class Setting:
     IsForbidTag = SettingValue("Other", False, False)
     IsForbidTitle = SettingValue("Other", False, False)
     IsSkipSpace = SettingValue("Other", 0, False)
+    IsSkipPic = SettingValue("Other", 0, False)
 
     @staticmethod
     def InitLoadSetting():

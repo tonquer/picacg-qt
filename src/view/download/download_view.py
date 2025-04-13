@@ -66,6 +66,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         datas = self.db.LoadDownload(self)
         self.redownloadRadio.clicked.connect(self.SwitchReDownload)
         self.skipSpaceRadio.clicked.connect(self.SwitchSkipSpace)
+        self.skipPic.clicked.connect(self.SwitchSkipPic)
         self.needLoadBookID = []
         self.tableWidget.setColumnHidden(0, True)
         for task in datas.values():
@@ -129,6 +130,8 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.redownloadRadio.setChecked(bool(Setting.IsReDownload.value))
         self.skipSpaceRadio.setCheckable(True)
         self.skipSpaceRadio.setChecked(bool(Setting.IsSkipSpace.value))
+        self.skipPic.setCheckable(True)
+        self.skipPic.setChecked(bool(Setting.IsSkipPic.value))
 
     def GetDownloadEpsInfo(self, bookId, epsId):
         info = self.GetDownloadInfo(bookId)
@@ -686,6 +689,9 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
 
     def SwitchSkipSpace(self):
         Setting.IsSkipSpace.SetValue(int(self.skipSpaceRadio.isChecked()))
+
+    def SwitchSkipPic(self):
+        Setting.IsSkipPic.SetValue(int(self.skipPic.isChecked()))
 
     def CheckFailReDownload(self):
         if not Setting.IsReDownload.value:

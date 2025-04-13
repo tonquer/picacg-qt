@@ -1,5 +1,7 @@
 from config import config
+from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
+from tools.book import BookMgr
 from tools.log import Log
 from tools.status import Status
 from tools.str import Str
@@ -34,6 +36,8 @@ class NasStatus(QtTaskBase):
         elif status == task.Success:
             self._SetDownloadTaskNone(task)
         elif status == task.Uploading:
+            self._SetTaskDownloading(task)
+        elif status == task.WaitXmlInfo:
             self._SetTaskDownloading(task)
         else:
             assert False
@@ -101,17 +105,34 @@ class NasStatus(QtTaskBase):
         assert isinstance(task, NasUploadItem)
         newStatus = task.UploadInit()
         self.SetNewStatus(task, newStatus)
+        if newStatus == task.WaitXmlInfo:
+            self.GetXmlInfo(task)
+            return
         if newStatus != task.Uploading:
             return
         task.type = 0
         newStatus, (nasInfo, srcDir, desFile, upDirPath) = task.GetNextParams()
         if newStatus == task.Uploading:
             task.type = 1
-            self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.key, self.UploadStCallBack)
+            self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
         self.SetNewStatus(task, newStatus)
         self.UpdateTableItem(task)
         self.UpdateTaskDB(task)
         return
+
+    def GetXmlInfo(self, task):
+        self.AddSqlTask("book", task.bookId, SqlServer.TaskTypeCacheBook, callBack=self.GetXmlInfoBack, backParam=task.key)
+        return True
+
+    def GetXmlInfoBack(self, books, taskId):
+        task = self.downloadDict.get(taskId)
+        if not task:
+            return
+        book = BookMgr().GetBook(task.bookId)
+        if not book:
+            self.SetNewStatus(task, task.Error)
+            return
+        self.StartItemDownload(task)
 
     def UploadStCallBack(self, st, taskId):
         task = self.downloadDict.get(taskId)
@@ -125,7 +146,7 @@ class NasStatus(QtTaskBase):
             if newStatus == task.Uploading:
                 newStatus, (nasInfo, srcDir, desFile, upDirPath) = task.GetNextParams()
                 if newStatus == task.Uploading:
-                    self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.key, self.UploadStCallBack)
+                    self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
             self.SetNewStatus(task, newStatus)
             self.UpdateTableItem(task)
             self.UpdateTaskDB(task)

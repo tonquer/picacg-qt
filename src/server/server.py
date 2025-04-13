@@ -4,9 +4,7 @@ import socket
 import threading
 from queue import Queue
 
-import requests
-import urllib3
-from urllib3.util.ssl_ import is_ipaddress
+import urllib
 
 import server.req as req
 import server.res as res
@@ -18,45 +16,21 @@ from tools.log import Log
 from tools.singleton import Singleton
 from tools.status import Status
 from tools.tool import ToolUtil
+import httpx
 
-urllib3.disable_warnings()
-
-
-from urllib3.util import connection
-_orig_create_connection = connection.create_connection
 
 host_table = {}
-# import urllib3.contrib.pyopenssl
-# urllib3.contrib.pyopenssl.HAS_SNI = False
-# urllib3.contrib.pyopenssl.inject_into_urllib3()
-
-
-def _dns_resolver(host):
+_orig_getaddrinfo = socket.getaddrinfo
+# 如果使用代理，無法使用自定義dns
+def getaddrinfo2(host, port, *args, **kwargs):
     if host in host_table:
         address = host_table[host]
         Log.Info("dns parse, host:{}->{}".format(host, address))
-        return address
     else:
-        return host
-
-
-def patched_create_connection(address, *args, **kwargs):
-    host, port = address
-    hostname = _dns_resolver(host)
-    return _orig_create_connection((hostname, port), *args, **kwargs)
-
-
-connection.create_connection = patched_create_connection
-
-# USE_IPV6 = True
-#
-# def allowed_gai_family():
-#     family = socket.AF_INET
-#     if USE_IPV6:
-#         family = socket.AF_INET6
-#     return family
-
-# urllib3.util.connection.allowed_gai_family = allowed_gai_family
+        address = host
+    results = _orig_getaddrinfo(address, port, *args, **kwargs)
+    return results
+socket.getaddrinfo = getaddrinfo2
 
 
 def handler(request):
@@ -73,6 +47,7 @@ class Task(object):
         # self.timeout = 5
         self.bakParam = bakParam
         self.status = Status.Ok
+        self.index = 0
 
     @property
     def timeout(self):
@@ -82,7 +57,8 @@ class Server(Singleton):
     def __init__(self) -> None:
         super().__init__()
         self.handler = {}
-        self.session = requests.session()
+        # self.session = httpx.Client(http2=True, verify=False, trust_env=False)
+
         self.address = ""
         self.imageServer = ""
         self.imageAddress = ""
@@ -93,27 +69,31 @@ class Server(Singleton):
         self.threadHandler = 0
         self.threadNum = config.ThreadNum
         self.downloadNum = config.DownloadThreadNum
+        self.threadSession = []
+        self.downloadSession = []
 
         for i in range(self.threadNum):
-            thread = threading.Thread(target=self.Run)
+            self.threadSession.append(httpx.Client(http2=True, verify=False, trust_env=False))
+            thread = threading.Thread(target=self.Run, args=[i])
             thread.setName("HTTP-"+str(i))
             thread.setDaemon(True)
             thread.start()
 
         for i in range(self.downloadNum):
-            thread = threading.Thread(target=self.RunDownload)
+            self.downloadSession.append(httpx.Client(http2=True, verify=False, trust_env=False))
+            thread = threading.Thread(target=self.RunDownload, args=[i])
             thread.setName("Download-" + str(i))
             thread.setDaemon(True)
             thread.start()
 
-    def Run(self):
+    def Run(self, index):
         while True:
             task = self._inQueue.get(True)
             self._inQueue.task_done()
             try:
                 if task == "":
                     break
-                self._Send(task)
+                self._Send(task, index)
             except Exception as es:
                 Log.Error(es)
         pass
@@ -124,14 +104,14 @@ class Server(Singleton):
         for i in range(self.downloadNum):
             self._downloadQueue.put("")
 
-    def RunDownload(self):
+    def RunDownload(self, index):
         while True:
             task = self._downloadQueue.get(True)
             self._downloadQueue.task_done()
             try:
                 if task == "":
                     break
-                self._Download(task)
+                self._Download(task, index)
             except Exception as es:
                 Log.Error(es)
         pass
@@ -146,25 +126,69 @@ class Server(Singleton):
         # AllDomain.append(config.ImageServer2Jump)
         # AllDomain.append(config.ImageServer3Jump)
         for domain in AllDomain:
-            if is_ipaddress(address):
+            if ToolUtil.IsipAddress(address):
                 host_table[domain] = address
             elif not address and domain in host_table:
                 host_table.pop(domain)
 
         for domain in GlobalConfig.ImageServerList.value:
-            if is_ipaddress(imageAdress):
+            if ToolUtil.IsipAddress(imageAdress):
                 host_table[domain] = imageAdress
             elif not imageAdress and domain in host_table:
                 host_table.pop(domain)
 
         for domain in GlobalConfig.ImageJumList.value:
-            if is_ipaddress(imageAdress):
+            if ToolUtil.IsipAddress(imageAdress):
                 host_table[domain] = imageAdress
             elif not imageAdress and domain in host_table:
                 host_table.pop(domain)
 
-        # 换一个，清空pool
-        self.session = requests.session()
+        return
+
+    def UpdateProxy(self):
+        from config.setting import Setting
+        self.UpdateProxy2(Setting.IsHttpProxy.value, Setting.HttpProxy.value, Setting.Sock5Proxy.value)
+
+    def UpdateProxy2(self, httpProxyIndex, httpProxy, sock5Proxy):
+        from tools.str import Str
+        # sock5代理
+        if httpProxyIndex == 2 and sock5Proxy:
+            data = sock5Proxy.replace("http://", "").replace("https://", "").replace("sock5://",
+                                                                                                   "").replace(
+                "socks5://", "")
+            trustEnv = False
+            data = data.split(":")
+            if len(data) == 2:
+                host = data[0]
+                port = data[1]
+                proxy = f"socks5://{host}:{port}"
+            else:
+                return Str.Sock5Error
+        # http代理
+        elif httpProxyIndex == 1 and httpProxy:
+            proxy = httpProxy
+            trustEnv = False
+        # 系统代理
+        elif httpProxyIndex == 3:
+            proxy = None
+            proxyDict = urllib.request.getproxies()
+            if isinstance(proxyDict, dict) and proxyDict.get("http"):
+                proxy = proxyDict.get("http")
+
+            trustEnv = False
+        # 其他
+        else:
+            trustEnv = False
+            proxy = None
+        Log.Warn(f"update proxy, index:{httpProxyIndex}, proxy:{proxy}, env:{trustEnv}")
+
+        self.threadSession = []
+        for i in range(self.threadNum):
+            self.threadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxies=proxy))
+
+        self.downloadSession = []
+        for i in range(self.downloadNum):
+            self.downloadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxies=proxy))
         return
 
     def __DealHeaders(self, request, token):
@@ -175,7 +199,7 @@ class Server(Singleton):
 
         host = ToolUtil.GetUrlHost(request.url)
         if self.imageServer and host in GlobalConfig.ImageServerList.value:
-            if not is_ipaddress(self.imageServer):
+            if not ToolUtil.IsipAddress(self.imageServer):
                 request.url = request.url.replace(host, self.imageServer)
 
         if not request.isUseHttps:
@@ -184,6 +208,12 @@ class Server(Singleton):
         if request.proxyUrl:
             host = ToolUtil.GetUrlHost(request.url)
             request.url = request.url.replace(host, request.proxyUrl+"/"+host)
+
+        from config.setting import Setting
+        if Setting.IsUseSniPretend.value:
+            for name in  GlobalConfig.SniDomain.value:
+                if name in host:
+                    request.extend["sni_hostname"] = name
 
         # host = ToolUtil.GetUrlHost(request.url)
         # if self.address and host in config.ApiDomain:
@@ -213,9 +243,9 @@ class Server(Singleton):
         if isASync:
             return self._inQueue.put(Task(request, backParam))
         else:
-            return self._Send(Task(request, backParam))
+            return self._Send(Task(request, backParam), 0)
 
-    def _Send(self, task):
+    def _Send(self, task, index):
         try:
             Log.Info("request-> backId:{}, {}".format(task.bakParam, task.req))
             if QtOwner().isOfflineModel:
@@ -225,31 +255,24 @@ class Server(Singleton):
                 return
 
             if task.req.method.lower() == "post":
-                self.Post(task)
+                self.Post(task, index)
             elif task.req.method.lower() == "get":
-                self.Get(task)
+                self.Get(task, index)
             elif task.req.method.lower() == "put":
-                self.Put(task)
+                self.Put(task, index)
             else:
                 return
         except Exception as es:
-            if isinstance(es, requests.exceptions.ConnectTimeout):
+            if isinstance(es, httpx.ConnectError):
                 task.status = Status.ConnectErr
-            elif isinstance(es, requests.exceptions.ReadTimeout):
+            elif isinstance(es, httpx.ConnectTimeout):
                 task.status = Status.TimeOut
-            elif isinstance(es, requests.exceptions.SSLError):
-                if "WSAECONNRESET" in es.__repr__():
-                    task.status = Status.ResetErr
-                else:
-                    task.status = Status.SSLErr
-            elif isinstance(es, requests.exceptions.ProxyError):
-                task.status = Status.ProxyError
             elif isinstance(es, ConnectionResetError):
                 task.status = Status.ResetErr
             else:
                 task.status = Status.NetError
             # Log.Error(es)
-            Log.Warn(task.req.url + " " + es.__repr__())
+            Log.Error(task.req.url + " " + es.__repr__())
             Log.Debug(es)
         finally:
             Log.Info("response-> backId:{}, {}, st:{}, {}".format(task.bakParam, task.req.__class__.__name__, task.status, task.res))
@@ -263,47 +286,47 @@ class Server(Singleton):
         finally:
             return task.res
 
-    def Post(self, task):
+    def Post(self, task, index=0):
         request = task.req
         if request.params == None:
             request.params = {}
 
         if request.headers == None:
             request.headers = {}
-
+        session = self.threadSession[index]
         task.res = res.BaseRes("", False, task.req.__class__.__name__)
         if request.file:
-            r = self.session.post(request.url, proxies=request.proxy, headers=request.headers, files=request.file,
-                                  timeout=task.timeout, verify=False)
+            r = session.post(request.url, follow_redirects=True, headers=request.headers, files=request.file,
+                                  timeout=task.timeout, extensions=request.extend)
         else:
-            r = self.session.post(request.url, proxies=request.proxy, headers=request.headers,
-                                  data=json.dumps(request.params), timeout=task.timeout, verify=False)
+            r = session.post(request.url, follow_redirects=True, headers=request.headers, json=request.params, timeout=task.timeout, extensions=request.extend)
         task.res = res.BaseRes(r, request.isParseRes, task.req.__class__.__name__)
         return task
 
-    def Put(self, task):
+    def Put(self, task, index=0):
         request = task.req
         if request.params == None:
             request.params = {}
 
         if request.headers == None:
             request.headers = {}
-
+        session = self.threadSession[index]
         task.res = res.BaseRes("", False, task.req.__class__.__name__)
-        r = self.session.put(request.url, proxies=request.proxy, headers=request.headers, data=json.dumps(request.params), timeout=60, verify=False)
+        r = session.put(request.url, follow_redirects=True, headers=request.headers, json=request.params, timeout=15, extensions=request.extend)
         task.res = res.BaseRes(r, request.isParseRes, task.req.__class__.__name__)
         return task
 
-    def Get(self, task):
+    def Get(self, task, index=0):
         request = task.req
         if request.params == None:
             request.params = {}
 
         if request.headers == None:
             request.headers = {}
-
+        session = self.threadSession[index]
         task.res = res.BaseRes("", False, task.req.__class__.__name__)
-        r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout, verify=False)
+        # print(f"index:{index}, token:{task.req.headers}")
+        r = session.get(request.url, follow_redirects=True, headers=request.headers, timeout=task.timeout, extensions=request.extend)
         task.res = res.BaseRes(r, request.isParseRes, task.req.__class__.__name__)
         return task
 
@@ -313,14 +336,14 @@ class Server(Singleton):
         if isASync:
             self._downloadQueue.put(task)
         else:
-            self._Download(task)
+            self._Download(task, 0)
 
     def ReDownload(self, task):
         task.res = ""
         task.status = Status.Ok
         self._downloadQueue.put(task)
 
-    def _Download(self, task):
+    def _Download(self, task, index):
         try:
             task.req.resetCnt -= 1
             if not task.req.isReload:
@@ -351,51 +374,36 @@ class Server(Singleton):
 
             history = []
             # oldHost = ToolUtil.GetUrlHost(request.url)
-            for i in range(10):
-                r = self.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout,
-                                     verify=False, allow_redirects=False, stream=True)
-                if r.status_code == 302 or r.status_code == 301:
-                    next = r.headers.get('Location')
-                    if ToolUtil.GetUrlHost(next) == "":
-                        next = "https://" + ToolUtil.GetUrlHost(request.url) + next
-                    request.url = next
-                    if not request.isReset:
-                        Log.Info("request 301 -> backId:{}, {}".format(task.bakParam, task.req))
-                    else:
-                        Log.Info("request 301 reset:{} -> backId:{}, {}".format(task.req.resetCnt, task.bakParam, task.req))
 
-                    history.append(r)
-                    # self.__DealHeaders(request, "")
-                else:
-                    break
-            r.history = history
             # task.res = res.BaseRes(r)
             # print(r.elapsed.total_seconds())
-            task.res = r
+            task.res = None
+            task.index = index
         except Exception as es:
-            if isinstance(es, requests.exceptions.ConnectTimeout):
-                task.status = Status.ConnectErr
-            elif isinstance(es, requests.exceptions.ReadTimeout):
-                task.status = Status.TimeOut
-            elif isinstance(es, requests.exceptions.SSLError):
-                if "WSAECONNRESET" in es.__repr__():
-                    task.status = Status.ResetErr
-                else:
-                    task.status = Status.SSLErr
-            elif isinstance(es, requests.exceptions.ProxyError):
-                task.status = Status.ProxyError
-            elif isinstance(es, ConnectionResetError):
-                task.status = Status.ResetErr
-            else:
-                task.status = Status.NetError
+            # if isinstance(es, requests.exceptions.ConnectTimeout):
+            #     task.status = Status.ConnectErr
+            # elif isinstance(es, requests.exceptions.ReadTimeout):
+            #     task.status = Status.TimeOut
+            # elif isinstance(es, requests.exceptions.SSLError):
+            #     if "WSAECONNRESET" in es.__repr__():
+            #         task.status = Status.ResetErr
+            #     else:
+            #         task.status = Status.SSLErr
+            # elif isinstance(es, requests.exceptions.ProxyError):
+            #     task.status = Status.ProxyError
+            # elif isinstance(es, ConnectionResetError):
+            #     task.status = Status.ResetErr
+            # else:
+            #     task.status = Status.NetError
+            task.status = Status.NetError
             Log.Warn(task.req.url + " " + es.__repr__())
             if (task.req.resetCnt > 0):
                 task.req.isReset = True
                 self.ReDownload(task)
                 return
         self.handler.get(task.req.__class__.__name__)(task)
-        if task.res:
-            task.res.close()
+        # if task.res:
+        #     task.res.close()
 
     def TestSpeed(self, request, bakParams=""):
         self.__DealHeaders(request, "")

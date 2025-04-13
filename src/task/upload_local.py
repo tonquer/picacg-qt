@@ -1,8 +1,7 @@
 import os
-
+import shutil
 
 from task.task_upload import UpLoadBase
-from smb.SMBConnection import SMBConnection, NotReadyError
 
 from tools.log import Log
 from tools.status import Status
@@ -10,39 +9,27 @@ from tools.str import Str
 from view.nas.nas_item import NasInfoItem
 
 
-class SmbClient(UpLoadBase):
+class LocalClient(UpLoadBase):
     AllLink = {}
 
     def __init__(self):
         UpLoadBase.__init__(self)
+        self.path = ""
         pass
 
     def Init(self, nasInfo):
-        assert isinstance(nasInfo, NasInfoItem)
-        self.address = nasInfo.address
-        self.port = nasInfo.port
-        self.password = nasInfo.passwd
-        self.username = nasInfo.user
-        datas = nasInfo.path.strip("/").split("/")
-
-        self.service_name = datas[0]
-
-        self.client = SMBConnection(self.username, self.password, '', '', use_ntlm_v2=True)
-        self.isLink = False
+        self.path = nasInfo.path
 
     def Connect(self):
         try:
-            if self.port:
-                result = self.client.connect(self.address, self.port, timeout=5)
+            isDir = os.path.isdir(self.path)
+            if isDir:
+                return Status.Ok
             else:
-                result = self.client.connect(self.address, timeout=5)
-            self.isLink = True
-            if not result:
-                return Str.CvAuthError
+                return Str.DirNotFound
         except Exception as es:
             Log.Error(es)
-            return self.GetExceptionSt(es)
-        return Str.Ok
+            return Str.Error
 
     def DisConnect(self):
         try:
@@ -72,23 +59,18 @@ class SmbClient(UpLoadBase):
 
     def Upload(self, localPath, remotePath):
         try:
-            if not self.isLink:
-                self.Connect()
-
-            remotePath  = remotePath.replace("/{}/".format(self.service_name), "")
             if not os.path.isfile(localPath):
                 return Str.FileError
-            self.Create(remotePath)
+            if not os.path.isdir(remotePath):
+                os.makedirs(remotePath)
             fileName = os.path.basename(localPath)
-            with open(localPath, "rb") as local_file:
-                self.client.storeFile(self.service_name, remotePath + "/" + fileName, local_file)
+            destPath = os.path.join(remotePath, fileName)
+            if os.path.isfile(destPath):
+                os.remove(destPath)
+            shutil.copy(localPath, destPath)
             os.remove(localPath)
         except Exception as es:
             Log.Error(es)
-            return self.GetExceptionSt(es)
+            return Str.Error
         return Str.Ok
 
-    def GetExceptionSt(self, es):
-        if isinstance(es, NotReadyError):
-            return Str.CvAuthError
-        return Str.Error

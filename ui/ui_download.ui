@@ -44,12 +44,19 @@
       </widget>
      </item>
      <item>
+      <widget class="QCheckBox" name="skipPic">
+       <property name="text">
+        <string>超分跳过损坏图片</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QRadioButton" name="radioButton">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="text">
-        <string>下载自动Waifu2x转换</string>
+        <string>下载自动超分转换</string>
        </property>
        <property name="checked">
         <bool>true</bool>
