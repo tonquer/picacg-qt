@@ -184,11 +184,11 @@ class Server(Singleton):
 
         self.threadSession = []
         for i in range(self.threadNum):
-            self.threadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxies=proxy))
+            self.threadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxy=proxy))
 
         self.downloadSession = []
         for i in range(self.downloadNum):
-            self.downloadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxies=proxy))
+            self.downloadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxy=proxy))
         return
 
     def __DealHeaders(self, request, token):
