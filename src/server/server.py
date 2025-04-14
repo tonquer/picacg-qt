@@ -149,10 +149,10 @@ class Server(Singleton):
     def GetNewClient(self, proxy):
         try:
             # > python3.7
-            return httpx.Client(http2=True, verify=False, proxy=proxy)
+            return httpx.Client(http2=True, verify=False, trust_env=False, proxy=proxy)
         except Exception as es:
             # <= python3.7
-            return httpx.Client(http2=True, verify=False, proxies=proxy)
+            return httpx.Client(http2=True, verify=False,  trust_env=False, proxies=proxy)
     
     def UpdateProxy(self):
         from config.setting import Setting
