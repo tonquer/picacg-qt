@@ -4,7 +4,7 @@
 
 [![GitHub](https://img.shields.io/github/license/tonquer/picacg-qt)](https://raw.githubusercontent.com/tonquer/picacg-qt/master/LICENSE.txt)
 [![GitHub](https://img.shields.io/github/workflow/status/tonquer/picacg-qt/CI?label=CI)](https://github.com/tonquer/picacg-qt/actions)
-![Relese](https://img.shields.io/badge/Python-3.7.9%2B-brightgreen)
+![Relese](https://img.shields.io/badge/Python-3.9.13%2B-brightgreen)
 [![Relese](https://img.shields.io/github/v/release/tonquer/picacg-qt)](https://github.com/tonquer/picacg-qt/releases)
 ![Relese](https://img.shields.io/github/downloads/tonquer/picacg-qt/total)
 

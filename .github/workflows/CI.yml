@@ -139,10 +139,10 @@ jobs:
       PACKAGENAME: bika_py37_windows_x64
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.7
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.9
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -181,10 +181,10 @@ jobs:
       PACKAGENAME: bika_py37_nosr_windows_x64
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.7
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.9
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
