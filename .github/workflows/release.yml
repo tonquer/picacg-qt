@@ -290,10 +290,10 @@ jobs:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows7_x64
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.7
+    - name: Set up Python 3.8
       uses: actions/setup-python@v5
       with:
-        python-version: 3.7
+        python-version: 3.8
 
     - name: Install dependencies
       run: |
@@ -343,10 +343,10 @@ jobs:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows7_nosr_x64
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.7
+    - name: Set up Python 3.8
       uses: actions/setup-python@v5
       with:
-        python-version: 3.7
+        python-version: 3.8
 
     - name: Install dependencies
       run: |
