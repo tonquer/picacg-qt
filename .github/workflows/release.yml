@@ -98,17 +98,15 @@ jobs:
         mv ${{ env.PACKAGENAME }}.dmg ..
         mv bika.zip ..
         cd ..
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.PACKAGENAME }}
-        path: bika.zip
-    - name: upload-macos-arm
-      uses: softprops/action-gh-release@v2
+    - name: upload-macos
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ env.PACKAGENAME }}.dmg
+        upload_url: ${{ needs.release.outputs.Up_Url }}
+        asset_path: ${{ env.PACKAGENAME }}.dmg
+        asset_name: ${{ env.PACKAGENAME }}.dmg
+        asset_content_type: application/gzip
 
   macos-nosr:
     needs: [setup, release]
@@ -166,17 +164,15 @@ jobs:
         mv ${{ env.PACKAGENAME }}.dmg ..
         mv bika.zip ..
         cd ..
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.PACKAGENAME }}
-        path: bika.zip
-    - name: upload-macos-arm
-      uses: softprops/action-gh-release@v2
+    - name: upload-macos
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ env.PACKAGENAME }}.dmg
+        upload_url: ${{ needs.release.outputs.Up_Url }}
+        asset_path: ${{ env.PACKAGENAME }}.dmg
+        asset_name: ${{ env.PACKAGENAME }}.dmg
+        asset_content_type: application/gzip
 
   windows:
     needs: [setup, release]
