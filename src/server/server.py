@@ -73,14 +73,14 @@ class Server(Singleton):
         self.downloadSession = []
 
         for i in range(self.threadNum):
-            self.threadSession.append(httpx.Client(http2=True, verify=False, trust_env=False))
+            self.threadSession.append(self.GetNewClient(None))
             thread = threading.Thread(target=self.Run, args=[i])
             thread.setName("HTTP-"+str(i))
             thread.setDaemon(True)
             thread.start()
 
         for i in range(self.downloadNum):
-            self.downloadSession.append(httpx.Client(http2=True, verify=False, trust_env=False))
+            self.downloadSession.append(self.GetNewClient(None))
             thread = threading.Thread(target=self.RunDownload, args=[i])
             thread.setName("Download-" + str(i))
             thread.setDaemon(True)
@@ -143,8 +143,17 @@ class Server(Singleton):
             elif not imageAdress and domain in host_table:
                 host_table.pop(domain)
 
+    
         return
 
+    def GetNewClient(self, proxy):
+        try:
+            # > python3.7
+            return httpx.Client(http2=True, verify=False, proxy=proxy)
+        except Exception as es:
+            # <= python3.7
+            return httpx.Client(http2=True, verify=False, proxies=proxy)
+    
     def UpdateProxy(self):
         from config.setting import Setting
         self.UpdateProxy2(Setting.IsHttpProxy.value, Setting.HttpProxy.value, Setting.Sock5Proxy.value)
@@ -184,11 +193,11 @@ class Server(Singleton):
 
         self.threadSession = []
         for i in range(self.threadNum):
-            self.threadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxy=proxy))
+            self.threadSession.append(self.GetNewClient(proxy))
 
         self.downloadSession = []
         for i in range(self.downloadNum):
-            self.downloadSession.append(httpx.Client(http2=True, verify=False, trust_env=trustEnv, proxy=proxy))
+            self.downloadSession.append(self.GetNewClient(proxy))
         return
 
     def __DealHeaders(self, request, token):
