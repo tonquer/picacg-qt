@@ -148,11 +148,11 @@ class Server(Singleton):
 
     def GetNewClient(self, proxy):
         try:
-            # > python3.7
+            ## proxy会报错
             return httpx.Client(http2=True, verify=False, trust_env=False, proxy=proxy)
         except Exception as es:
-            # <= python3.7
-            return httpx.Client(http2=True, verify=False,  trust_env=False, proxies=proxy)
+            Log.Error(es)
+            return httpx.Client(http2=True, verify=False, trust_env=False)
     
     def UpdateProxy(self):
         from config.setting import Setting
@@ -172,10 +172,13 @@ class Server(Singleton):
                 port = data[1]
                 proxy = f"socks5://{host}:{port}"
             else:
-                return Str.Sock5Error
+                Log.Warn("sock5 error, sock5Proxy:{}".format(sock5Proxy))
+                proxy = None
         # http代理
         elif httpProxyIndex == 1 and httpProxy:
             proxy = httpProxy
+            if "http" not in httpProxy:
+                httpProxy = "http://" + proxy
             trustEnv = False
         # 系统代理
         elif httpProxyIndex == 3:
@@ -183,7 +186,8 @@ class Server(Singleton):
             proxyDict = urllib.request.getproxies()
             if isinstance(proxyDict, dict) and proxyDict.get("http"):
                 proxy = proxyDict.get("http")
-
+                if "http" not in httpProxy:
+                    httpProxy = "http://" + proxy
             trustEnv = False
         # 其他
         else:

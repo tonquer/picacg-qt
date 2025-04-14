@@ -51,7 +51,7 @@ Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
 Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
 UpdateVersion = "v1.5.2"
-RealVersion = "v1.5.2"
+RealVersion = "v1.5.2.1"
 TimeVersion = "2025-4-14"
 DbVersion = ""
 

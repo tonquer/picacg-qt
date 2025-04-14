@@ -377,7 +377,7 @@ class CheckUpdateReq(ServerReq):
     def __init__(self, isPre=False):
         method = "GET"
         data = dict()
-        data["version"] = config.UpdateVersion
+        data["version"] = config.RealVersion
         data["platform"] = platform.platform()
         if not isPre:
             url = config.AppUrl + "/version.txt?"
@@ -394,7 +394,7 @@ class CheckUpdateInfoReq(ServerReq):
     def __init__(self, newVersion):
         method = "GET"
         data = dict()
-        data["version"] = config.UpdateVersion
+        data["version"] = config.RealVersion
         data["platform"] = platform.platform()
         url = config.AppUrl + "/{}.txt?".format(newVersion)
         url += ToolUtil.DictToUrl(data)
@@ -408,7 +408,7 @@ class CheckUpdateConfigReq(ServerReq):
     def __init__(self):
         method = "GET"
         data = dict()
-        data["version"] = config.UpdateVersion
+        data["version"] = config.RealVersion
         data["platform"] = platform.platform()
         url = config.AppUrl + "/config.txt?"
         url += ToolUtil.DictToUrl(data)
@@ -424,7 +424,7 @@ class CheckUpdateDatabaseReq(ServerReq):
             "Pragma": "No-cache",
             "Cache-Control": "no-cache",
             "Expires": '0',
-            "version": config.UpdateVersion,
+            "version": config.RealVersion,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
@@ -442,7 +442,7 @@ class DownloadDatabaseReq(ServerReq):
             "Pragma": "No-cache",
             "Cache-Control": "no-cache",
             "Expires": '0',
-            "version": config.UpdateVersion,
+            "version": config.RealVersion,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
@@ -464,7 +464,7 @@ class DownloadDatabaseWeekReq(ServerReq):
             "Pragma": "No-cache",
             "Cache-Control": "no-cache",
             "Expires": '0',
-            "version": config.UpdateVersion,
+            "version": config.RealVersion,
         }
         super(self.__class__, self).__init__(url, header, {}, method)
         self.isParseRes = False
