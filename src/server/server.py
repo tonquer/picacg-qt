@@ -177,8 +177,8 @@ class Server(Singleton):
         # http代理
         elif httpProxyIndex == 1 and httpProxy:
             proxy = httpProxy
-            if "http" not in httpProxy:
-                httpProxy = "http://" + proxy
+            if "http" not in proxy:
+                proxy = "http://" + proxy
             trustEnv = False
         # 系统代理
         elif httpProxyIndex == 3:
@@ -186,8 +186,8 @@ class Server(Singleton):
             proxyDict = urllib.request.getproxies()
             if isinstance(proxyDict, dict) and proxyDict.get("http"):
                 proxy = proxyDict.get("http")
-                if "http" not in httpProxy:
-                    httpProxy = "http://" + proxy
+                if "http" not in proxy:
+                    proxy = "http://" + proxy
             trustEnv = False
         # 其他
         else:
