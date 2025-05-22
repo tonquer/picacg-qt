@@ -419,7 +419,7 @@ jobs:
           rm -rf src/dist src/*.onefile-build
           mkdir package
           mv out package/bika
-          7z a -t7z -r "${{ env.PACKAGENAME }}.7z" package
+          7z a -t7z -r "${{ env.PACKAGENAME }}.7z" package/bika
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
