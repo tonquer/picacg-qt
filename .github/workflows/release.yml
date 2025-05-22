@@ -408,7 +408,7 @@ jobs:
               nuitka --onefile --output-dir=dist --static-libpython=yes --assume-yes-for-downloads \
                    --plugin-enable=pyside6 --linux-icon=../res/icon/icon.ico start.py 
               mkdir -p /workspace/out
-              mv dist/start.bin "/workspace/out/${BINARY_NAME}/PicACG"
+              mv dist/start.bin "/workspace/out/${BINARY_NAME}/start"
               cp -r db            /workspace/out/
               cp ../LICENSE       /workspace/out/
               cp ../CHANGELOG     /workspace/out/
