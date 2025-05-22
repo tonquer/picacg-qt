@@ -389,7 +389,7 @@ jobs:
     needs: [setup, release]
     runs-on: ubuntu-24.04-arm
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_arm64
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_nosr_arm64
       BINARY_NAME: bika
     steps:
       - uses: actions/checkout@v4
