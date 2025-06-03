@@ -591,26 +591,22 @@ class SqlServer(Singleton):
 
     @staticmethod
     def SaveCacheWord():
-        path = ospath.join(Setting.GetConfigPath(), "cache_word")
+        cache_file = Path(Setting.GetConfigPath()) / 'cache_word'
         try:
             if not SqlServer().cacheWord:
                 return
-            f = open(path, "w+", encoding="utf-8")
-            f.write("\n".join(SqlServer().cacheWord))
-            f.close()
+            cache_file.parent.mkdir(parents=True, exist_ok=True)
+            cache_file.write_text('\n'.join(SqlServer().cacheWord), encoding='utf-8')
         except Exception as es:
             Log.Error(es)
 
     @staticmethod
     def LoadCacheWord():
-        path = ospath.join(Setting.GetConfigPath(), "cache_word")
+        cache_file = Path(Setting.GetConfigPath()) / 'cache_word'
         try:
-            if not path.isfile(path):
+            if not cache_file.is_file():
                 return
-            f = open(path, "r", encoding="utf-8")
-            data = f.read()
-            f.close()
-            for v in data.split("\n"):
+            for v in cache_file.read_text(encoding='utf-8').splitlines():
                 if v:
                     SqlServer().cacheWord.append(v)
         except Exception as es:
