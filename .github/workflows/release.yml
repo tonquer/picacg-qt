@@ -60,7 +60,7 @@ jobs:
               pip3 install --upgrade nuitka
               UPX_VER=5.0.1
               curl -L -o /tmp/upx.tar.xz \
-                "https://github.com/upx/upx/releases/download/v${UPX_VER}/upx-${UPX_VER}-aarch64_linux.tar.xz"
+                "https://github.com/upx/upx/releases/download/v${UPX_VER}/upx-${UPX_VER}-arm64_linux.tar.xz"
               mkdir -p /tmp/upx
               tar -xf /tmp/upx.tar.xz -C /tmp/upx --strip-components=1
               export UPX_BIN=/tmp/upx/upx
