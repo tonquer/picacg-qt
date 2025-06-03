@@ -15,6 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
+          tags: true
       - name: get-package_prefix
         id: get-package_prefix
         run: |
