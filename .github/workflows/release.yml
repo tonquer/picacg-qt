@@ -90,6 +90,7 @@ jobs:
           mv out package/bika
           cd package
           7z a -t7z -r "${{ env.PACKAGENAME }}.7z" bika
+          mv "${{ env.PACKAGENAME }}.7z" ..
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
