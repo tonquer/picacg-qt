@@ -1,5 +1,5 @@
 from pathlib import Path
-from os import path
+from os import path as ospath
 from pickle import dumps
 from sqlite3 import connect
 from sys import executable, platform
@@ -95,7 +95,7 @@ class SqlServer(Singleton):
         conn = None
         try:
             if platform == "linux":
-                path = path.join(Setting.GetConfigPath(), bookPath)
+                path = ospath.join(Setting.GetConfigPath(), bookPath)
                 conn = connect(path)
             else:
                 conn = connect(bookPath)
@@ -591,7 +591,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def SaveCacheWord():
-        path = path.join(Setting.GetConfigPath(), "cache_word")
+        path = ospath.join(Setting.GetConfigPath(), "cache_word")
         try:
             if not SqlServer().cacheWord:
                 return
@@ -603,7 +603,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def LoadCacheWord():
-        path = path.join(Setting.GetConfigPath(), "cache_word")
+        path = ospath.join(Setting.GetConfigPath(), "cache_word")
         try:
             if not path.isfile(path):
                 return
