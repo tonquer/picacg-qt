@@ -54,7 +54,7 @@ jobs:
         run: |
           docker run --rm --platform linux/arm64 \
             -v "$PWD":/workspace -w /workspace/src \
-            cyberspace0000/linux-arm-py10 sh -exc '
+            cyberspace0000/linux-arm-py10:1 sh -exc '
               source /opt/miniforge/bin/activate
               conda activate py310
               pip3 install --upgrade nuitka
