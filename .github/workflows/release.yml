@@ -42,87 +42,73 @@ jobs:
           draft: true
           prerelease: true
   
-  macos:
+  windows:
     needs: [setup, release]
-    runs-on: macos-latest
+    runs-on: windows-latest
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_universal2
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64
+      EXE_NAME: PicACG.exe
     steps:
-      # 1️⃣ 取源
       - uses: actions/checkout@v4
-
-      # 2️⃣ Python + 依赖
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
       - name: Install build dependencies
+        shell: pwsh
         run: |
           python -m pip install --upgrade pip
           pip install nuitka
-          pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311.cp312.cp313-none-macosx_10_9_universal2.whl
-          cd script
-          pip install delocate wheel_filename
-          python build_universal2.py pillow
-          pip install *.whl
-          cd ..
-          pip install -r src/requirements_macos.txt
-          brew install create-dmg upx
-
-      # 3️⃣ Nuitka + UPX 打包
+          pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
+          pip install -r src\requirements.txt
+          Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
+          Expand-Archive -Path "upx.zip" -DestinationPath "$env:RUNNER_TEMP\upx"
+          Remove-Item "upx.zip"
+          $env:UPX_BIN = (Get-ChildItem "$env:RUNNER_TEMP\upx" -Recurse -Filter upx.exe).FullName
       - name: Build with Nuitka
+        shell: pwsh
         run: |
           cd src
-
-          # ---- 准备数据库
-          mkdir -p db
-          curl -L -o db/book.db \
-               https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db
-
-          # ---- 准备图标
-          cp ../res/icon/Icon.icns .
-
+          Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "db\book.db"
+          Copy-Item ..\res\icon\icon.ico .
+          python -m nuitka `
+            --onefile `
+            --output-dir=dist `
+            --output-filename=PicACG `
+            --windows-console-mode=disable `
+            --msvc=latest `
+            --clang `
+            --enable-plugin=pyside6 `
+            --assume-yes-for-downloads `
+            --windows-icon-from-ico=icon.ico `
+            --plugin-enable=upx --upx-binary="$env:UPX_BIN" `
+            start.py
           
+          $pkg = "bika"
+          Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
+          New-Item $pkg -ItemType Directory
+          Move-Item "dist\$env:EXE_NAME" "$pkg\start.exe"
+          Copy-Item -Recurse db               $pkg\
+          Copy-Item ..\LICENSE                $pkg\
+          Copy-Item ..\CHANGELOG              $pkg\
+          7z a -t7z "$env:PACKAGENAME.7z" $pkg
 
-          # ---- Nuitka 编译（启用 upx 插件）
-          python -m nuitka \
-              --standalone \
-              --macos-create-app-bundle \
-              --macos-target-arch=universal \
-              --output-dir=dist \
-              --output-filename=PicACG \
-              --enable-plugin=pyside6 \
-              --assume-yes-for-downloads \
-              --macos-app-icon=Icon.icns \
-              --plugin-enable=upx \
-              --show-progress \
-              start.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGENAME }}
+          path: ${{ env.PACKAGENAME }}.7z
 
-          # ---- 拷贝数据库
-          cp -avf db dist/PicACG.app/Contents/Frameworks/
-
-          # ---- 清签名 + DMG
-          xattr -cr dist/PicACG.app
-          create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
-              --window-pos 200 120 --window-size 800 400 --icon-size 100 \
-              --hide-extension "PicACG.app" --app-drop-link 600 185 \
-              "${{ env.PACKAGENAME }}.dmg" dist/PicACG.app
-
-          # ---- 压缩 + 移到工作区根目录
-          zip -9 bika.zip "${{ env.PACKAGENAME }}.dmg"
-          mv "${{ env.PACKAGENAME }}.dmg" ..
-          mv bika.zip ..
-
-      - name: upload-macos
+      - name: upload-win
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.release.outputs.UPLOAD_URL }}
-          asset_path: ${{ env.PACKAGENAME }}.dmg
-          asset_name: ${{ env.PACKAGENAME }}.dmg
-          asset_content_type: application/x-apple-diskimage
+          upload_url:         ${{ needs.release.outputs.Up_Url }}
+          asset_path:         ${{ env.PACKAGENAME }}.7z
+          asset_name:         ${{ env.PACKAGENAME }}.7z
+          asset_content_type: application/x-7z-compressed
+
 
 
   # linux-arm-nosr:
