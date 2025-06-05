@@ -96,6 +96,7 @@ class SqlServer(Singleton):
         try:
             if platform == "linux":
                 path = ospath.join(Setting.GetConfigPath(), bookPath)
+                print(path)
                 conn = connect(path)
             else:
                 conn = connect(bookPath)
