@@ -1,0 +1,975 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BookInfo</class>
+ <widget class="QWidget" name="BookInfo">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>892</width>
+    <height>719</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>漫画详情</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QToolButton
+{
+background-color:transparent;
+  border: 0px;
+  height: 0px;
+  margin: 0px;
+  padding: 0px;
+  border-right: 0px;
+  border-left: 0px;
+}
+QToolButton:hover  {
+background-color:transparent;
+  border-right: 0px;
+  border-left: 0px;
+}
+
+QToolButton:pressed  {
+background-color:transparent;
+  border-right: 0px;
+  border-left: 0px;
+}
+
+QToolButton:checked  {
+background-color:transparent;
+  border-right: 0px;
+  border-left: 0px;
+}
+QListWidget {background-color:transparent;}
+QScrollArea {background-color:transparent;}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="SmoothScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>872</width>
+        <height>699</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QLabel" name="picture">
+             <property name="minimumSize">
+              <size>
+               <width>300</width>
+               <height>400</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>标题：</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="title">
+                 <property name="text">
+                  <string>标题</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <widget class="QLabel" name="label_6">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>id:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="idLabel">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <widget class="QLabel" name="label_7">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>观看数：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="views">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>观看数</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_13">
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>上传时间：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="upTime">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_14">
+               <item>
+                <widget class="QLabel" name="label_12">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>更新时间：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="lastUpTime">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                 <property name="sizeConstraint">
+                  <enum>QLayout::SetDefaultConstraint</enum>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label_2">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>作者：</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="TagListWidget" name="autorList">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>60</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color:transparent;</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::NoFrame</enum>
+                   </property>
+                   <property name="showDropIndicator" stdset="0">
+                    <bool>true</bool>
+                   </property>
+                   <property name="flow">
+                    <enum>QListView::LeftToRight</enum>
+                   </property>
+                   <property name="spacing">
+                    <number>10</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_5">
+               <item>
+                <widget class="QLabel" name="label_3">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>描述：</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPlainTextEdit" name="description">
+                 <property name="styleSheet">
+                  <string notr="true">QPlainTextEdit {background-color:transparent;}</string>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>分类：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="TagListWidget" name="categoriesList">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>60</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+ QListWidget::item:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="spacing">
+                  <number>6</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Tags：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="tagList" native="true">
+                 <property name="styleSheet">
+                  <string notr="true">QPushButton {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+QPushButton:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QCommandLinkButton" name="commandLinkButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>看了这边本子的人也在看</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="tab">
+            <attribute name="title">
+             <string>阅读</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_10">
+               <item>
+                <widget class="HeadLabel" name="user_icon">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>TextLabel</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_5">
+                 <item>
+                  <widget class="QLabel" name="user_name">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="updateTick">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="IconToolButton" name="starButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                   <property name="text">
+                    <string>爱心</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../res/images.qrc">
+                     <normaloff>:/png/icon/icon_bookmark_off.png</normaloff>
+                     <selectedon>:/png/icon/icon_bookmark_on.png</selectedon>:/png/icon/icon_bookmark_off.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="checkable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="IconToolButton" name="favoriteButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color:transparent;</string>
+                   </property>
+                   <property name="text">
+                    <string>收藏</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../res/images.qrc">
+                     <normaloff>:/png/icon/icon_like_off.png</normaloff>
+                     <selectedon>:/png/icon/icon_bookmark_on.png</selectedon>:/png/icon/icon_like_off.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="checkable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="IconToolButton" name="commentButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color:transparent;</string>
+                   </property>
+                   <property name="text">
+                    <string>评论</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../res/images.qrc">
+                     <normaloff>:/png/icon/icon_comment.png</normaloff>:/png/icon/icon_comment.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="IconToolButton" name="downloadButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color:transparent;</string>
+                   </property>
+                   <property name="text">
+                    <string>下载</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../res/images.qrc">
+                     <normaloff>:/png/icon/ic_get_app_black_36dp.png</normaloff>:/png/icon/ic_get_app_black_36dp.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="uploadButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>存储</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../res/images.qrc">
+                     <normaloff>:/png/icon/upload.svg</normaloff>:/png/icon/upload.svg</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="clearButton">
+                   <property name="minimumSize">
+                    <size>
+                     <width>40</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>清理</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../res/images.qrc">
+                     <normaloff>:/png/icon/clear_off.png</normaloff>:/png/icon/clear_off.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>50</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextBesideIcon</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="startRead">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>开始阅读</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="pageLabel">
+                   <property name="text">
+                    <string>分页：</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="pageBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>120</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="EpsListWidget" name="epsListWidget">
+               <property name="styleSheet">
+                <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+ QListWidget::item:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+</string>
+               </property>
+               <property name="textElideMode">
+                <enum>Qt::ElideRight</enum>
+               </property>
+               <property name="verticalScrollMode">
+                <enum>QAbstractItemView::ScrollPerPixel</enum>
+               </property>
+               <property name="horizontalScrollMode">
+                <enum>QAbstractItemView::ScrollPerPixel</enum>
+               </property>
+               <property name="spacing">
+                <number>6</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_3">
+            <attribute name="title">
+             <string>已下载章节</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_12">
+               <item>
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>可离线阅读已下载的章节：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="readOffline">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>开始阅读</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Minimum</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>120</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="EpsListWidget" name="listWidget">
+               <property name="styleSheet">
+                <string notr="true">QListWidget {background-color:transparent;}
+QListWidget::item {
+    background-color:rgb(251, 239, 243);
+    color: rgb(196, 95, 125);
+	border:2px solid red;
+    border-radius: 10px;
+	border-color:rgb(196, 95, 125);
+}
+/* 鼠标在按钮上时，按钮颜色 */
+ QListWidget::item:hover 
+{
+    background-color:rgb(21, 85, 154);
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+}
+</string>
+               </property>
+               <property name="spacing">
+                <number>6</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SmoothScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header location="global">component.scroll_area.smooth_scroll_area.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HeadLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">component.label.head_label.h</header>
+  </customwidget>
+  <customwidget>
+   <class>TagListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.tag_list_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>IconToolButton</class>
+   <extends>QToolButton</extends>
+   <header location="global">component.button.icon_tool_button.h</header>
+  </customwidget>
+  <customwidget>
+   <class>EpsListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.eps_list_widget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../res/images.qrc"/>
+  <include location="../../comic-new/res/images.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>startRead</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>StartRead()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>676</x>
+     <y>517</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>313</x>
+     <y>607</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>starButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddBookLike()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>262</x>
+     <y>517</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>821</x>
+     <y>447</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>favoriteButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddFavorite()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>345</x>
+     <y>517</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>781</x>
+     <y>432</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>downloadButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>AddDownload()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>438</x>
+     <y>478</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>788</x>
+     <y>413</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearButton</sender>
+   <signal>clicked()</signal>
+   <receiver>BookInfo</receiver>
+   <slot>ClearCache()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>575</x>
+     <y>492</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>997</x>
+     <y>400</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>AddDownload()</slot>
+  <slot>AddFavorite()</slot>
+  <slot>StartRead()</slot>
+  <slot>AddBookLike()</slot>
+  <slot>ChangeTab()</slot>
+  <slot>ClearCache()</slot>
+ </slots>
+</ui>

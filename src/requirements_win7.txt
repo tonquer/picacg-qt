@@ -1,0 +1,11 @@
+PySide6==6.1.3
+websocket-client==0.59.0
+pillow
+natsort
+webdavclient3
+tqdm
+pysmb
+lxml
+httpx
+httpx[http2]
+httpx[socks]

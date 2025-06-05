@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Category</class>
+ <widget class="QWidget" name="Category">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>分类</string>
+  </property>
+
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="CategoryListWidget" name="bookList"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CategoryListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.category_list_widget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

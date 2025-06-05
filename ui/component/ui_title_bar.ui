@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TitleBar</class>
+ <widget class="QWidget" name="TitleBar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1360</width>
+    <height>49</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1,1">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <property name="leftMargin">
+      <number>8</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="minimumSize">
+        <size>
+         <width>25</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>25</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-image: url(:/png/icon/logo_round.png);</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="minimumSize">
+        <size>
+         <width>60</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>PicACG</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="subTitle">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QToolButton" name="minButton">
+       <property name="minimumSize">
+        <size>
+         <width>57</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QToolButton{ border-image:url(:/title_bar/open_black_min_button_57_40.png);}
+QToolButton:hover{ border-image:url(:/title_bar/green_min_button_hover_57_40.png);}
+QToolButton:pressed{ border-image:url(:/title_bar/black_min_button_pressed_57_40.png);}
+border: none; margin: 0px</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="maxBt">
+       <property name="minimumSize">
+        <size>
+         <width>57</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QToolButton[isMax=false]{ border-image:url(:/title_bar/open_black_max_button_57_40.png);}
+QToolButton:hover[isMax=false]{ border-image:url(:/title_bar/green_max_button_hover_57_40.png);}
+QToolButton:pressed[isMax=false]{ border-image:url(:/title_bar/black_max_button_pressed_57_40.png);}
+QToolButton[isMax=true]{ border-image:url(:/title_bar/black_down_button_57_40.png);}
+QToolButton:hover[isMax=true]{ border-image:url(:/title_bar/green_down_button_hover_57_40.png);}
+QToolButton:pressed[isMax=true]{ border-image:url(:/title_bar/down_button_pressed_57_40.png);}
+border: none;
+margin: 0px</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="isMax" stdset="0">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="closeButton">
+       <property name="minimumSize">
+        <size>
+         <width>57</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QToolButton{ border-image:url(:/title_bar/open_black_close_button_57_40.png);}
+QToolButton:hover{ border-image:url(:/title_bar/close_button_hover_57_40.png);}
+QToolButton:pressed{ border-image:url(:/title_bar/close_button_pressed_57_40.png);}
+border: none; margin: 0px</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../res/images.qrc"/>
+ </resources>
+ <connections/>
+ <slots>
+  <slot>_showRestoreWindow()</slot>
+  <slot>_close()</slot>
+  <slot>_showMinimized()</slot>
+  <slot>_showMenu()</slot>
+  <slot>_returnPage()</slot>
+ </slots>
+</ui>

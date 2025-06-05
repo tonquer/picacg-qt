@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Convert</class>
+ <widget class="QWidget" name="Convert">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>879</width>
+    <height>394</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>转换</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_7">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="2" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>全部开始转换</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_4">
+         <property name="text">
+          <string>全部暂停转换</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="5" column="0">
+      <widget class="QTableWidget" name="tableWidget">
+       <column>
+        <property name="text">
+         <string>id</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>时间</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>标题</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>章节数/图片数</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>进度</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>章节</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>耗时</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>状态</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>信息</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Rank</class>
+ <widget class="QWidget" name="Rank">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>536</width>
+    <height>379</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>排行榜</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>3</number>
+     </property>
+     <widget class="QWidget" name="widget_1">
+      <attribute name="title">
+       <string>24小时</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="ComicListWidget" name="h24BookList"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="widget_2">
+      <attribute name="title">
+       <string>7天</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="ComicListWidget" name="d7BookList"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="widget_3">
+      <attribute name="title">
+       <string>30天</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="ComicListWidget" name="d30BookList"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="widget_4">
+      <attribute name="title">
+       <string>骑士榜</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="UserListWidget" name="kindList"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>批量下载</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ComicListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.comic_list_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>UserListWidget</class>
+   <extends>QListWidget</extends>
+   <header location="global">component.list.user_list_widget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

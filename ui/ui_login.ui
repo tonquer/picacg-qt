@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Login</class>
+ <widget class="QDialog" name="Login">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>305</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>350</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>500</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="LoginWidget" name="tab">
+      <attribute name="title">
+       <string>登录</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>9</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="RegisterWidget" name="tab_2">
+      <attribute name="title">
+       <string>注册</string>
+      </attribute>
+     </widget>
+     <widget class="ChangePasswordWidget" name="tab_4">
+      <attribute name="title">
+       <string>修改密码</string>
+      </attribute>
+     </widget>
+     <widget class="LoginProxyWidget" name="tab_3">
+      <attribute name="title">
+       <string>分流</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QPushButton" name="loginButton">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>确定</string>
+       </property>
+       <property name="shortcut">
+        <string>Return</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="closeButton">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>关闭</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RegisterWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">view.user.register_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LoginWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">view.user.login_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LoginProxyWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">view.user.login_proxy_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ChangePasswordWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">view.user.change_password_widget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

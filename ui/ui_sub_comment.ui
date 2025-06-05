@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SubComment</class>
+ <widget class="QWidget" name="SubComment">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>子评论</string>
+  </property>
+
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="CommentItemWidget" name="comment" native="true"/>
+   </item>
+   <item>
+    <widget class="CommentWidget" name="commentList" native="true"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CommentWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">component.widget.comment_widget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CommentItemWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">component.widget.comment_item_widget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
