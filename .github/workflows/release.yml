@@ -92,7 +92,9 @@ jobs:
           Copy-Item ..\LICENSE                $pkg\
           Copy-Item ..\CHANGELOG              $pkg\
           7z a -t7z "$env:PACKAGENAME.7z" $pkg
-
+          Move-Item "${env:PACKAGENAME}.7z" ..\
+          cd ..
+          
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
