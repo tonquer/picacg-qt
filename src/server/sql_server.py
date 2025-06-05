@@ -2,7 +2,7 @@ from pathlib import Path
 from os import path as ospath
 from pickle import dumps
 from sqlite3 import connect
-from sys import executable, platform
+from sys import modules, platform
 from threading import Thread
 from time import localtime
 from queue import Queue
@@ -50,8 +50,9 @@ class DbBook(object):
 
 class SqlServer(Singleton):
     DbInfos = dict()
-    DbInfos["book"] = str(Path('db/book.db') if Path('db/book.db').is_file() else Path(
-        executable).resolve().parent / 'db/book.db')
+    DbPath = Path(ospath.dirname(modules["__main__"].__file__))
+    DbInfos["book"] = str(Path("db/book.db") if Path("db/book.db").is_file()
+                          else DbPath / "db" / "book.db")
 
     TaskCheck = 0
     TaskTypeSql = 1
