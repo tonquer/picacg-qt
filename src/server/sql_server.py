@@ -95,12 +95,7 @@ class SqlServer(Singleton):
         isInit = True
         conn = None
         try:
-            if platform == "linux":
-                path = ospath.join(Setting.GetConfigPath(), bookPath)
-                print(path)
-                conn = connect(path)
-            else:
-                conn = connect(bookPath)
+            conn = connect(bookPath)
         except Exception as es:
             Log.Error(es)
             from qt_owner import QtOwner
