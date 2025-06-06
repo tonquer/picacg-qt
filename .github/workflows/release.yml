@@ -42,11 +42,11 @@ jobs:
           draft: true
           prerelease: true
   
-  windows-nosr:
+  windows:
     needs: [setup, release]
     runs-on: windows-latest
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_nosr_x64
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64
       EXE_NAME: PicACG.exe
     steps:
       - uses: actions/checkout@v4
@@ -58,6 +58,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install nuitka
+          pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
           pip install -r src\requirements.txt
           Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
           Expand-Archive -Path "upx.zip" -DestinationPath "$env:RUNNER_TEMP\upx"
@@ -72,6 +73,7 @@ jobs:
             --onefile `
             --output-dir=dist `
             --output-filename=PicACG `
+            --include-package=waifu2x-vulkan `
             --windows-console-mode=disable `
             --msvc=latest `
             --clang `
