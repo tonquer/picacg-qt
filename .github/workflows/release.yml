@@ -73,7 +73,7 @@ jobs:
             --onefile `
             --output-dir=dist `
             --output-filename=PicACG `
-            --include-package=sr-ncnn-vulkan `
+            --include-package=sr_ncnn_vulkan `
             --windows-console-mode=disable `
             --msvc=latest `
             --clang `
