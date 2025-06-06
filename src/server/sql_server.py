@@ -2,7 +2,7 @@ from pathlib import Path
 from os import path as ospath
 from pickle import dumps
 from sqlite3 import connect
-from sys import modules, platform
+from sys import modules
 from threading import Thread
 from time import localtime
 from queue import Queue
