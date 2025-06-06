@@ -73,7 +73,7 @@ jobs:
             --onefile `
             --output-dir=dist `
             --output-filename=PicACG `
-            --include-package=waifu2x-vulkan `
+            --include-package=sr-ncnn-vulkan `
             --windows-console-mode=disable `
             --msvc=latest `
             --clang `
