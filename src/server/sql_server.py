@@ -50,9 +50,9 @@ class DbBook(object):
 
 class SqlServer(Singleton):
     DbInfos = dict()
-    DbPath = Path(ospath.dirname(modules["__main__"].__file__))
+    ExePath = Path(ospath.dirname(modules["__main__"].__file__))
     DbInfos["book"] = str(Path("db/book.db") if Path("db/book.db").is_file()
-                          else DbPath / "db" / "book.db")
+                          else ExePath / "db" / "book.db")
 
     TaskCheck = 0
     TaskTypeSql = 1
