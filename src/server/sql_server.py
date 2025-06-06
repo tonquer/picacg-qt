@@ -22,9 +22,9 @@ from tools.user import User
 
 class DbBook(object):
     def __init__(self):
-        self.id = ""             # 唯一标识
+        self.id = ""              # 唯一标识
         self.title = ""           # 标题
-        self.title2 = ""           # 标题
+        self.title2 = ""          # 标题
         self.author = ""          # 作者
         self.chineseTeam = ""     # 汉化组
         self.description = ""     # 描述
@@ -37,11 +37,11 @@ class DbBook(object):
         self.created_at = 0       # 创建时间
         self.updated_at = 0       # 更新时间
         self.path = ""            # 路径
-        self.fileServer = ""             # 路径
+        self.fileServer = ""      # 路径
         self.originalName = ""    # 封面名
-        self.creator = ""          # 上传者
-        self.totalLikes = 0        #
-        self.totalViews = 0        #
+        self.creator = ""         # 上传者
+        self.totalLikes = 0       #
+        self.totalViews = 0       #
 
     def CopyFromJson(self, data):
         for k, v in data.items():
