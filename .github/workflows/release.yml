@@ -179,105 +179,134 @@ jobs:
     runs-on: windows-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64
+      EXE_NAME: PicACG.exe
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.9
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install nuitka
+          pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
+          pip install -r src\requirements.txt
+          Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
+          Expand-Archive -Path "upx.zip" -DestinationPath "$env:RUNNER_TEMP\upx"
+          Remove-Item "upx.zip"
+          $env:UPX_BIN = (Get-ChildItem "$env:RUNNER_TEMP\upx" -Recurse -Filter upx.exe).FullName
+      - name: Build
+        run: |
+          cd src
+          Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "db\book.db"
+          Copy-Item ..\res\icon\icon.ico .
+          python -m nuitka `
+            --onefile `
+            --output-dir=dist `
+            --output-filename=PicACG `
+            --include-package=sr_ncnn_vulkan `
+            --windows-console-mode=disable `
+            --msvc=latest `
+            --clang `
+            --enable-plugin=pyside6 `
+            --assume-yes-for-downloads `
+            --windows-icon-from-ico=icon.ico `
+            --plugin-enable=upx --upx-binary="$env:UPX_BIN" `
+            start.py
+          
+          $pkg = "bika"
+          Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
+          New-Item $pkg -ItemType Directory
+          Move-Item "dist\$env:EXE_NAME" "$pkg\start.exe"
+          Copy-Item -Recurse db               $pkg\
+          Copy-Item ..\LICENSE                $pkg\
+          Copy-Item ..\CHANGELOG              $pkg\
+          7z a -t7z "$env:PACKAGENAME.7z" $pkg
+          Move-Item "${env:PACKAGENAME}.7z" ..\
+          cd ..
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGENAME }}
+          path: ${{ env.PACKAGENAME }}.7z
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
-        pip install -r src\requirements.txt
-        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
-        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
-        Remove-Item "upx.zip"
-    - name: Build
-      run: |
-        cd src
-        cd db
-        Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "book.db"
-        cd ..
-        cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
-        mv dist bika
-        Copy-Item -Verbose -Recurse -Path db -Destination bika/
-        cp ..\LICENSE bika\
-        cp ..\CHANGELOG bika\
-        cd ..
-        mkdir ${{ env.PACKAGENAME }}
-        mv src\bika ${{ env.PACKAGENAME }}
-        7z a -t7z -r "$($Env:PACKAGENAME + '.7z')" "bika"
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.PACKAGENAME }}
-        path: bika
-    - name: upload-win
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.release.outputs.Up_Url }}
-        asset_path: ${{ env.PACKAGENAME }}.7z
-        asset_name: ${{ env.PACKAGENAME }}.7z
-        asset_content_type: application/zip
+      - name: upload-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url:         ${{ needs.release.outputs.Up_Url }}
+          asset_path:         ${{ env.PACKAGENAME }}.7z
+          asset_name:         ${{ env.PACKAGENAME }}.7z
+          asset_content_type: application/x-7z-compressed
 
   windows-nosr:
     needs: [setup, release]
     runs-on: windows-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_nosr_x64
+      EXE_NAME: PicACG.exe
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.9
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install nuitka
+          pip install -r src\requirements.txt
+          Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
+          Expand-Archive -Path "upx.zip" -DestinationPath "$env:RUNNER_TEMP\upx"
+          Remove-Item "upx.zip"
+          $env:UPX_BIN = (Get-ChildItem "$env:RUNNER_TEMP\upx" -Recurse -Filter upx.exe).FullName
+      - name: Build
+        run: |
+          cd src
+          Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "db\book.db"
+          Copy-Item ..\res\icon\icon.ico .
+          python -m nuitka `
+            --onefile `
+            --output-dir=dist `
+            --output-filename=PicACG `
+            --windows-console-mode=disable `
+            --msvc=latest `
+            --clang `
+            --enable-plugin=pyside6 `
+            --assume-yes-for-downloads `
+            --windows-icon-from-ico=icon.ico `
+            --plugin-enable=upx --upx-binary="$env:UPX_BIN" `
+            start.py
+          
+          $pkg = "bika"
+          Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
+          New-Item $pkg -ItemType Directory
+          Move-Item "dist\$env:EXE_NAME" "$pkg\start.exe"
+          Copy-Item -Recurse db               $pkg\
+          Copy-Item ..\LICENSE                $pkg\
+          Copy-Item ..\CHANGELOG              $pkg\
+          7z a -t7z "$env:PACKAGENAME.7z" $pkg
+          Move-Item "${env:PACKAGENAME}.7z" ..\
+          cd ..
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGENAME }}
+          path: ${{ env.PACKAGENAME }}.7z
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-        pip install -r src\requirements.txt
-        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
-        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
-        Remove-Item "upx.zip"
-    - name: Build
-      run: |
-        cd src
-        cd db
-        Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "book.db"
-        cd ..
-        cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
-        mv dist bika
-        Copy-Item -Verbose -Recurse -Path db -Destination bika/
-        cp ..\LICENSE bika\
-        cp ..\CHANGELOG bika\
-        cd ..
-        mkdir ${{ env.PACKAGENAME }}
-        mv src\bika ${{ env.PACKAGENAME }}
-        7z a -t7z -r "$($Env:PACKAGENAME + '.7z')" "bika"
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.PACKAGENAME }}
-        path: bika
-    - name: upload-win
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.release.outputs.Up_Url }}
-        asset_path: ${{ env.PACKAGENAME }}.7z
-        asset_name: ${{ env.PACKAGENAME }}.7z
-        asset_content_type: application/zip
+      - name: upload-win
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url:         ${{ needs.release.outputs.Up_Url }}
+          asset_path:         ${{ env.PACKAGENAME }}.7z
+          asset_name:         ${{ env.PACKAGENAME }}.7z
+          asset_content_type: application/x-7z-compressed
 
   windows7:
     needs: [setup, release]
@@ -384,7 +413,6 @@ jobs:
         asset_name: ${{ env.PACKAGENAME }}.7z
         asset_content_type: application/zip
 
-
   linux-arm-nosr:
     needs: [setup, release]
     runs-on: ubuntu-24.04-arm
@@ -395,24 +423,36 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build with Nuitka
         run: |
-          docker run --rm --platform linux/arm64 -v "$PWD":/workspace -w /workspace/src \
-            cyberspace0000/linux-arm-py10 sh -exc '
+          docker run --rm --platform linux/arm64 \
+            -v "$PWD":/workspace -w /workspace/src \
+            cyberspace0000/linux-arm-py10:1 sh -exc '
               source /opt/miniforge/bin/activate
               conda activate py310
-              pip3 install nuitka -U
-              grep -v -i '^pyside6' requirements.txt > /tmp/requirements.txt
-              pip3 install  -r /tmp/requirements.txt
+              pip3 install --upgrade nuitka
+              UPX_VER=5.0.1
+              curl -L -o /tmp/upx.tar.xz \
+                "https://github.com/upx/upx/releases/download/v${UPX_VER}/upx-${UPX_VER}-arm64_linux.tar.xz"
+              mkdir -p /tmp/upx
+              tar -xf /tmp/upx.tar.xz -C /tmp/upx --strip-components=1
+              export UPX_BIN=/tmp/upx/upx
+              chmod +x "$UPX_BIN"
+              grep -v -i "^pyside6" requirements.txt > /tmp/requirements.txt
+              pip3 install -r /tmp/requirements.txt
               mkdir -p db
               curl -L -o db/book.db \
                    https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db
-              nuitka --onefile --output-dir=dist --static-libpython=yes --assume-yes-for-downloads \
-                   --plugin-enable=pyside6 --linux-icon=../res/icon/icon.ico start.py 
+              nuitka start.py \
+                --onefile --output-dir=dist --static-libpython=yes \
+                --plugin-enable=pyside6 \
+                --plugin-enable=upx --upx-binary="$UPX_BIN" \
+                --assume-yes-for-downloads \
+                --linux-icon=../res/icon/icon.ico
               mkdir -p /workspace/out
               mv dist/start.bin "/workspace/out/${BINARY_NAME}/start"
-              cp -r db            /workspace/out/
-              cp ../LICENSE       /workspace/out/
-              cp ../CHANGELOG     /workspace/out/
-              chown -R 1001:1001  /workspace
+              cp -r db             /workspace/out/
+              cp ../LICENSE        /workspace/out/
+              cp ../CHANGELOG      /workspace/out/
+              chown -R 1001:1001   /workspace
             '
       - name: Create 7z archive
         run: |
@@ -421,6 +461,7 @@ jobs:
           mv out package/bika
           cd package
           7z a -t7z -r "${{ env.PACKAGENAME }}.7z" bika
+          mv "${{ env.PACKAGENAME }}.7z" ..
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4

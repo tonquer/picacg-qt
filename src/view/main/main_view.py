@@ -203,7 +203,7 @@ class MainView(Main, QtTaskBase):
 
         else:
             if not config.CloseWaifu2x:
-                QtOwner().ShowError("Waifu2x Error, " + config.ErrorMsg)
+                QtOwner().ShowError(f"Waifu2x Error, {config.ErrorMsg}")
             Log.Warn("Waifu2x Error: " + str(config.ErrorMsg))
 
         if not IsCanUse:

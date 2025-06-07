@@ -1,10 +1,11 @@
-import os
-import pickle
-import sqlite3
-import sys
-import threading
-import time
+from os import path as ospath
+from pathlib import Path
+from pickle import dumps
 from queue import Queue
+from sqlite3 import connect
+from sys import modules
+from threading import Thread
+from time import localtime
 
 # 一本书
 from config import config
@@ -21,9 +22,9 @@ from tools.user import User
 
 class DbBook(object):
     def __init__(self):
-        self.id = ""             # 唯一标识
+        self.id = ""              # 唯一标识
         self.title = ""           # 标题
-        self.title2 = ""           # 标题
+        self.title2 = ""          # 标题
         self.author = ""          # 作者
         self.chineseTeam = ""     # 汉化组
         self.description = ""     # 描述
@@ -36,11 +37,11 @@ class DbBook(object):
         self.created_at = 0       # 创建时间
         self.updated_at = 0       # 更新时间
         self.path = ""            # 路径
-        self.fileServer = ""             # 路径
+        self.fileServer = ""      # 路径
         self.originalName = ""    # 封面名
-        self.creator = ""          # 上传者
-        self.totalLikes = 0        #
-        self.totalViews = 0        #
+        self.creator = ""         # 上传者
+        self.totalLikes = 0       #
+        self.totalViews = 0       #
 
     def CopyFromJson(self, data):
         for k, v in data.items():
@@ -49,7 +50,9 @@ class DbBook(object):
 
 class SqlServer(Singleton):
     DbInfos = dict()
-    DbInfos["book"] = "db/book.db"
+    ExePath = Path(ospath.dirname(modules["__main__"].__file__))
+    DbInfos["book"] = str(Path("db/book.db") if Path("db/book.db").is_file()
+                          else ExePath / "db" / "book.db")
 
     TaskCheck = 0
     TaskTypeSql = 1
@@ -70,7 +73,7 @@ class SqlServer(Singleton):
         self.data = []
         for i in self.DbInfos.keys():
             self._inQueue[i] = Queue()
-            thread = threading.Thread(target=self._Run, args=(i, ))
+            thread = Thread(target=self._Run, args=(i,))
             thread.setName("DB-"+str(i))
             # thread.setDaemon(True)
             thread.start()
@@ -92,11 +95,7 @@ class SqlServer(Singleton):
         isInit = True
         conn = None
         try:
-            if sys.platform == "linux":
-                path = os.path.join(Setting.GetConfigPath(), bookPath)
-                conn = sqlite3.connect(path)
-            else:
-                conn = sqlite3.connect(bookPath)
+            conn = connect(bookPath)
         except Exception as es:
             Log.Error(es)
             from qt_owner import QtOwner
@@ -117,23 +116,23 @@ class SqlServer(Singleton):
                 if taskType == self.TaskTypeClose:
                     break
                 if not isInit:
-                    TaskSql().taskObj.sqlBack.emit(backId, pickle.dumps(""))
+                    TaskSql().taskObj.sqlBack.emit(backId, dumps(""))
                     continue
                 if taskType == self.TaskCheck:
                     try:
                         cur = conn.cursor()
                         cur.execute("select * from system")
-                        data2 = pickle.dumps(str(int(isInit)))
+                        data2 = dumps(str(int(isInit)))
                     except Exception as es:
                         Log.Error(es)
-                        data2 = pickle.dumps("")
+                        data2 = dumps("")
                     TaskSql().taskObj.sqlBack.emit(backId, data2)
                 elif taskType == self.TaskTypeSql:
                     cur = conn.cursor()
                     cur.execute(data)
                     cur.execute("COMMIT")
                     if backId:
-                        data2 = pickle.dumps("")
+                        data2 = dumps("")
                         TaskSql().taskObj.sqlBack.emit(backId, data2)
                 elif taskType == self.TaskTypeSelectBook:
                     self._SelectBook(conn, data, backId)
@@ -187,7 +186,7 @@ class SqlServer(Singleton):
             info.totalLikes = data[17]
             info.totalViews = data[18]
             books.append(info)
-        data = pickle.dumps(books)
+        data = dumps(books)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -197,7 +196,7 @@ class SqlServer(Singleton):
         cur.execute(sql)
         for data in cur.fetchall():
             nums = data[0]
-        data = pickle.dumps(nums)
+        data = dumps(nums)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -208,7 +207,7 @@ class SqlServer(Singleton):
         cur.execute("select category, count(*) from category where bookId in ({}) group by category".format(sql))
         for data in cur.fetchall():
             nums[CateGoryMgr().indexCategories.get(data[0])] = data[1]
-        data = pickle.dumps(nums)
+        data = dumps(nums)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -218,7 +217,7 @@ class SqlServer(Singleton):
         words = []
         for data in cur.fetchall():
             words.append(data[1])
-        data = pickle.dumps(words)
+        data = dumps(words)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -239,7 +238,7 @@ class SqlServer(Singleton):
         for data in cur.fetchall():
             nums = data[0]
 
-        data = pickle.dumps((dbVer, nums, time, version))
+        data = dumps((dbVer, nums, time, version))
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -250,7 +249,7 @@ class SqlServer(Singleton):
         allFavoriteIds = []
         for data in cur.fetchall():
             allFavoriteIds.append((data[0], data[1]))
-        data = pickle.dumps(allFavoriteIds)
+        data = dumps(allFavoriteIds)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -290,7 +289,7 @@ class SqlServer(Singleton):
             v["st"] = Status.Ok
         except Exception as es:
             Log.Error(es)
-        data = pickle.dumps(v)
+        data = dumps(v)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -299,7 +298,7 @@ class SqlServer(Singleton):
         cur = conn.cursor()
 
         addData, tick, version = data
-        timeArray = time.localtime(tick)
+        timeArray = localtime(tick)
         strTime = "{}-{}-{} {}:{}:{}".format(timeArray.tm_year, timeArray.tm_mon, timeArray.tm_mday, timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
         sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.DbVersion)
         cur.execute(sql)
@@ -589,26 +588,22 @@ class SqlServer(Singleton):
 
     @staticmethod
     def SaveCacheWord():
-        path = os.path.join(Setting.GetConfigPath(), "cache_word")
+        cache_file = Path(Setting.GetConfigPath()) / 'cache_word'
         try:
             if not SqlServer().cacheWord:
                 return
-            f = open(path, "w+", encoding="utf-8")
-            f.write("\n".join(SqlServer().cacheWord))
-            f.close()
+            cache_file.parent.mkdir(parents=True, exist_ok=True)
+            cache_file.write_text('\n'.join(SqlServer().cacheWord), encoding='utf-8')
         except Exception as es:
             Log.Error(es)
 
     @staticmethod
     def LoadCacheWord():
-        path = os.path.join(Setting.GetConfigPath(), "cache_word")
+        cache_file = Path(Setting.GetConfigPath()) / 'cache_word'
         try:
-            if not os.path.isfile(path):
+            if not cache_file.is_file():
                 return
-            f = open(path, "r", encoding="utf-8")
-            data = f.read()
-            f.close()
-            for v in data.split("\n"):
+            for v in cache_file.read_text(encoding='utf-8').splitlines():
                 if v:
                     SqlServer().cacheWord.append(v)
         except Exception as es:
