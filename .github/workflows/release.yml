@@ -10,7 +10,7 @@ on:
         type: boolean
         default: false
       build_macos_nosr:
-        description: '打包 macOS 双架构 (无图片超分) '
+        description: '打包 macOS 双架构 (无图片超分)'
         type: boolean
         default: false
       build_windows:
@@ -26,7 +26,7 @@ on:
         type: boolean
         default: false
       build_windows7_nosr:
-        description: '打包 Windows7 x64 专用 (无图片超分) '
+        description: '打包 Windows7 x64 专用 (无图片超分)'
         type: boolean
         default: false
       build_linux_arm64_nosr:
