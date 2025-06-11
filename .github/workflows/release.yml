@@ -18,7 +18,7 @@ on:
         type: boolean
         default: true
       build_windows_nosr:
-        description: '打包 Windows (无图片超分) x64'
+        description: '打包 Windows x64 (无图片超分)'
         type: boolean
         default: false
       build_windows7:
