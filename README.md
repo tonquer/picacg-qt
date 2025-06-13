@@ -30,9 +30,7 @@
   2. 解压 7z
   3. 将解压出的 PicACG 拖入访达 (Finder) 左侧侧栏的应用程序 (Applications) 文件夹中
   4. 从启动台 (Launchpad) 中找到并打开 PicACG
-  #### 对于 M1 Mac 用户
-  * 作者没有 Arm Mac, 所以没有办法提供已经打包好的应用程序
-  * 如果您拥有 M1 Mac, 可以尝试参考下面的过程手动运行或者进行打包
+
 
   ### Linux (测试使用deepin 20.2)
   1. 下载qt依赖， http://ftp.br.debian.org/debian/pool/main/x/xcb-util/libxcb-util1_0.4.0-1+b1_amd64.deb
@@ -44,11 +42,15 @@
   7. 要想使用waifu2x请确定你的设备支持vulkan，然后安装vulkan驱动包，sudo apt install mesa-vulkan-drivers
 
 ## 关于代理问题
-  请看说明 https://github.com/tonquer/picacg-qt/discussions/48
+  请看说明 tonquer#48
 
 ## 如何编译
   ### 使用Git Actions编译
-  1. 查看编译结果[Git Actions编译](https://github.com/tonquer/picacg-qt/actions)
+  1. 选择对应系统和架构
+
+  ![image](https://github.com/user-attachments/assets/a5725899-6ab6-4c5c-9d13-8ceaef2e6892)
+
+  2. 查看编译结果[Git Actions编译](https://github.com/tonquer/picacg-qt/actions)
 
 ## 我的其他项目
  [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=tonquer&repo=JMComic-qt)](https://github.com/tonquer/JMComic-qt)  

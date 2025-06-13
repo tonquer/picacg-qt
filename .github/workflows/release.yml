@@ -4,6 +4,35 @@ on:
     tags:
       - '*'
   workflow_dispatch:
+    inputs:
+      build_macos:
+        description: '打包 macOS 双架构'
+        type: boolean
+        default: false
+      build_macos_nosr:
+        description: '打包 macOS 双架构 (无图片超分)'
+        type: boolean
+        default: false
+      build_windows:
+        description: '打包 Windows x64'
+        type: boolean
+        default: true
+      build_windows_nosr:
+        description: '打包 Windows x64 (无图片超分)'
+        type: boolean
+        default: false
+      build_windows7:
+        description: '打包 Windows7 x64 专用'
+        type: boolean
+        default: false
+      build_windows7_nosr:
+        description: '打包 Windows7 x64 专用 (无图片超分)'
+        type: boolean
+        default: false
+      build_linux_arm64_nosr:
+        description: '打包 Linux ARM64 (无图片超分)'
+        type: boolean
+        default: false
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -43,6 +72,7 @@ jobs:
           prerelease: true
 
   macos:
+    if: github.event_name == 'push' || github.event.inputs.build_macos == 'true'
     needs: [setup, release]
     runs-on: macos-latest
     env:
@@ -98,6 +128,12 @@ jobs:
         mv ${{ env.PACKAGENAME }}.dmg ..
         mv bika.zip ..
         cd ..
+
+    - name: upload-macos-artifact
+      uses: actions/upload-artifact@v4
+      with:
+          name: ${{ env.PACKAGENAME }}
+          path: ${{ env.PACKAGENAME }}.dmg
     - name: upload-macos
       uses: actions/upload-release-asset@v1
       env:
@@ -109,10 +145,11 @@ jobs:
         asset_content_type: application/gzip
 
   macos-nosr:
+    if: github.event_name == 'push' || github.event.inputs.build_macos_nosr == 'true'
     needs: [setup, release]
     runs-on: macos-latest
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_nosr_universal2
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_universal2_nosr
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.10
@@ -164,6 +201,12 @@ jobs:
         mv ${{ env.PACKAGENAME }}.dmg ..
         mv bika.zip ..
         cd ..
+        
+    - name: upload-macos-artifact
+      uses: actions/upload-artifact@v4
+      with:
+          name: ${{ env.PACKAGENAME }}
+          path: ${{ env.PACKAGENAME }}.dmg
     - name: upload-macos
       uses: actions/upload-release-asset@v1
       env:
@@ -175,6 +218,7 @@ jobs:
         asset_content_type: application/gzip
 
   windows:
+    if: github.event_name == 'push' || github.event.inputs.build_windows == 'true'
     needs: [setup, release]
     runs-on: windows-latest
     env:
@@ -193,9 +237,8 @@ jobs:
           pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
           pip install -r src\requirements.txt
           Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
-          Expand-Archive -Path "upx.zip" -DestinationPath "$env:RUNNER_TEMP\upx"
+          Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
           Remove-Item "upx.zip"
-          $env:UPX_BIN = (Get-ChildItem "$env:RUNNER_TEMP\upx" -Recurse -Filter upx.exe).FullName
       - name: Build
         run: |
           cd src
@@ -203,16 +246,15 @@ jobs:
           Copy-Item ..\res\icon\icon.ico .
           python -m nuitka `
             --onefile `
+            --onefile-no-compression `
             --output-dir=dist `
             --output-filename=PicACG `
-            --include-package=sr_ncnn_vulkan `
             --windows-console-mode=disable `
             --msvc=latest `
             --clang `
-            --enable-plugin=pyside6 `
             --assume-yes-for-downloads `
             --windows-icon-from-ico=icon.ico `
-            --plugin-enable=upx --upx-binary="$env:UPX_BIN" `
+            --plugin-enable=pyside6,upx --upx-binary="D:\upx-5.0.1-win64" `
             start.py
           
           $pkg = "bika"
@@ -222,7 +264,7 @@ jobs:
           Copy-Item -Recurse db               $pkg\
           Copy-Item ..\LICENSE                $pkg\
           Copy-Item ..\CHANGELOG              $pkg\
-          7z a -t7z "$env:PACKAGENAME.7z" $pkg
+          7z a -t7z -mx9 "$env:PACKAGENAME.7z" $pkg
           Move-Item "${env:PACKAGENAME}.7z" ..\
           cd ..
           
@@ -243,10 +285,11 @@ jobs:
           asset_content_type: application/x-7z-compressed
 
   windows-nosr:
+    if: github.event_name == 'push' || github.event.inputs.build_windows_nosr == 'true'
     needs: [setup, release]
     runs-on: windows-latest
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_nosr_x64
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64_nosr
       EXE_NAME: PicACG.exe
     steps:
       - uses: actions/checkout@v4
@@ -260,9 +303,8 @@ jobs:
           pip install nuitka
           pip install -r src\requirements.txt
           Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
-          Expand-Archive -Path "upx.zip" -DestinationPath "$env:RUNNER_TEMP\upx"
+          Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
           Remove-Item "upx.zip"
-          $env:UPX_BIN = (Get-ChildItem "$env:RUNNER_TEMP\upx" -Recurse -Filter upx.exe).FullName
       - name: Build
         run: |
           cd src
@@ -271,14 +313,14 @@ jobs:
           python -m nuitka `
             --onefile `
             --output-dir=dist `
+            --onefile-no-compression `
             --output-filename=PicACG `
             --windows-console-mode=disable `
             --msvc=latest `
             --clang `
-            --enable-plugin=pyside6 `
             --assume-yes-for-downloads `
             --windows-icon-from-ico=icon.ico `
-            --plugin-enable=upx --upx-binary="$env:UPX_BIN" `
+            --plugin-enable=pyside6,upx --upx-binary="D:\upx-5.0.1-win64" `
             start.py
           
           $pkg = "bika"
@@ -288,10 +330,10 @@ jobs:
           Copy-Item -Recurse db               $pkg\
           Copy-Item ..\LICENSE                $pkg\
           Copy-Item ..\CHANGELOG              $pkg\
-          7z a -t7z "$env:PACKAGENAME.7z" $pkg
+          7z a -t7z -mx9 "$env:PACKAGENAME.7z" $pkg
           Move-Item "${env:PACKAGENAME}.7z" ..\
           cd ..
-          
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -309,6 +351,7 @@ jobs:
           asset_content_type: application/x-7z-compressed
 
   windows7:
+    if: github.event_name == 'push' || github.event.inputs.build_windows7 == 'true'
     needs: [setup, release]
     runs-on: windows-latest
     env:
@@ -345,12 +388,12 @@ jobs:
         cd ..
         mkdir ${{ env.PACKAGENAME }}
         mv src\bika ${{ env.PACKAGENAME }}
-        7z a -t7z -r "$($Env:PACKAGENAME + '.7z')" "bika"
+        7z a -t7z -mx9 "$Env:PACKAGENAME.7z" "$Env:PACKAGENAME"
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PACKAGENAME }}
-        path: bika
+        path: ${{ env.PACKAGENAME }}.7z
     - name: upload-win
       uses: actions/upload-release-asset@v1
       env:
@@ -362,10 +405,11 @@ jobs:
         asset_content_type: application/zip
 
   windows7-nosr:
+    if: github.event_name == 'push' || github.event.inputs.build_windows7_nosr == 'true'
     needs: [setup, release]
     runs-on: windows-latest
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows7_nosr_x64
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows7_x64_nosr
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.8
@@ -397,12 +441,12 @@ jobs:
         cd ..
         mkdir ${{ env.PACKAGENAME }}
         mv src\bika ${{ env.PACKAGENAME }}
-        7z a -t7z -r "$($Env:PACKAGENAME + '.7z')" "bika"
+        7z a -t7z -mx9 "$Env:PACKAGENAME.7z" "$Env:PACKAGENAME"
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PACKAGENAME }}
-        path: bika
+        path: ${{ env.PACKAGENAME }}.7z
     - name: upload-win
       uses: actions/upload-release-asset@v1
       env:
@@ -413,11 +457,12 @@ jobs:
         asset_name: ${{ env.PACKAGENAME }}.7z
         asset_content_type: application/zip
 
-  linux-arm-nosr:
+  linux-arm64-nosr:
+    if: github.event_name == 'push' || github.event.inputs.build_linux_arm64_nosr == 'true'
     needs: [setup, release]
     runs-on: ubuntu-24.04-arm
     env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_nosr_arm64
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_arm64_nosr
       BINARY_NAME: bika
     steps:
       - uses: actions/checkout@v4
@@ -443,8 +488,8 @@ jobs:
                    https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db
               nuitka start.py \
                 --onefile --output-dir=dist --static-libpython=yes \
-                --plugin-enable=pyside6 \
-                --plugin-enable=upx --upx-binary="$UPX_BIN" \
+                --onefile-no-compression \
+                --plugin-enable=pyside6,upx --upx-binary="$UPX_BIN" \
                 --assume-yes-for-downloads \
                 --linux-icon=../res/icon/icon.ico
               mkdir -p /workspace/out
@@ -460,9 +505,9 @@ jobs:
           mkdir package
           mv out package/bika
           cd package
-          7z a -t7z -r "${{ env.PACKAGENAME }}.7z" bika
+          7z a -t7z -mx9 -r "${{ env.PACKAGENAME }}.7z" bika
           mv "${{ env.PACKAGENAME }}.7z" ..
-          
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
