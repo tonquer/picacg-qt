@@ -33,6 +33,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.isTag = True
         self.isAuthor = True
         self.isUpLoad = True
+        self.isFinish = False
         self.bookList.LoadCallBack = self.LoadNextPage
         # self.categoryList.itemClicked.connect(self.ClickCategoryListItem)
         # self.InitCategoryList()
@@ -170,6 +171,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.isTag = kwargs.get("isTag")
             self.isAuthor = kwargs.get("isAuthor")
             self.isUpLoad = kwargs.get("isUpLoad")
+            self.isFinish = kwargs.get("isFinish", False)
             self.lineEdit.AddCacheWord(self.text)
             self.SendSearch(1)
         pass
@@ -266,7 +268,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.categoryNum.setText("")
 
         if self.isLocal:
-            sql, sql2Data, selectNumSql = SqlServer.Search2(self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag, self.isCategory, self.isUpLoad, categorys, page, self.sortKey.currentIndex(), self.sortId.currentIndex())
+            sql, sql2Data, selectNumSql = SqlServer.Search2(self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag, self.isCategory, self.isUpLoad, categorys, page, self.sortKey.currentIndex(), self.sortId.currentIndex(), self.isFinish)
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
             if page == 1:
                 self.AddSqlTask("book", selectNumSql, SqlServer.TaskTypeSearchBookNum, callBack=self.SendLocalNumBack, backParam=self.text)

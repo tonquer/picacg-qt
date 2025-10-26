@@ -96,6 +96,14 @@ class WebdavClient(UpLoadBase):
             return self.GetExceptionSt(es)
         return Str.Ok
 
+    def TestConnect(self):
+        try:
+            self.client.list()
+        except Exception as es:
+            Log.Error(es)
+            return self.GetExceptionSt(es)
+        return Str.Ok
+
     def Upload(self, localPath, remotePath):
         try:
             if not os.path.isfile(localPath):

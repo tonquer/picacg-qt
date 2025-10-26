@@ -21,8 +21,8 @@ class GlobalItem(object):
 
 
 class GlobalConfig:
-    Ver = GlobalItem(7)
-    VerTime = GlobalItem("2025-3-17")
+    Ver = GlobalItem(10)
+    VerTime = GlobalItem("2025-10-12")
     # web url
     WebDnsList = GlobalItem([])
 
@@ -33,16 +33,14 @@ class GlobalConfig:
     ImageUrl = GlobalItem("s3.picacomic.com")
     ImageServerList = GlobalItem(["s3.picacomic.com", "storage.diwodiwo.xyz", "s2.picacomic.com",
                                   "storage1.picacomic.com", "storage-b.picacomic.com",
-                                  "storage1.go2778.com",
-                                  "storage-b.go2778.com"
                                   ])
     ImageJumList = GlobalItem(["img.picacomic.com", "img.diwodiwo.xyz", "img.safedataplj.com"])
 
-    ProxyApiDomain = GlobalItem("bika-api.ggo.icu")
-    ProxyImgDomain = GlobalItem("bika-img.ggo.icu")
+    ProxyApiDomain = GlobalItem("bika-api.jpacg.cc")
+    ProxyImgDomain = GlobalItem("bika-img.jpacg.cc")
 
-    ProxyApiDomain2 = GlobalItem("bika2-api.ggo.icu")
-    ProxyImgDomain2 = GlobalItem("bika21-img.ggo.icu")
+    ProxyApiDomain2 = GlobalItem("bika2-api.jpacg.cc")
+    ProxyImgDomain2 = GlobalItem("bika21-img.jpacg.cc")
 
     # 使用sni欺骗，避免
     SniDomain = GlobalItem(["picacomic.com", "diwodiwo.xyz", "tipatipa.xyz", "wikawika.xyz"])

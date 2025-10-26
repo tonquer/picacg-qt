@@ -2,7 +2,7 @@ import os
 import time
 
 from PySide6 import QtWidgets, QtCore
-from PySide6.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent
+from PySide6.QtCore import Qt, QRectF, QPointF, QSizeF, QEvent, QPoint
 from PySide6.QtGui import QPainter, QPixmap, QDoubleValidator, \
     QIntValidator, QMouseEvent, QImage
 from PySide6.QtWidgets import QFrame, QGraphicsPixmapItem, QGraphicsScene, QApplication, QFileDialog, QLabel, QGraphicsView
@@ -44,22 +44,22 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
 
         self.graphicsView.setFrameStyle(QFrame.NoFrame)
         self.graphicsView.setObjectName("graphicsView")
-
+        self.graphicsView.setAcceptDrops(True)
         # self.graphicsView.setBackgroundBrush(QColor(Qt.white))
         self.graphicsView.setCursor(Qt.OpenHandCursor)
         self.graphicsView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.graphicsView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.graphicsView.setRenderHints(QPainter.Antialiasing |
                                          QPainter.SmoothPixmapTransform)
-        self.graphicsView.setCacheMode(QGraphicsView.CacheBackground)
-        self.graphicsView.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
+        self.graphicsView.setCacheMode(QGraphicsView.CacheNone)
+        self.graphicsView.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
 
         self.graphicsItem = ReadQGraphicsProxyWidget()
         self.graphicsItem.setFlags(QGraphicsPixmapItem.ItemIsFocusable |
                                    QGraphicsPixmapItem.ItemIsMovable)
+        # self.graphicsView.setDragMode(QGraphicsView.RubberBandDrag)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.CopyPicture)
-
         self.graphicsScene = QGraphicsScene(self)  # 场景
         self.graphicsView.setScene(self.graphicsScene)
         self.graphicsItem.setWidget(QLabel())
@@ -84,8 +84,8 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self._delta = 0.1
         self.scaleCnt = 0
 
-        self.data = ""
-        self.waifu2xData = ""
+        self.data = b""
+        self.waifu2xData = b""
         self.backStatus = ""
         self.modelName.clicked.connect(self.OpenSrSelect)
         self.fmtComboBox.currentIndexChanged.connect(self.CheckStatus)
@@ -141,17 +141,18 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.ShowImg(self.data)
 
     def ShowImg(self, data):
+
         self.gpuLabel.setText(config.EncodeGpu)
-        self.scaleCnt = 0
+        # self.scaleCnt = 0
         # radio = self.devicePixelRatio()
         # p.setDevicePixelRatio(radio)
         # self.pixMapData = data
-        self.show()
+        # self.show()
+
         self.pixMap = QImage()
         self.pixMap.loadFromData(data)
+        self.pixMap.setDevicePixelRatio(self.graphicsView.devicePixelRatio())
 
-        self.graphicsItem.SetGifData(data, self.pixMap.width(), self.pixMap.height())
-        self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
         # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width()*radio, self.pixMap.height()*radio)))
 
         size = ToolUtil.GetDownloadSize(len(data))
@@ -159,40 +160,69 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         weight, height, mat, _ = ToolUtil.GetPictureSize(data)
         self.format.setText(mat)
         self.resolutionLabel.setText(str(weight) + "x" + str(height))
-        self.ScalePicture()
+
+        if mat == "gif":
+            self.graphicsItem.SetGifData(data, self.pixMap.width(), self.pixMap.height())
+            # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(self.pixMap.width(), self.pixMap.height())))
+        else:
+            radio = self.pixMap.devicePixelRatio()
+            scale = (1 + self.scaleCnt * 0.1)
+            toW = int(self.graphicsView.width() * scale)
+            toH = self.graphicsView.height() * scale
+
+            data2 = QPixmap(self.pixMap)
+            data2.setDevicePixelRatio(self.graphicsView.devicePixelRatio())
+            newData = data2.scaled(toW * radio, toH * radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pos = QPoint(max(0, self.graphicsView.width() // 2 - newData.width() / newData.devicePixelRatio() // 2), max(0, self.graphicsView.height() // 2 - newData.height() / newData.devicePixelRatio() // 2))
+            self.graphicsItem.setPos(pos)
+            # print("set index, {}".format(index))
+            self.graphicsItem.setPixmap(newData)
+            self.graphicsScene.setSceneRect(0, 0, self.graphicsView.width(), max(self.graphicsView.height(),
+                                                                    self.graphicsItem.pixmap().height() // self.graphicsItem.pixmap().devicePixelRatio()))
+
         self.CheckScaleRadio()
+        self.graphicsView.update()
 
-    def ScalePicture(self):
-        rect = QRectF(self.graphicsItem.pos(), QSizeF(
-            self.pixMap.size()))
-        unity = self.graphicsView.transform().mapRect(QRectF(0, 0, 1, 1))
-        width = unity.width()
-        height = unity.height()
-        if width <= 0 or height <= 0:
-            return
-        self.graphicsView.scale(1 / width, 1 / height)
-        viewRect = self.graphicsView.viewport().rect()
-        sceneRect = self.graphicsView.transform().mapRect(rect)
-        if sceneRect.width() <= 0 or sceneRect.height() <= 0:
-            return
-        x_ratio = viewRect.width() / sceneRect.width()
-        y_ratio = viewRect.height() / sceneRect.height()
-        x_ratio = y_ratio = min(x_ratio, y_ratio)
+    # def ScalePicture(self, data):
+    #
+    #     radio = data.devicePixelRatio()
+    #     toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height(), False)
+    #     data2 = QPixmap(data)
+    #     newData = data2.scaled(toW * radio, toH * radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+    #     label.setPos(pos)
+    #     # print("set index, {}".format(index))
+    #     label.setPixmap(newData)
 
-        self.graphicsView.scale(x_ratio, y_ratio)
-        # if self.readImg.isStripModel:
-        #     height2 = self.pixMap.size().height() / 2
-        #     height3 = self.graphicsView.size().height()/2
-        #     height3 = height3/x_ratio
-        #     p = self.graphicsItem.pos()
-        #     self.graphicsItem.setPos(p.x(), p.y()+height2-height3)
-        self.graphicsView.centerOn(rect.center())
-
-        for _ in range(abs(self.scaleCnt)):
-            if self.scaleCnt > 0:
-                self.graphicsView.scale(1.1, 1.1)
-            else:
-                self.graphicsView.scale(1/1.1, 1/1.1)
+        # rect = QRectF(self.graphicsItem.pos(), QSizeF(
+        #     self.pixMap.size()))
+        # unity = self.graphicsView.transform().mapRect(QRectF(0, 0, 1, 1))
+        # width = unity.width()
+        # height = unity.height()
+        # if width <= 0 or height <= 0:
+        #     return
+        # self.graphicsView.scale(1 / width, 1 / height)
+        # viewRect = self.graphicsView.viewport().rect()
+        # sceneRect = self.graphicsView.transform().mapRect(rect)
+        # if sceneRect.width() <= 0 or sceneRect.height() <= 0:
+        #     return
+        # x_ratio = viewRect.width() / sceneRect.width()
+        # y_ratio = viewRect.height() / sceneRect.height()
+        # x_ratio = y_ratio = min(x_ratio, y_ratio)
+        #
+        # self.graphicsView.scale(x_ratio, y_ratio)
+        # # if self.readImg.isStripModel:
+        # #     height2 = self.pixMap.size().height() / 2
+        # #     height3 = self.graphicsView.size().height()/2
+        # #     height3 = height3/x_ratio
+        # #     p = self.graphicsItem.pos()
+        # #     self.graphicsItem.setPos(p.x(), p.y()+height2-height3)
+        # self.graphicsView.centerOn(rect.center())
+        #
+        # for _ in range(abs(self.scaleCnt)):
+        #     if self.scaleCnt > 0:
+        #         self.graphicsView.scale(1.1, 1.1)
+        #     else:
+        #         self.graphicsView.scale(1/1.1, 1/1.1)
 
     def keyReleaseEvent(self, ev):
         if ev.key() == Qt.Key_Escape:
@@ -209,7 +239,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
 
     def resizeEvent(self, event) -> None:
         super(self.__class__, self).resizeEvent(event)
-        self.ScalePicture()
+        self.CheckShowImg()
 
     def eventFilter(self, obj, ev):
         if ev.type() == QEvent.KeyPress:
@@ -240,10 +270,22 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         return super(self.__class__, self).mousePressEvent(event)
 
     def wheelEvent(self, event):
-        if event.angleDelta().y() > 0:
-            self.zoomIn()
-        else:
-            self.zoomOut()
+        if (QApplication.keyboardModifiers() == Qt.ControlModifier):
+            if event.angleDelta().y() < 0:
+                self.zoomOut()
+                # self.Scale(1/1.1)
+            #     self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value() - 10)
+            else:
+                self.zoomIn()
+                # self.frame.scaleCnt += 1
+                # self.Scale(1.1)
+            #     self.qtTool.zoomSlider.setValue(self.qtTool.zoomSlider.value() + 10)
+            # print("scale:{}".format(self.frame.scaleCnt))
+            return
+        # if event.angleDelta().y() > 0:
+        #     self.zoomIn()
+        # else:
+        #     self.zoomOut()
 
     def zoomIn(self):
         """放大"""
@@ -257,16 +299,17 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         """缩放
         :param factor: 缩放的比例因子
         """
-        _factor = self.graphicsView.transform().scale(
-            factor, factor).mapRect(QRectF(0, 0, 1, 1)).width()
-        if _factor < 0.07 or _factor > 100:
-            # 防止过大过小
-            return
+        # _factor = self.graphicsView.transform().scale(
+        #     factor, factor).mapRect(QRectF(0, 0, 1, 1)).width()
+        # if _factor < 0.07 or _factor > 100:
+        #     # 防止过大过小
+        #     return
         if factor >= 1:
             self.scaleCnt += 1
         else:
             self.scaleCnt -= 1
-        self.graphicsView.scale(factor, factor)
+        self.CheckShowImg()
+        # self.graphicsView.scale(factor, factor)
 
     def CopyPicture(self):
         clipboard = QApplication.clipboard()
@@ -305,7 +348,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
             return
         if not config.CanWaifu2x:
             return
-        from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+        from sr_vulkan import sr_vulkan as sr
         self.modelName.setEnabled(False)
         # self.comboBox.setEnabled(False)
         self.changeButton.setEnabled(False)
@@ -373,6 +416,13 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         return
 
     def SwithPicture(self):
+        if self.checkBox.isChecked() and self.waifu2xData:
+            self.ShowImg(self.waifu2xData)
+        else:
+            self.ShowImg(self.data)
+        return
+
+    def CheckShowImg(self):
         if self.checkBox.isChecked() and self.waifu2xData:
             self.ShowImg(self.waifu2xData)
         else:

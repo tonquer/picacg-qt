@@ -41,7 +41,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-26</y>
         <width>301</width>
         <height>841</height>
        </rect>
@@ -143,12 +143,18 @@
              <property name="text">
               <string/>
              </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="1" column="1">
             <widget class="QLabel" name="stateLable2">
              <property name="text">
               <string/>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -157,12 +163,18 @@
              <property name="text">
               <string/>
              </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="3" column="1">
             <widget class="QLabel" name="resolutionLabel2">
              <property name="text">
               <string/>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -209,12 +221,18 @@
              <property name="text">
               <string/>
              </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="7" column="1">
             <widget class="QLabel" name="waifu2xRes">
              <property name="text">
               <string/>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -236,6 +254,9 @@
             <widget class="QLabel" name="waifu2xStatus">
              <property name="text">
               <string/>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -344,6 +365,9 @@
             <widget class="QLabel" name="waifu2xTick">
              <property name="text">
               <string/>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

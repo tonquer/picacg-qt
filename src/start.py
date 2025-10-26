@@ -21,7 +21,7 @@ if sys.platform == 'darwin':
     os.chdir(current_dir)
 
 try:
-    from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+    from sr_vulkan import sr_vulkan as sr
 
     config.CanWaifu2x = True
 except ModuleNotFoundError as es:

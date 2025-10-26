@@ -87,7 +87,7 @@ class ReadFrame(QFrame):
         painter.drawRect(QRect(0, 0, self.width()//3*4, self.height() // 2))
 
         painter.setFont(font)
-        if self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]:
+        if self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll, ReadMode.RightLeftDoubleAlone]:
             nextPage = Str.GetStr(Str.LastPage)
             lastPage = Str.GetStr(Str.NextPage)
         else:

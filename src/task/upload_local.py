@@ -31,6 +31,17 @@ class LocalClient(UpLoadBase):
             Log.Error(es)
             return Str.Error
 
+    def TestConnect(self):
+        try:
+            isDir = os.path.isdir(self.path)
+            if isDir:
+                return Status.Ok
+            else:
+                return Str.DirNotFound
+        except Exception as es:
+            Log.Error(es)
+            return Str.Error
+
     def DisConnect(self):
         try:
             self.client.close()

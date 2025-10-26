@@ -1,11 +1,10 @@
-from os import path as ospath
-from pathlib import Path
-from pickle import dumps
+import os
+import pickle
+import sqlite3
+import sys
+import threading
+import time
 from queue import Queue
-from sqlite3 import connect
-from sys import modules
-from threading import Thread
-from time import localtime
 
 # 一本书
 from config import config
@@ -22,9 +21,9 @@ from tools.user import User
 
 class DbBook(object):
     def __init__(self):
-        self.id = ""              # 唯一标识
+        self.id = ""             # 唯一标识
         self.title = ""           # 标题
-        self.title2 = ""          # 标题
+        self.title2 = ""           # 标题
         self.author = ""          # 作者
         self.chineseTeam = ""     # 汉化组
         self.description = ""     # 描述
@@ -37,11 +36,11 @@ class DbBook(object):
         self.created_at = 0       # 创建时间
         self.updated_at = 0       # 更新时间
         self.path = ""            # 路径
-        self.fileServer = ""      # 路径
+        self.fileServer = ""             # 路径
         self.originalName = ""    # 封面名
-        self.creator = ""         # 上传者
-        self.totalLikes = 0       #
-        self.totalViews = 0       #
+        self.creator = ""          # 上传者
+        self.totalLikes = 0        #
+        self.totalViews = 0        #
 
     def CopyFromJson(self, data):
         for k, v in data.items():
@@ -50,9 +49,7 @@ class DbBook(object):
 
 class SqlServer(Singleton):
     DbInfos = dict()
-    ExePath = Path(ospath.dirname(modules["__main__"].__file__))
-    DbInfos["book"] = str(Path("db/book.db") if Path("db/book.db").is_file()
-                          else ExePath / "db" / "book.db")
+    DbInfos["book"] = "db/book.db"
 
     TaskCheck = 0
     TaskTypeSql = 1
@@ -73,7 +70,7 @@ class SqlServer(Singleton):
         self.data = []
         for i in self.DbInfos.keys():
             self._inQueue[i] = Queue()
-            thread = Thread(target=self._Run, args=(i,))
+            thread = threading.Thread(target=self._Run, args=(i, ))
             thread.setName("DB-"+str(i))
             # thread.setDaemon(True)
             thread.start()
@@ -95,7 +92,11 @@ class SqlServer(Singleton):
         isInit = True
         conn = None
         try:
-            conn = connect(bookPath)
+            if sys.platform == "linux":
+                path = os.path.join(Setting.GetConfigPath(), bookPath)
+                conn = sqlite3.connect(path)
+            else:
+                conn = sqlite3.connect(bookPath)
         except Exception as es:
             Log.Error(es)
             from qt_owner import QtOwner
@@ -116,23 +117,23 @@ class SqlServer(Singleton):
                 if taskType == self.TaskTypeClose:
                     break
                 if not isInit:
-                    TaskSql().taskObj.sqlBack.emit(backId, dumps(""))
+                    TaskSql().taskObj.sqlBack.emit(backId, pickle.dumps(""))
                     continue
                 if taskType == self.TaskCheck:
                     try:
                         cur = conn.cursor()
                         cur.execute("select * from system")
-                        data2 = dumps(str(int(isInit)))
+                        data2 = pickle.dumps(str(int(isInit)))
                     except Exception as es:
                         Log.Error(es)
-                        data2 = dumps("")
+                        data2 = pickle.dumps("")
                     TaskSql().taskObj.sqlBack.emit(backId, data2)
                 elif taskType == self.TaskTypeSql:
                     cur = conn.cursor()
                     cur.execute(data)
                     cur.execute("COMMIT")
                     if backId:
-                        data2 = dumps("")
+                        data2 = pickle.dumps("")
                         TaskSql().taskObj.sqlBack.emit(backId, data2)
                 elif taskType == self.TaskTypeSelectBook:
                     self._SelectBook(conn, data, backId)
@@ -186,7 +187,7 @@ class SqlServer(Singleton):
             info.totalLikes = data[17]
             info.totalViews = data[18]
             books.append(info)
-        data = dumps(books)
+        data = pickle.dumps(books)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -196,7 +197,7 @@ class SqlServer(Singleton):
         cur.execute(sql)
         for data in cur.fetchall():
             nums = data[0]
-        data = dumps(nums)
+        data = pickle.dumps(nums)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -207,7 +208,7 @@ class SqlServer(Singleton):
         cur.execute("select category, count(*) from category where bookId in ({}) group by category".format(sql))
         for data in cur.fetchall():
             nums[CateGoryMgr().indexCategories.get(data[0])] = data[1]
-        data = dumps(nums)
+        data = pickle.dumps(nums)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -217,7 +218,7 @@ class SqlServer(Singleton):
         words = []
         for data in cur.fetchall():
             words.append(data[1])
-        data = dumps(words)
+        data = pickle.dumps(words)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -238,7 +239,7 @@ class SqlServer(Singleton):
         for data in cur.fetchall():
             nums = data[0]
 
-        data = dumps((dbVer, nums, time, version))
+        data = pickle.dumps((dbVer, nums, time, version))
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -249,7 +250,7 @@ class SqlServer(Singleton):
         allFavoriteIds = []
         for data in cur.fetchall():
             allFavoriteIds.append((data[0], data[1]))
-        data = dumps(allFavoriteIds)
+        data = pickle.dumps(allFavoriteIds)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -289,7 +290,7 @@ class SqlServer(Singleton):
             v["st"] = Status.Ok
         except Exception as es:
             Log.Error(es)
-        data = dumps(v)
+        data = pickle.dumps(v)
         if backId:
             TaskSql().taskObj.sqlBack.emit(backId, data)
 
@@ -298,7 +299,7 @@ class SqlServer(Singleton):
         cur = conn.cursor()
 
         addData, tick, version = data
-        timeArray = localtime(tick)
+        timeArray = time.localtime(tick)
         strTime = "{}-{}-{} {}:{}:{}".format(timeArray.tm_year, timeArray.tm_mon, timeArray.tm_mday, timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
         sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.DbVersion)
         cur.execute(sql)
@@ -476,24 +477,25 @@ class SqlServer(Singleton):
             linkStr = "and"
 
         if isTitle:
-            data3 += " title {} '%{}%' {} ".format(likeStr, word, linkStr)
-            data3 += " title2 {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " title {} \"%{}%\" {} ".format(likeStr, word, linkStr)
+            data3 += " title2 {} \"%{}%\" {} ".format(likeStr, word, linkStr)
         if isAuthor:
-            data3 += " author {} '%{}%' {} ".format(likeStr, word, linkStr)
-            data3 += " chineseTeam {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " author {} \"%{}%\" {} ".format(likeStr, word, linkStr)
+            data3 += " chineseTeam {} \"%{}%\" {} ".format(likeStr, word, linkStr)
         if isDes:
-            data3 += " description {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " description {} \"%{}%\" {} ".format(likeStr, word, linkStr)
         if isTag:
-            data3 += " tags {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " tags {} \"%{}%\" {} ".format(likeStr, word, linkStr)
         if isCategory:
-            data3 += " categories {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " categories {} \"%{}%\" {} ".format(likeStr, word, linkStr)
         if isCreator:
-            data3 += " creator {} '%{}%' {} ".format(likeStr, word, linkStr)
+            data3 += " creator {} \"%{}%\" {} ".format(likeStr, word, linkStr)
         data3 = data3.strip("{} ".format(linkStr))
         return "({})".format(data3)
 
     @staticmethod
-    def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
+    def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0, isFinish=False):
+        # wordList = wordList.replace("'", "\\'")
         wordList = Converter('zh-hans').convert(wordList).strip(" ")
         wordList2 = wordList.split(" ")
         exclude = []
@@ -542,7 +544,7 @@ class SqlServer(Singleton):
         data2 = ""
         if categorys:
             for category in categorys:
-                data2 += " categories like '%{}%' or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
+                data2 += " categories like \"%{}%\" or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
         if data2:
             data += "and ({})".format(data2.strip("or "))
 
@@ -555,6 +557,8 @@ class SqlServer(Singleton):
         else:
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 1 "
+        if isFinish:
+            sql += " and finished=1 "
 
         if selectNumSql:
             selectNumSql = "SELECT count(*) FROM book WHERE {}".format(selectNumSql)
@@ -588,22 +592,26 @@ class SqlServer(Singleton):
 
     @staticmethod
     def SaveCacheWord():
-        cache_file = Path(Setting.GetConfigPath()) / 'cache_word'
+        path = os.path.join(Setting.GetConfigPath(), "cache_word")
         try:
             if not SqlServer().cacheWord:
                 return
-            cache_file.parent.mkdir(parents=True, exist_ok=True)
-            cache_file.write_text('\n'.join(SqlServer().cacheWord), encoding='utf-8')
+            f = open(path, "w+", encoding="utf-8")
+            f.write("\n".join(SqlServer().cacheWord))
+            f.close()
         except Exception as es:
             Log.Error(es)
 
     @staticmethod
     def LoadCacheWord():
-        cache_file = Path(Setting.GetConfigPath()) / 'cache_word'
+        path = os.path.join(Setting.GetConfigPath(), "cache_word")
         try:
-            if not cache_file.is_file():
+            if not os.path.isfile(path):
                 return
-            for v in cache_file.read_text(encoding='utf-8').splitlines():
+            f = open(path, "r", encoding="utf-8")
+            data = f.read()
+            f.close()
+            for v in data.split("\n"):
                 if v:
                     SqlServer().cacheWord.append(v)
         except Exception as es:

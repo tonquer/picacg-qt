@@ -19,7 +19,7 @@ from tools.tool import ToolUtil
 
 class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
     def __init__(self):
-        self.isShowProxy5 = Setting.IsShowProxy5.value
+        self.isShowProxy5 = True
         super(self.__class__, self).__init__()
         Ui_LoginProxyWidget.__init__(self)
         QtTaskBase.__init__(self)

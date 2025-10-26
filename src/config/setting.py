@@ -158,6 +158,15 @@ class Setting:
     PreDownWaifu2x = SettingValue("ReadSetting", 1, False)
     IsOpenOpenGL = SettingValue("ReadSetting", 0, True)
 
+    # 批量超分
+    BatchSrImportDir = SettingValue("BatchSrTool", "", False)
+    BatchSrExportDir = SettingValue("BatchSrTool", "", False)
+    BatchSrState = SettingValue("BatchSrTool", "", False)
+    BatchSrFmt = SettingValue("BatchSrTool", "", False)
+
+    BatchSrModelName = SettingValue("BatchSrTool", "MODEL_WAIFU2X_CUNET_UP2X_DENOISE3X", False)
+    BatchSrScale = SettingValue("BatchSrTool", 2.0, False)
+
     # Other
     UserId = SettingValue("Other", "", False)
     Password = SettingValue("Other", "", False)

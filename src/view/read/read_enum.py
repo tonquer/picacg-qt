@@ -19,14 +19,17 @@ class ReadMode(Enum):
     RightLeftScroll = 5  # 右左滚动
     RightLeftDouble2 = 6  # 右左双页(滚轮正序)
     Samewight = 7  # 等宽模式
+    LeftRightDoubleAlone = 8  # 左右双页(主页独立)
+    RightLeftDoubleAlone = 9  # 右左双页(主页独立)
 
     @staticmethod
     def isDouble(model):
-        return model in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]
+        return model in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble,
+                         ReadMode.RightLeftDouble2, ReadMode.LeftRightDoubleAlone, ReadMode.RightLeftDoubleAlone]
 
     @staticmethod
     def isRightLeft(model):
-        return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll]
+        return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll, ReadMode.RightLeftDoubleAlone]
 
     @staticmethod
     def isUpDown(model):
@@ -146,12 +149,12 @@ class QtFileData(object):
             height = maxHeight * scale
             toScaleW = wight
             toScaleH = height
-        elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+        elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDoubleAlone]:
             scale = (1 + scaleCnt * 0.1)
             toScaleW =int(maxWidth // 2 * scale)
             toScaleH = maxHeight * scale
 
-        elif stripModel in [ReadMode.LeftRightDouble]:
+        elif stripModel in [ReadMode.LeftRightDouble, ReadMode.LeftRightDoubleAlone]:
             scale = (1 + scaleCnt * 0.1)
 
             toScaleW = int(maxWidth // 2 * scale)
@@ -187,12 +190,12 @@ class QtFileData(object):
     def GetReadToPos(stripModel, maxWidth, maxHeight, toWidth, toHeight, index, curIndex, oldPos):
         if stripModel in [ReadMode.LeftRight, ReadMode.Samewight]:
             return QPoint(maxWidth // 2 - toWidth // 2, max(0, maxHeight // 2 - toHeight // 2))
-        elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+        elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDoubleAlone]:
             if index == curIndex:
                 return QPoint(math.trunc(maxWidth / 2), max(0, maxHeight / 2 - toHeight / 2))
             else:
                 return QPoint(math.ceil(maxWidth / 2 - toWidth), max(0, maxHeight // 2 - toHeight // 2))
-        elif stripModel in [ReadMode.LeftRightDouble]:
+        elif stripModel in [ReadMode.LeftRightDouble, ReadMode.LeftRightDoubleAlone]:
             if index != curIndex:
                 return QPoint(math.trunc(maxWidth / 2), max(0, maxHeight // 2 - toHeight // 2))
             else:

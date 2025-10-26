@@ -130,7 +130,7 @@ class TaskUpload(TaskBase, QtTaskBase):
             client = SmbClient()
 
         client.Init(nasInfo)
-        return client.Connect()
+        return client.TestConnect()
 
     def MakeZip(self, task):
         assert isinstance(task, QtUpTask)

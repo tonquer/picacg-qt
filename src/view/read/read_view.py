@@ -432,7 +432,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             info.size = laveFileSize
         info.downloadSize += downloadSize
         if ReadMode.isDouble(self.stripModel):
-            if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+            if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDoubleAlone]:
                 if backParam == self.curIndex:
                     self.frame.UpdateProcessBar(info)
                 elif backParam == self.curIndex + 1:
@@ -643,7 +643,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             else:
                 self.frame.process.hide()
 
-        elif self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+        elif self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDoubleAlone]:
             index = self.curIndex
             p = self.pictureData.get(index)
             if not p or (not p.data):
@@ -690,7 +690,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                 self.frame.waifu2xProcess.show()
             else:
                 self.frame.waifu2xProcess.hide()
-        elif self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
+        elif self.stripModel not in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDoubleAlone]:
             index = self.curIndex
             p = self.pictureData.get(index)
             if not p:

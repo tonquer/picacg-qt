@@ -318,7 +318,7 @@ class NasView(QtWidgets.QWidget, Ui_Nas, NasStatus):
                 menu = QMenu(self.tableWidget)
 
                 assert isinstance(task, NasUploadItem)
-                if task.status in [task.Success, task.Pause, task.Error]:
+                if task.status in [task.Success, task.Pause, task.Error, task.SpaceEps]:
                     menu.addAction(startAction)
                 elif task.status in [task.WaitXmlInfo, task.Uploading, task.Waiting, task.WaitWaifu2x]:
                     menu.addAction(pauseAction)
@@ -345,7 +345,7 @@ class NasView(QtWidgets.QWidget, Ui_Nas, NasStatus):
             task = self.downloadDict.get(key)
             if not task:
                 continue
-            if task.status not in [task.Success, task.Pause, task.Error]:
+            if task.status not in [task.Success, task.Pause, task.Error, task.SpaceEps]:
                 continue
             self.SetNewStatus(task, task.Waiting)
 

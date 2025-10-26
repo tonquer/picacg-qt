@@ -104,6 +104,9 @@ class Str:
     CvAddUpload = 5109         # 添加上传成功
     DirNotFound = 5110         # 目录不存在
 
+    SrNotFoundDir = 5201        # 不存在输入目录
+    SrNotExportDIr = 5202        # 未设置导出目录
+
     LoadingPicture = 1     # "图片加载中..."
     LoadingFail = 2        # "图片加载失败"
     LoginCookie = 3        # "使用Cookie登录"

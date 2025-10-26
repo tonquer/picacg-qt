@@ -88,7 +88,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311.cp312.cp313-none-macosx_10_9_universal2.whl
+        pip install sr-vulkan
+        pip install sr-vulkan-model-waifu2x
+        pip install sr-vulkan-model-realcugan
+        pip install sr-vulkan-model-realesrgan
         cd script
         pip install delocate wheel_filename
         python build_universal2.py pillow
@@ -161,7 +164,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-        # pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311.cp312.cp313-none-macosx_10_9_universal2.whl
+
         cd script
         pip install delocate wheel_filename
         python build_universal2.py pillow
@@ -234,7 +237,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install nuitka
-          pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
+          pip install sr-vulkan
+          pip install sr-vulkan-model-waifu2x
+          pip install sr-vulkan-model-realcugan
+          pip install sr-vulkan-model-realesrgan
           pip install -r src\requirements.txt
           Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
           Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
@@ -367,7 +373,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller==4.6
-        pip install https://github.com/tonquer/waifu2x-vulkan/releases/download/v1.1.6/sr_ncnn_vulkan-1.2.0-cp36.cp37.cp38.cp39.cp310.cp311-none-win_amd64.whl
+        pip install sr-vulkan
+        pip install sr-vulkan-model-waifu2x
+        pip install sr-vulkan-model-realcugan
+        pip install sr-vulkan-model-realesrgan
         pip install -r src\requirements_win7.txt
         Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
         Expand-Archive -Path "upx.zip" -DestinationPath "D:\"

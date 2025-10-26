@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BatchSrTool</class>
+ <widget class="QWidget" name="BatchSrTool">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>508</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>批量超分</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>导入目录：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="inputDir"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="inputDirTool">
+       <property name="text">
+        <string>选择</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>导出目录：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="exportDir"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="exportDirTool">
+       <property name="text">
+        <string>选择</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>参数设置：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_25">
+       <property name="minimumSize">
+        <size>
+         <width>60</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>156</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>模型：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="coverModelName">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_26">
+       <property name="minimumSize">
+        <size>
+         <width>60</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>156</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>放大倍数:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="WheelDoubleSpinBox" name="coverScale">
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>32.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>2.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>转换格式：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="WheelComboBox" name="fmtBox"/>
+     </item>
+     <item>
+      <widget class="Line" name="line_4">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>成功/失败/总</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="numLabel">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_5">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>线程数：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="threadNum">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>5</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="startImportButton">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>开始导入</string>
+       </property>
+       <property name="shortcut">
+        <string>Return</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="startConvertButton">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>开始转换</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancleButton">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>取消</string>
+       </property>
+       <property name="shortcut">
+        <string>Return</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="BaseTableWidget" name="tableWidget">
+     <column>
+      <property name="text">
+       <string>id</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>时间</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>状态</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>错误信息</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>文件名</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>文件路径</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="msgLabel">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>BaseTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header location="global">component.tab.base_table_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WheelComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">component.box.wheel_combo_box.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WheelDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header location="global">component.box.wheel_double_spin_box.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

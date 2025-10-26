@@ -126,10 +126,22 @@ class DownloadItem(QtTaskBase):
             self.epsInfo[self.curDownloadEpsId] = epsInfo
         return epsInfo
 
+    def IsSpaceEps(self, epsId):
+        epsInfo = self.epsInfo.get(epsId)
+        if not epsInfo:
+            return False
+        if self.curDownloadEpsId in self.epsIds:
+            curIndex = self.epsIds.index(self.curDownloadEpsId)
+            needIndex = self.epsIds.index(epsId)
+            if curIndex > needIndex:
+                return not epsInfo.isDownloadComplete()
+        return False
+
     def IsEpsComplete(self, epsId):
         epsInfo = self.epsInfo.get(epsId)
         if not epsInfo:
             return False
+
         return epsInfo.isDownloadComplete()
 
     def IsWaifu2xComplete(self, epsId):

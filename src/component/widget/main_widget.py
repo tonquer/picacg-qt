@@ -4,6 +4,7 @@ import sys
 from PySide6.QtCore import Qt
 
 from config.setting import Setting
+from qt_owner import QtOwner
 from tools.log import Log
 
 MainType = 1
@@ -69,5 +70,16 @@ if not Main:
 
         def setSubTitle(self, text):
             return
+
+        def showFullScreen(self):
+            return QMainWindow.showFullScreen(self)
+
+        def showNormal(self):
+            QtOwner().isMaxSize = False
+            return QMainWindow.showNormal(self)
+
+        def showMaximized(self):
+            QtOwner().isMaxSize = True
+            return QMainWindow.showMaximized(self)
 
     Main = MainWidget

@@ -6,6 +6,7 @@ from config.setting import Setting
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
 from task.task_upload import QtUpTask
+from tools.status import Status
 from tools.str import Str
 from tools.tool import ToolUtil
 
@@ -23,6 +24,7 @@ class NasUploadItem(QtTaskBase):
     Pause = Str.CvPause
     Error = Str.CvError
     WaitXmlInfo = Str.CvXMLInfo
+    SpaceEps = Str.SpaceEps
 
     def __init__(self):
         QtTaskBase.__init__(self)
@@ -105,13 +107,17 @@ class NasUploadItem(QtTaskBase):
     def UploadSucCallBack(self):
         self.type += 1
         if self.type > QtUpTask.Upload:
-            st, nexEpsId = self.GetNextEps()
-            if st != Str.Ok:
-                return st
-            if self.curPreUpIndex >= 0:
-                self.epsIds.append(self.curPreUpIndex)
-            self.curPreUpIndex = nexEpsId
-            return Str.CvUpload
+            st = self.UploadNextEps()
+            return st
+        return Str.CvUpload
+
+    def UploadNextEps(self):
+        st, nexEpsId = self.GetNextEps()
+        if st != Str.Ok:
+            return st
+        if self.curPreUpIndex >= 0:
+            self.epsIds.append(self.curPreUpIndex)
+        self.curPreUpIndex = nexEpsId
         return Str.CvUpload
 
     def GetNextEps(self):
@@ -200,6 +206,10 @@ class NasUploadItem(QtTaskBase):
             self.curPreUpIndex = downloadInfo.epsInfo[0]
         if self.curPreUpIndex not in downloadInfo.epsInfo:
             return Str.CvWaitDown
+
+        if downloadInfo.IsSpaceEps(self.curPreUpIndex):
+            return Str.SpaceEps
+
         isDownload = downloadInfo.IsEpsComplete(self.curPreUpIndex)
         if not isDownload:
             return Str.CvWaitDown

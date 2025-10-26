@@ -1011,6 +1011,47 @@
             </attribute>
            </widget>
           </item>
+          <item>
+            <widget class="QToolButton" name="batchSrButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
+             <property name="text">
+              <string>批量超分</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="toolButtonStyle">
+              <enum>Qt::ToolButtonTextBesideIcon</enum>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
          </layout>
         </widget>
        </widget>

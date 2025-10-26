@@ -382,7 +382,7 @@ class ToolUtil(object):
         if not config.CanWaifu2x:
             return {}
         data = {"scale": scale}
-        from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+        from sr_vulkan import sr_vulkan as sr
         data["model"] = getattr(sr, modelName, 0)
         data["model_name"] = modelName
         return data
@@ -412,7 +412,7 @@ class ToolUtil(object):
     @staticmethod
     def GetCanSaveName(name):
         # 限制文件夹名称为255/3的长度
-        return str(re.sub('[\\\/:*?"<>|\0\t\r\n]', '', name).rstrip(".").strip(" "))[:254//3-1]
+        return (str(re.sub('[\\\/:*?"<>|\0\t\r\n]', '', name))[:254//3-1]).rstrip(".").strip(" ")
 
     @staticmethod
     def LoadCachePicture(filePath):

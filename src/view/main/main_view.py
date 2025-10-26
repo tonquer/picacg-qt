@@ -82,10 +82,30 @@ class MainView(Main, QtTaskBase):
         self.searchView2.searchWidget.hide()
         self.myTrayIcon = MySystemTrayIcon()
         self.myTrayIcon.show()
+        self.totalStackWidget.currentChanged.connect(self.SwitchReadView)
         # self.myTrayIcon.hide()
         # self.readView.LoadSetting()
         # QApplication.instance().installEventFilter(self)
         # QtOwner().app.paletteChanged.connect(self.CheckPaletteChanged)
+
+    @property
+    def isMaxSize(self):
+        return QtOwner().isMaxSize
+
+    @isMaxSize.setter
+    def isMaxSize(self, v):
+        QtOwner().isMaxSize = v
+
+    def BackOldSize(self):
+        self.isMaxSize = self.isMaximized()
+        return
+
+    def SwitchReadView(self, i):
+        ## 备份原来的大小
+        if i == 0:
+            if self.isMaxSize and self.windowState != Qt.WindowState.WindowMaximized:
+                self.showMaximized()
+        return
 
     def changeEvent(self, event):
         if event.type() == QEvent.WindowStateChange:
@@ -144,6 +164,9 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.chatNewButton.hide()
         self.navigationWidget.chatButton.hide()
         self.navigationWidget.nasButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.nasView)))
+        self.navigationWidget.batchSrButton.clicked.connect(
+            partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.batchSrView)))
+
 
     def RetranslateUi(self):
         Main.retranslateUi(self, self)
@@ -172,7 +195,7 @@ class MainView(Main, QtTaskBase):
         self.nasView.Init()
         self.InitApiProxy()
         if config.CanWaifu2x:
-            from sr_ncnn_vulkan import sr_ncnn_vulkan as sr
+            from sr_vulkan import sr_vulkan as sr
             stat = sr.init()
             sr.setDebug(True)
             if stat < 0:
@@ -203,7 +226,7 @@ class MainView(Main, QtTaskBase):
 
         else:
             if not config.CloseWaifu2x:
-                QtOwner().ShowError(f"Waifu2x Error, {config.ErrorMsg}")
+                QtOwner().ShowError("Waifu2x Error, " + config.ErrorMsg)
             Log.Warn("Waifu2x Error: " + str(config.ErrorMsg))
 
         if not IsCanUse:
@@ -343,7 +366,6 @@ class MainView(Main, QtTaskBase):
             self.readView.Close()
             a0.ignore()
             return
-
         if not self.isHidden():
             if Setting.ShowCloseType.value == 1 and QtOwner().closeType == 1:
                 QtOwner().app.setQuitOnLastWindowClosed(False)
@@ -442,6 +464,7 @@ class MainView(Main, QtTaskBase):
         self.chatView.Stop()
         self.nasView.Close()
         self.readView.Stop()
+        self.batchSrView.Stop()
         TaskWaifu2x().Stop()
         TaskQImage().Stop()
         Server().Stop()

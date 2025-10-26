@@ -101,6 +101,13 @@ class QtTaskBase:
             cleanFlag = self.__taskFlagId
         return TaskWaifu2x().AddConvertTaskByPath(loadPath, savePath, completeCallBack, backParam, cleanFlag)
 
+    # completeCallBack(saveData, taskId, backParam, tick)
+    def AddConvertTaskByPathSetModel(self, loadPath, savePath, completeCallBack, backParam=None, model=None, cleanFlag=""):
+        from task.task_waifu2x import TaskWaifu2x
+        if not cleanFlag:
+            cleanFlag = self.__taskFlagId
+        return TaskWaifu2x().AddConvertTaskByPathSetModel(loadPath, savePath, completeCallBack, backParam, model, cleanFlag)
+
     def AddQImageTask(self, data, radio, toW, toH, model, callBack=None, backParam=None):
         from task.task_qimage import TaskQImage
         return TaskQImage().AddQImageTask(data, radio, toW, toH, model, callBack, backParam, cleanFlag=self.__taskFlagId)

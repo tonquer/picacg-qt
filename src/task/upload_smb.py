@@ -5,7 +5,6 @@ from task.task_upload import UpLoadBase
 from smb.SMBConnection import SMBConnection, NotReadyError
 
 from tools.log import Log
-from tools.status import Status
 from tools.str import Str
 from view.nas.nas_item import NasInfoItem
 
@@ -23,6 +22,8 @@ class SmbClient(UpLoadBase):
         self.port = nasInfo.port
         self.password = nasInfo.passwd
         self.username = nasInfo.user
+        self.path = nasInfo.path
+
         datas = nasInfo.path.strip("/").split("/")
 
         self.service_name = datas[0]
@@ -36,6 +37,21 @@ class SmbClient(UpLoadBase):
                 result = self.client.connect(self.address, self.port, timeout=5)
             else:
                 result = self.client.connect(self.address, timeout=5)
+            self.isLink = True
+            if not result:
+                return Str.CvAuthError
+        except Exception as es:
+            Log.Error(es)
+            return self.GetExceptionSt(es)
+        return Str.Ok
+
+    def TestConnect(self):
+        try:
+            if self.port:
+                result = self.client.connect(self.address, self.port, timeout=5)
+            else:
+                result = self.client.connect(self.address, timeout=5)
+            self.client.listPath(self.service_name, "/")
             self.isLink = True
             if not result:
                 return Str.CvAuthError

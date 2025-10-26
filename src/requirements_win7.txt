@@ -1,5 +1,9 @@
 PySide6==6.1.3
 websocket-client==0.59.0
+#sr-vulkan
+#sr-vulkan-model-waifu2x
+#sr-vulkan-model-realcugan
+#sr-vulkan-model-realesrgan
 pillow
 natsort
 webdavclient3

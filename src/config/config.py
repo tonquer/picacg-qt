@@ -31,14 +31,14 @@ PreLook = 4                    # 预显示
 
 IsLoadingPicture = True
 
-AppUrl = "https://app.ggo.icu/PicACG"
+AppUrl = "https://app.jpacg.cc/PicACG"
 
 UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
-UpdateUrl2Back = "https://hub.ggo.icu/tonquer/picacg-qt"
+UpdateUrl2Back = "https://hub.jpacg.cc/tonquer/picacg-qt"
 UpdateUrl3Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
-DatabaseUpdate = "https://raw.ggo.icu/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload = "https://raw.ggo.icu/bika-robot/picacg-database/main/data3/"
+DatabaseUpdate = "https://raw.jpacg.cc/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload = "https://raw.jpacg.cc/bika-robot/picacg-database/main/data3/"
 
 DatabaseUpdate2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
@@ -47,12 +47,12 @@ DatabaseUpdate3 = "https://raw.fastgit.org/bika-robot/picacg-database/main/versi
 DatabaseDownload3 = "https://raw.fastgit.org/bika-robot/picacg-database/main/data3/"
 
 Issues1 = "https://github.com/tonquer/picacg-qt/issues"
-Issues2 = "https://hub.ggo.icu/tonquer/picacg-qt/issues"
+Issues2 = "https://hub.jpacg.cc/tonquer/picacg-qt/issues"
 Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.5.2"
-RealVersion = "v1.5.2.1"
-TimeVersion = "2025-4-14"
+UpdateVersion = "v1.5.3"
+RealVersion = "v1.5.3"
+TimeVersion = "2025-10-26"
 DbVersion = ""
 
 Waifu2xVersion = "1.2.0"
@@ -74,7 +74,7 @@ IsTips = 1
 
 # 代理与分流相关
 ProxyUrl1 = "https://github.com/tonquer/picacg-qt/discussions/48"
-ProxyUrl2 = "https://hub.ggo.icu/tonquer/picacg-qt/discussions/48"
+ProxyUrl2 = "https://hub.jpacg.cc/tonquer/picacg-qt/discussions/48"
 ProxyUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/discussions/48"
 
 # Waifu2x相关
@@ -89,11 +89,11 @@ Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"
 # ImageServer3 = 'storage.diwodiwo.xyz'          # 分流3 使用的图片服务器
 # ImageServer3Jump = 'img.diwodiwo.xyz'          # 分流3 使用的图片服务器
 
-# ProxyApiDomain = "bika-api.ggo.icu"
-# ProxyImgDomain = "bika-img.ggo.icu"
+# ProxyApiDomain = "bika-api.jpacg.cc"
+# ProxyImgDomain = "bika-img.jpacg.cc"
 
-# ProxyApiDomain2 = "bika2-api.ggo.icu"
-# ProxyImgDomain2 = "bika2-img.ggo.icu"
+# ProxyApiDomain2 = "bika2-api.jpacg.cc"
+# ProxyImgDomain2 = "bika2-img.jpacg.cc"
 
 ApiDomain = [
     "picaapi.picacomic.com",

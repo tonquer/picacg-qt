@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QListWidget, QAbstractItemView
 
 from component.list.base_list_widget import BaseListWidget
 from component.scroll.smooth_scroll_bar import SmoothScrollBar
+from config.setting import Setting
 from qt_owner import QtOwner
 from task.qt_task import QtTaskBase
 
@@ -22,4 +23,8 @@ class EpsListWidget(BaseListWidget, QtTaskBase):
         elif -arg__1.angleDelta().y() < 0 and abs(self.verticalScrollBar().value() - self.verticalScrollBar().minimum()) <= 2:
             arg__1.ignore()
             return
-        self.vScrollBar.ScrollValue(-arg__1.angleDelta().y())
+
+        if Setting.IsGrabGesture.value:
+            self.verticalScrollBar().setValue(-arg__1.angleDelta().y())
+        else:
+            self.vScrollBar.ScrollValue(-arg__1.angleDelta().y())

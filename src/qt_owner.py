@@ -19,6 +19,7 @@ class QtOwner(Singleton):
         self.isUseDb = True
         self.isOfflineModel = False
         self.closeType = 1   # 1普通， 2关闭弹窗触发， 3任务栏触发
+        self.isMaxSize = 0
 
     # db不可使用
     def SetDbError(self):
@@ -209,8 +210,8 @@ class QtOwner(Singleton):
         self.owner.subCommentView.SetWidget(widget)
         self.owner.SwitchWidget(self.owner.subCommentView, **arg)
 
-    def OpenSearch(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor, isUpLoad):
-        arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor, "isUpLoad": isUpLoad}
+    def OpenSearch(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor, isUpLoad, isFinish=False):
+        arg = {"text": text, "isLocal": isLocal, "isTitle": isTitle, "isDes": isDes, "isCategory": isCategory, "isTag":isTag, "isAuthor":isAuthor, "isUpLoad": isUpLoad, "isFinish": isFinish}
         self.owner.SwitchWidget(self.owner.searchView, **arg)
 
     def OpenSearch2(self, text, isLocal, isTitle, isDes, isCategory, isTag, isAuthor, isUpLoad):
@@ -242,10 +243,12 @@ class QtOwner(Singleton):
         self.owner.searchView.lineEdit.Search()
 
     def OpenReadView(self, bookId, index, pageIndex, isOffline=False):
+        self.owner.BackOldSize()
         self.owner.totalStackWidget.setCurrentIndex(1)
         self.owner.readView.OpenPage(bookId, index, pageIndex=pageIndex, isOffline=isOffline)
 
     def OpenLocalReadView(self, v, epsId=0):
+        self.owner.BackOldSize()
         self.owner.totalStackWidget.setCurrentIndex(1)
         self.owner.readView.OpenLocalPage(v, epsId)
 

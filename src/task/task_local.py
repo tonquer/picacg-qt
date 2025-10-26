@@ -40,8 +40,10 @@ class LocalData(object):
     Type4 = 4    #
     Type5 = 5    # 批量加载
     Type6 = 6    # 批量加载目录列表
+    
+    TypeLoadPicFile = 7  # 加载所以图片资源
 
-    AllPictureFormat = ["jpg", "jpeg", "webp", "gif", "apng", "png"]
+    AllPictureFormat = ["jpg", "jpeg", "webp", "gif", "apng", "png", "bmp"]
 
     def __init__(self) -> None:
         self.id     = ""   # md5 或者 生成Id
@@ -174,15 +176,17 @@ class TaskLocal(TaskBase, QtTaskBase):
                 return
             assert isinstance(info, QLocalTask)
             if info.cleanFlag:
-                taskIds = self.flagToIds.get(info.cleanFlag, set())
-                taskIds.discard(info.taskId)
+                if st != Str.Waiting:
+                    taskIds = self.flagToIds.get(info.cleanFlag, set())
+                    taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
                     info.callBack(st, newData)
                 else:
                     info.callBack(st, newData, info.backParam)
+            if st != Str.Waiting:
                 del info.callBack
-            del self.tasks[taskId]
+                del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)
 
@@ -232,6 +236,8 @@ class TaskLocal(TaskBase, QtTaskBase):
                 if st == Str.Ok:
                     datas.append(data)
             st = Str.Ok
+        elif type == LocalData.TypeLoadPicFile:
+            return self.ParseAllPicPath(taskId, dir)
         self.taskObj.localBack.emit(taskId, st, datas)
 
     def _LoadRead2(self, taskId):
@@ -544,3 +550,25 @@ class TaskLocal(TaskBase, QtTaskBase):
             Log.Error(es)
             return Str.NotFoundPicture, b""
         return Status.Ok, data
+
+    def ParseAllPicPath(self, taskId, dirName):
+        path = dirName
+        try:
+            if not os.path.isdir(dirName):
+                self.taskObj.localBack.emit(taskId, Str.Ok, [])
+                return 
+            
+            for filepath, dirnames, filenames in os.walk(dirName):
+                for filename in filenames:
+                    data = filename.split(".")
+                    if len(data) < 2:
+                        continue
+                    mat = data[-1]
+                    if mat not in LocalData.AllPictureFormat:
+                        continue
+                    subPath = filepath.replace(dirName, "").lstrip("\\").lstrip("/")
+                    self.taskObj.localBack.emit(taskId, Str.Waiting, [(subPath, filename)])
+            self.taskObj.localBack.emit(taskId, Str.Ok, [])
+        except Exception as es:
+            Log.Error(es)
+            return Str.ErrorPath, ""

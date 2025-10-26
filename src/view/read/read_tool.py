@@ -176,7 +176,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.scaleCnt = value
 
     def NextPage(self):
-        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]:
+        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll, ReadMode.RightLeftDoubleAlone]:
             self._LastPage()
         else:
             self._NextPage()
@@ -224,7 +224,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         return
 
     def LastPage(self):
-        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]:
+        if self.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll, ReadMode.RightLeftDoubleAlone]:
             self._NextPage()
         else:
             self._LastPage()
@@ -353,7 +353,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             self.modelNameButton.setToolTip(Setting.LookModelName.value)
         else:
             scale = model.get('scale', 0)
-            modelName = model.get('model_name', 0)
+            modelName = model.get('model_name', "")
             self.scaleLabel.setText(str(scale))
             self.modelNameButton.setText(ToolUtil.GetShowModelName(modelName))
             self.modelNameButton.setToolTip(modelName)
@@ -445,8 +445,7 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def FullScreen(self, isClear=False):
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
-
-            if self.isMaxFull:
+            if QtOwner().isMaxSize:
                 QtOwner().owner.showMaximized()
             else:
                 QtOwner().owner.showNormal()
@@ -454,7 +453,8 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             if not isClear:
                 Setting.LookReadFull.SetValue(0)
         else:
-            self.isMaxFull = self.window().isMaximized()
+            QtOwner().owner.BackOldSize()
+            # self.isMaxFull = self.window().isMaximized()
             QtOwner().owner.showFullScreen()
             self.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
             Setting.LookReadFull.SetValue(1)

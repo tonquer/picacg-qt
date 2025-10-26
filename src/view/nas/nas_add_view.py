@@ -155,11 +155,11 @@ class NasAddView(BaseMaskDialog, Ui_NasAdd, QtTaskBase):
         if not nasInfo:
             QtOwner().ShowError(Str.GetStr(Str.NotSpace))
             return
-        self.loadingDialog.show()
+        QtOwner().ShowLoading()
         self.AddUploadTask(nasInfo, QtUpTask.Check, "", "", "","","", backParam=self.nextId, callBack=self.TestLinkCallBack)
         return
 
     def TestLinkCallBack(self, st, back):
-        self.loadingDialog.close()
+        QtOwner().CloseLoading()
         QtOwner().ShowError(Str.GetStr(st))
         return

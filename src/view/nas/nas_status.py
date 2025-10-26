@@ -39,6 +39,9 @@ class NasStatus(QtTaskBase):
             self._SetTaskDownloading(task)
         elif status == task.WaitXmlInfo:
             self._SetTaskDownloading(task)
+        elif status == task.SpaceEps:
+            self._SetTaskWait(task)
+
         else:
             assert False
         self.UpdateTableItem(task)
@@ -112,9 +115,17 @@ class NasStatus(QtTaskBase):
             return
         task.type = 0
         newStatus, (nasInfo, srcDir, desFile, upDirPath) = task.GetNextParams()
+
         if newStatus == task.Uploading:
             task.type = 1
             self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
+
+        if newStatus == Str.SpaceEps:
+            task.type = 0
+            task.UploadNextEps()
+            self.StartItemDownload(task)
+            return
+
         self.SetNewStatus(task, newStatus)
         self.UpdateTableItem(task)
         self.UpdateTaskDB(task)
@@ -147,6 +158,10 @@ class NasStatus(QtTaskBase):
                 newStatus, (nasInfo, srcDir, desFile, upDirPath) = task.GetNextParams()
                 if newStatus == task.Uploading:
                     self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
+
+                if newStatus == Str.SpaceEps:
+                    task.UploadNextEps()
+
             self.SetNewStatus(task, newStatus)
             self.UpdateTableItem(task)
             self.UpdateTaskDB(task)

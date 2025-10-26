@@ -72,7 +72,7 @@
             <item>
              <spacer name="horizontalSpacer">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -87,6 +87,7 @@
           <item>
            <widget class="AnimationStackWidget" name="subStackWidget">
             <widget class="IndexView" name="indexView"/>
+            <widget class="BatchSrToolView" name="batchSrView"/>
             <widget class="NasView" name="nasView"/>
             <widget class="LocalReadAllView" name="localReadAllView"/>
             <widget class="ConvertView" name="convertView"/>
@@ -296,15 +297,21 @@
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>LocalReadEpsView</class>
+   <extends>QWidget</extends>
+   <header location="global">view.tool.local_read_eps_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>NasView</class>
    <extends>QWidget</extends>
    <header location="global">view.nas.nas_view.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>LocalReadEpsView</class>
+   <class>BatchSrToolView</class>
    <extends>QWidget</extends>
-   <header location="global">view.tool.local_read_eps_view.h</header>
+   <header location="global">view.tool.batch_sr_tool_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

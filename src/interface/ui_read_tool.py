@@ -40,7 +40,7 @@ class Ui_ReadImg(object):
         self.scrollArea22.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 841))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -26, 301, 841))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
@@ -90,21 +90,25 @@ class Ui_ReadImg(object):
 
         self.sizeLabel2 = QLabel(self.scrollAreaWidgetContents)
         self.sizeLabel2.setObjectName(u"sizeLabel2")
+        self.sizeLabel2.setWordWrap(True)
 
         self.gridLayout_3.addWidget(self.sizeLabel2, 0, 1, 1, 1)
 
         self.stateLable2 = QLabel(self.scrollAreaWidgetContents)
         self.stateLable2.setObjectName(u"stateLable2")
+        self.stateLable2.setWordWrap(True)
 
         self.gridLayout_3.addWidget(self.stateLable2, 1, 1, 1, 1)
 
         self.epsLabel2 = QLabel(self.scrollAreaWidgetContents)
         self.epsLabel2.setObjectName(u"epsLabel2")
+        self.epsLabel2.setWordWrap(True)
 
         self.gridLayout_3.addWidget(self.epsLabel2, 2, 1, 1, 1)
 
         self.resolutionLabel2 = QLabel(self.scrollAreaWidgetContents)
         self.resolutionLabel2.setObjectName(u"resolutionLabel2")
+        self.resolutionLabel2.setWordWrap(True)
 
         self.gridLayout_3.addWidget(self.resolutionLabel2, 3, 1, 1, 1)
 
@@ -139,11 +143,13 @@ class Ui_ReadImg(object):
 
         self.waifu2xSize = QLabel(self.scrollAreaWidgetContents)
         self.waifu2xSize.setObjectName(u"waifu2xSize")
+        self.waifu2xSize.setWordWrap(True)
 
         self.gridLayout.addWidget(self.waifu2xSize, 8, 1, 1, 1)
 
         self.waifu2xRes = QLabel(self.scrollAreaWidgetContents)
         self.waifu2xRes.setObjectName(u"waifu2xRes")
+        self.waifu2xRes.setWordWrap(True)
 
         self.gridLayout.addWidget(self.waifu2xRes, 7, 1, 1, 1)
 
@@ -159,6 +165,7 @@ class Ui_ReadImg(object):
 
         self.waifu2xStatus = QLabel(self.scrollAreaWidgetContents)
         self.waifu2xStatus.setObjectName(u"waifu2xStatus")
+        self.waifu2xStatus.setWordWrap(True)
 
         self.gridLayout.addWidget(self.waifu2xStatus, 10, 1, 1, 1)
 
@@ -228,6 +235,7 @@ class Ui_ReadImg(object):
 
         self.waifu2xTick = QLabel(self.scrollAreaWidgetContents)
         self.waifu2xTick.setObjectName(u"waifu2xTick")
+        self.waifu2xTick.setWordWrap(True)
 
         self.gridLayout.addWidget(self.waifu2xTick, 9, 1, 1, 1)
 

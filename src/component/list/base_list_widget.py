@@ -77,6 +77,10 @@ class BaseListWidget(QListWidget, QtTaskBase):
     def wheelEvent(self, arg__1) -> None:
         if not self.wheelStatus:
             return
+        if Setting.IsGrabGesture.value:
+            self.verticalScrollBar().setValue(-arg__1.angleDelta().y())
+            return
+
         if self.vScrollBar:
             self.vScrollBar.ScrollValue(-arg__1.angleDelta().y())
         else:
