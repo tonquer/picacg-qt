@@ -226,7 +226,7 @@ jobs:
     runs-on: windows-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64
-      EXE_NAME: PicACG.exe
+      EXE_NAME: start.exe
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.10
@@ -267,7 +267,7 @@ jobs:
           $pkg = "bika"
           Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
           New-Item $pkg -ItemType Directory
-          # Move-Item "dist\$env:EXE_NAME" "$pkg\start.exe"
+          Move-Item "dist\$env:EXE_NAME" "$pkg\start.exe"
           Copy-Item -Recurse db               $pkg\
           Copy-Item ..\LICENSE                $pkg\
           Copy-Item ..\CHANGELOG              $pkg\
