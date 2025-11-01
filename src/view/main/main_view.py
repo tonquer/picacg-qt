@@ -1,3 +1,4 @@
+import sys
 from functools import partial
 
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QTimer, QSize
@@ -103,13 +104,17 @@ class MainView(Main, QtTaskBase):
     def SwitchReadView(self, i):
         ## 备份原来的大小
         if i == 0:
-            if self.isMaxSize and self.windowState != Qt.WindowState.WindowMaximized:
-                self.showMaximized()
+            # windows
+            if not sys.platform == "darwin":
+                if self.isMaxSize and self.windowState != Qt.WindowState.WindowMaximized:
+                    self.showMaximized()
+            # Macos只有全屏和非全屏
         return
 
     def changeEvent(self, event):
         if event.type() == QEvent.WindowStateChange:
             self.WindowsSizeChange.emit()
+            print(event.type(), event.oldState(), self.windowState())
         return super(self.__class__, self).changeEvent(event)
 
     # def eventFilter(self, watched, event) -> bool:

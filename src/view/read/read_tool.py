@@ -1,3 +1,4 @@
+import sys
 import weakref
 
 from PySide6 import QtWidgets
@@ -445,16 +446,22 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def FullScreen(self, isClear=False):
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
-            if QtOwner().isMaxSize:
-                QtOwner().owner.showMaximized()
+            if not sys.platform == "darwin":
+                if QtOwner().isMaxSize:
+                    QtOwner().owner.showMaximized()
+                else:
+                    QtOwner().owner.showNormal()
             else:
-                QtOwner().owner.showNormal()
+                pass
+                # QtOwner().owner.showNormal()
             self.fullButton.setText(Str.GetStr(Str.FullScreen))
             if not isClear:
                 Setting.LookReadFull.SetValue(0)
         else:
             QtOwner().owner.BackOldSize()
             # self.isMaxFull = self.window().isMaximized()
+            if QtOwner().isMaxSize:
+                QtOwner().owner.showNormal()
             QtOwner().owner.showFullScreen()
             self.fullButton.setText(Str.GetStr(Str.ExitFullScreen))
             Setting.LookReadFull.SetValue(1)
