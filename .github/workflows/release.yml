@@ -249,24 +249,25 @@ jobs:
         run: |
           cd src
           Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "db\book.db"
-          Copy-Item ..\res\icon\icon.ico .
-          python -m nuitka `
-            --onefile `
-            --onefile-no-compression `
-            --output-dir=dist `
-            --output-filename=PicACG `
-            --windows-console-mode=disable `
-            --msvc=latest `
-            --clang `
-            --assume-yes-for-downloads `
-            --windows-icon-from-ico=icon.ico `
-            --plugin-enable=pyside6,upx --upx-binary="D:\upx-5.0.1-win64" `
-            start.py
+          Copy-Item ..\res\icon\icon.ico .         
+          pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
+          # python -m nuitka `
+          #   --onefile `
+          #   --onefile-no-compression `
+          #   --output-dir=dist `
+          #   --output-filename=PicACG `
+          #   --windows-console-mode=disable `
+          #   --msvc=latest `
+          #   --clang `
+          #   --assume-yes-for-downloads `
+          #   --windows-icon-from-ico=icon.ico `
+          #   --plugin-enable=pyside6,upx --upx-binary="D:\upx-5.0.1-win64" `
+          #   start.py
           
           $pkg = "bika"
           Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
           New-Item $pkg -ItemType Directory
-          Move-Item "dist\$env:EXE_NAME" "$pkg\start.exe"
+          # Move-Item "dist\$env:EXE_NAME" "$pkg\start.exe"
           Copy-Item -Recurse db               $pkg\
           Copy-Item ..\LICENSE                $pkg\
           Copy-Item ..\CHANGELOG              $pkg\
