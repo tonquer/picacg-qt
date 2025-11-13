@@ -180,7 +180,7 @@ class NasUploadItem(QtTaskBase):
             upPath = nasInfo.path + "/"
         elif nasInfo.dir_index == 1:
             upPath = nasInfo.path + "/" + ToolUtil.GetCanSaveName(downloadInfo.title) + "/"
-            desFile = os.path.join(desPath, "{}.zip".format(epsInfo.epsTitle))
+            desFile = os.path.join(desPath, "{}.zip".format(ToolUtil.GetCanSaveName(epsInfo.epsTitle)))
         else :
             tick = int(time.time())
             day = time.strftime('%Y-%m-%d', time.localtime(tick))

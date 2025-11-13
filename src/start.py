@@ -34,6 +34,19 @@ except Exception as es:
     if hasattr(es, "msg"):
         config.ErrorMsg = es.msg
 
+
+
+try:
+    import sr_vulkan_model_waifu2x
+    print("import sr_vulkan_model_waifu2x, {}".format(sr_vulkan_model_waifu2x))
+    import sr_vulkan_model_realcugan
+    print("import sr_vulkan_model_waifu2x, {}".format(sr_vulkan_model_realcugan))
+    import sr_vulkan_model_realesrgan
+    print("import sr_vulkan_model_waifu2x, {}".format(sr_vulkan_model_realesrgan))
+except Exception as es:
+    pass
+
+
 from PySide6.QtGui import QFont
 from PySide6 import QtWidgets, QtGui  # 导入PySide6部件
 from PySide6.QtNetwork import QLocalSocket, QLocalServer

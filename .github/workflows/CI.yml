@@ -141,19 +141,15 @@ jobs:
     env:
       PACKAGENAME: bika_py39_windows_x64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.9
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-        pip install sr-vulkan
-        pip install sr-vulkan-model-waifu2x
-        pip install sr-vulkan-model-realcugan
-        pip install sr-vulkan-model-realesrgan
         pip install -r src\requirements.txt
     - name: Build
       run: |
@@ -186,16 +182,16 @@ jobs:
     env:
       PACKAGENAME: bika_py39_nosr_windows_x64
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.9
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-        pip install -r src\requirements.txt
+        pip install -r src\requirements_nosr.txt
     - name: Build
       run: |
         cd src
@@ -319,10 +315,6 @@ jobs:
         sudo apt-get install -y fuse libfuse2
         python -m pip install --upgrade pip
         pip install pyinstaller
-        pip install sr-vulkan
-        pip install sr-vulkan-model-waifu2x
-        pip install sr-vulkan-model-realcugan
-        pip install sr-vulkan-model-realesrgan
         pip install -r src/requirements.txt
     - name: Build
       run: |
