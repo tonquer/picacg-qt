@@ -151,6 +151,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r src\requirements.txt
+        
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
+
     - name: Build
       run: |
         cd src
@@ -161,7 +166,7 @@ jobs:
 
         cp ..\res\icon\icon.ico .\
 
-        pyinstaller -F -w -i icon.ico start.py
+        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
@@ -192,6 +197,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r src\requirements_nosr.txt
+        
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
+
     - name: Build
       run: |
         cd src
@@ -202,7 +212,7 @@ jobs:
 
         cp ..\res\icon\icon.ico .\
 
-        pyinstaller -F -w -i icon.ico start.py
+        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
@@ -237,6 +247,11 @@ jobs:
         pip install sr-vulkan-model-realcugan
         pip install sr-vulkan-model-realesrgan
         pip install -r src\requirements_win7.txt
+        
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
+
     - name: Build
       run: |
         cd src
@@ -245,7 +260,7 @@ jobs:
         Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py
+        pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
@@ -276,6 +291,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller==4.6
         pip install -r src\requirements_win7.txt
+        Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
+        Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
+        Remove-Item "upx.zip"
     - name: Build
       run: |
         cd src
@@ -284,7 +302,7 @@ jobs:
         Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
-        pyinstaller -F -w -i icon.ico start.py
+        pyinstaller -F -w -i icon.ico start.py  --upx-dir "D:\upx-5.0.1-win64"
         mv dist bika
         Copy-Item -Verbose -Recurse -Path db -Destination bika/
         cp ..\LICENSE bika\
