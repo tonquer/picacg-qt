@@ -58,6 +58,7 @@ jobs:
             start.py
         cp -avf db dist/PicACG.app/Contents/Frameworks
         xattr -cr dist/PicACG.app
+        xattr -dr com.apple.quarantine dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
             --window-pos 200 120 \
             --window-size 800 400 \
@@ -118,6 +119,7 @@ jobs:
             start.py
         cp -avf db dist/PicACG.app/Contents/Frameworks
         xattr -cr dist/PicACG.app
+        xattr -dr com.apple.quarantine dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
             --window-pos 200 120 \
             --window-size 800 400 \
