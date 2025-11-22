@@ -1,8 +1,10 @@
 from PySide6.QtGui import QImage
 from PySide6.QtCore import Qt
+import hashlib
 
 from task.qt_task import TaskBase
 from tools.log import Log
+from tools.image_cache import get_scaled_cache
 
 
 class QtQImageTask(object):
@@ -23,6 +25,7 @@ class TaskQImage(TaskBase):
     def __init__(self):
         TaskBase.__init__(self)
         self.taskObj.imageBack.connect(self.HandlerTask)
+        self.scaled_cache = get_scaled_cache()  # 初始化缓存，避免循环内重复获取
         self.thread.start()
 
     def Run(self):
@@ -39,27 +42,28 @@ class TaskQImage(TaskBase):
             if taskId < 0:
                 break
 
+            # ✅ 修复Bug1: 在try之前初始化newQ，防止未定义错误
+            newQ = QImage()
             q = QImage()
+
             try:
                 info = self.tasks.get(taskId)
                 if not info:
                     continue
 
+                # ✅ 修复Bug2: 改用continue而不是return，避免退出整个循环
                 if not info.data:
-                    return
+                    continue
 
-                # 性能优化：尝试使用缩放缓存
-                from tools.image_cache import get_scaled_cache
-                scaled_cache = get_scaled_cache()
-
+                # 性能优化：使用缩放缓存
                 # 如果需要缩放，先查缓存
                 if info.toW > 0:
-                    # 使用数据hash作为key的一部分
-                    import hashlib
-                    data_hash = hashlib.md5(info.data[:1024]).hexdigest()[:8]  # 只hash前1KB
-                    cache_key = f"{data_hash}_{info.toW}x{info.toH}"
+                    # ✅ 修复Bug3: Hash完整数据，确保唯一性
+                    # ✅ 修复Bug4: 包含radio在缓存键中
+                    data_hash = hashlib.md5(info.data).hexdigest()[:16]
+                    cache_key = f"{data_hash}_{info.toW}x{info.toH}_r{info.radio}"
 
-                    cached_scaled = scaled_cache.get(cache_key, info.toW, info.toH)
+                    cached_scaled = self.scaled_cache.get(cache_key, info.toW, info.toH)
                     if cached_scaled is not None:
                         # 缓存命中
                         newQ = cached_scaled
@@ -84,7 +88,7 @@ class TaskQImage(TaskBase):
                         )
 
                         # 加入缓存
-                        scaled_cache.put(cache_key, info.toW, info.toH, newQ)
+                        self.scaled_cache.put(cache_key, info.toW, info.toH, newQ)
                 else:
                     # 不需要缩放
                     q.loadFromData(info.data)
@@ -93,6 +97,7 @@ class TaskQImage(TaskBase):
 
             except Exception as es:
                 Log.Error(es)
+                # newQ已在try之前初始化为空QImage，可以安全emit
             finally:
                 self.taskObj.imageBack.emit(taskId, newQ)
 
