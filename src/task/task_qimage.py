@@ -47,11 +47,48 @@ class TaskQImage(TaskBase):
 
                 if not info.data:
                     return
-                q.loadFromData(info.data)
-                q.setDevicePixelRatio(info.radio)
+
+                # 性能优化：尝试使用缩放缓存
+                from tools.image_cache import get_scaled_cache
+                scaled_cache = get_scaled_cache()
+
+                # 如果需要缩放，先查缓存
                 if info.toW > 0:
-                    newQ = q.scaled(info.toW * info.radio, info.toH * info.radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    # 使用数据hash作为key的一部分
+                    import hashlib
+                    data_hash = hashlib.md5(info.data[:1024]).hexdigest()[:8]  # 只hash前1KB
+                    cache_key = f"{data_hash}_{info.toW}x{info.toH}"
+
+                    cached_scaled = scaled_cache.get(cache_key, info.toW, info.toH)
+                    if cached_scaled is not None:
+                        # 缓存命中
+                        newQ = cached_scaled
+                    else:
+                        # 缓存未命中，执行缩放
+                        q.loadFromData(info.data)
+                        q.setDevicePixelRatio(info.radio)
+
+                        # 优化：根据缩放比例选择算法
+                        # 缩小超过50%使用FastTransformation（速度快）
+                        # 其他情况使用SmoothTransformation（质量好）
+                        if info.toW < q.width() * 0.5:
+                            transform = Qt.FastTransformation
+                        else:
+                            transform = Qt.SmoothTransformation
+
+                        newQ = q.scaled(
+                            info.toW * info.radio,
+                            info.toH * info.radio,
+                            Qt.KeepAspectRatio,
+                            transform
+                        )
+
+                        # 加入缓存
+                        scaled_cache.put(cache_key, info.toW, info.toH, newQ)
                 else:
+                    # 不需要缩放
+                    q.loadFromData(info.data)
+                    q.setDevicePixelRatio(info.radio)
                     newQ = q
 
             except Exception as es:
