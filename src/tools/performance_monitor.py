@@ -6,12 +6,19 @@
 
 import time
 import threading
-import psutil
 import os
 from typing import Dict, List, Optional
 from collections import deque
 
 from tools.log import Log
+
+# 可选依赖：psutil（用于系统资源监控）
+try:
+    import psutil
+    HAS_PSUTIL = True
+except ImportError:
+    HAS_PSUTIL = False
+    Log.Warn("[PerfMonitor] psutil not installed, system resource monitoring disabled. Install with: pip install psutil")
 
 
 class PerformanceMonitor:
@@ -56,8 +63,13 @@ class PerformanceMonitor:
         self.lock = threading.RLock()
         self.start_time = time.time()
 
-        # 进程信息
-        self.process = psutil.Process(os.getpid())
+        # 进程信息（如果psutil可用）
+        self.process = None
+        if HAS_PSUTIL:
+            try:
+                self.process = psutil.Process(os.getpid())
+            except Exception as e:
+                Log.Warn(f"[PerfMonitor] Failed to initialize psutil Process: {e}")
 
         Log.Info("[PerfMonitor] Initialized")
 
@@ -100,6 +112,9 @@ class PerformanceMonitor:
         Returns:
             内存使用字典（MB）
         """
+        if not HAS_PSUTIL or not self.process:
+            return {'rss_mb': 0, 'vms_mb': 0, 'percent': 0}
+
         try:
             mem_info = self.process.memory_info()
             mem_percent = self.process.memory_percent()
@@ -120,6 +135,9 @@ class PerformanceMonitor:
         Returns:
             CPU使用率（0-100）
         """
+        if not HAS_PSUTIL or not self.process:
+            return 0.0
+
         try:
             return self.process.cpu_percent(interval=0.1)
         except Exception as e:

@@ -64,20 +64,36 @@ class SQLiteConnectionPool:
             # 性能优化配置
             cursor = conn.cursor()
 
-            # WAL模式 - 提升并发性能
-            cursor.execute("PRAGMA journal_mode=WAL")
+            # WAL模式 - 提升并发性能（可能在某些文件系统上不支持）
+            try:
+                cursor.execute("PRAGMA journal_mode=WAL")
+            except Exception as e:
+                Log.Warn(f"[DBPool] WAL mode not supported, using default journal mode: {e}")
+                # Fallback to default journal mode
 
             # 同步模式 - 平衡性能和安全
-            cursor.execute("PRAGMA synchronous=NORMAL")
+            try:
+                cursor.execute("PRAGMA synchronous=NORMAL")
+            except Exception as e:
+                Log.Warn(f"[DBPool] Failed to set synchronous mode: {e}")
 
             # 缓存大小 - 64MB
-            cursor.execute("PRAGMA cache_size=-64000")
+            try:
+                cursor.execute("PRAGMA cache_size=-64000")
+            except Exception as e:
+                Log.Warn(f"[DBPool] Failed to set cache size: {e}")
 
             # 临时表存储在内存
-            cursor.execute("PRAGMA temp_store=MEMORY")
+            try:
+                cursor.execute("PRAGMA temp_store=MEMORY")
+            except Exception as e:
+                Log.Warn(f"[DBPool] Failed to set temp_store: {e}")
 
             # 内存映射 - 256MB
-            cursor.execute("PRAGMA mmap_size=268435456")
+            try:
+                cursor.execute("PRAGMA mmap_size=268435456")
+            except Exception as e:
+                Log.Warn(f"[DBPool] Failed to set mmap_size: {e}")
 
             cursor.close()
 

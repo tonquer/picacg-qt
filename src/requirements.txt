@@ -14,3 +14,4 @@ lxml
 httpx
 httpx[http2]
 httpx[socks]
+psutil>=5.9.0  # 性能监控（可选）
