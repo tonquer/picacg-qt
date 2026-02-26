@@ -81,9 +81,11 @@ class MainView(Main, QtTaskBase):
 
         self.searchView.searchTab.hide()
         self.searchView2.searchWidget.hide()
+        self.searchView2.bookList.isOpen2 = True
         self.myTrayIcon = MySystemTrayIcon()
         self.myTrayIcon.show()
         self.totalStackWidget.currentChanged.connect(self.SwitchReadView)
+
         # self.myTrayIcon.hide()
         # self.readView.LoadSetting()
         # QApplication.instance().installEventFilter(self)
@@ -470,6 +472,7 @@ class MainView(Main, QtTaskBase):
         self.nasView.Close()
         self.readView.Stop()
         self.batchSrView.Stop()
+        self.navigationWidget.Stop()
         TaskWaifu2x().Stop()
         TaskQImage().Stop()
         Server().Stop()

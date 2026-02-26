@@ -17,6 +17,7 @@ from qt_owner import QtOwner
 from server import req
 from server.sql_server import SqlServer, DbBook
 from task.qt_task import QtTaskBase
+from task.task_thread import ThreadPrintDns
 from tools.log import Log
 from tools.str import Str
 from tools.tool import ToolUtil
@@ -30,8 +31,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.dbUpdateUrl = [config.DatabaseUpdate, config.DatabaseUpdate2, config.DatabaseUpdate3]
-        self.dbUpdateDbUrl = [config.DatabaseDownload, config.DatabaseDownload2, config.DatabaseDownload3]
+        self.dbUpdateUrl = [config.DatabaseUpdate, config.DatabaseUpdate2]
+        self.dbUpdateDbUrl = [config.DatabaseDownload, config.DatabaseDownload2]
         self.curIndex = 0
         self.curSubVersion = 0
         self.curUpdateTick = 0
@@ -46,7 +47,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
 
         # self.updateUrl = [config.UpdateUrl, config.UpdateUrl2, config.UpdateUrl3]
         # self.updatePreUrl = [config.UpdateUrlApi, config.UpdateUrl2Api, config.UpdateUrl3Api]
-        self.updateBackUrl = [config.UpdateUrlBack, config.UpdateUrl2Back, config.UpdateUrl3Back]
+        self.updateBackUrl = [config.UpdateUrlBack]
         self.checkUpdateIndex = 0
         self.helpLogWidget = HelpLogWidget()
         if Setting.IsShowCmd.value:
@@ -60,6 +61,10 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.preCheckBox.setChecked(bool(Setting.IsPreUpdate.value))
         self.preCheckBox.clicked.connect(self.SwitchCheckPre)
         self.configVer.setText("{}({})".format(GlobalConfig.Ver.value, GlobalConfig.VerTime.value))
+        self.dnsCheck = ThreadPrintDns()
+        self.configUrlList = [config.AppUrl, config.AppUrl2, config.AppUrl3]
+        self.configUrlIndex = 0
+        self.updateUrlIndex = 0
 
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)
@@ -89,13 +94,19 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         # if self.checkUpdateIndex > len(self.updateUrl) -1:
         #     self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
         #     return
-        self.AddHttpTask(req.CheckUpdateReq(Setting.IsPreUpdate.value), self.InitUpdateBack)
+        self.updateUrlIndex = 0
+        self.AddHttpTask(req.CheckUpdateReq(self.configUrlList[self.updateUrlIndex], Setting.IsPreUpdate.value), self.InitUpdateBack)
 
     def InitUpdateBack(self, raw):
         try:
             st = raw.get("st")
             if st != Str.Ok:
                 self.UpdateText(self.verCheck, st, "#d71345", True)
+                self.updateUrlIndex += 1
+                if self.updateUrlIndex >= len(self.configUrlList):
+                    return
+                self.AddHttpTask(req.CheckUpdateReq(self.configUrlList[self.updateUrlIndex], Setting.IsPreUpdate.value),
+                                 self.InitUpdateBack)
                 return
             data = raw.get("data")
             if not data:
@@ -104,8 +115,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             if data == "no":
                 self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
                 return
-            
-            self.AddHttpTask(req.CheckUpdateInfoReq(data), self.InitUpdateInfoBack)
+
+            self.AddHttpTask(req.CheckUpdateInfoReq(self.configUrlList[self.updateUrlIndex], data), self.InitUpdateInfoBack)
             self.UpdateText(self.verCheck, Str.HaveUpdate, "#d71345", True)
         except Exception as es:
             Log.Error(es)
@@ -115,19 +126,37 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex], Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n\n" + data)
 
     def InitUpdateConfig(self):
-        self.AddHttpTask(req.CheckUpdateConfigReq(), self.InitUpdateConfigBack)
+        self.AddHttpTask(req.CheckUpdateConfigReq(self.configUrlList[self.configUrlIndex]), self.InitUpdateConfigBack)
 
     def InitUpdateConfigBack(self, raw):
         try:
             st = raw.get("st")
             if st != Str.Ok:
+                self.configUrlIndex += 1
+                if self.configUrlIndex >= len(self.configUrlList):
+                    self.StartCheckDns()
+                    return
+                self.AddHttpTask(req.CheckUpdateConfigReq(self.configUrlList[self.configUrlIndex]), self.InitUpdateConfigBack)
                 return
+            self.StartCheckDns()
             data = raw.get("data")
             if not data:
                 return
             GlobalConfig.UpdateSetting(data)
+            self.configVer.setText("{}({})".format(GlobalConfig.Ver.value, GlobalConfig.VerTime.value))
         except Exception as es:
             Log.Error(es)
+
+    def StartCheckDns(self):
+        self.dnsCheck.hostList.append(config.AppUrl)
+        self.dnsCheck.hostList.append(config.AppUrl2)
+        self.dnsCheck.hostList.append(config.AppUrl3)
+        self.dnsCheck.hostList.append(config.Url)
+        self.dnsCheck.hostList.append(GlobalConfig.ProxyApiDomain.value)
+        self.dnsCheck.hostList.append(GlobalConfig.ProxyApiDomain2.value)
+        self.dnsCheck.hostList.extend(GlobalConfig.ImageServerList.value)
+        self.dnsCheck.hostList.extend(GlobalConfig.ImageJumList.value)
+        self.dnsCheck.start()
 
     def CheckDb(self):
         self.AddSqlTask("book", "", SqlServer.TaskCheck, self.CheckDbBack)
@@ -320,12 +349,12 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             return infos
 
     def OpenUrl(self):
-        UrlList = [config.Issues1, config.Issues2, config.Issues3]
+        UrlList = [config.Issues1]
         url = UrlList[0] if self.checkUpdateIndex >= len(UrlList) else UrlList[self.checkUpdateIndex]
         QDesktopServices.openUrl(QUrl(url))
 
     def OpenProxyUrl(self):
-        UrlList = [config.ProxyUrl1, config.ProxyUrl2, config.ProxyUrl3]
+        UrlList = [config.ProxyUrl1]
         url = UrlList[0] if self.checkUpdateIndex >= len(UrlList) else UrlList[self.checkUpdateIndex]
         QDesktopServices.openUrl(QUrl(url))
 

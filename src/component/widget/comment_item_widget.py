@@ -44,6 +44,7 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         self.nameLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.titleLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.commentLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
+
         # self.nameLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.linkLabel.setWordWrap(True)
         self.linkLabel.setVisible(False)

@@ -213,6 +213,10 @@ class Server(Singleton):
         host = ToolUtil.GetUrlHost(request.url)
         if self.imageServer and host in GlobalConfig.ImageServerList.value:
             if not ToolUtil.IsipAddress(self.imageServer):
+                ## 图片域名
+                request.resetUrlHost = GlobalConfig.ImageServerList.value[:]
+                if self.imageServer in request.resetUrlHost:
+                    request.resetUrlHost.remove(self.imageServer)
                 request.url = request.url.replace(host, self.imageServer)
 
         if not request.isUseHttps:

@@ -25,6 +25,7 @@ class EpsListWidget(BaseListWidget, QtTaskBase):
             return
 
         if Setting.IsGrabGesture.value:
-            self.verticalScrollBar().setValue(-arg__1.angleDelta().y())
+            return QListWidget.wheelEvent(self, arg__1)
+            # self.verticalScrollBar().setValue(-arg__1.angleDelta().y())
         else:
             self.vScrollBar.ScrollValue(-arg__1.angleDelta().y())

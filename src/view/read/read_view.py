@@ -61,6 +61,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.qtTool.ChangeReadMode2(Setting.LookReadMode.value)
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
         self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
+        self.qtTool.scrollInitSpeed.setValue(Setting.ScrollInitSpeed.value)
+        self.qtTool.scrollTime.setValue(Setting.ScrollTime.value)
         self.pageIndex = -1
         self.isOffline = False
         self.isLocal = False
@@ -197,6 +199,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
     def Clear(self):
         Setting.TurnSpeed.SetValue(int(self.qtTool.turnSpeed.value() * 1000))
         Setting.ScrollSpeed.SetValue(int(self.qtTool.scrollSpeed.value()))
+        Setting.ScrollInitSpeed.SetValue(int(self.qtTool.scrollInitSpeed.value()))
+        Setting.ScrollTime.SetValue(int(self.qtTool.scrollTime.value()))
         self.qtTool.UpdateText("")
         self.frame.UpdateProcessBar(None)
         self.frame.UpdateProcessBar2(None)
@@ -882,10 +886,12 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         # today = time.strftime("%Y%m%d%H%M%S", time.localtime(time.time()))
         if info.waifuData:
-            path = "{}_{}_waifu2x.jpg".format(self.bookId, self.curIndex+1)
+            _, _, mat, _ = ToolUtil.GetPictureSize(info.waifuData)
+            path = "{}_{}_waifu2x.{}".format(self.bookId, self.curIndex+1, mat)
             data = info.waifuData
         else:
-            path = "{}_{}.jpg".format(self.bookId, self.curIndex+1)
+            _, _, mat, _ = ToolUtil.GetPictureSize(info.data)
+            path = "{}_{}.{}}".format(self.bookId, self.curIndex+1, mat)
             data = info.data
         if not data:
             return
@@ -914,10 +920,12 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             return
 
         if info.waifuData:
-            path = "{}_{}_waifu2x.jpg".format(self.bookId, self.curIndex+1)
+            _, _, mat, _ = ToolUtil.GetPictureSize(info.waifuData)
+            path = "{}_{}_waifu2x.{}".format(self.bookId, self.curIndex+1, mat)
             data = info.waifuData
         else:
-            path = "{}_{}.jpg".format(self.bookId, self.curIndex+1)
+            _, _, mat, _ = ToolUtil.GetPictureSize(info.data)
+            path = "{}_{}.{}".format(self.bookId, self.curIndex+1, mat)
             data = info.data
         if not data:
             return

@@ -168,12 +168,7 @@ class TaskWaifu2x(TaskBase):
             try:
                 if not info.noSaveCache:
                     for path in [info.cachePath, info.savePath]:
-                        if path and not os.path.isdir(os.path.dirname(path)):
-                            os.makedirs(os.path.dirname(path))
-
-                        if path and data:
-                            with open(path, "wb+") as f:
-                                f.write(data)
+                        ToolUtil.SavePicture(data, path, format)
             except Exception as es:
                 info.status = Status.SaveError
                 Log.Error(es)

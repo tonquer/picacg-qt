@@ -15,6 +15,7 @@ from task.qt_task import QtTaskBase
 from tools.category import CateGoryMgr
 from tools.langconv import Converter
 from tools.str import Str
+from tools.tool import ToolUtil
 
 
 class SearchView(QWidget, Ui_Search, QtTaskBase):
@@ -59,6 +60,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.hiddenNum = 0
         self.searchLabel.installEventFilter(self)
         self.someDownButton.clicked.connect(self.bookList.OpenBookDownloadAll)
+
+        self.cacheRecommend = {}
 
 
     def InitCategory(self):
@@ -130,8 +133,13 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         if text and re.match('^[0-9a-zA-Z]+$',text) and len(text) == len("5d5d760774184679c1e63f4c"):
             QtOwner().OpenBookInfo(text)
             return
-        isRecomend = not not kwargs.get("recoment")
-        if isRecomend:
+        if text and "pica" in text.lower() and text.lower().replace("pica", "").isdigit():
+            QtOwner().OpenBookInfoByShareId(int(text.lower().replace("pica", "")))
+            self.lineEdit.AddCacheWord(text)
+            return
+
+        isRecomend =  kwargs.get("recoment")
+        if isRecomend == 1:
             self.bookList.clear()
             bookId = kwargs.get("bookId")
             self.bookList.UpdatePage(1, 1)
@@ -140,6 +148,19 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.label.setText(self.bookList.GetPageStr())
             QtOwner().ShowLoading()
             self.AddHttpTask(req.GetComicsRecommendation(bookId), self.OpenRecommendationBack)
+            return
+        if isRecomend == 2:
+            self.bookList.clear()
+            bookId = kwargs.get("bookId")
+            self.bookList.UpdatePage(1, 1)
+            self.spinBox.setValue(1)
+            self.spinBox.setMaximum(1)
+            self.label.setText(self.bookList.GetPageStr())
+            if bookId in self.cacheRecommend:
+                self.OpenRecommendationBack2({"data": self.cacheRecommend[bookId]}, bookId)
+                return
+            QtOwner().ShowLoading()
+            self.AddHttpTask(req.GetRecommendByIdReq(bookId), self.OpenRecommendationBack2, bookId)
             return
 
         if categories is not None:
@@ -195,6 +216,36 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
                 self.bookList.AddBookByDict(v)
         except Exception as es:
             Log.Error(es)
+
+    def OpenRecommendationBack2(self, raw, bookId):
+        QtOwner().CloseLoading()
+        data = raw.get("data")
+        try:
+            commentsData = json.loads(data)
+            allBookIds = []
+            for v in commentsData:
+                allBookIds.append(v.get('id'))
+            if QtOwner().owner.helpView.isHaveDb:
+                sql = SqlServer.GetBookByIds(allBookIds)
+                self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.OpenLocalRecommendationBack, backParam=1)
+            else:
+                for v in commentsData:
+                    if v.get('pic'):
+                        v['thumb'] = {}
+                        host = ToolUtil.GetUrlHost(v.get('pic'))
+                        v['thumb']['fileServer'] = "https://" + host
+                        v['thumb']['path'] = v.get('pic').replace("http://", "").replace("https://", "").replace(host, "").replace("/static", "")
+                        self.bookList.AddBookByDict(v)
+            self.cacheRecommend[bookId] = data
+        except Exception as es:
+            Log.Error(es)
+
+    def OpenLocalRecommendationBack(self, books, page):
+        self.SendLocalBack(books, page)
+        self.bookList.pages = 1
+        self.spinBox.setMaximum(1)
+        self.spinBox.setValue(1)
+        self.bookList.UpdatePage(1, self.bookList.pages)
 
     def SendSearchCategories(self, page):
         sort = ["dd", "da", "ld", "vd"]

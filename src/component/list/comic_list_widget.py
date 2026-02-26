@@ -34,6 +34,7 @@ class ComicListWidget(BaseListWidget):
         self.isLocalEps = False
         self.isMoveMenu = False
         self.openMenu = False
+        self.isOpen2 = False
 
     def SelectMenuBook(self, pos):
         index = self.indexAt(pos)
@@ -293,14 +294,20 @@ class ComicListWidget(BaseListWidget):
         elif self.isLocal:
             QtOwner().OpenLocalBook(widget.id)
         else:
-            QtOwner().OpenBookInfo(widget.id)
+            if self.isOpen2:
+                QtOwner().OpenBookInfo2(widget.id)
+            else:
+                QtOwner().OpenBookInfo(widget.id)
         return
 
     def OpenBookInfoHandler(self, index):
         widget = self.indexWidget(index)
         if widget:
             assert isinstance(widget, ComicItemWidget)
-            QtOwner().OpenBookInfo(widget.id)
+            if self.isOpen2:
+                QtOwner().OpenBookInfo2(widget.id)
+            else:
+                QtOwner().OpenBookInfo(widget.id)
             return
 
     def OpenPicture(self, index):

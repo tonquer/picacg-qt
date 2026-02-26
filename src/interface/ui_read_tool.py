@@ -17,7 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
     QHBoxLayout, QLabel, QLayout, QPushButton,
-    QSizePolicy, QSpacerItem, QVBoxLayout, QWidget)
+    QSizePolicy, QSpacerItem, QSpinBox, QVBoxLayout,
+    QWidget)
 
 from component.box.wheel_combo_box import WheelComboBox
 from component.box.wheel_double_spin_box import WheelDoubleSpinBox
@@ -29,7 +30,7 @@ class Ui_ReadImg(object):
     def setupUi(self, ReadImg):
         if not ReadImg.objectName():
             ReadImg.setObjectName(u"ReadImg")
-        ReadImg.resize(328, 825)
+        ReadImg.resize(328, 750)
         ReadImg.setAutoFillBackground(False)
         ReadImg.setStyleSheet(u"")
         self.gridLayout_2 = QGridLayout(ReadImg)
@@ -40,7 +41,7 @@ class Ui_ReadImg(object):
         self.scrollArea22.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -26, 301, 841))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -129, 301, 897))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
@@ -337,6 +338,24 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addWidget(self.label_7)
 
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label_12 = QLabel(self.scrollAreaWidgetContents)
+        self.label_12.setObjectName(u"label_12")
+
+        self.horizontalLayout_3.addWidget(self.label_12)
+
+        self.scrollInitSpeed = QSpinBox(self.scrollAreaWidgetContents)
+        self.scrollInitSpeed.setObjectName(u"scrollInitSpeed")
+        self.scrollInitSpeed.setMinimum(1)
+        self.scrollInitSpeed.setMaximum(4000)
+        self.scrollInitSpeed.setValue(200)
+
+        self.horizontalLayout_3.addWidget(self.scrollInitSpeed)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+
         self.horizontalLayout_12 = QHBoxLayout()
         self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
         self.label_10 = QLabel(self.scrollAreaWidgetContents)
@@ -355,6 +374,24 @@ class Ui_ReadImg(object):
 
 
         self.verticalLayout.addLayout(self.horizontalLayout_12)
+
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label_2 = QLabel(self.scrollAreaWidgetContents)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout_2.addWidget(self.label_2)
+
+        self.scrollTime = WheelSpinBox(self.scrollAreaWidgetContents)
+        self.scrollTime.setObjectName(u"scrollTime")
+        self.scrollTime.setMinimum(50)
+        self.scrollTime.setMaximum(2000)
+        self.scrollTime.setValue(500)
+
+        self.horizontalLayout_2.addWidget(self.scrollTime)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.horizontalLayout_13 = QHBoxLayout()
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
@@ -532,7 +569,9 @@ class Ui_ReadImg(object):
 
         self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08120%\uff09", None))
         self.label_7.setText(QCoreApplication.translate("ReadImg", u"\u81ea\u52a8\u6eda\u52a8/\u7ffb\u9875", None))
+        self.label_12.setText(QCoreApplication.translate("ReadImg", u"\u624b\u52a8\u6eda\u52a8\uff08\u50cf\u7d20\uff09\uff1a", None))
         self.label_10.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u901f\u5ea6\uff08\u50cf\u7d20\uff09\uff1a", None))
+        self.label_2.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u65f6\u95f4\uff08\u6beb\u79d2\uff09\uff1a", None))
         self.label_11.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u901f\u5ea6\uff08\u79d2\uff09\uff1a", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
         self.fullButton.setText(QCoreApplication.translate("ReadImg", u"\u5168\u5c4f", None))

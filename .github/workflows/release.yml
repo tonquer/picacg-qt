@@ -104,7 +104,7 @@ jobs:
         cd src
         cd db
         rm -rf book.db
-        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db
+        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
         cd ..
         cp ../res/icon/Icon.icns ./
         pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
@@ -178,7 +178,7 @@ jobs:
         cd src
         cd db
         rm -rf book.db
-        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db
+        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
         cd ..
         cp ../res/icon/Icon.icns ./
         pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
@@ -246,7 +246,7 @@ jobs:
       - name: Build
         run: |
           cd src
-          Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "db\book.db"
+          Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "db\book.db"
           Copy-Item ..\res\icon\icon.ico .         
           pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
           # python -m nuitka `
@@ -313,7 +313,7 @@ jobs:
       - name: Build
         run: |
           cd src
-          Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "db\book.db"
+          Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "db\book.db"
           Copy-Item ..\res\icon\icon.ico .
           pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
           # python -m nuitka `
@@ -386,7 +386,7 @@ jobs:
         cd src
         cd db
         Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "book.db"
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
@@ -439,7 +439,7 @@ jobs:
         cd src
         cd db
         Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db" -OutFile "book.db"
+        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "book.db"
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
@@ -494,7 +494,7 @@ jobs:
               pip3 install -r /tmp/requirements_nosr.txt
               mkdir -p db
               curl -L -o db/book.db \
-                   https://github.com/bika-robot/picacg-database/releases/download/v1.5.3/book.db
+                   https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
               nuitka start.py \
                 --onefile --output-dir=dist --static-libpython=yes \
                 --onefile-no-compression \

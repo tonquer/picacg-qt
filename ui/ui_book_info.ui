@@ -54,9 +54,9 @@ QScrollArea {background-color:transparent;}</string>
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
-        <width>872</width>
-        <height>699</height>
+        <y>-60</y>
+        <width>855</width>
+        <height>876</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -85,7 +85,7 @@ QScrollArea {background-color:transparent;}</string>
                 <widget class="QLabel" name="label">
                  <property name="maximumSize">
                   <size>
-                   <width>40</width>
+                   <width>80</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -115,7 +115,7 @@ QScrollArea {background-color:transparent;}</string>
                 <widget class="QLabel" name="label_6">
                  <property name="maximumSize">
                   <size>
-                   <width>40</width>
+                   <width>80</width>
                    <height>16777215</height>
                   </size>
                  </property>
@@ -126,6 +126,30 @@ QScrollArea {background-color:transparent;}</string>
                </item>
                <item>
                 <widget class="QLabel" name="idLabel">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_15">
+               <item>
+                <widget class="QLabel" name="label_10">
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>pica号：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="shareIdLabel">
                  <property name="text">
                   <string/>
                  </property>
@@ -386,17 +410,41 @@ QPushButton:hover
               </layout>
              </item>
              <item>
-              <widget class="QCommandLinkButton" name="commandLinkButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>看了这边本子的人也在看</string>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_16">
+               <item>
+                <widget class="QCommandLinkButton" name="commandLinkButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>看了这边本子的人也在看</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCommandLinkButton" name="commandLinkButton2">
+                 <property name="text">
+                  <string>本子妹推荐</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>

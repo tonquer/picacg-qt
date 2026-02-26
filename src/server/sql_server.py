@@ -22,6 +22,7 @@ from tools.user import User
 class DbBook(object):
     def __init__(self):
         self.id = ""             # 唯一标识
+        self.shareId = 0
         self.title = ""           # 标题
         self.title2 = ""           # 标题
         self.author = ""          # 作者
@@ -58,6 +59,7 @@ class SqlServer(Singleton):
     TaskTypeSelectUpdate = 102
     TaskTypeSelectFavorite = 103
     TaskTypeCacheBook = 104          # 缓存
+    TaskTypeCacheBookByShareId = 107          # 缓存
     TaskTypeCategoryBookNum = 105    # 查询分类数量
     TaskTypeSearchBookNum = 106      # 查询分页数量
     TaskTypeUpdateBook = 2
@@ -186,6 +188,7 @@ class SqlServer(Singleton):
             info.creator = data[16]
             info.totalLikes = data[17]
             info.totalViews = data[18]
+            info.shareId = data[19]
             books.append(info)
         data = pickle.dumps(books)
         if backId:
@@ -258,10 +261,16 @@ class SqlServer(Singleton):
         v = {}
         try:
             cur = conn.cursor()
-            cur.execute(
-                "select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book where id ='{}'".format(
-                    bookId))
+            if isinstance(bookId, int):
+                cur.execute(
+                    "select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+                    "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book where shareId ='{}'".format(
+                        bookId))
+            else:
+                cur.execute(
+                    "select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+                    "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book where id ='{}'".format(
+                        bookId))
             allFavoriteIds = []
             for data in cur.fetchall():
                 info = DbBook()
@@ -284,6 +293,7 @@ class SqlServer(Singleton):
                 info.creator = data[16]
                 info.totalLikes = data[17]
                 info.totalViews = data[18]
+                info.shareId = data[19]
                 BookMgr().AddBookByDb(info)
                 allFavoriteIds.append(info)
             v["bookList"] = allFavoriteIds
@@ -309,12 +319,12 @@ class SqlServer(Singleton):
                 if not book:
                     continue
                 sql = "replace INTO book(id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                      "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews) " \
-                      "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9}, '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', {17}, {18}); " \
+                      "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId) " \
+                      "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9}, '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', {17}, {18}, {19}); " \
                     .format(book.id, book.title, book.title2, book.author, book.chineseTeam, book.description,
                             book.epsCount, book.pages, int(book.finished), book.likesCount,
                             book.categories, book.tags, book.created_at, book.updated_at, book.path, book.fileServer,
-                            book.creator, book.totalLikes, book.totalViews)
+                            book.creator, book.totalLikes, book.totalViews, book.shareId)
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
 
@@ -354,11 +364,11 @@ class SqlServer(Singleton):
     def SearchFavorite(page, sortKey=0, sortId=0, searchText=""):
         if not searchText:
             sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
+                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
                 Setting.UserId.value)
         else:
             sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
+                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
                 Setting.UserId.value)
             sql += " and (book.title like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
             sql += " book.title2 like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
@@ -436,10 +446,10 @@ class SqlServer(Singleton):
 
         if data:
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 0 {}".format(data)
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 0 {}".format(data)
         else:
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 1 "
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 1 "
 
         if sql2Data:
             sql2Data = "SELECT id FROM book WHERE 0 {}".format(sql2Data)
@@ -492,6 +502,18 @@ class SqlServer(Singleton):
             data3 += " creator {} \"%{}%\" {} ".format(likeStr, word, linkStr)
         data3 = data3.strip("{} ".format(linkStr))
         return "({})".format(data3)
+
+    @staticmethod
+    def GetBookByIds(bookIds):
+        data = ""
+        for v in bookIds:
+            data += "\'{}\',".format(v)
+        data = data.strip(",")
+        where = "id in ({})".format(data)
+        sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE {}".format(
+            where)
+        return sql
 
     @staticmethod
     def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0, isFinish=False):
@@ -553,10 +575,10 @@ class SqlServer(Singleton):
         selectNumSql = data
         if data:
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE {}".format(data)
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE {}".format(data)
         else:
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews FROM book WHERE 1 "
+              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 1 "
         if isFinish:
             sql += " and finished=1 "
 

@@ -32,6 +32,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         QtTaskBase.__init__(self)
         self.setupUi(self)
         self.bookId = ""
+        self.shareId = 0
         self.url = ""
         self.path = ""
         self.bookName = ""
@@ -93,6 +94,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.autorList.customContextMenuRequested.connect(self.CopyClickAutorItem)
 
         self.idLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.shareIdLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
         self.description.setTextInteractionFlags(Qt.TextBrowserInteraction)
 
         self.description.adjustSize()
@@ -107,6 +109,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.pageBox.currentIndexChanged.connect(self.UpdateEpsPageData)
         self.tabWidget.currentChanged.connect(self.SwitchPage)
         self.commandLinkButton.clicked.connect(self.OpenRecommend)
+        self.commandLinkButton2.clicked.connect(self.OpenRecommend2)
         self.readOffline.clicked.connect(self.StartRead2)
         self.flowLayout = FlowLayout(self.tagList)
         self.uploadButton.clicked.connect(self.ShowMenu)
@@ -138,10 +141,26 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
     def SwitchCurrent(self, **kwargs):
         bookId = kwargs.get("bookId")
+        shareId = kwargs.get("shareId")
         if bookId:
             self.OpenBook(bookId)
+        elif shareId:
+            self.OpenBookByShare(shareId)
 
         pass
+
+    def OpenBookByShare(self, shareId):
+        self.shareId = shareId
+        self.bookId = ""
+        if QtOwner().isOfflineModel:
+            self.tabWidget.setCurrentIndex(1)
+        else:
+            self.tabWidget.setCurrentIndex(0)
+        self.setFocus()
+        self.Clear()
+        self.show()
+        QtOwner().ShowLoading()
+        self.OpenLocalBackByShare()
 
     def OpenBook(self, bookId):
         self.bookId = bookId
@@ -158,6 +177,9 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def OpenRecommend(self):
         QtOwner().OpenRecomment(self.bookId)
 
+    def OpenRecommend2(self):
+        QtOwner().OpenRecomment2(self.bookId)
+
     def SwitchPage(self, page):
         pass
 
@@ -168,13 +190,48 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def OpenLocalBack(self):
         self.AddSqlTask("book", self.bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack)
 
+    def OpenLocalBackByShare(self):
+        self.AddSqlTask("book", self.shareId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack)
+
     def SendLocalBack(self, books):
         if not QtOwner().isOfflineModel:
-            self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookBack)
+            if not self.bookId and self.shareId:
+                self.AddHttpTask(req.GetIdByShareIdReq(self.shareId), self.GetBookIdBack)
+            else:
+                self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookBack)
         else:
             self.OpenBookBack({"st": Status.Ok})
         self.UpdateDownloadEps()
         self.LoadHistory()
+
+    def GetBookIdBack(self, raw):
+        st = raw["st"]
+        QtOwner().CloseLoading()
+        if st == Status.Ok:
+            if raw.get('data', ""):
+                v = json.loads(raw.get('data'))
+                if v.get('cid'):
+                    self.bookId = v.get('cid')
+                    QtOwner().ShowLoading()
+                    self.AddHttpTask(req.GetComicsBookReq(self.bookId), self.OpenBookBack)
+                else:
+                    QtOwner().ShowError(Str.GetStr(Str.NotFoundBook))
+            else:
+                QtOwner().ShowError(Str.GetStr(Str.NotFoundBook))
+        else:
+            QtOwner().ShowError(Str.GetStr(st))
+        pass
+
+    def GetShareIdBack(self, raw):
+        st = raw["st"]
+        if st == Status.Ok:
+            info = BookMgr().books.get(self.bookId)
+            if info and info.shareId:
+                self.shareIdLabel.setText("pica" + str(info.shareId))
+                pass
+        else:
+            pass
+        pass
 
     def UpdateDownloadEps(self):
         info = QtOwner().downloadView.GetDownloadInfo(self.bookId)
@@ -244,6 +301,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.autorList.AddItem(info.author)
             if hasattr(info, "chineseTeam"):
                 self.autorList.AddItem(info.chineseTeam)
+            self.bookId = info.id
             title = info.title
             if info.pagesCount:
                 title += "<font color=#d5577c>{}</font>".format("(" + str(info.pagesCount) + "P)")
@@ -255,7 +313,11 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             font.setBold(True)
             self.title.setFont(font)
             self.idLabel.setText(info.id)
-
+            if info.shareId:
+                self.shareIdLabel.setText("pica"+str(info.shareId))
+            else:
+                self.shareIdLabel.setText("")
+                self.AddHttpTask(req.GetShareIdReq(self.bookId), self.GetShareIdBack)
             self.bookName = info.title
             self.description.setPlainText(info.description)
 

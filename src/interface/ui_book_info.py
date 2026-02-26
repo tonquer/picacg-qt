@@ -70,7 +70,7 @@ class Ui_BookInfo(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 872, 699))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -60, 855, 876))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.gridLayout_3 = QGridLayout()
@@ -89,7 +89,7 @@ class Ui_BookInfo(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label = QLabel(self.scrollAreaWidgetContents)
         self.label.setObjectName(u"label")
-        self.label.setMaximumSize(QSize(40, 16777215))
+        self.label.setMaximumSize(QSize(80, 16777215))
         self.label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
 
         self.horizontalLayout_3.addWidget(self.label)
@@ -107,7 +107,7 @@ class Ui_BookInfo(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_6 = QLabel(self.scrollAreaWidgetContents)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setMaximumSize(QSize(40, 16777215))
+        self.label_6.setMaximumSize(QSize(80, 16777215))
 
         self.horizontalLayout_8.addWidget(self.label_6)
 
@@ -118,6 +118,22 @@ class Ui_BookInfo(object):
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_8)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.label_10 = QLabel(self.scrollAreaWidgetContents)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout_15.addWidget(self.label_10)
+
+        self.shareIdLabel = QLabel(self.scrollAreaWidgetContents)
+        self.shareIdLabel.setObjectName(u"shareIdLabel")
+
+        self.horizontalLayout_15.addWidget(self.shareIdLabel)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_15)
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
@@ -282,6 +298,8 @@ class Ui_BookInfo(object):
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_7)
 
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
         self.commandLinkButton = QCommandLinkButton(self.scrollAreaWidgetContents)
         self.commandLinkButton.setObjectName(u"commandLinkButton")
         sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
@@ -290,7 +308,19 @@ class Ui_BookInfo(object):
         sizePolicy.setHeightForWidth(self.commandLinkButton.sizePolicy().hasHeightForWidth())
         self.commandLinkButton.setSizePolicy(sizePolicy)
 
-        self.verticalLayout_2.addWidget(self.commandLinkButton)
+        self.horizontalLayout_16.addWidget(self.commandLinkButton)
+
+        self.commandLinkButton2 = QCommandLinkButton(self.scrollAreaWidgetContents)
+        self.commandLinkButton2.setObjectName(u"commandLinkButton2")
+
+        self.horizontalLayout_16.addWidget(self.commandLinkButton2)
+
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_16.addItem(self.horizontalSpacer_5)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_16)
 
 
         self.horizontalLayout.addLayout(self.verticalLayout_2)
@@ -551,6 +581,8 @@ class Ui_BookInfo(object):
         self.title.setText(QCoreApplication.translate("BookInfo", u"\u6807\u9898", None))
         self.label_6.setText(QCoreApplication.translate("BookInfo", u"id:", None))
         self.idLabel.setText("")
+        self.label_10.setText(QCoreApplication.translate("BookInfo", u"pica\u53f7\uff1a", None))
+        self.shareIdLabel.setText("")
         self.label_7.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570\uff1a", None))
         self.views.setText(QCoreApplication.translate("BookInfo", u"\u89c2\u770b\u6570", None))
         self.label_9.setText(QCoreApplication.translate("BookInfo", u"\u4e0a\u4f20\u65f6\u95f4\uff1a", None))
@@ -562,6 +594,7 @@ class Ui_BookInfo(object):
         self.label_4.setText(QCoreApplication.translate("BookInfo", u"\u5206\u7c7b\uff1a", None))
         self.label_5.setText(QCoreApplication.translate("BookInfo", u"Tags\uff1a", None))
         self.commandLinkButton.setText(QCoreApplication.translate("BookInfo", u"\u770b\u4e86\u8fd9\u8fb9\u672c\u5b50\u7684\u4eba\u4e5f\u5728\u770b", None))
+        self.commandLinkButton2.setText(QCoreApplication.translate("BookInfo", u"\u672c\u5b50\u59b9\u63a8\u8350", None))
         self.user_icon.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.user_name.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))
         self.updateTick.setText(QCoreApplication.translate("BookInfo", u"TextLabel", None))

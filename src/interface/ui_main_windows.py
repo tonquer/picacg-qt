@@ -133,6 +133,9 @@ class Ui_MainWindows(object):
         self.searchView2 = SearchView()
         self.searchView2.setObjectName(u"searchView2")
         self.subStackWidget.addWidget(self.searchView2)
+        self.bookInfoView2 = BookInfoView()
+        self.bookInfoView2.setObjectName(u"bookInfoView2")
+        self.subStackWidget.addWidget(self.bookInfoView2)
         self.rankView = RankView()
         self.rankView.setObjectName(u"rankView")
         self.subStackWidget.addWidget(self.rankView)
@@ -212,7 +215,7 @@ class Ui_MainWindows(object):
 
         self.retranslateUi(MainWindows)
 
-        self.subStackWidget.setCurrentIndex(26)
+        self.subStackWidget.setCurrentIndex(8)
 
 
         QMetaObject.connectSlotsByName(MainWindows)

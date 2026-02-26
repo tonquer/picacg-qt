@@ -638,8 +638,14 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.imgFrame.scrollArea.hScrollBar.StopScroll()
         pass
 
+    def GetScrollValue(self):
+        if self.timerOut.isActive():
+            return int(self.scrollSpeed.value())
+        else:
+            return int(self.scrollInitSpeed.value())
+
     def AutoScroll(self):
-        self.timerOut.setInterval(1000)
+        self.timerOut.setInterval(self.scrollTime.value())
         self.timerOut.start()
         pass
 

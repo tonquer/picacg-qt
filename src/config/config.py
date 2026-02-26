@@ -32,10 +32,10 @@ PreLook = 4                    # 预显示
 IsLoadingPicture = True
 
 AppUrl = "https://app.jpacg.cc/PicACG"
+AppUrl2 = "https://app2.jpacg.cc/PicACG"
+AppUrl3 = "https://app3.jpacg.cc/PicACG"
 
 UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
-UpdateUrl2Back = "https://hub.jpacg.cc/tonquer/picacg-qt"
-UpdateUrl3Back = "https://hub.fastgit.xyz/tonquer/picacg-qt"
 
 DatabaseUpdate = "https://raw.jpacg.cc/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload = "https://raw.jpacg.cc/bika-robot/picacg-database/main/data3/"
@@ -43,16 +43,12 @@ DatabaseDownload = "https://raw.jpacg.cc/bika-robot/picacg-database/main/data3/"
 DatabaseUpdate2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
 
-DatabaseUpdate3 = "https://raw.fastgit.org/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload3 = "https://raw.fastgit.org/bika-robot/picacg-database/main/data3/"
 
 Issues1 = "https://github.com/tonquer/picacg-qt/issues"
-Issues2 = "https://hub.jpacg.cc/tonquer/picacg-qt/issues"
-Issues3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.5.3"
-RealVersion = "v1.5.3.1"
-TimeVersion = "2025-11-13"
+UpdateVersion = "v1.5.4"
+RealVersion = "v1.5.4"
+TimeVersion = "2026-2-20"
 DbVersion = ""
 
 Waifu2xVersion = "1.2.0"
@@ -67,15 +63,12 @@ Encode = 0             # 当前正在使用的索引
 UseCpuNum = 0
 EncodeGpu = ""
 
-Format = "jpg"
 Waifu2xPath = "waifu2x"
 
 IsTips = 1
 
 # 代理与分流相关
 ProxyUrl1 = "https://github.com/tonquer/picacg-qt/discussions/48"
-ProxyUrl2 = "https://hub.jpacg.cc/tonquer/picacg-qt/discussions/48"
-ProxyUrl3 = "https://hub.fastgit.xyz/tonquer/picacg-qt/discussions/48"
 
 # Waifu2x相关
 Waifu2xUrl = "https://github.com/tonquer/picacg-qt/discussions/76"

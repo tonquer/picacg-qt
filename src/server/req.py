@@ -9,6 +9,7 @@ from urllib.parse import quote
 from config import config
 from config.global_config import GlobalConfig
 from config.setting import Setting
+from tools.log import Log
 from tools.tool import ToolUtil
 
 
@@ -17,6 +18,8 @@ class ServerReq(object):
         self.resetCnt = 0
         self.isReload = False
         self.url = url
+        self.resetUrlHost = []
+
         self.file = ""
         self.token = ""
         self.headers = header
@@ -63,6 +66,26 @@ class ServerReq(object):
             self.proxy = {}
         else:
             self.proxy = {"http": None, "https": None}
+
+    def ResetToSwitchNextUrl(self):
+        if not self.resetUrlHost:
+            return False
+        host = ToolUtil.GetUrlHost(self.url)
+        if host in self.resetUrlHost:
+            index = self.resetUrlHost.index(host)
+            if index >= len(self.resetUrlHost)-1:
+                return False
+            newHost = self.resetUrlHost[index+1]
+            host = ToolUtil.GetUrlHost(self.url)
+            self.url = self.url.replace(host, newHost)
+            Log.Info("request 404 switch:{}->{}".format(host, newHost))
+            return True
+        else:
+            newHost = self.resetUrlHost[0]
+            host = ToolUtil.GetUrlHost(self.url)
+            self.url = self.url.replace(host, newHost)
+            Log.Info("request 404 switch:{}->{}".format(host, newHost))
+            return True
 
     def __str__(self):
         # if Setting.LogIndex.value == 0:
@@ -374,15 +397,15 @@ class CommentsReportReq(ServerReq):
 
 # 检查更新
 class CheckUpdateReq(ServerReq):
-    def __init__(self, isPre=False):
+    def __init__(self, url2, isPre=False):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
         data["platform"] = platform.platform()
         if not isPre:
-            url = config.AppUrl + "/version.txt?"
+            url = url2 + "/version.txt?"
         else:
-            url = config.AppUrl + "/version_pre.txt?"
+            url = url2 + "/version_pre.txt?"
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
@@ -391,12 +414,12 @@ class CheckUpdateReq(ServerReq):
 
 # 检查更新
 class CheckUpdateInfoReq(ServerReq):
-    def __init__(self, newVersion):
+    def __init__(self, url2, newVersion):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
         data["platform"] = platform.platform()
-        url = config.AppUrl + "/{}.txt?".format(newVersion)
+        url = url2 + "/{}.txt?".format(newVersion)
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
@@ -405,12 +428,12 @@ class CheckUpdateInfoReq(ServerReq):
 
 # 检查更新配置
 class CheckUpdateConfigReq(ServerReq):
-    def __init__(self):
+    def __init__(self, url2):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
         data["platform"] = platform.platform()
-        url = config.AppUrl + "/config.txt?"
+        url = url2 + "/config.txt?"
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
         self.isParseRes = False
@@ -789,3 +812,33 @@ class SendNewChatImgMsgReq(ServerReq):
             "userMentions": (None, "[]"),
             "medias": (os.path.basename(filePath), open(filePath, 'rb'))
         }
+
+
+# 获取pica号
+class GetShareIdReq(ServerReq):
+    def __init__(self, id):
+        url = "https://recommend.go2778.com/pic/share/set/?c={}".format(id)
+        method = "Get"
+        self.bookId = id
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+# 通过pica号获取id
+class GetIdByShareIdReq(ServerReq):
+    def __init__(self, shareId):
+        url = "https://recommend.go2778.com/pic/share/get/?shareId={}".format(shareId)
+        method = "Get"
+        self.shareId = shareId
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+
+
+class GetRecommendByIdReq(ServerReq):
+    def __init__(self, bookId):
+        url = "https://recommend.go2778.com/pic/recommend/get/?c={}".format(bookId)
+        method = "Get"
+        self.bookId = bookId
+        super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+                                             {}, method)
+        self.isParseRes = False

@@ -105,7 +105,7 @@ class ConvertView(QtWidgets.QWidget, Ui_Convert, ConvertStatus):
             return ""
         epsTitle = task.epsInfo[epsId].epsTitle
         convertPath = os.path.join(task.convertPath, ToolUtil.GetCanSaveName(epsTitle))
-        return os.path.join(convertPath, "{:04}.{}".format(index + 1, "jpg"))
+        return os.path.join(convertPath, "{:04}".format(index + 1))
 
     def GetDownloadFilePath(self, bookId, epsId, index):
         if bookId not in self.downloadDict:
@@ -115,7 +115,7 @@ class ConvertView(QtWidgets.QWidget, Ui_Convert, ConvertStatus):
             return ""
         epsTitle = task.epsInfo[epsId].epsTitle
         savePath = os.path.join(task.savePath, ToolUtil.GetCanSaveName(epsTitle))
-        return os.path.join(savePath, "{:04}.{}".format(index + 1, "jpg"))
+        return os.path.join(savePath, "{:04}".format(index + 1))
 
     def SwitchCurrent(self, **kwargs):
         pass

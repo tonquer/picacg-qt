@@ -142,6 +142,8 @@ class SearchLineEdit(QLineEdit):
 
         if isSelf:
             datas.insert(0, strings)
+        if strings.isdigit():
+            datas.insert(0, "pica"+strings)
         self.model.setStringList(datas)
 
     def keyReleaseEvent(self, ev):

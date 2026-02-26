@@ -158,6 +158,21 @@ class GetComicsBookEpsHandler(object):
             TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
 
 
+@handler(req.GetShareIdReq)
+class GetShareIdHandler(object):
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status == Status.Ok:
+                from tools.book import BookMgr
+                st = BookMgr().AddBookShareId(task)
+                data["st"] = st
+        except Exception as es:
+            Log.Error(es)
+        if task.bakParam:
+            TaskBase.taskObj.taskBack.emit(task.bakParam, pickle.dumps(data))
+
+
 @handler(req.GetComicsBookOrderReq)
 class GetComicsBookOrderHandler(object):
     def __call__(self, task):
@@ -233,6 +248,21 @@ class DownloadBookHandler(object):
                     now = time.time()
                     isAlreadySend = False
                     isSpacePic = True
+                    if r.status_code == 404 or r.status_code == 403 :
+                        ## 404 尝试切换图片地址
+                        isReset = backData.req.ResetToSwitchNextUrl()
+                        if isReset:
+                            Server().ReDownload(backData)
+                            return
+                        else:
+                            if backData.bakParam:
+                                TaskBase.taskObj.downloadBack.emit(backData.bakParam, -Status.Error, b"")
+                            return
+                    elif r.status_code != 200:
+                        if backData.bakParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.bakParam, -Status.Error, b"")
+                        return
+
                     # 网速快，太卡了，优化成最多100ms一次
                     try:
                         # from tqdm import tqdm
@@ -262,18 +292,14 @@ class DownloadBookHandler(object):
                             return
 
                     # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
+                    _, _, mat, isAni = ToolUtil.GetPictureSize(data)
                     if config.IsUseCache and len(data) > 0:
                         try:
                             for path in [backData.req.cachePath, backData.req.savePath]:
                                 filePath = path
                                 if not path:
                                     continue
-                                fileDir = os.path.dirname(filePath)
-                                if not os.path.isdir(fileDir):
-                                    os.makedirs(fileDir)
-
-                                with open(filePath, "wb+") as f:
-                                    f.write(data)
+                                ToolUtil.SavePicture(data, filePath, mat)
                                 Log.Debug("add download cache, cachePath:{}".format(filePath))
                         except Exception as es:
                             Log.Error(es)
@@ -450,6 +476,8 @@ class SpeedTestHandler(object):
 @handler(req.GetNewChatLoginReq)
 @handler(req.SendNewChatMsgReq)
 @handler(req.SendNewChatImgMsgReq)
+@handler(req.GetIdByShareIdReq)
+@handler(req.GetRecommendByIdReq)
 class MsgHandler(object):
     def __call__(self, task):
         data = {"st": task.status, "data": task.res.GetText()}

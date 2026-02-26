@@ -234,6 +234,14 @@ class QtOwner(Singleton):
         self.owner.searchView2.searchTab.setText(Title)
         self.owner.SwitchWidget(self.owner.searchView2, **arg)
 
+    def OpenRecomment2(self, bookId):
+        Title = "本子妹推荐"
+        arg = {"recoment": 2, "bookId": bookId}
+        self.owner.searchView2.setWindowTitle(Title)
+        self.owner.searchView2.searchTab.setText(Title)
+        self.owner.SwitchWidget(self.owner.searchView2, **arg)
+
+
     def OpenLocalEpsView(self, bookId):
         arg = {"bookId": bookId}
         self.owner.SwitchWidget(self.owner.localReadEpsView, **arg)
@@ -279,7 +287,18 @@ class QtOwner(Singleton):
         # self.owner.subCommentView.SetOpenEvent(commentId, widget)
         arg = {"bookId": bookId}
         self.owner.SwitchWidget(self.owner.bookInfoView, **arg)
-        
+
+    def OpenBookInfoByShareId(self, shareId):
+        # self.owner.subCommentView.SetOpenEvent(commentId, widget)
+        arg = {"shareId": shareId}
+        self.owner.SwitchWidget(self.owner.bookInfoView, **arg)
+
+    def OpenBookInfo2(self, bookId):
+        Title = "漫画详情2"
+        self.owner.bookInfoView2.setWindowTitle(Title)
+        arg = {"bookId": bookId}
+        self.owner.SwitchWidget(self.owner.bookInfoView2, **arg)
+
     def OpenSomeDownload(self, bookList=None):
         arg = {"bookList": bookList}
         self.owner.SwitchWidget(self.owner.downloadSomeView, **arg)

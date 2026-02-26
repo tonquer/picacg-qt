@@ -1,6 +1,7 @@
 import re
+import time
 
-from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent, QSize
+from PySide6.QtCore import QPropertyAnimation, QRect, QEasingCurve, QFile, QEvent, QSize, QTimer
 from PySide6.QtGui import QPixmap, Qt, QIcon
 from PySide6.QtWidgets import QWidget, QScroller, QScrollerProperties
 
@@ -10,6 +11,7 @@ from interface.ui_navigation import Ui_Navigation
 from qt_owner import QtOwner
 from server import req
 from task.qt_task import QtTaskBase
+from tools.log import Log
 from tools.status import Status
 from tools.str import Str
 from tools.tool import ToolUtil
@@ -26,6 +28,12 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         # if Setting.IsUseTitleBar.value:
             # self.scrollArea.setFixedHeight(380)
         # self.resize(260, 800)
+        self.timer = QTimer(self)
+        # 取余数
+        second = 3600 - int(time.time()) % 3600
+        self.timer.setInterval(1000*(second+10))
+        self.timer.timeout.connect(self.HourTimeOut)
+        self.timer.start()
         self.__ani = QPropertyAnimation(self, b"geometry")
         self.__connect = None
         self.pictureData = ""
@@ -139,6 +147,13 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         else:
             self.proxyImgName.setText("分流{}".format(str(Setting.ProxyImgSelectIndex.value)))
 
+    def HourTimeOut(self):
+        Log.Info("check_next_sign")
+        self.timer.setInterval(1000*3600)
+        if not User().isLogin:
+            return
+        QtOwner().owner.helpView.ReUpdateDatabase()
+        self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
 
     def UpdateUserBack(self, raw):
         self.levelLabel.setText("LV" + str(User().level))
@@ -287,3 +302,6 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
     def MoveCategory(self, words, list):
         self.UpdateFilterStr()
         return
+
+    def Stop(self):
+        self.timer.stop()

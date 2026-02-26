@@ -1,3 +1,4 @@
+import json
 import os
 
 from server import ToolUtil, Status, Log
@@ -36,6 +37,7 @@ class BookEps(object):
 class Book(object):
     def __init__(self):
         self._id = ""             # 唯一标识
+        self.shareId = 0
         self.title = ""           # 标题
         self.author = ""          # 作者
         self.description = ""     # 描述
@@ -94,6 +96,26 @@ class BookMgr(Singleton):
             Log.Error(es)
             return Status.NetError
 
+    def AddBookShareId(self, backData):
+        if backData.status != Status.Ok:
+            return backData.status
+        try:
+            data = backData.res.GetText()
+            if data:
+                v = json.loads(data)
+                if v.get('shareId'):
+                    shareId = v.get('shareId')
+                    bookId = backData.req.bookId
+                    info = self.books.get(bookId)
+                    if not info:
+                        return
+
+                    info.shareId = shareId
+            return Status.Ok
+        except Exception as es:
+            Log.Error(es)
+            return Status.Ok
+
     def AddBookByDb(self, dbBook):
         from server.sql_server import DbBook
         assert isinstance(dbBook, DbBook)
@@ -101,6 +123,7 @@ class BookMgr(Singleton):
             return
         info = Book()
         info._id = dbBook.id
+        info.shareId = dbBook.shareId
         info.title = dbBook.title
         info.author = dbBook.author
         info.description = dbBook.description

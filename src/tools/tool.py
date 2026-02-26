@@ -418,15 +418,44 @@ class ToolUtil(object):
     def LoadCachePicture(filePath):
         try:
             c = CTime()
-            if not os.path.isfile(filePath):
-                return None
-            with open(filePath, "rb") as f:
-                data = f.read()
-                c.Refresh("LoadCache", filePath)
-                return data
+            formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng"]
+            for mat in formatList:
+                if filePath[-4:] in formatList:
+                    path = filePath
+                elif filePath[-5:] in formatList:
+                    path = filePath
+                else:
+                    path = filePath + mat
+                if not os.path.isfile(path):
+                    continue
+
+                with open(path, "rb") as f:
+                    data = f.read()
+                    c.Refresh("LoadCache", path)
+                    if len(data) < 20:
+                        Log.Debug(f"load_fail_picture, {path}")
+                        continue
+                    return data
+
         except Exception as es:
             Log.Error(es)
         return None
+
+    @staticmethod
+    def SavePicture(data, path, format):
+        if path and not os.path.isdir(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
+
+        formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", "jpeg"]
+        if path and data:
+            if path[-4:] in formatList:
+                pass
+            elif path[-5:] in formatList:
+                pass
+            else:
+                path = path + "." + format
+            with open(path, "wb+") as f:
+                f.write(data)
 
     @staticmethod
     def IsHaveFile(filePath):
@@ -500,10 +529,11 @@ class ToolUtil(object):
     def GetRealPath(path, direction):
         if path:
             data = "{}/{}".format(direction, path)
-            if ".jpg" not in data:
-                return data + ".jpg"
-            else:
-                return data
+            return data
+            # if ".jpg" not in data:
+            #     return data + ".jpg"
+            # else:
+            #     return data
         else:
             return path
 
