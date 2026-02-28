@@ -565,14 +565,14 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
                     proxy = self.allItems[i]
                     if self.initReadMode == ReadMode.UpDown:
                         if isinstance(proxy, QGraphicsProxyWidget):
-                            height += proxy.widget().height()
+                            height += (proxy.widget().height()-1)
                         else:
-                            height += proxy.pixmap().height() // proxy.pixmap().devicePixelRatio()
+                            height += (proxy.pixmap().height() // proxy.pixmap().devicePixelRatio()-1)
                     else:
                         if isinstance(proxy, QGraphicsProxyWidget):
-                            height += proxy.widget().width()
+                            height += (proxy.widget().width()-1)
                         else:
-                            height += proxy.pixmap().width() // proxy.pixmap().devicePixelRatio()
+                            height += (proxy.pixmap().width() // proxy.pixmap().devicePixelRatio()-1)
 
         self.ResetMaxNum(notChange=True)
 

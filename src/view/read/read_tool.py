@@ -661,14 +661,20 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
             if self.stripModel == ReadMode.UpDown:
                 if self.imgFrame.scrollArea.vScrollBar.value() >= self.imgFrame.scrollArea.vScrollBar.maximum():
                     self.CloseScrollAndTurn()
+                else:
+                    self.imgFrame.scrollArea.vScrollBar.Finished()
                 self.imgFrame.scrollArea.vScrollBar.scrollValue(value)
             elif self.stripModel == ReadMode.LeftRightScroll:
                 if self.imgFrame.scrollArea.hScrollBar.value() >= self.imgFrame.scrollArea.hScrollBar.maximum():
                     self.CloseScrollAndTurn()
+                else:
+                    self.imgFrame.scrollArea.hScrollBar.Finished()
                 self.imgFrame.scrollArea.hScrollBar.scrollValue(value)
             elif self.stripModel == ReadMode.RightLeftScroll:
                 if self.imgFrame.scrollArea.hScrollBar.value() <= self.imgFrame.scrollArea.hScrollBar.minimum():
                     self.CloseScrollAndTurn()
+                else:
+                    self.imgFrame.scrollArea.hScrollBar.Finished()
                 self.imgFrame.scrollArea.hScrollBar.scrollValue(-value)
         else:
             self._NextPage()
