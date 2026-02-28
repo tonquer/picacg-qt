@@ -305,7 +305,7 @@ jobs:
       - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install nuitka
+          pip install pyinstaller
           pip install -r src\requirements_nosr.txt
           Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
           Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
@@ -466,69 +466,69 @@ jobs:
         asset_name: ${{ env.PACKAGENAME }}.7z
         asset_content_type: application/zip
 
-  linux-arm64-nosr:
-    if: github.event_name == 'push' || github.event.inputs.build_linux_arm64_nosr == 'true'
-    needs: [setup, release]
-    runs-on: ubuntu-24.04-arm
-    env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_arm64_nosr
-      BINARY_NAME: bika
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build with Nuitka
-        run: |
-          docker run --rm --platform linux/arm64 \
-            -v "$PWD":/workspace -w /workspace/src \
-            cyberspace0000/linux-arm-py10:1 sh -exc '
-              source /opt/miniforge/bin/activate
-              conda activate py310
-              pip3 install --upgrade nuitka
-              UPX_VER=5.0.1
-              curl -L -o /tmp/upx.tar.xz \
-                "https://github.com/upx/upx/releases/download/v${UPX_VER}/upx-${UPX_VER}-arm64_linux.tar.xz"
-              mkdir -p /tmp/upx
-              tar -xf /tmp/upx.tar.xz -C /tmp/upx --strip-components=1
-              export UPX_BIN=/tmp/upx/upx
-              chmod +x "$UPX_BIN"
-              grep -v -i "^pyside6" requirements_nosr.txt > /tmp/requirements_nosr.txt
-              pip3 install -r /tmp/requirements_nosr.txt
-              mkdir -p db
-              curl -L -o db/book.db \
-                   https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
-              nuitka start.py \
-                --onefile --output-dir=dist --static-libpython=yes \
-                --onefile-no-compression \
-                --plugin-enable=pyside6,upx --upx-binary="$UPX_BIN" \
-                --assume-yes-for-downloads \
-                --linux-icon=../res/icon/icon.ico
-              mkdir -p /workspace/out
-              mv dist/start.bin "/workspace/out/${BINARY_NAME}/start"
-              cp -r db             /workspace/out/
-              cp ../LICENSE        /workspace/out/
-              cp ../CHANGELOG      /workspace/out/
-              chown -R 1001:1001   /workspace
-            '
-      - name: Create 7z archive
-        run: |
-          rm -rf src/dist src/*.onefile-build
-          mkdir package
-          mv out package/bika
-          cd package
-          7z a -t7z -mx9 -r "${{ env.PACKAGENAME }}.7z" bika
-          mv "${{ env.PACKAGENAME }}.7z" ..
+  # linux-arm64-nosr:
+  #   if: github.event_name == 'push' || github.event.inputs.build_linux_arm64_nosr == 'true'
+  #   needs: [setup, release]
+  #   runs-on: ubuntu-24.04-arm
+  #   env:
+  #     PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_arm64_nosr
+  #     BINARY_NAME: bika
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Build with Nuitka
+  #       run: |
+  #         docker run --rm --platform linux/arm64 \
+  #           -v "$PWD":/workspace -w /workspace/src \
+  #           cyberspace0000/linux-arm-py10:1 sh -exc '
+  #             source /opt/miniforge/bin/activate
+  #             conda activate py310
+  #             pip3 install --upgrade nuitka
+  #             UPX_VER=5.0.1
+  #             curl -L -o /tmp/upx.tar.xz \
+  #               "https://github.com/upx/upx/releases/download/v${UPX_VER}/upx-${UPX_VER}-arm64_linux.tar.xz"
+  #             mkdir -p /tmp/upx
+  #             tar -xf /tmp/upx.tar.xz -C /tmp/upx --strip-components=1
+  #             export UPX_BIN=/tmp/upx/upx
+  #             chmod +x "$UPX_BIN"
+  #             grep -v -i "^pyside6" requirements_nosr.txt > /tmp/requirements_nosr.txt
+  #             pip3 install -r /tmp/requirements_nosr.txt
+  #             mkdir -p db
+  #             curl -L -o db/book.db \
+  #                  https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
+  #             nuitka start.py \
+  #               --onefile --output-dir=dist --static-libpython=yes \
+  #               --onefile-no-compression \
+  #               --plugin-enable=pyside6,upx --upx-binary="$UPX_BIN" \
+  #               --assume-yes-for-downloads \
+  #               --linux-icon=../res/icon/icon.ico
+  #             mkdir -p /workspace/out
+  #             mv dist/start.bin "/workspace/out/${BINARY_NAME}/start"
+  #             cp -r db             /workspace/out/
+  #             cp ../LICENSE        /workspace/out/
+  #             cp ../CHANGELOG      /workspace/out/
+  #             chown -R 1001:1001   /workspace
+  #           '
+  #     - name: Create 7z archive
+  #       run: |
+  #         rm -rf src/dist src/*.onefile-build
+  #         mkdir package
+  #         mv out package/bika
+  #         cd package
+  #         7z a -t7z -mx9 -r "${{ env.PACKAGENAME }}.7z" bika
+  #         mv "${{ env.PACKAGENAME }}.7z" ..
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.PACKAGENAME }}
-          path: ${{ env.PACKAGENAME }}.7z
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ env.PACKAGENAME }}
+  #         path: ${{ env.PACKAGENAME }}.7z
 
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url:         ${{ needs.release.outputs.Up_Url }}
-          asset_path:         ${{ env.PACKAGENAME }}.7z
-          asset_name:         ${{ env.PACKAGENAME }}.7z
-          asset_content_type: application/zip
+  #     - name: Upload release asset
+  #       uses: actions/upload-release-asset@v1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         upload_url:         ${{ needs.release.outputs.Up_Url }}
+  #         asset_path:         ${{ env.PACKAGENAME }}.7z
+  #         asset_name:         ${{ env.PACKAGENAME }}.7z
+  #         asset_content_type: application/zip
