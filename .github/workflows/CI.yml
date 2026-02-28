@@ -30,7 +30,7 @@ jobs:
         pip install sr-vulkan-model-realcugan
         pip install sr-vulkan-model-realesrgan
         cd script
-        pip install delocate wheel_filename==2.0.0
+        pip install delocate wheel_filename==1.4.2
         python build_universal2.py pillow
         pip install *.whl
         cd ..
@@ -92,7 +92,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
         cd script
-        pip install delocate wheel_filename==2.0.0
+        pip install delocate wheel_filename==1.4.2
         python build_universal2.py pillow
         pip install *.whl
         cd ..
