@@ -41,8 +41,7 @@ jobs:
       run: |
         cd src
         cd db
-        rm -rf book.db
-        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
+        unzip -o book.zip
         cd ..
         cp ../res/icon/Icon.icns ./
         pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
@@ -102,8 +101,7 @@ jobs:
       run: |
         cd src
         cd db
-        rm -rf book.db
-        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
+        unzip -o book.zip
         cd ..
         cp ../res/icon/Icon.icns ./
         pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
@@ -162,8 +160,7 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "book.db"
+        7z x book.zip
         cd ..
 
         cp ..\res\icon\icon.ico .\
@@ -208,8 +205,7 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "book.db"
+        7z x book.zip
         cd ..
 
         cp ..\res\icon\icon.ico .\
@@ -258,8 +254,7 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "book.db"
+        7z x book.zip
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
@@ -300,8 +295,7 @@ jobs:
       run: |
         cd src
         cd db
-        Remove-Item book.db
-        Invoke-WebRequest -Uri "https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db" -OutFile "book.db"
+        7z x book.zip
         cd ..
         cp ..\res\icon\icon.ico .\
         pyinstaller -F -w -i icon.ico start.py  --upx-dir "D:\upx-5.0.1-win64"
@@ -341,8 +335,7 @@ jobs:
         cd src
         pyinstaller -w start.py
         cd db
-        rm -rf book.db
-        wget https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
+        unzip -o book.zip
         cd ..
         cd dist
         mkdir -p picacg.AppRun/usr/bin
