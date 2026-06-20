@@ -230,19 +230,7 @@ class Setting:
         path = Setting.GetConfigPath()
         if not os.path.isdir(path):
             os.mkdir(path)
-        path2 = Setting.GetLocalHomePath()
-        if not os.path.isdir(path2):
-            os.mkdir(path2)
-        Setting.CheckRepair()
-        Setting.CheckRepairLocalDb()
         return
-
-    @staticmethod
-    def GetLocalHomePath():
-        from PySide6.QtCore import QDir
-        homePath = QDir.homePath()
-        projectName = ".comic-qt"
-        return os.path.join(homePath, projectName)
 
     @staticmethod
     def GetConfigPath():
@@ -265,49 +253,3 @@ class Setting:
             return "logs"
         else:
             return os.path.join(Setting.GetConfigPath(), "logs")
-
-    @staticmethod
-    def CheckRepair():
-        import sys
-        if not sys.platform == "win32":
-            return
-        try:
-            from PySide6.QtCore import QDir
-            homePath = QDir.homePath()
-            projectName = ".picacg"
-            oldPath = os.path.join(homePath, projectName)
-            fileList = ["download.db", "config.ini", "history.db", "cache_word"]
-            for file in fileList:
-                filePath = os.path.join("data", file)
-                if not os.path.isfile(filePath):
-                    oldFilePath = os.path.join(oldPath, file)
-                    if os.path.isfile(oldFilePath):
-                        shutil.move(oldFilePath, filePath)
-                    elif os.path.isfile(file):
-                        shutil.move(file, filePath)
-
-        except Exception as es:
-            from tools.log import Log
-            Log.Error(es)
-
-    @staticmethod
-    def CheckRepairLocalDb():
-        try:
-            fileName = os.path.join(Setting.GetLocalHomePath(), "local_read.db")
-            toFileName = os.path.join(Setting.GetConfigPath(), "local_read.db")
-            from config import config
-            copyOkName = os.path.join(Setting.GetLocalHomePath(), "{}_local.ok".format(config.ProjectName))
-            from PySide6.QtCore import QDir
-            if os.path.isfile(copyOkName):
-                return
-            if not os.path.isfile(fileName):
-                return
-            if os.path.isfile(toFileName):
-                return
-            shutil.copy(fileName, copyOkName)
-            shutil.copy(fileName, toFileName)
-            from server import Log
-            Log.Warn("copy local read db")
-        except Exception as es:
-            from tools.log import Log
-            Log.Error(es)
