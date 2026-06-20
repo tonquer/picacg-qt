@@ -13,7 +13,7 @@ from view.nas.nas_item import NasUploadItem, NasInfoItem
 class NasDb(object):
     def __init__(self):
         self.db = QSqlDatabase.addDatabase("QSQLITE", "nas")
-        path = os.path.join(Setting.GetConfigPath(), "nas.db")
+        path = os.path.join(Setting.GetStatePath(), "nas.db")
         self.db.setDatabaseName(path)
         if not self.db.open():
             Log.Warn(self.db.lastError().text())

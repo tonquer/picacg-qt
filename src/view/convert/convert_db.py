@@ -13,7 +13,7 @@ from view.download.download_item import DownloadItem, DownloadEpsItem
 class ConvertDb(object):
     def __init__(self):
         self.db = QSqlDatabase.addDatabase("QSQLITE", "convert")
-        path = os.path.join(Setting.GetConfigPath(), "convert.db")
+        path = os.path.join(Setting.GetStatePath(), "convert.db")
         self.db.setDatabaseName(path)
         if not self.db.open():
             Log.Warn(self.db.lastError().text())
