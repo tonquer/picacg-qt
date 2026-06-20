@@ -266,7 +266,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
                 byte = base64.b64decode(imageData[1])
                 date = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
                 if Setting.SavePath.value:
-                    path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), "chat/picture/{}_{}.jpg".format(date, random.randint(1, 999)))
+                    path = os.path.join(Setting.GetCachePath(), "chat/picture/{}_{}.jpg".format(date, random.randint(1, 999)))
                     ToolUtil.SaveFile(byte, path)
                 info.SetPictureComment(byte)
 
@@ -279,7 +279,7 @@ class ChatRoomWidget(QWidget, Ui_ChatRoom, QtTaskBase):
                 saveName = str(int(time.time())) + "_" + str(random.randint(1, 1000)) + ".3gp"
                 info.toolButton.setText(saveName)
                 if Setting.SavePath.value:
-                    path = os.path.join(Setting.SavePath.value, config.ChatSavePath)
+                    path = os.path.join(Setting.GetCachePath(), config.ChatSavePath, "audio")
                     saveName = os.path.join(path, saveName)
                     info.audioData = saveName
                     if not os.path.isdir(path):

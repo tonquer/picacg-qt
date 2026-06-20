@@ -67,8 +67,7 @@ class QtTaskBase:
             # else:
             #     a = hashlib.md5(path.encode("utf-8")).hexdigest() + ".jpg"
             if Setting.SavePath.value and path:
-                filePath2 = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), path)
-                cachePath = filePath2
+                cachePath = os.path.join(Setting.GetCachePath(), path)
         return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isReload, resetCnt)
 
     # downloadCallBack(data, laveFileSize, backParam)
