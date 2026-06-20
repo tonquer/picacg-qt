@@ -12,7 +12,7 @@ from view.download.download_item import DownloadItem, DownloadEpsItem
 class DownloadDb(object):
     def __init__(self):
         self.db = QSqlDatabase.addDatabase("QSQLITE", "download")
-        path = os.path.join(Setting.GetConfigPath(), "download.db")
+        path = os.path.join(Setting.GetStatePath(), "download.db")
         self.db.setDatabaseName(path)
         if not self.db.open():
             Log.Warn(self.db.lastError().text())

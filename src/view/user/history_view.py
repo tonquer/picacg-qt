@@ -32,7 +32,7 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         self.bookList.LoadCallBack = self.LoadNextPage
         self.history = {}
         self.db = QSqlDatabase.addDatabase("QSQLITE", "history")
-        path = os.path.join(Setting.GetConfigPath(), "history.db")
+        path = os.path.join(Setting.GetStatePath(), "history.db")
         self.db.setDatabaseName(path)
         # self.bookList.InstallDel()
 

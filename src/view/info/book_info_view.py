@@ -121,8 +121,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         else:
             self.favoriteButton.setIcon(QIcon(":/png/icon/icon_like_off.png"))
 
-        path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), "book/{}".format(self.bookId))
-        waifuPath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), "waifu2x/book/{}".format(self.bookId))
+        path = os.path.join(Setting.GetCachePath(), "book/{}".format(self.bookId))
+        waifuPath = os.path.join(Setting.GetCachePath(), "waifu2x/book/{}".format(self.bookId))
         if os.path.isdir(path) or os.path.isdir(waifuPath):
             self.clearButton.setIcon(QIcon(":/png/icon/clear_on.png"))
         else:
@@ -541,18 +541,14 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             QtOwner().favoriteView.DelAndFavoritesBack({"st": Status.Ok}, self.bookId)
 
     def ClearCache(self):
-        path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
-                            "book/{}".format(self.bookId))
-        waifuPath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
-                                 "waifu2x/book/{}".format(self.bookId))
+        path = os.path.join(Setting.GetCachePath(), "book/{}".format(self.bookId))
+        waifuPath = os.path.join(Setting.GetCachePath(), "waifu2x/book/{}".format(self.bookId))
         isClear = QMessageBox.information(self, '清除缓存', "是否清除本书所有缓存\n{}\n{}".format(path, waifuPath), QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No)
         if isClear == QtWidgets.QMessageBox.Yes:
             if not Setting.SavePath.value:
                 return
-            path = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
-                                "book/{}".format(self.bookId))
-            waifuPath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir),
-                                     "waifu2x/book/{}".format(self.bookId))
+            path = os.path.join(Setting.GetCachePath(), "book/{}".format(self.bookId))
+            waifuPath = os.path.join(Setting.GetCachePath(), "waifu2x/book/{}".format(self.bookId))
             if os.path.isdir(path):
                 shutil.rmtree(path, True)
             if os.path.isdir(waifuPath):

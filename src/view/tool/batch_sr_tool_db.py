@@ -11,7 +11,7 @@ from tools.log import Log
 class BatchSrToolDb(object):
     def __init__(self):
         self.db = QSqlDatabase.addDatabase("QSQLITE", "batch_sr_tool")
-        path = os.path.join(Setting.GetConfigPath(), "batch_sr_tool.db")
+        path = os.path.join(Setting.GetStatePath(), "batch_sr_tool.db")
         self.db.setDatabaseName(path)
         if not self.db.open():
             Log.Warn(self.db.lastError().text())

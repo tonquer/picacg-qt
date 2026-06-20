@@ -95,7 +95,7 @@ class SqlServer(Singleton):
         conn = None
         try:
             if sys.platform == "linux":
-                path = os.path.join(Setting.GetConfigPath(), bookPath)
+                path = os.path.join(Setting.GetDataPath(), bookPath)
                 conn = sqlite3.connect(path)
             else:
                 conn = sqlite3.connect(bookPath)
@@ -614,7 +614,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def SaveCacheWord():
-        path = os.path.join(Setting.GetConfigPath(), "cache_word")
+        path = os.path.join(Setting.GetConfigPath() if sys.platform == "win32" else Setting.GetCachePath(), "cache_word")
         try:
             if not SqlServer().cacheWord:
                 return
@@ -626,7 +626,7 @@ class SqlServer(Singleton):
 
     @staticmethod
     def LoadCacheWord():
-        path = os.path.join(Setting.GetConfigPath(), "cache_word")
+        path = os.path.join(Setting.GetConfigPath() if sys.platform == "win32" else Setting.GetCachePath(), "cache_word")
         try:
             if not os.path.isfile(path):
                 return

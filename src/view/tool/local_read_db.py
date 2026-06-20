@@ -11,7 +11,7 @@ from view.download.download_item import DownloadItem, DownloadEpsItem
 
 class LocalReadDb(object):
     def __init__(self):
-        self.db = sqlite3.connect(os.path.join(Setting.GetConfigPath(), "local_read.db"), check_same_thread=False)
+        self.db = sqlite3.connect(os.path.join(Setting.GetStatePath(), "local_read.db"), check_same_thread=False)
         self.cur = self.db.cursor()
 
         sql = """\

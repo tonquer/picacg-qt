@@ -168,7 +168,7 @@ class NasUploadItem(QtTaskBase):
         if nasInfo.is_waifu2x:
             srcDir = os.path.join(downloadInfo.convertPath, ToolUtil.GetCanSaveName(epsInfo.epsTitle))
 
-        desPath = os.path.join(os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), "zip"), ToolUtil.GetCanSaveName(downloadInfo.title))
+        desPath = os.path.join(os.path.join(Setting.GetCachePath(), "zip"), ToolUtil.GetCanSaveName(downloadInfo.title))
 
         if self.curPreUpIndex == 0:
             desFile = os.path.join(desPath, "{}.zip".format(ToolUtil.GetCanSaveName(downloadInfo.title)))

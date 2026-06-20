@@ -188,7 +188,7 @@ class TaskWaifu2x(TaskBase):
         info.preDownPath = preDownPath
         info.noSaveCache = noSaveCache
         if not noSaveCache and path and Setting.SavePath.value:
-            info.cachePath = os.path.join(os.path.join(Setting.SavePath.value, config.CachePathDir), os.path.join("waifu2x", path))
+            info.cachePath = os.path.join(Setting.GetCachePath(), os.path.join("waifu2x", path))
 
         if cleanFlag:
             info.cleanFlag = cleanFlag

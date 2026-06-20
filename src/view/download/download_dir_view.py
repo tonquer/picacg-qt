@@ -28,9 +28,9 @@ class DownloadDirView(BaseMaskDialog, Ui_DownloadDir, QtTaskBase):
         if url:
             self.lineEdit.setText(url)
             self.downloadDir.setText(os.path.join(url, config.SavePathDir))
-            self.chatDir.setText(os.path.join(url, config.ChatSavePath))
-            self.cacheDir.setText(os.path.join(url, config.CachePathDir))
-            self.waifu2xDir.setText(os.path.join(os.path.join(url, config.CachePathDir), config.Waifu2xPath))
+            self.chatDir.setText(os.path.join(Setting.GetCachePath(), config.ChatSavePath))
+            self.cacheDir.setText(Setting.GetCachePath())
+            self.waifu2xDir.setText(os.path.join(Setting.GetCachePath(), config.Waifu2xPath))
 
     def SavePath(self):
         path = self.lineEdit.text()

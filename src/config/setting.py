@@ -1,5 +1,8 @@
 import os
 import shutil
+import sys
+
+from config import config
 
 
 class SettingValue:
@@ -204,6 +207,8 @@ class Setting:
                 setItem.InitValue(value, name)
         from tools.log import Log
         Log.UpdateLoggingLevel()
+        if sys.platform == "linux" and not Setting.SavePath.value:
+            Setting.SavePath.SetValue(Setting.GetDataPath())
         return
 
     @staticmethod
@@ -227,87 +232,45 @@ class Setting:
 
     @staticmethod
     def Init():
-        path = Setting.GetConfigPath()
-        if not os.path.isdir(path):
-            os.mkdir(path)
-        path2 = Setting.GetLocalHomePath()
-        if not os.path.isdir(path2):
-            os.mkdir(path2)
-        Setting.CheckRepair()
-        Setting.CheckRepairLocalDb()
+        for path in [
+            Setting.GetConfigPath(),
+            Setting.GetDataPath(),
+            Setting.GetCachePath(), 
+            Setting.GetStatePath(),
+        ]:
+            os.makedirs(path, exist_ok=True)
         return
 
     @staticmethod
-    def GetLocalHomePath():
-        from PySide6.QtCore import QDir
-        homePath = QDir.homePath()
-        projectName = ".comic-qt"
-        return os.path.join(homePath, projectName)
+    def _xdgDir(envName, default, *subdirs):
+        if sys.platform == "win32":
+            return "data"
+        base = os.environ.get(envName, os.path.join(os.path.expanduser("~"), default))
+        return os.path.join(base, "picacg-qt", *subdirs)
 
     @staticmethod
     def GetConfigPath():
-        import sys
+        return Setting._xdgDir("XDG_CONFIG_HOME", ".config")
+
+    @staticmethod
+    def GetDataPath():
+        return Setting._xdgDir("XDG_DATA_HOME", ".local/share")
+
+    @staticmethod
+    def GetCachePath():
         if sys.platform == "win32":
-            return "data"
-        else:
-            from PySide6.QtCore import QDir
-            homePath = QDir.homePath()
-            projectName = ".picacg"
-            return os.path.join(homePath, projectName)
+            return os.path.join(Setting.SavePath.value, config.CachePathDir)
+        return Setting._xdgDir("XDG_CACHE_HOME", ".cache")
+
+    @staticmethod
+    def GetStatePath():
+        return Setting._xdgDir("XDG_STATE_HOME", ".local/state")
 
     @staticmethod
     def GetLogPath():
-        import sys
         if Setting.LogDirPath.value:
             return Setting.LogDirPath.value
 
         if sys.platform == "win32":
             return "logs"
-        else:
-            return os.path.join(Setting.GetConfigPath(), "logs")
-
-    @staticmethod
-    def CheckRepair():
-        import sys
-        if not sys.platform == "win32":
-            return
-        try:
-            from PySide6.QtCore import QDir
-            homePath = QDir.homePath()
-            projectName = ".picacg"
-            oldPath = os.path.join(homePath, projectName)
-            fileList = ["download.db", "config.ini", "history.db", "cache_word"]
-            for file in fileList:
-                filePath = os.path.join("data", file)
-                if not os.path.isfile(filePath):
-                    oldFilePath = os.path.join(oldPath, file)
-                    if os.path.isfile(oldFilePath):
-                        shutil.move(oldFilePath, filePath)
-                    elif os.path.isfile(file):
-                        shutil.move(file, filePath)
-
-        except Exception as es:
-            from tools.log import Log
-            Log.Error(es)
-
-    @staticmethod
-    def CheckRepairLocalDb():
-        try:
-            fileName = os.path.join(Setting.GetLocalHomePath(), "local_read.db")
-            toFileName = os.path.join(Setting.GetConfigPath(), "local_read.db")
-            from config import config
-            copyOkName = os.path.join(Setting.GetLocalHomePath(), "{}_local.ok".format(config.ProjectName))
-            from PySide6.QtCore import QDir
-            if os.path.isfile(copyOkName):
-                return
-            if not os.path.isfile(fileName):
-                return
-            if os.path.isfile(toFileName):
-                return
-            shutil.copy(fileName, copyOkName)
-            shutil.copy(fileName, toFileName)
-            from server import Log
-            Log.Warn("copy local read db")
-        except Exception as es:
-            from tools.log import Log
-            Log.Error(es)
+        return Setting._xdgDir("XDG_STATE_HOME", ".local/state", "logs")
