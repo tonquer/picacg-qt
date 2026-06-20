@@ -95,7 +95,7 @@ class SqlServer(Singleton):
         conn = None
         try:
             if sys.platform == "linux":
-                path = os.path.join(Setting.GetConfigPath(), bookPath)
+                path = os.path.join(Setting.GetDataPath(), bookPath)
                 conn = sqlite3.connect(path)
             else:
                 conn = sqlite3.connect(bookPath)
