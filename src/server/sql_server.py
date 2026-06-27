@@ -96,9 +96,10 @@ class SqlServer(Singleton):
         try:
             if sys.platform == "linux":
                 path = os.path.join(Setting.GetDataPath(), bookPath)
-                conn = sqlite3.connect(path)
+                conn = sqlite3.connect(path, timeout=5)
             else:
-                conn = sqlite3.connect(bookPath)
+                conn = sqlite3.connect(bookPath, timeout=5)
+            conn.execute("PRAGMA journal_mode=WAL")
         except Exception as es:
             Log.Error(es)
             from qt_owner import QtOwner
