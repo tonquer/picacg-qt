@@ -96,9 +96,10 @@ class SqlServer(Singleton):
         try:
             if sys.platform == "linux":
                 path = os.path.join(Setting.GetDataPath(), bookPath)
-                conn = sqlite3.connect(path)
+                conn = sqlite3.connect(path, timeout=5)
             else:
-                conn = sqlite3.connect(bookPath)
+                conn = sqlite3.connect(bookPath, timeout=5)
+            conn.execute("PRAGMA journal_mode=WAL")
         except Exception as es:
             Log.Error(es)
             from qt_owner import QtOwner
@@ -132,8 +133,8 @@ class SqlServer(Singleton):
                     TaskSql().taskObj.sqlBack.emit(backId, data2)
                 elif taskType == self.TaskTypeSql:
                     cur = conn.cursor()
-                    cur.execute(data)
-                    cur.execute("COMMIT")
+                    with conn:
+                        cur.execute(data)
                     if backId:
                         data2 = pickle.dumps("")
                         TaskSql().taskObj.sqlBack.emit(backId, data2)
@@ -309,13 +310,13 @@ class SqlServer(Singleton):
         cur = conn.cursor()
 
         addData, tick, version = data
-        timeArray = time.localtime(tick)
-        strTime = "{}-{}-{} {}:{}:{}".format(timeArray.tm_year, timeArray.tm_mon, timeArray.tm_mday, timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
-        sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.DbVersion)
-        cur.execute(sql)
+        with conn:
+            timeArray = time.localtime(tick)
+            strTime = "{}-{}-{} {}:{}:{}".format(timeArray.tm_year, timeArray.tm_mon, timeArray.tm_mday, timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
+            sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.DbVersion)
+            cur.execute(sql)
 
-        for book in addData:
-            try:
+            for book in addData:
                 if not book:
                     continue
                 sql = "replace INTO book(id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
@@ -328,37 +329,26 @@ class SqlServer(Singleton):
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
 
-                try:
-                    for name in book.categories.split(","):
-                        from tools.category import CateGoryMgr
-                        index = CateGoryMgr().categoriseIndex.get(name)
-                        if not index:
-                            continue
-                        sql = "replace INTO category(bookId, category) VALUES ('{0}', {1}); ".format(book.id, index)
-                        sql = sql.replace("\0", "")
-                        cur.execute(sql)
-                except Exception as es:
-                    Log.Error(es)
+                for name in book.categories.split(","):
+                    from tools.category import CateGoryMgr
+                    index = CateGoryMgr().categoriseIndex.get(name)
+                    if not index:
+                        continue
+                    sql = "replace INTO category(bookId, category) VALUES ('{0}', {1}); ".format(book.id, index)
+                    sql = sql.replace("\0", "")
+                    cur.execute(sql)
 
-            except Exception as ex:
-                Log.Error(ex)
-
-        cur.execute("COMMIT")
-        Log.Info("db: update database, len:{}, version:{}, tick:{} ".format(len(addData), tick, version))
+            Log.Info("db: update database, len:{}, version:{}, tick:{} ".format(len(addData), tick, version))
 
     def _UpdateFavorite(self, conn, addData, backId):
         cur = conn.cursor()
-        for bookId, sortId in addData:
-            try:
+        with conn:
+            for bookId, sortId in addData:
                 if not bookId:
                     continue
                 sql = "replace INTO favorite(id, user, sortId) VALUES ('{0}', '{1}', {2});".format(bookId, Setting.UserId.value, sortId)
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
-            except Exception as ex:
-                Log.Error(ex)
-
-        cur.execute("COMMIT")
 
     @staticmethod
     def SearchFavorite(page, sortKey=0, sortId=0, searchText=""):
