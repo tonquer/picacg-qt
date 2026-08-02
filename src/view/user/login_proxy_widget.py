@@ -195,11 +195,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.StartSpeedPing()
 
     def StartSpeedPing(self):
-        if len(self.speedTest) <= self.speedPingNum:
+        self.needBackNum = 0
+        Server().UpdateProxy2(self.radioProxyGroup.checkedId(), self.httpLine.text(), self.sockEdit.text())
+        for address, imageProxy, _, isProxyUrl, i in self.speedTest:
+            self._StartOneSpeedPing(address, imageProxy, isProxyUrl, i)
+        if self.needBackNum == 0:
             self.StartSpeedTest()
-            return
-        # for v in self.speedTest:
-        address, imageProxy, _, isProxyUrl, i = self.speedTest[self.speedPingNum]
+
+    def _StartOneSpeedPing(self, address, imageProxy, isProxyUrl, i):
 
         # isHttpProxy = True
 
@@ -207,8 +210,6 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
                             (self.radioProxyGroup.checkedId() == 2 and not self.sockEdit.text())):
             label = getattr(self, "label_api_"+str(i))
             label.setText(Str.GetStr(Str.NoProxy))
-            self.speedPingNum += 1
-            self.StartSpeedPing()
             return
 
         request = req.SpeedTestPingReq()
@@ -235,8 +236,7 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
 
         # imageAdress = GlobalConfig.GetImageAdress(i)
         imgUrl = self.imgCombox.currentText()
-        Server().UpdateDns(address, imgUrl, imageProxy)
-        Server().UpdateProxy2(self.radioProxyGroup.checkedId(), self.httpLine.text(), self.sockEdit.text())
+        self._ApplySpeedRoute(request, address)
 
         self.pingBackNumCnt[i] = 0
         self.pingBackNumDict[i] = [0, 0, 0]
@@ -249,6 +249,14 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.AddHttpTask(lambda x: Server().TestSpeedPing(request2, x), self.SpeedTestPingBack, (i, 2))
         self.needBackNum += 1
         return
+
+    @staticmethod
+    def _ApplySpeedRoute(request, address):
+        if not ToolUtil.IsipAddress(address):
+            return
+        host = ToolUtil.GetUrlHost(request.url)
+        request.url = request.url.replace(host, address, 1)
+        request.headers["host"] = host
 
     def SpeedTestPingBack(self, raw, v):
         i, backNum = v
@@ -281,8 +289,9 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
                 text = "<font color=#d71345>{}</font>".format(Str.GetStr(int(sumSt)))
                 label.setText(text)
             self.lastResult[objectName] = text
-            self.speedPingNum += 1
-            self.StartSpeedPing()
+            self.needBackNum -= 1
+            if self.needBackNum == 0:
+                self.StartSpeedTest()
             return
 
     def CheckShow5(self):
@@ -296,21 +305,23 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
             self.radio_img_5.setEnabled(True)
 
     def StartSpeedTest(self):
-        if len(self.speedTest) <= self.speedIndex:
+        self.speedIndex = 0
+        Server().UpdateProxy2(self.radioProxyGroup.checkedId(), self.httpLine.text(), self.sockEdit.text())
+        for address, imageProxy, isHttpProxy, isProxyUrl, i in self.speedTest:
+            self._StartOneSpeedTest(address, imageProxy, isHttpProxy, isProxyUrl, i)
+        if self.speedIndex == 0:
             self.UpdateServer()
             self.SetEnabled(True)
             self.CheckShow5()
             self.SaveHistory()
-            return
+        return
 
-        address, imageProxy, isHttpProxy, isProxyUrl, i = self.speedTest[self.speedIndex]
+    def _StartOneSpeedTest(self, address, imageProxy, isHttpProxy, isProxyUrl, i):
         httpProxy = self.httpLine.text()
         if ((self.radioProxyGroup.checkedId() == 1 and not self.httpLine.text()) or
                             (self.radioProxyGroup.checkedId() == 2 and not self.sockEdit.text())):
             label = getattr(self, "label_img_" + str(i))
             label.setText(Str.GetStr(Str.NoProxy))
-            self.speedIndex += 1
-            self.StartSpeedTest()
             return
 
         request = req.SpeedTestReq()
@@ -335,10 +346,10 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         # else:
         #     self.SetSock5Proxy(False)
         imgUrl = self.imgCombox.currentText()
-        Server().UpdateDns(address, imgUrl, imageProxy)
-        Server().UpdateProxy2(self.radioProxyGroup.checkedId(), self.httpLine.text(), self.sockEdit.text())
+        self._ApplySpeedRoute(request, imageProxy)
 
         self.AddHttpTask(lambda x: Server().TestSpeed(request, x), self.SpeedTestBack, i)
+        self.speedIndex += 1
         return
 
     def SpeedTestBack(self, raw, i):
@@ -353,8 +364,12 @@ class LoginProxyWidget(QtWidgets.QWidget, Ui_LoginProxyWidget, QtTaskBase):
         self.lastResult[objectName] = data
 
         label.setText(data)
-        self.speedIndex += 1
-        self.StartSpeedTest()
+        self.speedIndex -= 1
+        if self.speedIndex == 0:
+            self.UpdateServer()
+            self.SetEnabled(True)
+            self.CheckShow5()
+            self.SaveHistory()
         return
 
     def LoadSetting(self):
