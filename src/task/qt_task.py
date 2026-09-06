@@ -168,6 +168,7 @@ class TaskBase(Singleton):
         self.thread.setDaemon(True)
         self.tasks = {}
         self.flagToIds = {}
+        self._taskLock = threading.RLock()
 
     def Stop(self):
         self._inQueue.put("")
@@ -177,10 +178,44 @@ class TaskBase(Singleton):
         return
 
     def Cancel(self, cleanFlag):
-        taskIds = self.flagToIds.get(cleanFlag, set())
-        if not taskIds:
-            return
-        for taskId in taskIds:
-            if taskId in self.tasks:
-                del self.tasks[taskId]
-        self.flagToIds.pop(cleanFlag)
+        self._RemoveTasksByFlag(cleanFlag)
+
+    def _RegisterTask(self, info, cleanFlag=None, id_attr="taskId"):
+        with self._taskLock:
+            self.taskId += 1
+            taskId = self.taskId
+            setattr(info, id_attr, taskId)
+            info.cleanFlag = cleanFlag
+            self.tasks[taskId] = info
+            if cleanFlag:
+                self.flagToIds.setdefault(cleanFlag, set()).add(taskId)
+            return taskId
+
+    def _GetTask(self, taskId):
+        with self._taskLock:
+            return self.tasks.get(taskId)
+
+    def _TakeTask(self, taskId):
+        # 终态先取出记录，再调用业务回调，避免重入或回调异常留下旧任务。
+        with self._taskLock:
+            info = self.tasks.pop(taskId, None)
+            if info is None:
+                return None
+            if info.cleanFlag:
+                taskIds = self.flagToIds.get(info.cleanFlag)
+                if taskIds is not None:
+                    taskIds.discard(taskId)
+                    if not taskIds:
+                        self.flagToIds.pop(info.cleanFlag, None)
+            return info
+
+    def _RemoveTasksByFlag(self, cleanFlag):
+        with self._taskLock:
+            taskIds = list(self.flagToIds.get(cleanFlag, ()))
+            removedIds = self._RemoveTasksByIds(taskIds)
+            self.flagToIds.pop(cleanFlag, None)
+            return removedIds
+
+    def _RemoveTasksByIds(self, taskIds):
+        with self._taskLock:
+            return [taskId for taskId in list(taskIds) if self._TakeTask(taskId) is not None]

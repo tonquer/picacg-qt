@@ -39,14 +39,12 @@ class TaskQImage(TaskBase):
             if taskId < 0:
                 break
 
-            q = QImage()
+            info = self._GetTask(taskId)
+            if not info:
+                continue
+            newQ = QImage()
             try:
-                info = self.tasks.get(taskId)
-                if not info:
-                    continue
-
-                if not info.data:
-                    return
+                q = QImage()
                 q.loadFromData(info.data)
                 q.setDevicePixelRatio(info.radio)
                 if info.toW > 0:
@@ -60,8 +58,7 @@ class TaskQImage(TaskBase):
                 self.taskObj.imageBack.emit(taskId, newQ)
 
     def AddQImageTask(self, data, radio, toW, toH, model, callBack=None, backParam=None, cleanFlag=None):
-        self.taskId += 1
-        info = QtQImageTask(self.taskId)
+        info = QtQImageTask(0)
         info.callBack = callBack
         info.backParam = backParam
         info.data = data
@@ -70,34 +67,23 @@ class TaskQImage(TaskBase):
         info.toH = toH
         info.model = model
 
-        self.tasks[self.taskId] = info
-        if cleanFlag:
-            info.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-        self._inQueue.put(self.taskId)
-        return self.taskId
+        taskId = self._RegisterTask(info, cleanFlag)
+        self._inQueue.put(taskId)
+        return taskId
 
     def ClearQImageTaskById(self, taskId):
-        if taskId in self.tasks:
-            self.tasks.pop(taskId)
+        self._TakeTask(taskId)
 
     def HandlerTask(self, taskId, newData):
         try:
-            info = self.tasks.get(taskId)
+            info = self._TakeTask(taskId)
             if not info:
-                Log.Warn("[Task] not find taskId:{}".format(taskId))
                 return
             assert isinstance(info, QtQImageTask)
-            if info.cleanFlag:
-                taskIds = self.flagToIds.get(info.cleanFlag, set())
-                taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
                     info.callBack(newData)
                 else:
                     info.callBack(newData, info.backParam)
-                del info.callBack
-            del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)

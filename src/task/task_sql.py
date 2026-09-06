@@ -18,46 +18,29 @@ class TaskSql(TaskBase):
         self.taskObj.sqlBack.connect(self.HandlerSqlTask)
 
     def AddSqlTask(self, table, data, taskType, callBack=None, backParam=None, cleanFlag=None):
-        self.taskId += 1
-        info = QtSqlTask(self.taskId)
+        info = QtSqlTask(0)
         info.callBack = callBack
         info.backParam = backParam
-        self.tasks[self.taskId] = info
-        if cleanFlag:
-            info.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-
-        from server.sql_server import SqlServer
-        SqlServer().AddSqlTask(table, taskType, data, self.taskId)
+        taskId = self._RegisterTask(info, cleanFlag)
+        try:
+            from server.sql_server import SqlServer
+            SqlServer().AddSqlTask(table, taskType, data, taskId)
+        except Exception:
+            self._TakeTask(taskId)
+            raise
         return
 
     def HandlerSqlTask(self, taskId, data):
         try:
-            data = pickle.loads(data)
-            info = self.tasks.get(taskId)
+            info = self._TakeTask(taskId)
             if not info:
-                Log.Warn("[Task] not find taskId:{}, {}".format(taskId, data))
                 return
+            data = pickle.loads(data)
             assert isinstance(info, QtSqlTask)
-            if info.cleanFlag:
-                taskIds = self.flagToIds.get(info.cleanFlag, set())
-                taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
                     info.callBack(data)
                 else:
                     info.callBack(data, info.backParam)
-                del info.callBack
-            del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)
-
-    def Cancel(self, cleanFlag):
-        taskIds = self.flagToIds.get(cleanFlag, set())
-        if not taskIds:
-            return
-        for taskId in taskIds:
-            if taskId in self.tasks:
-                del self.tasks[taskId]
-        self.flagToIds.pop(cleanFlag)

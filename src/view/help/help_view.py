@@ -184,6 +184,9 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectUpdate, self.UpdateDbInfoBack)
 
     def UpdateDbInfoBack(self, data):
+        if data is None:
+            QtOwner().ShowError(Str.GetStr(Str.Error))
+            return
         dbVer, num, timeStr, version = data
         config.DbVersion = dbVer
         self.curSubVersion = version

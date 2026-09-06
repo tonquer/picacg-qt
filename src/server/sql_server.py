@@ -116,61 +116,61 @@ class SqlServer(Singleton):
 
         inQueue = self._inQueue[bookName]
         while True:
+            taskType, data, backId = inQueue.get(True)
             try:
-                task = inQueue.get(True)
-            except Exception as es:
-                continue
-                pass
-            inQueue.task_done()
-            try:
-                (taskType, data, backId) = task
-
                 if taskType == self.TaskTypeClose:
                     break
-                if not isInit:
-                    TaskSql().taskObj.sqlBack.emit(backId, pickle.dumps(""))
-                    continue
-                if taskType == self.TaskCheck:
-                    try:
-                        cur = conn.cursor()
-                        cur.execute("select * from system")
-                        data2 = pickle.dumps(str(int(isInit)))
-                    except Exception as es:
-                        Log.Error(es)
-                        data2 = pickle.dumps("")
-                    TaskSql().taskObj.sqlBack.emit(backId, data2)
-                elif taskType == self.TaskTypeSql:
-                    cur = conn.cursor()
-                    with conn:
-                        cur.execute(data)
-                    if backId:
-                        data2 = pickle.dumps("")
-                        TaskSql().taskObj.sqlBack.emit(backId, data2)
-                elif taskType == self.TaskTypeSelectBook:
-                    self._SelectBook(conn, data, backId)
-                elif taskType == self.TaskTypeSelectWord:
-                    self._SelectWord(conn, data, backId)
-                elif taskType == self.TaskTypeSelectUpdate:
-                    self._SelectUpdateInfo(conn, data, backId)
-                elif taskType == self.TaskTypeSelectFavorite:
-                    self._SelectFavoriteIds(conn, data, backId)
-                elif taskType == self.TaskTypeCacheBook:
-                    self._SelectCacheBook(conn, data, backId)
-                elif taskType == self.TaskTypeCategoryBookNum:
-                    self._SelectCategoryBookNum(conn, data, backId)
-                elif taskType == self.TaskTypeSearchBookNum:
-                    self._SelectBookNum(conn, data, backId)
-                elif taskType == self.TaskTypeUpdateFavorite:
-                    self._UpdateFavorite(conn, data, backId)
-                elif taskType == self.TaskTypeUpdateBook:
-                    self._UpdateBookInfo(conn, data, backId)
-
-            except Exception as es:
-                Log.Error(es)
+                result = self._SqlFailureResult(taskType)
+                try:
+                    if isInit:
+                        if taskType == self.TaskCheck:
+                            conn.execute("select * from system")
+                            result = "1"
+                        elif taskType == self.TaskTypeSql:
+                            with conn:
+                                conn.execute(data)
+                            result = ""
+                        elif taskType == self.TaskTypeSelectBook:
+                            result = self._SelectBook(conn, data, backId)
+                        elif taskType == self.TaskTypeSelectWord:
+                            result = self._SelectWord(conn, data, backId)
+                        elif taskType == self.TaskTypeSelectUpdate:
+                            result = self._SelectUpdateInfo(conn, data, backId)
+                        elif taskType == self.TaskTypeSelectFavorite:
+                            result = self._SelectFavoriteIds(conn, data, backId)
+                        elif taskType == self.TaskTypeCacheBook:
+                            result = self._SelectCacheBook(conn, data, backId)
+                        elif taskType == self.TaskTypeCategoryBookNum:
+                            result = self._SelectCategoryBookNum(conn, data, backId)
+                        elif taskType == self.TaskTypeSearchBookNum:
+                            result = self._SelectBookNum(conn, data, backId)
+                        elif taskType == self.TaskTypeUpdateFavorite:
+                            result = self._UpdateFavorite(conn, data, backId)
+                        elif taskType == self.TaskTypeUpdateBook:
+                            result = self._UpdateBookInfo(conn, data, backId)
+                    response = pickle.dumps(result)
+                except Exception as es:
+                    Log.Error(es)
+                    response = pickle.dumps(self._SqlFailureResult(taskType))
+                # 每个 SQL 任务只有这一处终态通知，写操作在事务提交后才到达这里。
+                if backId:
+                    TaskSql().taskObj.sqlBack.emit(backId, response)
+            finally:
+                inQueue.task_done()
         if conn:
             conn.close()
         Log.Info("db: close conn:{}".format(bookName))
         return
+
+    @classmethod
+    def _SqlFailureResult(cls, taskType):
+        if taskType == cls.TaskCheck:
+            return ""
+        if taskType == cls.TaskTypeCacheBook:
+            return {"st": Status.Error, "bookList": []}
+        if taskType in (cls.TaskTypeUpdateBook, cls.TaskTypeUpdateFavorite):
+            return {"st": Status.Error}
+        return None
 
     def __DoCheckHavePicaID(self, conn):
         cur = conn.cursor()
@@ -212,9 +212,7 @@ class SqlServer(Singleton):
             if QtOwner().isDbHavePicaID:
                 info.shareId = data[19]
             books.append(info)
-        data = pickle.dumps(books)
-        if backId:
-            TaskSql().taskObj.sqlBack.emit(backId, data)
+        return books
 
     def _SelectBookNum(self, conn, sql, backId):
         cur = conn.cursor()
@@ -222,9 +220,7 @@ class SqlServer(Singleton):
         cur.execute(sql)
         for data in cur.fetchall():
             nums = data[0]
-        data = pickle.dumps(nums)
-        if backId:
-            TaskSql().taskObj.sqlBack.emit(backId, data)
+        return nums
 
     def _SelectCategoryBookNum(self, conn, sql, backId):
         cur = conn.cursor()
@@ -233,9 +229,7 @@ class SqlServer(Singleton):
         cur.execute("select category, count(*) from category where bookId in ({}) group by category".format(sql))
         for data in cur.fetchall():
             nums[CateGoryMgr().indexCategories.get(data[0])] = data[1]
-        data = pickle.dumps(nums)
-        if backId:
-            TaskSql().taskObj.sqlBack.emit(backId, data)
+        return nums
 
     def _SelectWord(self, conn, sql, backId):
         cur = conn.cursor()
@@ -243,9 +237,7 @@ class SqlServer(Singleton):
         words = []
         for data in cur.fetchall():
             words.append(data[1])
-        data = pickle.dumps(words)
-        if backId:
-            TaskSql().taskObj.sqlBack.emit(backId, data)
+        return words
 
     def _SelectUpdateInfo(self, conn, sql, backId):
         cur = conn.cursor()
@@ -264,9 +256,7 @@ class SqlServer(Singleton):
         for data in cur.fetchall():
             nums = data[0]
 
-        data = pickle.dumps((dbVer, nums, time, version))
-        if backId:
-            TaskSql().taskObj.sqlBack.emit(backId, data)
+        return dbVer, nums, time, version
 
     def _SelectFavoriteIds(self, conn, sql, backId):
         cur = conn.cursor()
@@ -275,9 +265,7 @@ class SqlServer(Singleton):
         allFavoriteIds = []
         for data in cur.fetchall():
             allFavoriteIds.append((data[0], data[1]))
-        data = pickle.dumps(allFavoriteIds)
-        if backId:
-            TaskSql().taskObj.sqlBack.emit(backId, data)
+        return allFavoriteIds
 
     def _SelectCacheBook(self, conn, bookId, backId):
         v = {}
@@ -324,9 +312,8 @@ class SqlServer(Singleton):
             v["st"] = Status.Ok
         except Exception as es:
             Log.Error(es)
-        data = pickle.dumps(v)
-        if backId:
-            TaskSql().taskObj.sqlBack.emit(backId, data)
+            return self._SqlFailureResult(self.TaskTypeCacheBook)
+        return v
 
     @time_me
     def _UpdateBookInfo(self, conn, data, backId):
@@ -374,6 +361,7 @@ class SqlServer(Singleton):
             cur.execute(sql)
 
             Log.Info("db: update database, len:{}, version:{}, tick:{} ".format(len(addData), tick, version))
+        return {"st": Status.Ok}
 
     def _UpdateFavorite(self, conn, addData, backId):
         cur = conn.cursor()
@@ -384,6 +372,7 @@ class SqlServer(Singleton):
                 sql = "replace INTO favorite(id, user, sortId) VALUES ('{0}', '{1}', {2});".format(bookId, Setting.UserId.value, sortId)
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
+        return {"st": Status.Ok}
 
     @staticmethod
     def SearchFavorite(page, sortKey=0, sortId=0, searchText=""):

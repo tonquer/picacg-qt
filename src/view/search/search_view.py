@@ -103,6 +103,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             pending["finished"] = True
             self.SetPageLoading(False)
             QtOwner().CloseLoading()
+            QtOwner().ShowError(Str.GetStr(Str.Error))
             return
         if books is _WAITING_PAGE_RESULT or total is _WAITING_PAGE_RESULT:
             return
@@ -322,6 +323,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def OpenLocalRecommendationBack(self, books, page):
         self.SendLocalBack(books, page)
+        if books is None:
+            return
         self.bookList.pages = 1
         self.spinBox.setMaximum(1)
         self.spinBox.setValue(1)
@@ -413,6 +416,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def SendLocalNumBack(self, nums, text):
+        if nums is None:
+            return
         if text != self.text and text != self.categories:
             return
 
@@ -439,6 +444,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def SendLocalBack(self, books, page):
         QtOwner().CloseLoading()
+        if books is None:
+            self.SetPageLoading(False)
+            QtOwner().ShowError(Str.GetStr(Str.Error))
+            return
         self.spinBox.setValue(page)
         self.bookList.UpdatePage(page, self.bookList.pages)
         self.SetPageLoading(True)
