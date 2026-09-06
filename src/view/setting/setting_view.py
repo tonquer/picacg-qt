@@ -1,4 +1,3 @@
-import base64
 import os
 import re
 import sys
@@ -6,17 +5,17 @@ from contextlib import contextmanager, ExitStack
 from functools import partial
 
 from PySide6 import QtWidgets
-from PySide6.QtCore import QSettings, Qt, QSize, QUrl, QFile, QTranslator, QLocale, QEvent, QObject, QSignalBlocker
-from PySide6.QtGui import QDesktopServices, QFont, QFontDatabase
+from PySide6.QtCore import QSettings, Qt, QUrl, QFile, QTranslator, QLocale, QEvent, QObject, QSignalBlocker
+from PySide6.QtGui import QDesktopServices, QFontDatabase
 from PySide6.QtWidgets import QFileDialog, QScroller, QScrollerProperties, QToolTip
 
 from config import config
 from config.setting import Setting, SettingValue
 from interface.ui_setting_new import Ui_SettingNew
 from qt_owner import QtOwner
-from tools.langconv import Converter
 from tools.log import Log
 from tools.str import Str
+from view.setting.setting_binding import BindCheck, BindRadio, BindLine, BindIndex, BindValue, BindSpin
 
 
 class SettingView(QtWidgets.QWidget, Ui_SettingNew):
@@ -24,6 +23,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         super(self.__class__, self).__init__(parent)
         Ui_SettingNew.__init__(self)
         self._settingControlsReady = False
+        self._settingBindingsConnected = False
         self.setupUi(self)
 
         self.mainSize = None
@@ -40,75 +40,15 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
         for index in range(1, self.fontSize.count()):
             self.fontSize.setItemData(index, self.fontSize.itemText(index))
 
-        # RadioButton:
-        self.themeGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ThemeIndex))
-        self.languageGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.Language))
-        self.logGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.LogIndex))
-        # self.mainScaleGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ScaleLevel))
-        self.proxyGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.IsHttpProxy))
-        self.saveNameGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.SaveNameType))
-        self.showCloseButtonGroup.buttonClicked.connect(partial(self.ButtonClickEvent, Setting.ShowCloseType))
-
-        # CheckButton:
-        self.mainScaleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUseScaleFactor, self.mainScaleBox))
-
-        self.checkBox_IsUpdate.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUpdate, self.checkBox_IsUpdate))
-        self.chatProxy.clicked.connect(partial(self.CheckButtonEvent, Setting.ChatProxy, self.chatProxy))
-        self.readCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenWaifu, self.readCheckBox))
-        self.preDownWaifu2x.clicked.connect(partial(self.CheckButtonEvent, Setting.PreDownWaifu2x, self.preDownWaifu2x))
-        self.coverCheckBox.clicked.connect(partial(self.CheckButtonEvent, Setting.CoverIsOpenWaifu, self.coverCheckBox))
-        self.downAuto.clicked.connect(partial(self.CheckButtonEvent, Setting.DownloadAuto, self.downAuto))
-        # self.titleBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsUseTitleBar, self.titleBox))
-        self.openglBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsOpenOpenGL, self.openglBox))
-        self.crossChapterPrefetch.clicked.connect(partial(self.CheckButtonEvent, Setting.CrossChapterPrefetch, self.crossChapterPrefetch))
-        self.prefetchWholeChapter.clicked.connect(partial(self.CheckButtonEvent, Setting.PrefetchWholeChapter, self.prefetchWholeChapter))
-        self.grabGestureBox.clicked.connect(partial(self.CheckButtonEvent, Setting.IsGrabGesture, self.grabGestureBox))
-        # self.isShowClose.clicked.connect(partial(self.CheckButtonEvent, Setting.IsNotShowCloseTip, self.isShowClose))
-
-        # LineEdit:
-        self.httpEdit.editingFinished.connect(partial(self.LineEditEvent, Setting.HttpProxy, self.httpEdit))
-        self.sockEdit.editingFinished.connect(partial(self.LineEditEvent, Setting.Sock5Proxy, self.sockEdit))
-
-        # Button:
-
-        # comboBox:
-        # self.encodeSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, "LookReadMode"))
-        # self.readModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookModel))
-        # self.readNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.LookNoise))
-        # self.coverModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookModel))
-        # self.coverNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.CoverLookNoise))
-        # self.downModel.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadModel))
-        # self.downNoise.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadNoise))
-        self.coverLvBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.DownloadCoverLv))
-
-        self.readModelName.clicked.connect(partial(self.CheckOpenSrSelect, Setting.LookModelName, self.readModelName))
-        self.coverModelName.clicked.connect(partial(self.CheckOpenSrSelect, Setting.CoverLookModelName, self.coverModelName))
-        self.downModelName.clicked.connect(partial(self.CheckOpenSrSelect, Setting.DownloadModelName, self.downModelName))
-        self.encodeSelect.currentIndexChanged.connect(partial(self.ChoiceTextEvent, Setting.SelectEncodeGpu, self.encodeSelect))
-        self.threadSelect.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.Waifu2xCpuCore))
-        self.titleLineBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.TitleLine))
-        self.categoryBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.NotCategoryShow))
-
-        self.fontBox.currentIndexChanged.connect(partial(self.ChoiceTextEvent, Setting.FontName, self.fontBox))
-        self.fontSize.currentIndexChanged.connect(partial(self.ChoiceTextEvent, Setting.FontSize, self.fontSize))
-        self.fontStyle.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.FontStyle))
-        self.tileComboBox.currentIndexChanged.connect(partial(self.CheckRadioEvent, Setting.Waifu2xTileSize))
-
-        # spinBox
-        # self.preDownNum.valueChanged.connect(partial(self.SpinBoxEvent, "", self.preDownNum))
-        self.scaleBox.valueChanged.connect(partial(self.SpinBoxEvent, Setting.ScaleFactor))
-        self.coverSize.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverSize))
-        self.categorySize.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CategorySize))
-        self.readScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.LookScale))
-        self.coverScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverLookScale))
-        self.downScale.valueChanged.connect(partial(self.SpinBoxEvent, Setting.DownloadScale))
-        self.lookMaxBox.valueChanged.connect(partial(self.SpinBoxEvent, Setting.LookMaxNum))
-        self.coverMaxBox.valueChanged.connect(partial(self.SpinBoxEvent, Setting.CoverMaxNum))
-        self.prefetchCount.valueChanged.connect(partial(self.SpinBoxEvent, Setting.PicturePrefetchCount))
-        self.prefetchFrontCount.valueChanged.connect(partial(self.SpinBoxEvent, Setting.PicturePrefetchFrontCount))
-
-        self.showCount.valueChanged.connect(partial(self.SpinBoxEvent, Setting.PictureShowCount))
-        self.showFrontCount.valueChanged.connect(partial(self.SpinBoxEvent, Setting.PictureShowFrontCount))
+        self._settingBindings = self._CreateSettingBindings()
+        self._modelBindings = (
+            (Setting.LookModelName, self.readModelName),
+            (Setting.CoverLookModelName, self.coverModelName),
+            (Setting.DownloadModelName, self.downModelName),
+        )
+        self._ConnectSettingBindings()
+        for setting, button in self._modelBindings:
+            button.setText(setting.setV)
 
         self.generalButton.clicked.connect(partial(self.MoveToLabel, self.generalLabel))
         self.prefetchButton.clicked.connect(partial(self.MoveToLabel, self.prefetchLabel))
@@ -186,88 +126,106 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             self.msgLabel.setVisible(False)
         return
 
-    def ButtonClickEvent(self, setItem, button):
-        assert isinstance(setItem, SettingValue)
-        mo = re.search(r"\d+", button.objectName())
-        if mo:
-            value = int(mo.group())
-            setItem.SetValue(value)
-            if setItem == Setting.ThemeIndex:
-                self.SetTheme()
-            elif setItem == Setting.LogIndex:
-                Log.UpdateLoggingLevel()
-            elif setItem == Setting.Language:
-                self.SetLanguage()
-            # elif setItem == Setting.IsHttpProxy:
-            #     from server.server import Server
-            #     Server().UpdateProxy()
-            QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
+    def _CreateSettingBindings(self):
+        return (
+            BindRadio(Setting.ThemeIndex, self.themeGroup,
+                      (self.themeButton0, self.themeButton1, self.themeButton2),
+                      lambda: self.SetTheme()),
+            BindRadio(Setting.Language, self.languageGroup,
+                      (self.languageButton0, self.languageButton1, self.languageButton2, self.languageButton3),
+                      lambda: self.SetLanguage()),
+            BindRadio(Setting.LogIndex, self.logGroup,
+                      (self.logutton0, self.logutton1, self.logutton2),
+                      lambda: Log.UpdateLoggingLevel()),
+            BindRadio(Setting.IsHttpProxy, self.proxyGroup, (self.proxy0, self.proxy1, self.proxy2, self.proxy3)),
+            BindRadio(Setting.SaveNameType, self.saveNameGroup,
+                      (self.saveNameButton0, self.saveNameButton1, self.saveNameButton2)),
+            BindRadio(Setting.ShowCloseType, self.showCloseButtonGroup, (self.showCloseButton0, self.showCloseButton1)),
+            BindCheck(Setting.IsUseScaleFactor, self.mainScaleBox),
+            BindCheck(Setting.IsUpdate, self.checkBox_IsUpdate),
+            BindCheck(Setting.ChatProxy, self.chatProxy),
+            BindCheck(Setting.IsOpenWaifu, self.readCheckBox),
+            BindCheck(Setting.PreDownWaifu2x, self.preDownWaifu2x),
+            BindCheck(Setting.CoverIsOpenWaifu, self.coverCheckBox),
+            BindCheck(Setting.DownloadAuto, self.downAuto),
+            BindCheck(Setting.IsOpenOpenGL, self.openglBox),
+            BindCheck(Setting.CrossChapterPrefetch, self.crossChapterPrefetch),
+            BindCheck(Setting.PrefetchWholeChapter, self.prefetchWholeChapter),
+            BindCheck(Setting.IsGrabGesture, self.grabGestureBox),
+            BindLine(Setting.HttpProxy, self.httpEdit),
+            BindLine(Setting.Sock5Proxy, self.sockEdit),
+            BindIndex(Setting.DownloadCoverLv, self.coverLvBox),
+            BindIndex(Setting.Waifu2xCpuCore, self.threadSelect,
+                      lambda value: self._SetIndexChoice(self.threadSelect, value, config.UseCpuNum)),
+            BindIndex(Setting.TitleLine, self.titleLineBox),
+            BindIndex(Setting.NotCategoryShow, self.categoryBox),
+            BindIndex(Setting.FontStyle, self.fontStyle, lambda value: self.fontStyle.setCurrentIndex(int(value))),
+            BindIndex(Setting.Waifu2xTileSize, self.tileComboBox),
+            BindValue(Setting.SelectEncodeGpu, self.encodeSelect,
+                      lambda value: self._SetTextChoice(self.encodeSelect, value, config.EncodeGpu)),
+            BindValue(Setting.FontName, self.fontBox,
+                      lambda value: self._SetTextChoice(self.fontBox, self._FontChoiceValue(value))),
+            BindValue(Setting.FontSize, self.fontSize,
+                      lambda value: self._SetTextChoice(self.fontSize, self._FontChoiceValue(value))),
+            BindSpin(Setting.ScaleFactor, self.scaleBox),
+            BindSpin(Setting.CoverSize, self.coverSize),
+            BindSpin(Setting.CategorySize, self.categorySize),
+            BindSpin(Setting.LookMaxNum, self.lookMaxBox),
+            BindSpin(Setting.CoverMaxNum, self.coverMaxBox),
+            BindSpin(Setting.PicturePrefetchCount, self.prefetchCount),
+            BindSpin(Setting.PicturePrefetchFrontCount, self.prefetchFrontCount),
+            BindSpin(Setting.PictureShowCount, self.showCount),
+            BindSpin(Setting.PictureShowFrontCount, self.showFrontCount),
+            BindSpin(Setting.LookScale, self.readScale, float),
+            BindSpin(Setting.CoverLookScale, self.coverScale, float),
+            BindSpin(Setting.DownloadScale, self.downScale, float),
+        )
+
+    def _ConnectSettingBindings(self):
+        if self._settingBindingsConnected:
+            return
+        for binding in self._settingBindings:
+            binding.signal.connect(partial(self._SaveSettingBinding, binding))
+        for setting, button in self._modelBindings:
+            button.clicked.connect(partial(self._OpenModelSelection, setting, button))
+        self._settingBindingsConnected = True
+
+    def _SaveSettingBinding(self, binding, *_):
+        value = binding.read()
+        if value is None:
+            return
+        self._SaveSettingValue(binding.setting, value, binding.after_save)
+
+    def _SaveSettingValue(self, setting, value, after_save=None):
+        setting.SetValue(value)
+        if after_save is not None:
+            after_save()
+        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
         self.CheckMsgLabel()
-        return
+
+    # 登录代理页仍复用这三个入口，保留兼容并共用保存逻辑。
+    def ButtonClickEvent(self, setItem, button):
+        match = re.search(r"\d+", button.objectName())
+        if match is None:
+            self.CheckMsgLabel()
+            return
+        after_save = next((binding.after_save for binding in self._settingBindings
+                           if binding.setting is setItem), None)
+        self._SaveSettingValue(setItem, int(match.group()), after_save)
 
     def CheckButtonEvent(self, setItem, button):
-        assert isinstance(setItem, SettingValue)
-        setItem.SetValue(int(button.isChecked()))
-        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
-        self.CheckMsgLabel()
-        return
-    
-    def CheckOpenSrSelect(self, setItem, button):
-        if button == self.coverModelName:
-            QtOwner().OpenSrSelectModel(setItem.value, self.CheckOpenSrSelectCoverBack)
-        elif button == self.readModelName:
-            QtOwner().OpenSrSelectModel(setItem.value, self.CheckOpenSrSelectReadBack)
-        elif button == self.downModelName:
-            QtOwner().OpenSrSelectModel(setItem.value, self.CheckOpenSrSelectDownBack)
-        pass
-
-    def CheckOpenSrSelectCoverBack(self, modelName):
-        Setting.CoverLookModelName.SetValue(modelName)
-        self.coverModelName.setText(modelName)
-        return modelName
-
-    def CheckOpenSrSelectReadBack(self, modelName):
-        Setting.LookModelName.SetValue(modelName)
-        self.readModelName.setText(modelName)
-        return modelName
-
-    def CheckOpenSrSelectDownBack(self, modelName):
-        Setting.DownloadModelName.SetValue(modelName)
-        self.downModelName.setText(modelName)
-        return modelName
-    
-    def CheckRadioEvent(self, setItem, value):
-        assert isinstance(setItem, SettingValue)
-        setItem.SetValue(value)
-        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
-        # if setItem == Setting.IsHttpProxy:
-        #     from server.server import Server
-        #     Server().UpdateProxy()
-        self.CheckMsgLabel()
-        return
-
-    def ChoiceTextEvent(self, setItem, comboBox, *_):
-        if comboBox.currentIndex() < 0:
-            return
-        self.CheckRadioEvent(setItem, comboBox.currentData())
+        self._SaveSettingValue(setItem, int(button.isChecked()))
 
     def LineEditEvent(self, setItem, lineEdit):
-        assert isinstance(setItem, SettingValue)
-        value = lineEdit.text()
-        setItem.SetValue(value)
-        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
-        self.CheckMsgLabel()
-        # from server.server import Server
-        # Server().UpdateProxy()
-        return
+        self._SaveSettingValue(setItem, lineEdit.text())
 
-    def SpinBoxEvent(self, setItem, value):
-        assert isinstance(setItem, SettingValue)
-        converter = float if isinstance(setItem.defaultV, float) else int
-        setItem.SetValue(converter(value))
-        QtOwner().ShowMsgOne(Str.GetStr(Str.SaveSuc))
-        self.CheckMsgLabel()
-        return
+    def _OpenModelSelection(self, setting, button, *_):
+        QtOwner().OpenSrSelectModel(setting.value, partial(self._SaveModelSelection, setting, button))
+
+    def _SaveModelSelection(self, setting, button, modelName):
+        setting.SetValue(modelName)
+        button.setText(modelName)
+        return modelName
 
     def SwitchCurrent(self, **kwargs):
         self.InitSetting()
@@ -317,53 +275,19 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             comboBox.setCurrentIndex(index)
 
     def InitSetting(self):
-        # 回填展示待生效值，不能通过控件信号覆盖用户已经保存的设置。
-        with self._BlockSettingSignals():
-            self.checkBox_IsUpdate.setChecked(bool(Setting.IsUpdate.setV))
-            self.mainScaleBox.setChecked(bool(Setting.IsUseScaleFactor.setV))
-            self.SetRadioGroup("themeButton", Setting.ThemeIndex.setV)
-            self.SetRadioGroup("languageButton", Setting.Language.setV)
-            self.SetRadioGroup("proxy", Setting.IsHttpProxy.setV)
-            self.SetRadioGroup("saveNameButton", Setting.SaveNameType.setV)
-            self.SetRadioGroup("showCloseButton", Setting.ShowCloseType.setV)
-            self.coverSize.setValue(Setting.CoverSize.setV)
-            self.coverLvBox.setCurrentIndex(Setting.DownloadCoverLv.setV)
-            self.categorySize.setValue(Setting.CategorySize.setV)
-            self.SetRadioGroup("logutton", Setting.LogIndex.setV)
-            self.httpEdit.setText(Setting.HttpProxy.setV)
-            self.sockEdit.setText(Setting.Sock5Proxy.setV)
-            self.chatProxy.setChecked(bool(Setting.ChatProxy.setV))
-            self.openglBox.setChecked(bool(Setting.IsOpenOpenGL.setV))
-            self.prefetchCount.setValue(Setting.PicturePrefetchCount.setV)
-            self.prefetchFrontCount.setValue(Setting.PicturePrefetchFrontCount.setV)
-            self.showCount.setValue(Setting.PictureShowCount.setV)
-            self.showFrontCount.setValue(Setting.PictureShowFrontCount.setV)
-            self.crossChapterPrefetch.setChecked(bool(Setting.CrossChapterPrefetch.setV))
-            self.prefetchWholeChapter.setChecked(bool(Setting.PrefetchWholeChapter.setV))
-            self.grabGestureBox.setChecked(bool(Setting.IsGrabGesture.setV))
-            self._SetTextChoice(self.encodeSelect, Setting.SelectEncodeGpu.setV, config.EncodeGpu)
-            self._SetIndexChoice(self.threadSelect, Setting.Waifu2xCpuCore.setV, config.UseCpuNum)
-            self._SetTextChoice(self.fontSize, self._FontChoiceValue(Setting.FontSize.setV))
-            self.fontStyle.setCurrentIndex(int(Setting.FontStyle.setV))
-            self._SetTextChoice(self.fontBox, self._FontChoiceValue(Setting.FontName.setV))
-            self.readCheckBox.setChecked(bool(Setting.IsOpenWaifu.setV))
-            self.preDownWaifu2x.setChecked(bool(Setting.PreDownWaifu2x.setV))
-            self.readScale.setValue(Setting.LookScale.setV)
-            self.scaleBox.setValue(Setting.ScaleFactor.setV)
-            self.lookMaxBox.setValue(Setting.LookMaxNum.setV)
-            self.coverMaxBox.setValue(Setting.CoverMaxNum.setV)
-            self.categoryBox.setCurrentIndex(Setting.NotCategoryShow.setV)
-            self.titleLineBox.setCurrentIndex(Setting.TitleLine.setV)
-            self.tileComboBox.setCurrentIndex(Setting.Waifu2xTileSize.setV)
-            self.coverCheckBox.setChecked(bool(Setting.CoverIsOpenWaifu.setV))
-            self.coverScale.setValue(Setting.CoverLookScale.setV)
-            self.downAuto.setChecked(bool(Setting.DownloadAuto.setV))
-            self.downScale.setValue(Setting.DownloadScale.setV)
-            self.coverModelName.setText(Setting.CoverLookModelName.setV)
-            self.readModelName.setText(Setting.LookModelName.setV)
-            self.downModelName.setText(Setting.DownloadModelName.setV)
+        self._LoadSettingBindings()
         self.SetDownloadLabel()
         self.CheckMsgLabel(notify=False)
+
+    def _LoadSettingBindings(self, controls=None):
+        # 回填展示待生效值，不能通过控件信号覆盖用户已经保存的设置。
+        with self._BlockSettingSignals():
+            for binding in self._settingBindings:
+                if controls is None or binding.control in controls:
+                    binding.write(binding.setting.setV)
+            for setting, button in self._modelBindings:
+                if controls is None or button in controls:
+                    button.setText(setting.setV)
 
     def retranslateUi(self, SettingNew):
         with self._BlockSettingSignals():
@@ -372,14 +296,6 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             self.InitSetting()
         else:
             self.SetDownloadLabel()
-            self.coverModelName.setText(Setting.CoverLookModelName.setV)
-            self.readModelName.setText(Setting.LookModelName.setV)
-            self.downModelName.setText(Setting.DownloadModelName.setV)
-
-    def SetRadioGroup(self, text, index):
-        radio = getattr(self, text+str(index), None)
-        if radio:
-            radio.setChecked(True)
 
     # def SetSock5Proxy(self):
     #     try:
@@ -563,14 +479,13 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             for info in self.gpuInfos:
                 self.encodeSelect.addItem(info, info)
             self.encodeSelect.addItem("CPU", "CPU")
-            self._SetTextChoice(self.encodeSelect, Setting.SelectEncodeGpu.setV, config.EncodeGpu)
 
             autoText = self.threadSelect.itemText(0)
             self.threadSelect.clear()
             self.threadSelect.addItem(autoText)
             for i in range(cpuNum):
                 self.threadSelect.addItem(str(i + 1))
-            self._SetIndexChoice(self.threadSelect, Setting.Waifu2xCpuCore.setV, config.UseCpuNum)
+            self._LoadSettingBindings((self.encodeSelect, self.threadSelect))
 
         Log.Warn("waifu2x GPU: " + str(self.gpuInfos) + ",select: " + str(config.EncodeGpu) + ",use cpu num: " + str(config.UseCpuNum))
         return

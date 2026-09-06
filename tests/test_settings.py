@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 from contextlib import ExitStack
+from functools import partial
 from unittest.mock import Mock, patch
 
 
@@ -12,7 +13,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from PySide6.QtCore import QSettings, QTranslator
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QButtonGroup, QCheckBox, QLineEdit, QRadioButton
 
 from config import config
 from config.setting import Setting, SettingValue
@@ -314,6 +315,66 @@ class SettingViewTests(unittest.TestCase):
                 self.save.assert_called_once_with(item)
                 self.assert_refresh_preserves(item, "MODEL_WAIFU2X_CUNET_UP2X",
                                               "MODEL_WAIFU2X_CUNET_UP2X", control.text)
+
+    def test_repeated_initialization_does_not_duplicate_connections_or_saves(self):
+        for _ in range(3):
+            self.view._ConnectSettingBindings()
+            self.view.LoadSetting()
+            self.view.SwitchCurrent()
+            self.view.retranslateUi(self.view)
+            self.view.SetGpuInfos(["测试 GPU A", "测试 GPU B"], 4)
+        self.save.assert_not_called()
+        self.owner.reset_mock()
+        self.view.SetTheme.reset_mock()
+
+        self.view.fontStyle.setCurrentIndex(4)
+        self.save.assert_called_once_with(Setting.FontStyle)
+        self.owner.ShowMsgOne.assert_called_once()
+        self.assertEqual(0, Setting.FontStyle.value)
+        self.assertEqual(4, Setting.FontStyle.setV)
+
+        self.save.reset_mock()
+        self.owner.reset_mock()
+        self.view.themeButton2.click()
+        self.save.assert_called_once_with(Setting.ThemeIndex)
+        self.owner.ShowMsgOne.assert_called_once()
+        self.view.SetTheme.assert_called_once()
+
+        self.save.reset_mock()
+        self.owner.reset_mock()
+        self.view.readModelName.click()
+        self.owner.OpenSrSelectModel.assert_called_once()
+        self.save.assert_not_called()
+        _, callback = self.owner.OpenSrSelectModel.call_args.args
+        callback("MODEL_WAIFU2X_CUNET_UP2X")
+        self.save.assert_called_once_with(Setting.LookModelName)
+
+    def test_login_proxy_controls_keep_shared_setting_slots(self):
+        group = QButtonGroup(self.view)
+        radio = QRadioButton(self.view)
+        radio.setObjectName("radioButton_5")
+        group.addButton(radio)
+        group.buttonClicked.connect(partial(self.view.ButtonClickEvent, Setting.ProxySelectIndex))
+        self.save.reset_mock()
+        radio.click()
+        self.save.assert_called_once_with(Setting.ProxySelectIndex)
+        self.assertEqual(5, Setting.ProxySelectIndex.value)
+
+        line = QLineEdit(self.view)
+        line.editingFinished.connect(partial(self.view.LineEditEvent, Setting.DohAddress, line))
+        line.setText("https://example.invalid/dns-query")
+        self.save.reset_mock()
+        line.editingFinished.emit()
+        self.save.assert_called_once_with(Setting.DohAddress)
+        self.assertEqual(line.text(), Setting.DohAddress.value)
+
+        checkbox = QCheckBox(self.view)
+        checkbox.setChecked(True)
+        checkbox.clicked.connect(partial(self.view.CheckButtonEvent, Setting.EnableEch, checkbox))
+        self.save.reset_mock()
+        checkbox.click()
+        self.save.assert_called_once_with(Setting.EnableEch)
+        self.assertEqual(0, Setting.EnableEch.value)
 
 
 if __name__ == "__main__":
