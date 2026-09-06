@@ -8,7 +8,8 @@ from config.setting import Setting
 from interface.ui_history import Ui_History
 from tools.log import Log
 from tools.str import Str
-from tools.pagination import HISTORY_PAGE_SIZE, page_count, clamp_page
+from tools.pagination import HISTORY_PAGE_SIZE, page_count
+from tools.page_result import PageRequest, PageResult
 
 
 class QtHistoryData(object):
@@ -150,15 +151,14 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         sortedList = list(self.history.values())
         sortedList.sort(key=lambda a: a.bookId)
         sortedList.sort(key=lambda a: a.tick, reverse=True)
-        pages = page_count(len(sortedList), self.pageNums)
-        page = clamp_page(page, pages)
-        self.bookList.UpdatePage(page, pages)
+        request = PageRequest(page, self.pageNums).clamp(len(sortedList))
+        items = sortedList[request.offset:request.offset + request.page_size]
+        result = PageResult.from_total(items, request, len(sortedList))
+        self.bookList.UpdatePage(result.page, result.pages)
         self.bookList.UpdateState(True)
-        self.spinBox.setMaximum(pages)
-        self.spinBox.setValue(page)
-        start = (page-1) * self.pageNums
-        end = start + self.pageNums
-        for info in sortedList[start:end]:
+        self.spinBox.setMaximum(result.pages)
+        self.spinBox.setValue(result.page)
+        for info in result.items:
             self.bookList.AddBookItemByHistory(info)
         self.bookList.UpdateState()
         self.UpdatePageLabel()

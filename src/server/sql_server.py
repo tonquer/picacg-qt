@@ -1,7 +1,6 @@
 import os
 import pickle
 import sqlite3
-import sys
 import threading
 import time
 from queue import Queue
@@ -12,47 +11,14 @@ from config.setting import Setting
 from qt_owner import QtOwner
 from task.task_sql import TaskSql
 from tools.book import BookMgr
-from tools.langconv import Converter
 from tools.log import Log
 from tools.singleton import Singleton
 from tools.status import Status
 from tools.tool import time_me
-from tools.user import User
-from tools.pagination import SEARCH_PAGE_SIZE
-from qt_owner import QtOwner
-
-
-class DbBook(object):
-    def __init__(self):
-        self.id = ""             # 唯一标识
-        self.shareId = 0
-        self.title = ""           # 标题
-        self.title2 = ""           # 标题
-        self.author = ""          # 作者
-        self.chineseTeam = ""     # 汉化组
-        self.description = ""     # 描述
-        self.epsCount = 0         # 章节数
-        self.pages = 0            # 页数
-        self.finished = False     # 是否完本
-        self.categories = ""      # 分类
-        self.tags = ""            # tag
-        self.likesCount = 0       # 爱心数
-        self.created_at = 0       # 创建时间
-        self.updated_at = 0       # 更新时间
-        self.path = ""            # 路径
-        self.fileServer = ""             # 路径
-        self.originalName = ""    # 封面名
-        self.creator = ""          # 上传者
-        self.totalLikes = 0        #
-        self.totalViews = 0        #
-
-    @property
-    def pagesCount(self):
-        return self.pages
-
-    def CopyFromJson(self, data):
-        for k, v in data.items():
-            setattr(self, k, v)
+# 保留 DbBook 的旧导入路径和历史序列化兼容性。
+from server.book_mapping import DbBook, book_projection, books_from_cursor
+from server.book_query import BookQuery, SqlStatement, books_by_ids_statement, execute_statement
+from tools.page_result import PageRequest, PageResult
 
 
 class SqlServer(Singleton):
@@ -69,6 +35,7 @@ class SqlServer(Singleton):
     TaskTypeCacheBookByShareId = 107          # 缓存
     TaskTypeCategoryBookNum = 105    # 查询分类数量
     TaskTypeSearchBookNum = 106      # 查询分页数量
+    TaskTypeSelectBookPage = 108     # 查询书籍与分页总数
     TaskTypeUpdateBook = 2
     TaskTypeUpdateFavorite= 3
     TaskTypeClose = 4
@@ -132,6 +99,8 @@ class SqlServer(Singleton):
                             result = ""
                         elif taskType == self.TaskTypeSelectBook:
                             result = self._SelectBook(conn, data, backId)
+                        elif taskType == self.TaskTypeSelectBookPage:
+                            result = self._SelectBookPage(conn, data, backId)
                         elif taskType == self.TaskTypeSelectWord:
                             result = self._SelectWord(conn, data, backId)
                         elif taskType == self.TaskTypeSelectUpdate:
@@ -184,52 +153,34 @@ class SqlServer(Singleton):
         else:
             QtOwner().isDbHavePicaID = False
 
+    @staticmethod
+    def _HasShareId(conn):
+        return any(column[1] == "shareId" for column in conn.execute("PRAGMA table_info(book)"))
+
     def _SelectBook(self, conn, sql, backId):
-        cur = conn.cursor()
-        cur.execute(sql)
-        books = []
-        for data in cur.fetchall():
-            info = DbBook()
-            info.id = data[0]
-            info.title = data[1]
-            info.title2 = data[2]
-            info.author = data[3]
-            info.chineseTeam = data[4]
-            info.description = data[5]
-            info.epsCount = data[6]
-            info.pages = data[7]
-            info.finished = data[8]
-            info.likesCount = data[9]
-            info.categories = data[10]
-            info.tags = data[11]
-            info.created_at = data[12]
-            info.updated_at = data[13]
-            info.path = data[14]
-            info.fileServer = data[15]
-            info.creator = data[16]
-            info.totalLikes = data[17]
-            info.totalViews = data[18]
-            if QtOwner().isDbHavePicaID:
-                info.shareId = data[19]
-            books.append(info)
-        return books
+        return books_from_cursor(execute_statement(conn, sql))
+
+    def _SelectBookPage(self, conn, data, backId):
+        query, request = data
+        hasShareId = self._HasShareId(conn)
+        _, _, count = query.statements(has_share_id=hasShareId)
+        total = execute_statement(conn, count).fetchone()[0]
+        request = request.clamp(total)
+        rows, _, _ = query.statements(request, hasShareId)
+        books = books_from_cursor(execute_statement(conn, rows))
+        return PageResult.from_total(books, request, total)
 
     def _SelectBookNum(self, conn, sql, backId):
-        cur = conn.cursor()
-        nums = 0
-        cur.execute(sql)
-        for data in cur.fetchall():
-            nums = data[0]
-        return nums
+        return execute_statement(conn, sql).fetchone()[0]
 
     def _SelectCategoryBookNum(self, conn, sql, backId):
-        cur = conn.cursor()
         from tools.category import CateGoryMgr
-        nums = {}
-        cur.execute("select category, count(*) from category where bookId in ({}) group by category".format(sql))
-        for data in cur.fetchall():
-            nums[CateGoryMgr().indexCategories.get(data[0])] = data[1]
-        return nums
+        if isinstance(sql, SqlStatement):
+            statement = SqlStatement("select category, count(*) from category where bookId in ({}) group by category".format(sql.sql), sql.params)
+        else:
+            statement = "select category, count(*) from category where bookId in ({}) group by category".format(sql)
+        return {CateGoryMgr().indexCategories.get(category): count
+                for category, count in execute_statement(conn, statement)}
 
     def _SelectWord(self, conn, sql, backId):
         cur = conn.cursor()
@@ -268,52 +219,16 @@ class SqlServer(Singleton):
         return allFavoriteIds
 
     def _SelectCacheBook(self, conn, bookId, backId):
-        v = {}
-        try:
-            cur = conn.cursor()
-            if isinstance(bookId, int):
-                sql = "select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                    "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book where shareId ='{}'".format(
-                        bookId)
-            else:
-                sql = "select id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book where id ='{}'".format(
-                    bookId)
-            if not QtOwner().isDbHavePicaID:
-                sql = sql.replace(", shareId", "")
-            cur.execute(sql)
-            allFavoriteIds = []
-            for data in cur.fetchall():
-                info = DbBook()
-                info.id = data[0]
-                info.title = data[1]
-                info.title2 = data[2]
-                info.author = data[3]
-                info.chineseTeam = data[4]
-                info.description = data[5]
-                info.epsCount = data[6]
-                info.pages = data[7]
-                info.finished = data[8]
-                info.likesCount = data[9]
-                info.categories = data[10]
-                info.tags = data[11]
-                info.created_at = data[12]
-                info.updated_at = data[13]
-                info.path = data[14]
-                info.fileServer = data[15]
-                info.creator = data[16]
-                info.totalLikes = data[17]
-                info.totalViews = data[18]
-                if QtOwner().isDbHavePicaID:
-                    info.shareId = data[19]
-                BookMgr().AddBookByDb(info)
-                allFavoriteIds.append(info)
-            v["bookList"] = allFavoriteIds
-            v["st"] = Status.Ok
-        except Exception as es:
-            Log.Error(es)
+        hasShareId = self._HasShareId(conn)
+        if isinstance(bookId, int) and not hasShareId:
             return self._SqlFailureResult(self.TaskTypeCacheBook)
-        return v
+        field = "shareId" if isinstance(bookId, int) else "id"
+        statement = SqlStatement("SELECT {} FROM book WHERE {} = ?".format(
+            book_projection(hasShareId), field), (bookId,))
+        books = self._SelectBook(conn, statement, backId)
+        for book in books:
+            BookMgr().AddBookByDb(book)
+        return {"st": Status.Ok, "bookList": books}
 
     @time_me
     def _UpdateBookInfo(self, conn, data, backId):
@@ -375,285 +290,23 @@ class SqlServer(Singleton):
         return {"st": Status.Ok}
 
     @staticmethod
-    def SearchFavorite(page, sortKey=0, sortId=0, searchText=""):
-        if not searchText:
-            sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
-                Setting.UserId.value)
-            if not QtOwner().isDbHavePicaID:
-                sql = sql.replace(", shareId", "")
-        else:
-            sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-                  "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
-                Setting.UserId.value)
-            if not QtOwner().isDbHavePicaID:
-                sql = sql.replace(", shareId", "")
-            sql += " and (book.title like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.title2 like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.author like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.chineseTeam like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.description like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.tags like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.categories like '%{}%')  ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-
-        if sortKey == 0:
-            sql += "ORDER BY book.updated_at "
-
-        elif sortKey == 1:
-            sql += "ORDER BY favorite.sortId "
-        elif sortKey == 2:
-            sql += "ORDER BY book.created_at "
-        elif sortKey == 3:
-            sql += "ORDER BY book.totalLikes "
-        elif sortKey == 4:
-            sql += "ORDER BY book.totalViews "
-        elif sortKey == 5:
-            sql += "ORDER BY book.epsCount "
-        elif sortKey == 6:
-            sql += "ORDER BY book.pages "
-
-        if sortId == 0:
-            sql += "DESC"
-        else:
-            sql += "ASC"
-        sql += "  limit {},{};".format((page - 1) * 20, 20)
-        return sql
-
-    @staticmethod
-    def Search(wordList, isTitle, isAutor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0):
-        wordList = Converter('zh-hans').convert(wordList)
-        data = ""
-        sql2Data = ""
-        wordList2 = wordList.split("|")
-        for words in wordList2:
-            data2 = ""
-            for word in words.split("&"):
-                data3 = ""
-                if not word:
-                    continue
-                if isTitle:
-                    data3 += " title like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
-                    data3 += " title2 like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
-                if isAutor:
-                    data3 += " author like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
-                    data3 += " chineseTeam like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
-                if isDes:
-                    data3 += " description like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
-                if isTag:
-                    data3 += " tags like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
-                if isCategory:
-                    data3 += " categories like '%{}%' or ".format(Converter('zh-hans').convert(word).replace("'", "''"))
-                if isCreator:
-                    data3 += " creator = '{}' or".format(word)
-                data3 = data3.strip("or ")
-                data2 += "({}) and ".format(data3)
-            data2 = data2.strip("and ")
-
-            data4 = ""
-            if categorys:
-                for category in categorys:
-                    data4 += " categories like '%{}%' or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
-            data4 = data4.strip("or ")
-
-            if data2:
-                if data4:
-                    data += " or ({} and ({}))".format(data2, data4)
-                else:
-                    data += " or ({})".format(data2)
-                sql2Data += " or ({})".format(data2)
-
-        if data:
-            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 0 {}".format(data)
-        else:
-            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 1 "
-        if not QtOwner().isDbHavePicaID:
-            sql = sql.replace(", shareId", "")
-
-        if sql2Data:
-            sql2Data = "SELECT id FROM book WHERE 0 {}".format(sql2Data)
-        else:
-            sql2Data = "SELECT id FROM book WHERE 1 "
-
-        if sortKey == 0:
-            sql += "ORDER BY updated_at "
-        elif sortKey == 1:
-            sql += "ORDER BY created_at "
-        elif sortKey == 2:
-            sql += "ORDER BY totalLikes "
-        elif sortKey == 3:
-            sql += "ORDER BY totalViews "
-        elif sortKey == 4:
-            sql += "ORDER BY epsCount "
-        elif sortKey == 5:
-            sql += "ORDER BY pages "
-
-        if sortId == 0:
-            sql += "DESC"
-        else:
-            sql += "ASC"
-        sql += "  limit {},{};".format((page-1)*20, 20)
-        return sql, sql2Data
-
-    @staticmethod
-    def _GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, isLike):
-        data3 = ""
-        if isLike:
-            likeStr = "like"
-            linkStr = "or"
-        else:
-            likeStr = "not like"
-            linkStr = "and"
-
-        if isTitle:
-            data3 += " title {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-            data3 += " title2 {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-        if isAuthor:
-            data3 += " author {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-            data3 += " chineseTeam {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-        if isDes:
-            data3 += " description {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-        if isTag:
-            data3 += " tags {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-        if isCategory:
-            data3 += " categories {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-        if isCreator:
-            data3 += " creator {} \"%{}%\" {} ".format(likeStr, word, linkStr)
-        data3 = data3.strip("{} ".format(linkStr))
-        return "({})".format(data3)
-
-    @staticmethod
     def GetBookByIds(bookIds):
-        data = ""
-        for v in bookIds:
-            data += "\'{}\',".format(v)
-        data = data.strip(",")
-        where = "id in ({})".format(data)
-        sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE {}".format(
-            where)
-        if not QtOwner().isDbHavePicaID:
-            sql = sql.replace(", shareId", "")
-        return sql
+        return books_by_ids_statement(bookIds, QtOwner().isDbHavePicaID).legacy_sql()
 
     @staticmethod
     def GetBookMetrics(bookIds):
-        """只读取收藏排序需要的指标，沿用现有书籍列表任务回调。"""
-        ids = ",".join("'{}'".format(str(v).replace("'", "''")) for v in bookIds)
-        columns = "id, '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', totalLikes, totalViews"
-        if QtOwner().isDbHavePicaID:
-            columns += ", 0"
-        return "SELECT {} FROM book WHERE id IN ({})".format(columns, ids)
+        return books_by_ids_statement(bookIds, metrics_only=True).legacy_sql()
 
     @staticmethod
-    def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0, isFinish=False, limitIds=None):
-        # wordList = wordList.replace("'", "\\'")
-        wordList = Converter('zh-hans').convert(wordList).strip(" ")
-        wordList2 = wordList.split(" ")
-        exclude = []
-        andWords = []
-        orWords = []
-
-        for words in wordList2:
-            if len(words) <= 0:
-                continue
-            words = Converter('zh-hans').convert(words)
-            if words[0] == "+":
-                andWords.append(words[1:])
-            elif words[0] == "-":
-                exclude.append(words[1:])
-            else:
-                orWords.append(words)
-
-        if not andWords and not exclude:
-            orWords = []
-            orWords.append(wordList)
-
-        data = ""
-        data2 = ""
-        for word in orWords:
-            whereSql = SqlServer._GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, True)
-            data2 += "{} or ".format(whereSql)
-        if data2:
-            data += "({})".format(data2.strip("or "))
-
-        data2 = ""
-        for word in andWords:
-            whereSql = SqlServer._GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, True)
-            data2 += "{} and ".format(whereSql)
-        if data2:
-            data += "and ({})".format(data2.strip("and "))
-
-        data2 = ""
-        for word in exclude:
-            whereSql = SqlServer._GetSearchWhere(word, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, False)
-            data2 += "{} and ".format(whereSql)
-        if data2:
-            data += "and ({})".format(data2.strip("and "))
-
-        data = data.strip("and ").strip("or ") or "1"
-        if isFinish:
-            data += " AND finished=1"
-        if limitIds is not None:
-            ids = ",".join("'{}'".format(str(v).replace("'", "''")) for v in limitIds)
-            data += " AND id IN ({})".format(ids)
-        sql2Data = data
-
-        data2 = ""
-        if categorys:
-            for category in categorys:
-                data2 += " categories like \"%{}%\" or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
-        if data2:
-            data += " AND ({})".format(data2.strip("or "))
-
-        data = data.strip("and ").strip("or ")
-
-        selectNumSql = data
-        if data:
-            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE {}".format(data)
-        else:
-            sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
-              "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 1 "
-        if not QtOwner().isDbHavePicaID:
-            sql = sql.replace(", shareId", "")
-
-        if selectNumSql:
-            selectNumSql = "SELECT count(*) FROM book WHERE {}".format(selectNumSql)
-        else:
-            selectNumSql = "SELECT count(*) FROM book WHERE 1 "
-
-        if sql2Data:
-            sql2Data = "SELECT id FROM book WHERE {}".format(sql2Data)
-        else:
-            sql2Data = "SELECT id FROM book WHERE 1 "
-
-        sql += " "
-        if sortKey == 0:
-            sql += "ORDER BY updated_at "
-        elif sortKey == 1:
-            sql += "ORDER BY created_at "
-        elif sortKey == 2:
-            sql += "ORDER BY totalLikes "
-        elif sortKey == 3:
-            sql += "ORDER BY totalViews "
-        elif sortKey == 4:
-            sql += "ORDER BY epsCount "
-        elif sortKey == 5:
-            sql += "ORDER BY pages "
-        else:
-            sql += "ORDER BY id "
-
-        if sortId == 0:
-            sql += "DESC"
-        else:
-            sql += "ASC"
-        if sortKey in range(6):
-            sql += ", id ASC"
-        if page >= 0:
-            sql += "  limit {},{};".format((max(1, page)-1)*SEARCH_PAGE_SIZE, SEARCH_PAGE_SIZE)
-        return sql, sql2Data, selectNumSql
+    def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator,
+                categorys, page, sortKey=0, sortId=0, isFinish=False, limitIds=None):
+        """兼容原有三段字符串 SQL 接口，新分页调用直接传入查询条件。"""
+        query = BookQuery.from_legacy(wordList, isTitle, isAuthor, isDes, isTag,
+                                     isCategory, isCreator, categorys, sortKey,
+                                     sortId, isFinish, limitIds)
+        request = None if page < 0 else PageRequest(max(1, page))
+        return tuple(statement.legacy_sql() for statement in query.statements(
+            request, QtOwner().isDbHavePicaID))
 
     @staticmethod
     def SaveCacheWord():

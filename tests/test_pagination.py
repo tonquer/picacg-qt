@@ -20,7 +20,8 @@ from component.list.base_list_widget import BaseListWidget
 from qt_owner import QtOwner
 from server.sql_server import DbBook, SqlServer
 from tools.pagination import page_count
-from view.search.search_view import SearchView, _WAITING_PAGE_RESULT
+from view.search.search_view import SearchView
+from server.book_query import BookQuery
 from view.tool.local_read_view import LocalReadView
 from view.user.history_view import HistoryView
 from view.user.local_favorite_db import LocalFavoriteDb
@@ -135,20 +136,25 @@ class PaginationTests(unittest.TestCase):
         sql, _, _ = SqlServer.Search2("示例", True, False, False, False, False, False, [], 1)
         self.assertEqual(len(self.main.execute(sql).fetchall()), 20)
 
-    def test_search_waits_for_rows_and_count_in_both_orders(self):
+    def test_search_receives_rows_and_count_in_one_page_result(self):
         view = SearchView()
         self.addCleanup(view.close)
         view.bookList.AddBookItemByDbBook = lambda book: None
-        for count_first in (False, True):
-            view.SetPageLoading(True)
-            pending = {"page": 1, "books": _WAITING_PAGE_RESULT, "total": _WAITING_PAGE_RESULT}
-            first, second = ((view.ReceiveLocalTotal, 40), (view.ReceiveLocalBooks, [])) if count_first else ((view.ReceiveLocalBooks, []), (view.ReceiveLocalTotal, 40))
-            first[0](first[1], pending)
-            self.assertTrue(view.bookList.isLoadingPage)
-            second[0](second[1], pending)
-            self.assertFalse(view.bookList.isLoadingPage)
-            self.assertEqual(view.bookList.pages, 2)
-            self.assertEqual(view.spinBox.maximum(), 2)
+        requests = []
+        view.AddSqlTask = lambda *args: requests.append(args)
+        view.SetPageLoading(True)
+        criteria = BookQuery(text="示例", fields=("title",), limit_ids=tuple(f"{i:03}" for i in range(40)))
+        view.QueueLocalPage(criteria, 1)
+        self.assertTrue(view.bookList.isLoadingPage)
+        page_requests = [item for item in requests if item[2] == SqlServer.TaskTypeSelectBookPage]
+        self.assertEqual(len(page_requests), 1)
+        _, data, _, callback, pending = page_requests[0]
+        server = object.__new__(SqlServer)
+        result = server._SelectBookPage(self.main, data, 0)
+        callback(result, pending)
+        self.assertFalse(view.bookList.isLoadingPage)
+        self.assertEqual(view.bookList.pages, 2)
+        self.assertEqual(view.spinBox.maximum(), 2)
         view.bookList.UpdatePage(3, 5)
         view.ResetSearch()
         self.assertEqual(view.bookList.page, 1)
@@ -165,17 +171,14 @@ class PaginationTests(unittest.TestCase):
         self.addCleanup(view.close)
         view.bookList.UpdatePage(1, 3)
         view.SetPageLoading(True)
-        pending = {"page": 2, "books": _WAITING_PAGE_RESULT, "total": _WAITING_PAGE_RESULT}
-        view.ReceiveLocalBooks(None, pending)
-        self.assertFalse(view.bookList.isLoadingPage)
-        view.ReceiveLocalTotal(60, pending)
+        view.ReceiveLocalPage(None, 2)
         self.assertFalse(view.bookList.isLoadingPage)
         self.assertEqual(view.bookList.page, 1)
         queries = []
         view.AddSqlTask = lambda *args: queries.append(args)
-        view.UpdateFacetCounts("SELECT 1", ("category", "全彩"))
-        view.UpdateFacetCounts("SELECT 1", ("category", "全彩"))
-        view.UpdateFacetCounts("SELECT 1", ("category", "长篇"))
+        view.UpdateFacetCounts(BookQuery(text="全彩", fields=("categories",)))
+        view.UpdateFacetCounts(BookQuery(text="全彩", fields=("categories",)))
+        view.UpdateFacetCounts(BookQuery(text="长篇", fields=("categories",)))
         self.assertEqual(len(queries), 2)
 
     def test_search_does_not_request_more_pages_while_inserting_rows(self):
@@ -223,12 +226,12 @@ class PaginationTests(unittest.TestCase):
         self.main.execute("DELETE FROM book WHERE id='224'")
         view.sortKeyCombox.setCurrentIndex(3)
         self.assertEqual(view._shown, [f"{i:03}" for i in range(223, 123, -1)])
-        metric_queries = sum("totalLikes, totalViews" in sql and "'', ''" in sql for sql in view._queries)
+        metric_queries = sum(sql.startswith("SELECT id, totalLikes, totalViews ") for sql in view._queries)
         view.LoadNextPage()
         view.LoadNextPage()
         self.assertEqual(len(view._shown), 225)
         self.assertEqual(view._shown[-1], "224")
-        self.assertEqual(sum("totalLikes, totalViews" in sql and "'', ''" in sql for sql in view._queries), metric_queries)
+        self.assertEqual(sum(sql.startswith("SELECT id, totalLikes, totalViews ") for sql in view._queries), metric_queries)
         self.assertEqual(len(set(view._shown)), 225)
         view.sortIdCombox.setCurrentIndex(1)
         self.assertEqual(view._shown[:3], ["000", "001", "002"])
