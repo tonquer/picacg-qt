@@ -29,7 +29,9 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
 
         # self.bookList.InitBook(self.LoadNextPage)
         self.pageNums = 20
+        self.bookList.isHistory = True
         self.bookList.LoadCallBack = self.LoadNextPage
+        self.bookList.BatchDelCallBack = self.BatchDelCallBack
         self.history = {}
         self.db = QSqlDatabase.addDatabase("QSQLITE", "history")
         path = os.path.join(Setting.GetStatePath(), "history.db")
@@ -152,6 +154,10 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
 
     def UpdatePageLabel(self):
         self.pages.setText(Str.GetStr(Str.Page)+"：{}/{}".format(str(self.bookList.page), str(self.bookList.pages)))
+
+    def BatchDelCallBack(self, bookIds):
+        for bookId in bookIds:
+            self.DelCallBack(bookId)
 
     def DelCallBack(self, bookId):
         if bookId not in self.history:

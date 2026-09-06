@@ -60,7 +60,8 @@ class CategoryView(QtWidgets.QWidget, Ui_Category, QtTaskBase):
         elif widget.id == "3":
             QtOwner().OpenSearchByText("")
         elif widget.id == "4":
-            QtOwner().OpenIndex()
+            arg = {"refresh": True}
+            QtOwner().owner.SwitchWidget(QtOwner().indexView, **arg)
         else:
             QtOwner().OpenSearchByCategory(widget.nameLable.text())
         return

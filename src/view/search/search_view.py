@@ -63,6 +63,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         # self.someDownButton.clicked.connect(self.bookList.OpenBookDownloadAll)
 
         self.cacheRecommend = {}
+        self.isSearch2 = False
 
 
     def InitCategory(self):
@@ -209,6 +210,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.lineEdit.SetDbError()
 
     def SetEnable(self, isLocal):
+        if self.isSearch2:
+            return
         self.sortId.setVisible(isLocal)
         self.sortKey.setVisible(isLocal)
         self.comboBox.setVisible(not isLocal)

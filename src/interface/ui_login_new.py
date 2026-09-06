@@ -468,7 +468,7 @@ class Ui_LoginNew(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, -187, 569, 3253))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 569, 3253))
         self.verticalLayout_10 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.horizontalLayout_15 = QHBoxLayout()
@@ -998,13 +998,13 @@ class Ui_LoginNew(object):
 
         self.horizontalLayout_3.addWidget(self.tabWidget)
 
-        QWidget.setTabOrder(self.testIpButton, self.autoSign)
-        QWidget.setTabOrder(self.autoSign, self.ipListEdit)
-        QWidget.setTabOrder(self.ipListEdit, self.proxyIpEdit)
-        QWidget.setTabOrder(self.proxyIpEdit, self.passwdEdit_2)
-        QWidget.setTabOrder(self.passwdEdit_2, self.userEdit_2)
-        QWidget.setTabOrder(self.userEdit_2, self.loginButton)
-        QWidget.setTabOrder(self.loginButton, self.scrollArea_4)
+        QWidget.setTabOrder(self.userEdit_2, self.passwdEdit_2)
+        QWidget.setTabOrder(self.passwdEdit_2, self.loginButton)
+        QWidget.setTabOrder(self.loginButton, self.proxyIpEdit)
+        QWidget.setTabOrder(self.proxyIpEdit, self.autoSign)
+        QWidget.setTabOrder(self.autoSign, self.testIpButton)
+        QWidget.setTabOrder(self.testIpButton, self.ipListEdit)
+        QWidget.setTabOrder(self.ipListEdit, self.scrollArea_4)
         QWidget.setTabOrder(self.scrollArea_4, self.answer1Edit)
         QWidget.setTabOrder(self.answer1Edit, self.answer3Edit)
         QWidget.setTabOrder(self.answer3Edit, self.passwdEdit)
@@ -1057,7 +1057,7 @@ class Ui_LoginNew(object):
 
         self.retranslateUi(LoginNew)
 
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(LoginNew)

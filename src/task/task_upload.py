@@ -112,6 +112,8 @@ class TaskUpload(TaskBase, QtTaskBase):
             st = self.MakeZip(task)
         elif type == task.Upload:
             st = self.UpData(task)
+        else:
+            st = Str.UnKnowError
 
         self.taskObj.uploadBack.emit(taskId, st, msg)
 

@@ -340,7 +340,7 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
 
     def SetEnable(self, enable):
         self.importButton.setEnabled(enable)
-        self.allDownButton.setEnabled(enable)
+        # self.allDownButton.setEnabled(enable)
         self.sortIdCombox.setEnabled(enable)
         self.sortKeyCombox.setEnabled(enable)
         self.folderBox.setEnabled(enable)

@@ -132,7 +132,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="cateLabel">
            <property name="minimumSize">
             <size>
              <width>80</width>

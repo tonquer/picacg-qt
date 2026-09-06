@@ -80,8 +80,21 @@ class MainView(Main, QtTaskBase):
         GlobalConfig.LoadSetting()
 
         self.searchView.searchTab.hide()
+        self.searchView2.isSearch2 = True
         self.searchView2.searchWidget.hide()
         self.searchView2.bookList.isOpen2 = True
+        self.searchView2.bookList.LoadCallBack = None
+        self.searchView2.saveButton.hide()
+        self.searchView2.selectAllButton.hide()
+        self.searchView2.unfoldButton.hide()
+        self.searchView2.cateLabel.hide()
+        self.searchView2.sortKey.hide()
+        self.searchView2.sortId.hide()
+        self.searchView2.comboBox.hide()
+        self.searchView2.label.hide()
+        self.searchView2.spinBox.hide()
+        self.searchView2.jumpPage.hide()
+
         self.myTrayIcon = MySystemTrayIcon()
         self.myTrayIcon.show()
         self.totalStackWidget.currentChanged.connect(self.SwitchReadView)
@@ -149,7 +162,8 @@ class MainView(Main, QtTaskBase):
 
     def __initWidget(self):
         self.navigationWidget.indexButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.indexView)))
-        self.navigationWidget.settingButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.settingView)))
+        self.navigationWidget.settingButton.clicked.connect(partial(self.SwitchWidgetByIndex, self.subStackWidget.indexOf(self.settingView)))
+
         self.navigationWidget.downloadButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.downloadView)))
         self.navigationWidget.categoryButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.categoryView)))
         self.navigationWidget.searchButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.searchView)))
@@ -160,7 +174,7 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.lookButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.historyView)))
         self.navigationWidget.myCommentButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.myCommentView)))
         self.navigationWidget.gameButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.gameView)))
-        self.navigationWidget.helpButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.helpView)))
+        self.navigationWidget.helpButton.clicked.connect(partial(self.SwitchWidgetByIndex, self.subStackWidget.indexOf(self.helpView)))
         self.navigationWidget.waifu2xButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.waifu2xToolView)))
         self.navigationWidget.localReadButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.localReadView)))
         self.navigationWidget.friedButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.friedView)))

@@ -39,6 +39,8 @@ class ComicListWidget(BaseListWidget):
         self.isMoveMenu = False
         self.openMenu = False
         self.isLocalFavorite = False
+        self.isFavorite = False
+        self.isHistory = False
 
         self.isOpen2 = False
         self.isCanBatch = True
@@ -152,7 +154,7 @@ class ComicListWidget(BaseListWidget):
                     action = popMenu.addAction(Str.GetStr(Str.OpenDir))
                     action.triggered.connect(partial(self.OpenDirHandler, index))
 
-                if not self.isLocalFavorite and not self.isLocal and not self.isGame:
+                if not self.isFavorite and not self.isLocalFavorite and not self.isLocal and not self.isGame and not self.isHistory:
                     if QtOwner().localFavoriteView.IsHave(widget.id):
                         action = popMenu.addAction(Str.GetStr(Str.DelLocalFavorite))
                         action.triggered.connect(partial(self.DelFavoriteHandler, index))
@@ -171,7 +173,7 @@ class ComicListWidget(BaseListWidget):
                     action = popMenu.addAction(Str.GetStr(Str.SelectAll))
                 action.triggered.connect(self.BatchAll)
 
-                if not self.isLocal and not self.isGame:
+                if not self.isLocal and not self.isGame and not self.isHistory:
                     nas = QMenu(Str.GetStr(Str.NetNas))
                     nasDict = QtOwner().owner.nasView.nasDict
                     if not nasDict:
@@ -185,17 +187,17 @@ class ComicListWidget(BaseListWidget):
                             action.triggered.connect(partial(self.BatchNasUploadHandler, k))
                     popMenu.addMenu(nas)
 
-                    if not self.isGame:
+                    if not self.isGame and not self.isHistory:
                         action = popMenu.addAction(Str.GetStr(Str.DownloadAll))
                         action.triggered.connect(self.OpenBookDownloadAll)
 
-                if self.isDelMenu:
+                if self.isDelMenu :
                     action = popMenu.addAction(Str.GetStr(Str.BatchDelete))
                     action.triggered.connect(self.BatchDelHandler)
                 if self.isMoveMenu:
                     action = popMenu.addAction(Str.GetStr(Str.BatchMove))
                     action.triggered.connect(self.BatchMoveHandler)
-                if not self.isLocalFavorite and not self.isLocal and not self.isGame:
+                if not self.isLocalFavorite and not self.isLocal and not self.isGame and not self.isHistory:
                     action = popMenu.addAction(Str.GetStr(Str.BatchLocalFavorite))
                     action.triggered.connect(self.BatchLocalFavoriteHandler)
 
@@ -631,3 +633,4 @@ class ComicListWidget(BaseListWidget):
     
     def OpenDirHandler(self, index):
         return
+

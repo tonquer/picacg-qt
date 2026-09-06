@@ -20,7 +20,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -727,7 +727,7 @@
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-187</y>
+              <y>0</y>
               <width>569</width>
               <height>3253</height>
              </rect>
@@ -1535,13 +1535,13 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>testIpButton</tabstop>
-  <tabstop>autoSign</tabstop>
-  <tabstop>ipListEdit</tabstop>
-  <tabstop>proxyIpEdit</tabstop>
-  <tabstop>passwdEdit_2</tabstop>
   <tabstop>userEdit_2</tabstop>
+  <tabstop>passwdEdit_2</tabstop>
   <tabstop>loginButton</tabstop>
+  <tabstop>proxyIpEdit</tabstop>
+  <tabstop>autoSign</tabstop>
+  <tabstop>testIpButton</tabstop>
+  <tabstop>ipListEdit</tabstop>
   <tabstop>scrollArea_4</tabstop>
   <tabstop>answer1Edit</tabstop>
   <tabstop>answer3Edit</tabstop>
@@ -1598,9 +1598,9 @@
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="radioProxyGroup"/>
   <buttongroup name="radioApiGroup"/>
-  <buttongroup name="radioImgGroup"/>
+  <buttongroup name="radioProxyGroup"/>
   <buttongroup name="sexGroup"/>
+  <buttongroup name="radioImgGroup"/>
  </buttongroups>
 </ui>

@@ -219,6 +219,7 @@ class QtOwner(Singleton):
         # arg = {"refresh": True}
         # self.owner.SwitchWidget(self.owner.indexView, **arg)
 
+
     def OpenLogin(self):
         arg = {"refresh": True, "page": 0}
         self.owner.SwitchWidget(self.owner.loginNewView, **arg)

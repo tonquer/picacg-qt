@@ -32,13 +32,15 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.reupdateBookIds = set()
         self.allFavoriteIds = dict()
         self.maxSortId = 0
+        self.bookList.isFavorite = True
         self.bookList.isDelMenu = True
         self.bookList.LoadCallBack = self.LoadNextPage
         self.bookList.DelCallBack = self.DelCallBack
+        self.bookList.BatchDelCallBack = self.BatchDelCallBack
         self.resetCnt = 5
         self.sortCombox.currentIndexChanged.connect(self.RefreshDataFocus)
 
-        self.someDownButton.clicked.connect(self.bookList.OpenBookDownloadAll)
+        # self.someDownButton.clicked.connect(self.bookList.OpenBookDownloadAll)
         self.searchText = ""
 
     def SwitchCurrent(self, **kwargs):
@@ -100,6 +102,11 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         QtOwner().ShowLoading()
         self.AddHttpTask(req.FavoritesAdd(bookId), self.DelAndFavoritesBack, bookId)
         pass
+
+    def BatchDelCallBack(self, bookIds):
+        QtOwner().ShowLoading()
+        for bookId in bookIds:
+            self.AddHttpTask(req.FavoritesAdd(bookId), self.DelAndFavoritesBack, bookId)
 
     def DelAndFavoritesBack(self, raw, bookId):
         QtOwner().CloseLoading()

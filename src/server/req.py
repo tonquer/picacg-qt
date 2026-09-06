@@ -470,6 +470,8 @@ class DownloadBookReq(ServerReq):
         self.isReset = False
         if "static/tobeimg/" in url:
             url = url.replace("static/tobeimg/", "static/")
+        if "static/tobs/" in url:
+            url = url.replace("static/tobs/", "static/")
         self.url = url
         super(self.__class__, self).__init__(url, ToolUtil.GetDownImgHeader(),
                                              {}, method)
