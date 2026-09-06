@@ -170,10 +170,14 @@ class LocalReadDb(object):
         return books
 
     def Search(self, searchTxt):
-        sql = "select  id from local_book  where id = main_id and title like '%{}%'".format(searchTxt)
-        suc = self.cur.execute(sql)
+        try:
+            sql = "select  id from local_book  where id = main_id and title like '%{}%'".format(searchTxt.replace("'", "''"))
+            suc = self.cur.execute(sql)
 
-        bookIds = []
-        for query in self.cur.fetchall():
-            bookIds.append(query[0])
-        return bookIds
+            bookIds = []
+            for query in self.cur.fetchall():
+                bookIds.append(query[0])
+            return bookIds
+        except Exception as es:
+            Log.Error(es)
+            return []
