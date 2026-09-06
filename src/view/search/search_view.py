@@ -17,6 +17,9 @@ from tools.category import CateGoryMgr
 from tools.langconv import Converter
 from tools.str import Str
 from tools.tool import ToolUtil
+from tools.pagination import SEARCH_PAGE_SIZE, page_count, clamp_page
+
+_WAITING_PAGE_RESULT = object()
 
 
 class SearchView(QWidget, Ui_Search, QtTaskBase):
@@ -64,6 +67,64 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
         self.cacheRecommend = {}
         self.isSearch2 = False
+
+    def ResetSearch(self):
+        self.bookList.UpdatePage(1, 1)
+        self.bookList.clear()
+        self.spinBox.setMaximum(1)
+        self.spinBox.setValue(1)
+        self.label.setText(self.bookList.GetPageStr())
+
+    def SetPageLoading(self, loading):
+        self.bookList.UpdateState(loading)
+        self.spinBox.setEnabled(not loading)
+        self.jumpPage.setEnabled(not loading)
+
+    def QueueLocalPage(self, sql, countSql, page):
+        """同一页的列表和数量都返回后才允许继续翻页。"""
+        pending = {"page": page, "books": _WAITING_PAGE_RESULT, "total": _WAITING_PAGE_RESULT}
+        self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.ReceiveLocalBooks, pending)
+        self.AddSqlTask("book", countSql, SqlServer.TaskTypeSearchBookNum, self.ReceiveLocalTotal, pending)
+
+    def ReceiveLocalBooks(self, books, pending):
+        pending["books"] = books
+        self.FinishLocalPage(pending)
+
+    def ReceiveLocalTotal(self, total, pending):
+        pending["total"] = total
+        self.FinishLocalPage(pending)
+
+    def FinishLocalPage(self, pending):
+        if pending.get("finished"):
+            return
+        books, total = pending["books"], pending["total"]
+        if ((books is not _WAITING_PAGE_RESULT and not isinstance(books, list))
+                or (total is not _WAITING_PAGE_RESULT and not isinstance(total, int))):
+            pending["finished"] = True
+            self.SetPageLoading(False)
+            QtOwner().CloseLoading()
+            return
+        if books is _WAITING_PAGE_RESULT or total is _WAITING_PAGE_RESULT:
+            return
+        pending["finished"] = True
+        pages = page_count(pending["total"], SEARCH_PAGE_SIZE)
+        page = clamp_page(pending["page"], pages)
+        if page != pending["page"]:
+            self.bookList.clear()
+            if self.categories:
+                self.SendSearchCategories(page)
+            else:
+                self.SendSearch(page)
+            return
+        self.bookList.UpdateMaxPage(pages)
+        self.spinBox.setMaximum(pages)
+        self.SendLocalBack(pending["books"], page)
+
+    def UpdateFacetCounts(self, sql, key):
+        if key != self.lastText:
+            self.lastText = key
+            self.ClearLocalNum()
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeCategoryBookNum, self.SendLocalCategoryNumBack, key)
 
 
     def InitCategory(self):
@@ -175,7 +236,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.isLocal = False
             self.text = ""
             self.lineEdit.setText(self.categories)
-            self.bookList.clear()
+            self.ResetSearch()
             if self.categories in CateGoryMgr().allCategorise:
                 self.SetEnable(True)
             else:
@@ -185,7 +246,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.text = text
             self.categories = ""
             self.lineEdit.setText(self.text)
-            self.bookList.clear()
+            self.ResetSearch()
             isLocal = kwargs.get("isLocal")
 
             if isLocal is not None:
@@ -268,6 +329,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def SendSearchCategories(self, page):
         sort = ["dd", "da", "ld", "vd"]
+        self.SetPageLoading(True)
         QtOwner().ShowLoading()
         if QtOwner().canUseDb and self.categories in CateGoryMgr().allCategorise:
             categorys = self.GetSelectCategory()
@@ -278,15 +340,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             sql, sql2Data, selectNumSql = SqlServer.Search2(self.categories, False, False, False, False,
                                                             True, False, categorys, page,
                                                             self.sortKey.currentIndex(), self.sortId.currentIndex())
-            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
-            if page == 1:
-                self.AddSqlTask("book", selectNumSql, SqlServer.TaskTypeSearchBookNum, callBack=self.SendLocalNumBack,
-                                backParam=self.text)
-            if self.text != self.lastText:
-                self.lastText = self.text
-                self.ClearLocalNum()
-                self.AddSqlTask("book", sql2Data, SqlServer.TaskTypeCategoryBookNum, callBack=self.SendLocalCategoryNumBack,
-                                backParam=self.text)
+            self.QueueLocalPage(sql, selectNumSql, page)
+            self.UpdateFacetCounts(sql2Data, ("category", self.categories))
         else:
             self.ClearLocalNum()
             sortId = sort[self.comboBox.currentIndex()]
@@ -295,16 +350,16 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
     def SendSearchBack(self, raw):
         QtOwner().CloseLoading()
         try:
-            self.bookList.UpdateState()
             data = json.loads(raw["data"])
             st = raw["st"]
             if st == Status.Ok:
                 info = data.get("data").get("comics")
-                page = int(info.get("page"))
-                pages = int(info.get("pages"))
+                pages = max(1, int(info.get("pages")))
+                page = clamp_page(int(info.get("page")), pages)
                 self.bookList.UpdatePage(page, pages)
-                self.spinBox.setValue(page)
+                self.SetPageLoading(True)
                 self.spinBox.setMaximum(pages)
+                self.spinBox.setValue(page)
                 self.label.setText(self.bookList.GetPageStr())
                 for v in info.get("docs", []):
                     self.bookList.AddBookByDict(v)
@@ -315,6 +370,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
                 QtOwner().ShowError(Str.GetStr(st))
         except Exception as es:
             Log.Error(es)
+        finally:
+            self.SetPageLoading(False)
         pass
 
     def ClearAndSendSearch(self):
@@ -322,14 +379,14 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             if not box.isChecked():
                 self.isSelectAll = False
 
-        self.bookList.page = 1
-        self.bookList.clear()
+        self.ResetSearch()
         if not self.categories:
             self.SendSearch(1)
         else:
             self.SendSearchCategories(1)
 
     def SendSearch(self, page):
+        self.SetPageLoading(True)
         QtOwner().ShowLoading()
         categorys = self.GetSelectCategory()
         if len(categorys) > 0:
@@ -339,13 +396,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
         if self.isLocal:
             sql, sql2Data, selectNumSql = SqlServer.Search2(self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag, self.isCategory, self.isUpLoad, categorys, page, self.sortKey.currentIndex(), self.sortId.currentIndex(), self.isFinish)
-            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SendLocalBack, backParam=page)
-            if page == 1:
-                self.AddSqlTask("book", selectNumSql, SqlServer.TaskTypeSearchBookNum, callBack=self.SendLocalNumBack, backParam=self.text)
-            if self.text != self.lastText:
-                self.lastText = self.text
-                self.ClearLocalNum()
-                self.AddSqlTask("book", sql2Data, SqlServer.TaskTypeCategoryBookNum, callBack=self.SendLocalCategoryNumBack, backParam=self.text)
+            self.QueueLocalPage(sql, selectNumSql, page)
+            key = (self.text, self.isTitle, self.isAuthor, self.isDes, self.isTag,
+                   self.isCategory, self.isUpLoad, self.isFinish)
+            self.UpdateFacetCounts(sql2Data, key)
         else:
             self.ClearLocalNum()
             self.lastText = "--1"
@@ -362,14 +416,14 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         if text != self.text and text != self.categories:
             return
 
-        pages = max(0, (nums - 1)) // 20 + 1
+        pages = page_count(nums, SEARCH_PAGE_SIZE)
         self.bookList.UpdateMaxPage(pages)
         self.spinBox.setMaximum(pages)
         self.label.setText(self.bookList.GetPageStr())
         return
 
     def SendLocalCategoryNumBack(self, nums, text):
-        if text != self.text and text != self.categories:
+        if text != self.lastText or not isinstance(nums, dict):
             return
         for k, v in nums.items():
             box = self.allBox.get(k)
@@ -385,18 +439,15 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
     def SendLocalBack(self, books, page):
         QtOwner().CloseLoading()
-        self.bookList.UpdateState()
-        if page == 1:
-            pages = 100
-            self.bookList.pages = 100
-            # self.jumpLine.setValidator(QtIntLimit(1, pages, self))
-            self.spinBox.setMaximum(pages)
-
         self.spinBox.setValue(page)
         self.bookList.UpdatePage(page, self.bookList.pages)
+        self.SetPageLoading(True)
         self.label.setText(self.bookList.GetPageStr())
-        for v in books:
-            self.bookList.AddBookItemByDbBook(v)
+        try:
+            for v in books:
+                self.bookList.AddBookItemByDbBook(v)
+        finally:
+            self.SetPageLoading(False)
         # self.CheckCategoryShowItem()
 
     # def ClickCategoryListItem(self, item):
@@ -438,10 +489,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
     #         self.hideLabel.setText("")
 
     def JumpPage(self):
-        page = int(self.spinBox.text())
-        if page > self.bookList.pages:
+        page = self.spinBox.value()
+        if self.bookList.isLoadingPage or not 1 <= page <= self.bookList.pages:
             return
-        self.bookList.page = page
         self.bookList.clear()
         if not self.categories:
             self.SendSearch(page)
@@ -450,6 +500,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def LoadNextPage(self):
+        if self.bookList.page >= self.bookList.pages:
+            self.SetPageLoading(False)
+            return
         if not self.categories:
             self.SendSearch(self.bookList.page + 1)
         else:
@@ -457,8 +510,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def ChangeSort(self, pos):
-        self.bookList.page = 1
-        self.bookList.clear()
+        self.ResetSearch()
         if not self.categories:
             self.SendSearch(1)
         else:

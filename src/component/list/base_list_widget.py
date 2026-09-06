@@ -52,16 +52,7 @@ class BaseListWidget(QListWidget, QtTaskBase):
 
     def ValueChange(self, v):
         if v >= self.verticalScrollBar().maximum():
-            if Setting.IsGrabGesture.value:
-                QScroller.ungrabGesture(self)
-
-            self.ClearWheelEvent()
-            self.isLoadingPage = True
-            if self.LoadCallBack:
-                self.LoadCallBack()
-
-            if Setting.IsGrabGesture.value:
-                QScroller.grabGesture(self, QScroller.LeftMouseButtonGesture)
+            self.RequestNextPage()
 
     # def event(self, e) -> bool:
     #     print(e)
@@ -90,15 +81,19 @@ class BaseListWidget(QListWidget, QtTaskBase):
             return QListWidget.wheelEvent(self, arg__1)
 
     def OnActionTriggered(self):
-        if self.isLoadingPage:
-            return
-        if self.page >= self.pages:
-            return
         if self.verticalScrollBar().sliderPosition() == self.verticalScrollBar().maximum():
-            self.ClearWheelEvent()
-            self.isLoadingPage = True
-            if self.LoadCallBack:
-                self.LoadCallBack()
+            self.RequestNextPage()
+
+    def RequestNextPage(self):
+        if self.isLoadingPage or self.page >= self.pages or not self.LoadCallBack:
+            return
+        self.ClearWheelEvent()
+        self.isLoadingPage = True
+        try:
+            self.LoadCallBack()
+        except Exception:
+            self.isLoadingPage = False
+            raise
 
     def UpdatePage(self, page, pages):
         self.page = page
@@ -115,12 +110,16 @@ class BaseListWidget(QListWidget, QtTaskBase):
         return Str.GetStr(Str.Page) + ": " + str(self.page) + "/" + str(self.pages)
 
     def clear(self) -> None:
-        QListWidget.clear(self)
-
-        # 防止异步加载时，信息错乱
-        self.ClearTask()
-        if self.vScrollBar:
-            self.vScrollBar.ResetValue(0)
+        wasLoading = self.isLoadingPage
+        self.isLoadingPage = True
+        try:
+            QListWidget.clear(self)
+            # 防止清空列表引起的滚动事件请求下一页。
+            self.ClearTask()
+            if self.vScrollBar:
+                self.vScrollBar.ResetValue(0)
+        finally:
+            self.isLoadingPage = wasLoading
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.ForwardButton:

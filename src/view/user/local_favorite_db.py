@@ -10,6 +10,7 @@ from tools.book import Book
 from tools.langconv import Converter
 from tools.log import Log
 from view.download.download_item import DownloadItem, DownloadEpsItem
+from tools.pagination import FAVORITE_PAGE_SIZE
 
 class LocalFavoriteItem(DbBook):
     def __init__(self):
@@ -254,10 +255,16 @@ class LocalFavoriteDb(object):
                 sql += "ORDER BY book.tick DESC, book.bookId ASC"
             else:
                 sql += "ORDER BY book.tick ASC, book.bookId ASC"
+        elif sortKey in (2, 5, 6):
+            column = {2: "created_at", 5: "epsCount", 6: "pages"}[sortKey]
+            direction = "DESC" if sortId == 0 else "ASC"
+            sql += "ORDER BY book.{} {}, book.bookId ASC".format(column, direction)
+        else:
+            sql += "ORDER BY book.bookId ASC"
 
 
         if page >= 0:
-            sql += "  limit {},{};".format((page - 1) * 100, 100)
+            sql += "  limit {},{};".format((max(1, page) - 1) * FAVORITE_PAGE_SIZE, FAVORITE_PAGE_SIZE)
 
         self.db.exec()
         query = QSqlQuery(self.db)

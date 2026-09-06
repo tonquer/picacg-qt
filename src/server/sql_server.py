@@ -18,6 +18,7 @@ from tools.singleton import Singleton
 from tools.status import Status
 from tools.tool import time_me
 from tools.user import User
+from tools.pagination import SEARCH_PAGE_SIZE
 from qt_owner import QtOwner
 
 
@@ -548,6 +549,15 @@ class SqlServer(Singleton):
         return sql
 
     @staticmethod
+    def GetBookMetrics(bookIds):
+        """只读取收藏排序需要的指标，沿用现有书籍列表任务回调。"""
+        ids = ",".join("'{}'".format(str(v).replace("'", "''")) for v in bookIds)
+        columns = "id, '', '', '', '', '', 0, 0, 0, 0, '', '', '', '', '', '', '', totalLikes, totalViews"
+        if QtOwner().isDbHavePicaID:
+            columns += ", 0"
+        return "SELECT {} FROM book WHERE id IN ({})".format(columns, ids)
+
+    @staticmethod
     def Search2(wordList, isTitle, isAuthor, isDes, isTag, isCategory, isCreator, categorys, page, sortKey=0, sortId=0, isFinish=False, limitIds=None):
         # wordList = wordList.replace("'", "\\'")
         wordList = Converter('zh-hans').convert(wordList).strip(" ")
@@ -593,6 +603,12 @@ class SqlServer(Singleton):
         if data2:
             data += "and ({})".format(data2.strip("and "))
 
+        data = data.strip("and ").strip("or ") or "1"
+        if isFinish:
+            data += " AND finished=1"
+        if limitIds is not None:
+            ids = ",".join("'{}'".format(str(v).replace("'", "''")) for v in limitIds)
+            data += " AND id IN ({})".format(ids)
         sql2Data = data
 
         data2 = ""
@@ -600,7 +616,7 @@ class SqlServer(Singleton):
             for category in categorys:
                 data2 += " categories like \"%{}%\" or ".format(Converter('zh-hans').convert(category).replace("'", "''"))
         if data2:
-            data += "and ({})".format(data2.strip("or "))
+            data += " AND ({})".format(data2.strip("or "))
 
         data = data.strip("and ").strip("or ")
 
@@ -613,11 +629,6 @@ class SqlServer(Singleton):
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 1 "
         if not QtOwner().isDbHavePicaID:
             sql = sql.replace(", shareId", "")
-        if isFinish:
-            sql += " and finished=1 "
-        if not limitIds is None:
-            limitIds = ["'"+v+"'" for v in limitIds]
-            sql += " and id in ({})".format(",".join(limitIds))
 
         if selectNumSql:
             selectNumSql = "SELECT count(*) FROM book WHERE {}".format(selectNumSql)
@@ -629,6 +640,7 @@ class SqlServer(Singleton):
         else:
             sql2Data = "SELECT id FROM book WHERE 1 "
 
+        sql += " "
         if sortKey == 0:
             sql += "ORDER BY updated_at "
         elif sortKey == 1:
@@ -648,8 +660,10 @@ class SqlServer(Singleton):
             sql += "DESC"
         else:
             sql += "ASC"
+        if sortKey in range(6):
+            sql += ", id ASC"
         if page >= 0:
-            sql += "  limit {},{};".format((page-1)*20, 20)
+            sql += "  limit {},{};".format((max(1, page)-1)*SEARCH_PAGE_SIZE, SEARCH_PAGE_SIZE)
         return sql, sql2Data, selectNumSql
 
     @staticmethod

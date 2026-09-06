@@ -1,6 +1,5 @@
 import json
 import os
-from this import d
 
 from PySide6.QtCore import Signal, QUrl
 from PySide6.QtGui import QAction, Qt, QDesktopServices
@@ -15,6 +14,7 @@ from task.qt_task import QtTaskBase
 from task.task_local import LocalData
 from tools.str import Str
 from tools.tool import time_me
+from tools.pagination import LOCAL_BOOK_PAGE_SIZE, page_count, clamp_page
 from view.tool.local_read_db import LocalReadDb
 
 
@@ -143,14 +143,16 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
     @time_me
     def ShowPages(self, page=1):
-        showLen = 30
-        maxPage = len(self.sortAllBookIds) // showLen + 1
+        showLen = LOCAL_BOOK_PAGE_SIZE
+        maxPage = page_count(len(self.sortAllBookIds), showLen)
+        page = clamp_page(page, maxPage)
         showStart = (page - 1) * showLen
         showEnd = page * showLen
 
-        self.spinBox.setValue(page)
         self.spinBox.setMaximum(maxPage)
+        self.spinBox.setValue(page)
         self.bookList.UpdatePage(page, maxPage)
+        self.bookList.UpdateState(True)
         self.pages.setText(self.bookList.GetPageStr())
         self.nums.setText("{}：{} ".format(Str.GetStr(Str.FavoriteNum), len(self.sortAllBookIds)))
 
@@ -160,11 +162,14 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
             if v:
                 categoryList = self.bookCategory.get(v.id, [])
                 categoryStr = ",".join(categoryList)
-                if not self.searchText or self.searchText in v.title:
-                    self.bookList.AddBookByLocal(v, categoryStr)
+                self.bookList.AddBookByLocal(v, categoryStr)
+        self.bookList.UpdateState()
         return
 
     def LoadNextPage(self):
+        if self.bookList.page >= self.bookList.pages:
+            self.bookList.UpdateState()
+            return
         self.ShowPages(self.bookList.page + 1)
 
     def JumpPage(self):
