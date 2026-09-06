@@ -391,13 +391,13 @@ class SqlServer(Singleton):
                   "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
                 Setting.UserId.value)
             if not QtOwner().isDbHavePicaID:
-                sql = sql.replace(", share_id", "")
+                sql = sql.replace(", shareId", "")
         else:
             sql = "select book.id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
                   "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId from book, favorite  where book.id = favorite.id and favorite.user='{}' ".format(
                 Setting.UserId.value)
             if not QtOwner().isDbHavePicaID:
-                sql = sql.replace(", share_id", "")
+                sql = sql.replace(", shareId", "")
             sql += " and (book.title like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
             sql += " book.title2 like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
             sql += " book.author like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
@@ -479,7 +479,7 @@ class SqlServer(Singleton):
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 1 "
         if not QtOwner().isDbHavePicaID:
-            sql = sql.replace(", share_id", "")
+            sql = sql.replace(", shareId", "")
 
         if sql2Data:
             sql2Data = "SELECT id FROM book WHERE 0 {}".format(sql2Data)
@@ -612,7 +612,7 @@ class SqlServer(Singleton):
             sql = "SELECT id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
               "created_at, updated_at, path, fileServer, creator, totalLikes, totalViews, shareId FROM book WHERE 1 "
         if not QtOwner().isDbHavePicaID:
-            sql = sql.replace(", share_id", "")
+            sql = sql.replace(", shareId", "")
         if isFinish:
             sql += " and finished=1 "
         if not limitIds is None:
