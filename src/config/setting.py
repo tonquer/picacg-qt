@@ -40,25 +40,24 @@ class SettingValue:
 
     @staticmethod
     def GetSettingV(v, defV=None):
-        try:
-            if v:
-                if isinstance(defV, int):
-                    if v == "true" or v == "True":
-                        return 1
-                    elif v == "false" or v == "False":
-                        return 0
-                    return int(v)
-                elif isinstance(defV, float):
-                    return float(v)
-                elif isinstance(defV, list) and isinstance(v, str):
-                    return [v]
-                else:
-                    return v
+        if v is None:
             return defV
+        try:
+            if isinstance(defV, (bool, int)):
+                if isinstance(v, str) and v.lower() in ("true", "false"):
+                    value = int(v.lower() == "true")
+                else:
+                    value = int(v)
+                return bool(value) if isinstance(defV, bool) else value
+            if isinstance(defV, float):
+                return float(v)
+            if isinstance(defV, list) and isinstance(v, str):
+                return [v] if v else []
+            return v
         except Exception as es:
             from tools.log import Log
             Log.Error(es)
-        return v
+        return defV
 
     def GetIndexV(self):
         if not isinstance(self.des, list):
