@@ -9,6 +9,7 @@ class BaseRes(object):
         self.raw = data
         self.data = {}
         self.code = 0
+        self.error = ""
         self.message = ""
         self.reqBak = None
         self.isParseRes = isParseRes

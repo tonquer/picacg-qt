@@ -220,8 +220,11 @@ class BookMgr(Singleton):
             epsId = backData.req.epsId
 
             bookInfo = self.books.get(bookId)
-
             epsInfo = bookInfo.epsDict[epsId-1]
+            if r.code == 500 and r.error == "Cannot read property '_id' of null":
+                Log.Warn("eps space, book_id:{}, eps_id:{}, raw:{}".format(bookId, epsId-1, r.GetText()))
+                epsInfo.isSpace = True
+                return Status.Ok
             epsInfo.maxPics = r.data['pages']["total"]
             page = r.data['pages']["page"]
             pages = r.data['pages']["pages"]
@@ -229,7 +232,7 @@ class BookMgr(Singleton):
 
             # 空白章节
             if epsInfo.maxPics == 0:
-                Log.Warn("eps space, book_id:{}, data:{}".format(bookId, r.GetText()))
+                Log.Warn("eps space, book_id:{}, eps_id:{}, data:{}".format(bookId, epsId-1, r.GetText()))
                 epsInfo.isSpace = True
 
             # 重新初始化
