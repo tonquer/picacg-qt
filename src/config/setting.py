@@ -287,7 +287,7 @@ class Setting:
     def GetDBPath():
         if sys.platform != "linux":
             return "db"
-        return Setting._xdgDir("XDG_DATA_HOME", ".local/state")
+        return Setting._xdgDir("XDG_STATE_HOME", ".local/state")
 
     @staticmethod
     def GetCachePath():
