@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=Qt;
+Comment=A jmcopicacgmic comic brower
+Exec="/opt/apps/org.tonquer.picacg/files/AppRun" %U
+GenericName=org.tonquer.picacg
+Icon=/opt/apps/org.tonquer.picacg/entries/icons/hicolor/192x192/apps/org.tonquer.picacg.png
+Name=PicACG
+Type=Application
+X-Deepin-Vendor=user-custom

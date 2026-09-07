@@ -1,0 +1,2 @@
+#!/bin/sh
+rm -f /usr/share/applications/PicACG.desktop

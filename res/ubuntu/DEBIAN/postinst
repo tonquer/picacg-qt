@@ -1,0 +1,3 @@
+#!/bin/sh
+chmod 777 /opt/PicACG/PicACG.desktop
+cp /opt/PicACG/PicACG.desktop /usr/share/applications/

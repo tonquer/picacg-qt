@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=PicACG
+Exec=/opt/PicACG/AppRun
+Icon=/opt/PicACG/PicACG.png
+Comment=A picacg comic brower
+Terminal=false

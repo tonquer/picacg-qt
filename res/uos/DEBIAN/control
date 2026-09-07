@@ -1,0 +1,7 @@
+Package: org.tonquer.picacg
+Version: 1.5.5.0
+Architecture: amd64
+Section: utils
+Maintainer: tonquer
+Description: A picacg comic browse
+

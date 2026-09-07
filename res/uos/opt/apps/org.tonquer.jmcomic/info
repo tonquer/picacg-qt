@@ -1,0 +1,17 @@
+{
+    "appid": "org.tonquer.picacg",
+    "name": "PicACG",
+    "version": "1.5.5.0",
+    "arch": ["amd64"],
+    "permissions": {
+        "autostart": false,
+        "notification": false,
+        "trayicon": false,
+        "clipboard": false,
+        "account": false,
+        "bluetooth": false,
+        "camera": false,
+        "audio_record": false,
+        "installed_apps": false
+}
+}

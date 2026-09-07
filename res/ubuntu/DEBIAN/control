@@ -1,0 +1,9 @@
+Package: PicACG
+Version: 1.5.5.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends:
+Installed-Size: 102400
+Maintainer: tonquer
+Description: A picacg comic brower
