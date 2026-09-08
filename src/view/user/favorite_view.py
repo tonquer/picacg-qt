@@ -2,15 +2,14 @@ import json
 
 from PySide6 import QtWidgets
 
-from config.setting import Setting
 from interface.ui_favorite import Ui_Favorite
 from qt_owner import QtOwner
 from server import req, User, Log
-from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from tools.book import BookMgr
 from tools.status import Status
 from tools.str import Str
+from tools.page_result import PageResult
 
 
 class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
@@ -63,8 +62,8 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         # self.bookList.pages = max(0, (maxFovorite-1)) // 20 + 1
         self.pages.setText("{}/{}".format(self.bookList.page, self.bookList.pages) + Str.GetStr(Str.Page))
         # self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(maxFovorite))
-        self.spinBox.setValue(self.bookList.page)
         self.spinBox.setMaximum(self.bookList.pages)
+        self.spinBox.setValue(self.bookList.page)
         self.bookList.UpdateState()
 
     def InitFavorite(self):
@@ -128,21 +127,25 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         #     sortId = self.UpdateSortId(bookId)
 
     def LoadNextPage(self):
-        self.bookList.page += 1
-        self.RefreshData()
+        if self.bookList.page >= self.bookList.pages:
+            self.bookList.UpdateState()
+            return
+        self.RefreshData(self.bookList.page + 1)
 
     def JumpPage(self):
-        page = int(self.spinBox.text())
-        if page > self.bookList.pages:
+        page = self.spinBox.value()
+        if self.bookList.isLoadingPage or not 1 <= page <= self.bookList.pages:
             return
-        self.bookList.page = page
-        self.bookList.clear()
-        self.RefreshData()
+        self.RefreshData(page, replace=True)
 
-    def RefreshData(self):
+    def RefreshData(self, page=None, replace=False):
+        page = self.bookList.page if page is None else page
         QtOwner().ShowLoading()
+        self.bookList.UpdateState(True)
+        self.spinBox.setEnabled(False)
+        self.jumpButton.setEnabled(False)
         sort = self.sortList[self.sortCombox.currentIndex()]
-        self.AddHttpTask(req.FavoritesReq(self.bookList.page, sort), self.SearchBack, self.bookList.page)
+        self.AddHttpTask(req.FavoritesReq(page, sort), self.SearchBack, (page, replace))
 
     # def SearchLocalBack(self, bookList):
     #     QtOwner().CloseLoading()
@@ -151,7 +154,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
     #     self.UpdatePageNum()
     #     return
 
-    def SearchBack(self, raw, page):
+    def SearchBack(self, raw, pending):
         QtOwner().CloseLoading()
         try:
             st = raw.get("st")
@@ -159,17 +162,20 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
                 data = raw["data"]
                 data = json.loads(data)
                 info = data.get("data", {}).get("comics", {})
-                total = info["total"]
-                page = info["page"]
-                pages = info["pages"]
-                self.bookList.UpdateState()
-                self.bookList.UpdatePage(page, pages)
-                self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(total))
-                for bookInfo in info.get("docs", []):
-                    bookId = bookInfo.get("_id")
+                result = PageResult.from_remote(info)
+                if pending[1]:
+                    self.bookList.clear()
+                self.bookList.UpdatePage(result.page, result.pages)
+                self.bookList.UpdateState(True)
+                self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(result.total))
+                for bookInfo in result.items:
                     self.bookList.AddBookByDict(bookInfo)
                 self.UpdatePageNum()
             else:
                 QtOwner().ShowError(Str.GetStr(st))
         except Exception as es:
             Log.Error(es)
+        finally:
+            self.bookList.UpdateState()
+            self.spinBox.setEnabled(True)
+            self.jumpButton.setEnabled(True)

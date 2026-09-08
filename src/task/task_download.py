@@ -71,8 +71,7 @@ class TaskDownload(TaskBase, QtTaskBase):
             self.HandlerDownload({"st": Status.Ok}, (v, QtDownloadTask.Waiting))
 
     def DownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isReload=False, resetCnt=1):
-        self.taskId += 1
-        data = QtDownloadTask(self.taskId)
+        data = QtDownloadTask()
         data.downloadCallBack = downloadCallBack
         data.downloadCompleteBack = completeCallBack
         data.backParam = backParam
@@ -83,20 +82,20 @@ class TaskDownload(TaskBase, QtTaskBase):
         data.loadPath = loadPath
         data.cachePath = cachePath
         data.savePath = savePath
-        self.tasks[self.taskId] = data
-        if cleanFlag:
-            data.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-
         Log.Debug("add download info, cachePath:{}, loadPath:{}, savePath:{}".format(data.cachePath, data.loadPath, data.savePath))
-        from server.server import Server
-        from server import req
-        Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath, data.isReload, resetCnt=resetCnt), backParams=self.taskId)
-        return self.taskId
+        taskId = self._RegisterTask(data, cleanFlag, id_attr="downloadId")
+        try:
+            from server.server import Server
+            from server import req
+            Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath, data.isReload, resetCnt=resetCnt), backParams=taskId)
+        except Exception:
+            self._TakeTask(taskId)
+            raise
+        return taskId
 
     def HandlerTask(self, downloadId, laveFileSize, data, isCallBack=True):
-        info = self.tasks.get(downloadId)
+        isTerminal = (laveFileSize < 0 and data == b"") or laveFileSize == -2 or (laveFileSize == 0 and data != b"")
+        info = self._TakeTask(downloadId) if isTerminal else self._GetTask(downloadId)
         if not info:
             return
         assert isinstance(info, QtDownloadTask)
@@ -119,7 +118,6 @@ class TaskDownload(TaskBase, QtTaskBase):
                         info.downloadCompleteBack(b"", st)
             except Exception as es:
                 Log.Error(es)
-            self.ClearDownloadTask(downloadId)
             return
 
         if info.lastLaveSize <= 0:
@@ -138,21 +136,16 @@ class TaskDownload(TaskBase, QtTaskBase):
         if laveFileSize == 0 and data != b"":
             if info.downloadCompleteBack:
                 try:
-                    if info.cleanFlag:
-                        taskIds = self.flagToIds.get(info.cleanFlag, set())
-                        taskIds.discard(info.downloadId)
                     if info.backParam is not None:
                         info.downloadCompleteBack(data, Status.Ok, info.backParam)
                     else:
                         info.downloadCompleteBack(data, Status.Ok)
                 except Exception as es:
                     Log.Error(es)
-            self.ClearDownloadTask(downloadId)
 
     def DownloadBook(self, bookId, epsId, index, statusBack=None, downloadCallBack=None, completeCallBack=None,
                     backParam=None, loadPath="", cachePath="", savePath="", cleanFlag=None, isInit=False):
-        self.taskId += 1
-        data = QtDownloadTask(self.taskId)
+        data = QtDownloadTask()
         data.downloadCallBack = downloadCallBack
         data.downloadCompleteBack = completeCallBack
         data.isInit = isInit
@@ -164,35 +157,26 @@ class TaskDownload(TaskBase, QtTaskBase):
         data.loadPath = loadPath
         data.cachePath = cachePath
         data.savePath = savePath
-        self.tasks[self.taskId] = data
-        if cleanFlag:
-            data.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
         Log.Debug("add download info, savePath:{}, loadPath:{}".format(data.savePath, data.loadPath))
-        self._inQueue.put(self.taskId)
-        return self.taskId
+        taskId = self._RegisterTask(data, cleanFlag, id_attr="downloadId")
+        self._inQueue.put(taskId)
+        return taskId
 
     def DownloadCache(self, filePath, completeCallBack=None, backParam = 0, cleanFlag=""):
-        self.taskId += 1
-        data = QtDownloadTask(self.taskId)
+        data = QtDownloadTask()
         data.downloadCompleteBack = completeCallBack
         data.loadPath = filePath
         data.backParam = backParam
         data.isLoadTask = True
-        if cleanFlag:
-            data.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-        self.tasks[self.taskId] = data
-        self._inQueue.put(self.taskId)
-        return self.taskId
+        taskId = self._RegisterTask(data, cleanFlag, id_attr="downloadId")
+        self._inQueue.put(taskId)
+        return taskId
 
     def HandlerDownload(self, data, v):
         if not data:
             data = {"st": Status.Error}
         (taskId, newStatus) = v
-        task = self.tasks.get(taskId)
+        task = self._GetTask(taskId)
         if not task:
             return
         backData = {}
@@ -349,6 +333,7 @@ class TaskDownload(TaskBase, QtTaskBase):
                     task.backParam, task.loadPath, task.cachePath, task.savePath, task.cleanFlag, resetCnt=resetCnt)
         except Exception as es:
             Log.Error(es)
+            self.SetTaskStatus(taskId, backData, task.Error)
         return
 
     def SetTaskStatus(self, taskId, backData, status):
@@ -369,24 +354,23 @@ class TaskDownload(TaskBase, QtTaskBase):
             Log.Error(es)
 
     def HandlerTaskSt(self, downloadId, data):
-        task = self.tasks.get(downloadId)
+        task = self._GetTask(downloadId)
         if not task:
             return
         assert isinstance(task, QtDownloadTask)
         try:
+            status = data.get("st") or task.status
+            # Downloading 表示元数据已交接给另一个下载任务，不是图片下载完成。
+            if status in (task.Success, task.Downloading, task.Error, task.SpaceEps, task.Cache, task.UnderReviewBook):
+                task = self._TakeTask(downloadId)
+                if not task:
+                    return
             self.CallBookBack(data, task)
             st = data.get("st")
             if st:
                 task.status = st
-            # print("st:{} {}".format(task.status, data))
-            status = task.status
-            if status == task.Downloading or status == task.Error or status == task.SpaceEps or status == task.Cache or status == task.UnderReviewBook:
-                self.ClearDownloadTask(downloadId)
         except Exception as es:
             Log.Error(es)
 
     def ClearDownloadTask(self, downloadId):
-        info = self.tasks.get(downloadId)
-        if not info:
-            return
-        del self.tasks[downloadId]
+        self._TakeTask(downloadId)

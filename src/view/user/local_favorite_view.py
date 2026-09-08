@@ -1,19 +1,20 @@
 import json
-import time
 
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QMessageBox
 
-from config.setting import Setting
 from interface.ui_local_favorite import Ui_LocalFavorite
 from qt_owner import QtOwner
-from server import req, Log, config
+from server import req, Log
 from server.sql_server import SqlServer
+from server.book_query import FavoriteQuery, FAVORITE_SORT_FIELDS
 from task.qt_task import QtTaskBase
-from tools.book import BookMgr, Book
+from tools.book import Book
 from tools.status import Status
 from tools.str import Str
 from tools.tool import ToolUtil
+from tools.pagination import FAVORITE_PAGE_SIZE
+from tools.page_result import PageRequest, PageResult
 from view.user.local_favorite_db import LocalFavoriteDb
 
 
@@ -55,8 +56,10 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
         # self.widget.hide()
         self.lineEdit.textChanged.connect(self.SearchTextChange)
         self.searchText = ""
+        self._snapshot = None
+        self._snapshotKey = None
         self.db = LocalFavoriteDb()
-        bookList = self.db.SearchFavorite(-1, 0, 0, 0, "")
+        bookList = self.db.QueryFavorites(FavoriteQuery())
         self.allBookIds = set([v.id for v in bookList])
         # self.allDownButton.clicked.connect(self.OpenSomeBook)
         self.importButton.clicked.connect(self.ImportFavorite)
@@ -149,57 +152,97 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
 
     def SearchTextChange(self, text):
         self.searchText = text
-        self.bookList.clear()
-        self.LoadBookList()
+        self.RefreshDataFocus()
 
-    def LoadBookList(self):
+    def UpdateSortAvailability(self):
+        canUseDb = QtOwner().canUseDb
+        for index in (3, 4):
+            self.sortKeyCombox.model().item(index).setEnabled(canUseDb)
+        if not canUseDb and self.sortKeyCombox.currentIndex() in (3, 4):
+            blocked = self.sortKeyCombox.blockSignals(True)
+            self.sortKeyCombox.setCurrentIndex(0)
+            self.sortKeyCombox.blockSignals(blocked)
+
+    def SetPageLoading(self, loading):
+        self.bookList.UpdateState(loading)
+        self.spinBox.setEnabled(not loading)
+        self.jumpButton.setEnabled(not loading)
+
+    def LoadBookList(self, page=None, replace=False):
+        self.UpdateSortAvailability()
+        page = self.bookList.page if page is None else page
+        self.SetPageLoading(True)
         sortId = self.sortIdCombox.currentIndex()
         sortKey = self.sortKeyCombox.currentIndex()
         name = self.folderBox.currentText()
         fid = self.GetFidByName(name)
-        bookList = self.db.SearchFavorite(self.bookList.page, sortKey, sortId, fid, self.searchText)
-        page = self.bookList.page
-        if QtOwner().canUseDb:
-            bookIds = [v.id for v in bookList]
-            sql, _, _ = SqlServer.Search2(
-                self.searchText, True, True, True, True, False,
-                True, [], -1, sortKey - 1, sortId, False, bookIds)
-            
-            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.SearchLocalBack, backParam=bookList)
-        else:
-            self.SearchLocalBack(bookList, bookList)
+        criteria = FavoriteQuery(text=self.searchText, folder_id=fid,
+                                 sort_field=FAVORITE_SORT_FIELDS[sortKey], descending=sortId == 0)
+        key = (criteria, QtOwner().canUseDb)
+        if self._snapshot is not None and key == self._snapshotKey:
+            self.LoadSnapshotPage(page, replace)
+            return
+        books = self.db.QueryFavorites(criteria)
+        if sortKey in (3, 4) and books:
+            sql = SqlServer.GetBookMetrics([book.id for book in books])
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.ReceiveSortMetrics,
+                            (books, key, page, replace))
+            return
+        self._snapshot = books
+        self._snapshotKey = key
+        self.LoadSnapshotPage(page, replace)
 
-    def SearchLocalBack(self, bookList, oldBookList):
-        QtOwner().CloseLoading()
-        sortKey = self.sortKeyCombox.currentIndex()
-        self.bookList.UpdateState()
-        ## 如果sortKey == 0, 按oldBookList排序，否则按bookList排序
-        if sortKey == 0:
-            bookDict = {}
-            for v in bookList:
-                bookDict[v.id] = v
-            for info in oldBookList:
-                info2 = bookDict.get(info.id)
-                if info2:
-                    self.bookList.AddBookItemByDbBook(info2, isShowHistory=True)
-                else:
-                    self.bookList.AddBookItemByDbBook(info, isShowHistory=True)
+    def ReceiveSortMetrics(self, metrics, pending):
+        books, key, page, replace = pending
+        if not isinstance(metrics, list):
+            self.SetPageLoading(False)
+            QtOwner().CloseLoading()
+            return
+        criteria = key[0]
+        field = criteria.sort_field
+        values = {book.id: getattr(book, field) for book in metrics}
+        known = [book for book in books if values.get(book.id) is not None]
+        missing = [book for book in books if values.get(book.id) is None]
+        known.sort(key=lambda book: book.id)
+        known.sort(key=lambda book: values[book.id], reverse=criteria.descending)
+        missing.sort(key=lambda book: book.id)
+        self._snapshot = known + missing
+        self._snapshotKey = key
+        self.LoadSnapshotPage(page, replace)
+
+    def LoadSnapshotPage(self, page, replace):
+        request = PageRequest(page, FAVORITE_PAGE_SIZE).clamp(len(self._snapshot))
+        books = self._snapshot[request.offset:request.offset + request.page_size]
+        result = PageResult.from_total(books, request, len(self._snapshot))
+        pending = (result, replace)
+        if QtOwner().canUseDb and books:
+            sql = SqlServer.GetBookByIds([book.id for book in books])
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.SearchLocalBack, pending)
         else:
-            for info in bookList:
-                self.bookList.AddBookItemByDbBook(info, isShowHistory=True)
-        self.UpdatePageNum()
+            self.SearchLocalBack(books, pending)
+
+    def SearchLocalBack(self, bookList, pending):
+        QtOwner().CloseLoading()
+        result, replace = pending
+        if replace:
+            self.bookList.clear()
+        bookDict = {book.id: book for book in bookList} if isinstance(bookList, list) else {}
+        for info in result.items:
+            self.bookList.AddBookItemByDbBook(bookDict.get(info.id, info), isShowHistory=True)
+        self.bookList.UpdatePage(result.page, result.pages)
+        self.UpdatePageNum(result)
+        self.SetPageLoading(False)
         return
 
-    def UpdatePageNum(self):
-        maxFovorite = len(self.allBookIds)
-        self.bookList.pages = max(0, (maxFovorite-1)) // 20 + 1
+    def UpdatePageNum(self, result):
         self.pages.setText("{}/{}".format(self.bookList.page, self.bookList.pages) + Str.GetStr(Str.Page))
-        self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(maxFovorite))
-        self.spinBox.setValue(self.bookList.page)
+        self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(result.total))
         self.spinBox.setMaximum(self.bookList.pages)
+        self.spinBox.setValue(self.bookList.page)
         self.bookList.UpdateState()
 
     def RefreshDataFocus(self):
+        self._snapshot = None
         self.bookList.UpdatePage(1, 1)
         self.bookList.UpdateState()
         self.bookList.clear()
@@ -207,15 +250,13 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
 
     def DelCallBack(self, bookId):
         self.DelFavorites(bookId)
-        self.bookList.DelBookID(bookId)
-        # self.RefreshDataFocus()
+        self.RefreshData()
         pass
 
     def BatchDelCallBack(self, bookIds):
         for bookId in bookIds:
             self.DelFavorites(bookId)
-            self.bookList.DelBookID(bookId)
-        # self.RefreshDataFocus()
+        self.RefreshData()
         pass
 
     def IsHave(self, bookId):
@@ -224,11 +265,13 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
     def AddFavorites(self, bookInfo):
         self.db.AddBookToDB(bookInfo)
         self.allBookIds.add(str(bookInfo.id))
+        self._snapshot = None
         QtOwner().ShowMsg(Str.GetStr(Str.AddFavoriteSuc))
 
     def AddFavoritesAndFidName(self, bookInfo):
         self.db.AddBookToDB(bookInfo)
         self.allBookIds.add(str(bookInfo.id))
+        self._snapshot = None
         # fid = self.GetFidByName(fidName)
         # self.db.AddBookFavoriteFid(str(bookInfo.baseInfo.id), fid)
         self.fidBookList = self.db.LoadBookFold()
@@ -236,6 +279,7 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
     def DelFavorites(self, bookId):
         self.db.DelFavoriteDB(bookId)
         self.allBookIds.discard(str(bookId))
+        self._snapshot = None
         self.fidBookList = self.db.LoadBookFold()
 
     def AddFidByName(self, name):
@@ -273,23 +317,24 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
             self.db.UpdateBookFavoriteFid(bookId, fids)
         self.folderDict = self.db.LoadFold()
         self.fidBookList = self.db.LoadBookFold()
+        self._snapshot = None
         return True
 
     def LoadNextPage(self):
-        self.bookList.page += 1
-        self.LoadBookList()
+        if self.bookList.page >= self.bookList.pages:
+            self.SetPageLoading(False)
+            return
+        self.LoadBookList(self.bookList.page + 1)
 
     def JumpPage(self):
-        page = int(self.spinBox.text())
-        if page > self.bookList.pages:
+        page = self.spinBox.value()
+        if self.bookList.isLoadingPage or not 1 <= page <= self.bookList.pages:
             return
-        self.bookList.page = page
-        self.bookList.clear()
-        self.RefreshData()
+        self.LoadBookList(page, replace=True)
 
     def RefreshData(self):
         QtOwner().ShowLoading()
-        self.SearchTextChange(self.searchText)
+        self.LoadBookList(replace=True)
 
     def InitFolder(self):
         self.ClearFolder()
@@ -318,15 +363,8 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
     def MoveOkBack(self):
         ## 如果检查移动的不在,则hidden book
         # self.RefreshDataFocus()
-        bookIds = self.lastMoveBookIds
-        name = self.folderBox.currentText()
-        fid = self.GetFidByName(name)
-
-        for bookId in bookIds:
-            if fid > 0:
-                isHave = bookId in self.fidBookList.get(fid, [])
-                if not isHave:
-                    self.bookList.DelBookID(bookId)
+        self._snapshot = None
+        self.RefreshData()
         QtOwner().ShowMsg(Str.GetStr(Str.Ok))
         return
 

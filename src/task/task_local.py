@@ -147,6 +147,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                 self._LoadRead(taskId)
             except Exception as es:
                 Log.Error(es)
+                self.taskObj.localBack.emit(taskId, Str.Error, [])
         pass
 
     def RunLoad2(self):
@@ -159,59 +160,45 @@ class TaskLocal(TaskBase, QtTaskBase):
                 self._LoadRead2(task)
             except Exception as es:
                 Log.Error(es)
+                self.taskObj.localReadBack.emit(task, Str.Error, b"")
         pass
 
     def Stop(self):
         self._inQueue.put("")
 
     def ClearQImageTaskById(self, taskId):
-        if taskId in self.tasks:
-            self.tasks.pop(taskId)
+        self._TakeTask(taskId)
 
     def HandlerTask(self, taskId, st, newData):
         try:
-            info = self.tasks.get(taskId)
+            info = self._GetTask(taskId) if st == Str.Waiting else self._TakeTask(taskId)
             if not info:
-                Log.Warn("[TaskLocal] not find taskId:{}, {}".format(taskId, len(newData)))
                 return
             assert isinstance(info, QLocalTask)
-            if info.cleanFlag:
-                if st != Str.Waiting:
-                    taskIds = self.flagToIds.get(info.cleanFlag, set())
-                    taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
                     info.callBack(st, newData)
                 else:
                     info.callBack(st, newData, info.backParam)
-            if st != Str.Waiting:
-                del info.callBack
-                del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)
 
     def HandlerTask2(self, taskId, st, newData):
         try:
-            info = self.tasks.get(taskId)
+            info = self._TakeTask(taskId)
             if not info:
-                Log.Warn("[TaskLocal] not find taskId:{}, {}".format(taskId, len(newData)))
                 return
             assert isinstance(info, QLocalTask)
-            if info.cleanFlag:
-                taskIds = self.flagToIds.get(info.cleanFlag, set())
-                taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
                     info.callBack(newData, st)
                 else:
                     info.callBack(newData, st, info.backParam)
-                del info.callBack
-            del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)
 
     def _LoadRead(self, taskId):
-        task = self.tasks.get(taskId)
+        task = self._GetTask(taskId)
         if not task:
             return
         type = task.type
@@ -241,37 +228,31 @@ class TaskLocal(TaskBase, QtTaskBase):
         self.taskObj.localBack.emit(taskId, st, datas)
 
     def _LoadRead2(self, taskId):
-        task = self.tasks.get(taskId)
+        task = self._GetTask(taskId)
         if not task:
             return
         st, data = self.GetBookPicture(task)
         self.taskObj.localReadBack.emit(taskId, st, data)
 
     def AddLoadRead(self, type, path, backParam, callBack, cleanFlag):
-        self.taskId += 1
-        info = QLocalTask(self.taskId)
+        info = QLocalTask(0)
         info.callBack = callBack
         info.backParam = backParam
         info.type = type
         info.path = path
 
-        self.tasks[self.taskId] = info
-        if cleanFlag:
-            info.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-        self._inQueue.put(self.taskId)
-        return self.taskId
+        taskId = self._RegisterTask(info, cleanFlag)
+        self._inQueue.put(taskId)
+        return taskId
 
     def AddLoadReadPicture(self, v2, index, backParam, callBack, cleanFlag):
-        self.taskId += 1
         assert isinstance(v2, LocalData)
         if index == -1 and v2.eps:
             v = v2.eps[0]
         else:
             v = v2
 
-        info = QLocalTask(self.taskId)
+        info = QLocalTask(0)
         info.callBack = callBack
         info.backParam = backParam
         info.bookId = v.id
@@ -287,13 +268,9 @@ class TaskLocal(TaskBase, QtTaskBase):
         info.isZip = v.isZipFile
         info.path = v.file
 
-        self.tasks[self.taskId] = info
-        if cleanFlag:
-            info.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-        self._loadQueue.put(self.taskId)
-        return self.taskId
+        taskId = self._RegisterTask(info, cleanFlag)
+        self._loadQueue.put(taskId)
+        return taskId
 
     def ParseBookInfoByDir(self, dirName):
         # 解析目录
@@ -571,4 +548,4 @@ class TaskLocal(TaskBase, QtTaskBase):
             self.taskObj.localBack.emit(taskId, Str.Ok, [])
         except Exception as es:
             Log.Error(es)
-            return Str.ErrorPath, ""
+            self.taskObj.localBack.emit(taskId, Str.ErrorPath, [])

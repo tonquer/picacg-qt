@@ -8,6 +8,8 @@ from config.setting import Setting
 from interface.ui_history import Ui_History
 from tools.log import Log
 from tools.str import Str
+from tools.pagination import HISTORY_PAGE_SIZE, page_count
+from tools.page_result import PageRequest, PageResult
 
 
 class QtHistoryData(object):
@@ -28,7 +30,7 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         self.setupUi(self)
 
         # self.bookList.InitBook(self.LoadNextPage)
-        self.pageNums = 20
+        self.pageNums = HISTORY_PAGE_SIZE
         self.bookList.isHistory = True
         self.bookList.LoadCallBack = self.LoadNextPage
         self.bookList.BatchDelCallBack = self.BatchDelCallBack
@@ -66,9 +68,9 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         if refresh:
             self.bookList.clear()
             self.bookList.page = 1
-            self.bookList.pages = len(self.history) // self.pageNums + 1
+            self.bookList.pages = page_count(len(self.history), self.pageNums)
+            self.spinBox.setMaximum(self.bookList.pages)
             self.spinBox.setValue(1)
-            self.spinBox.setMaximum(self.pageNums)
             self.bookList.UpdateState()
             self.UpdatePageLabel()
             self.RefreshData(self.bookList.page)
@@ -130,8 +132,8 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         pass
 
     def JumpPage(self):
-        page = int(self.spinBox.text())
-        if page > self.bookList.pages:
+        page = self.spinBox.value()
+        if not 1 <= page <= self.bookList.pages:
             return
         self.bookList.page = page
         self.bookList.clear()
@@ -139,32 +141,43 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         self.UpdatePageLabel()
 
     def LoadNextPage(self):
-        self.bookList.page += 1
-        self.RefreshData(self.bookList.page)
+        if self.bookList.page >= self.bookList.pages:
+            self.bookList.UpdateState()
+            return
+        self.RefreshData(self.bookList.page + 1)
         self.UpdatePageLabel()
 
     def RefreshData(self, page):
         sortedList = list(self.history.values())
+        sortedList.sort(key=lambda a: a.bookId)
         sortedList.sort(key=lambda a: a.tick, reverse=True)
-        self.bookList.UpdateState()
-        start = (page-1) * self.pageNums
-        end = start + self.pageNums
-        for info in sortedList[start:end]:
+        request = PageRequest(page, self.pageNums).clamp(len(sortedList))
+        items = sortedList[request.offset:request.offset + request.page_size]
+        result = PageResult.from_total(items, request, len(sortedList))
+        self.bookList.UpdatePage(result.page, result.pages)
+        self.bookList.UpdateState(True)
+        self.spinBox.setMaximum(result.pages)
+        self.spinBox.setValue(result.page)
+        for info in result.items:
             self.bookList.AddBookItemByHistory(info)
+        self.bookList.UpdateState()
+        self.UpdatePageLabel()
 
     def UpdatePageLabel(self):
         self.pages.setText(Str.GetStr(Str.Page)+"：{}/{}".format(str(self.bookList.page), str(self.bookList.pages)))
 
     def BatchDelCallBack(self, bookIds):
         for bookId in bookIds:
-            self.DelCallBack(bookId)
+            self.history.pop(bookId, None)
+            self.DelHistory(bookId)
+        self.ReloadCurrentPage()
 
     def DelCallBack(self, bookId):
         if bookId not in self.history:
             return
         self.history.pop(bookId)
         self.DelHistory(bookId)
-        self.bookList.DelBookID(bookId)
+        self.ReloadCurrentPage()
 
         #
         # page = 1
@@ -173,3 +186,8 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         # self.RefreshData(page)
         # self.UpdatePageLabel()
         return
+
+    def ReloadCurrentPage(self):
+        page = self.bookList.page
+        self.bookList.clear()
+        self.RefreshData(page)

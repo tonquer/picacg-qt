@@ -63,8 +63,7 @@ class TaskUpload(TaskBase, QtTaskBase):
         self.taskObj.uploadBack.connect(self.HandlerTask)
 
     def AddLoadReadPicture(self, nasInfo, type, srcDir, desFile, upDirPath, bookId, epsId, backParam, callBack, cleanFlag):
-        self.taskId += 1
-        info = QtUpTask(self.taskId)
+        info = QtUpTask(0)
         info.callBack = callBack
         info.backParam = backParam
         info.nasInfo = nasInfo
@@ -75,13 +74,9 @@ class TaskUpload(TaskBase, QtTaskBase):
         info.desFile = desFile
         info.upDirPath = upDirPath
 
-        self.tasks[self.taskId] = info
-        if cleanFlag:
-            info.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-        self._inQueue.put(self.taskId)
-        return self.taskId
+        taskId = self._RegisterTask(info, cleanFlag)
+        self._inQueue.put(taskId)
+        return taskId
 
     def Run(self):
         while True:
@@ -93,13 +88,14 @@ class TaskUpload(TaskBase, QtTaskBase):
                 self._LoadRead(taskId)
             except Exception as es:
                 Log.Error(es)
+                self.taskObj.uploadBack.emit(taskId, Str.Error, "")
         pass
 
     def Stop(self):
         self._inQueue.put("")
 
     def _LoadRead(self, taskId):
-        task = self.tasks.get(taskId)
+        task = self._GetTask(taskId)
         if not task:
             return
         assert isinstance(task, QtUpTask)
@@ -165,21 +161,15 @@ class TaskUpload(TaskBase, QtTaskBase):
 
     def HandlerTask(self, taskId, st, msg):
         try:
-            info = self.tasks.get(taskId)
+            info = self._TakeTask(taskId)
             if not info:
-                Log.Warn("[TaskLocal] not find taskId:{}".format(taskId))
                 return
             assert isinstance(info, QtUpTask)
-            if info.cleanFlag:
-                taskIds = self.flagToIds.get(info.cleanFlag, set())
-                taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
                     info.callBack(st, msg)
                 else:
                     info.callBack(st, info.backParam, msg)
-                del info.callBack
-            del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)
 

@@ -1,20 +1,22 @@
-import json
 import os.path
 import time
 
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from config.setting import Setting
-from server.sql_server import DbBook
+from server.book_mapping import DbBook, book_from_row
+from server.book_query import FavoriteQuery
+from tools.page_result import PageRequest
 from tools.book import Book
 from tools.langconv import Converter
 from tools.log import Log
-from view.download.download_item import DownloadItem, DownloadEpsItem
+from tools.pagination import FAVORITE_PAGE_SIZE
 
 class LocalFavoriteItem(DbBook):
     def __init__(self):
         DbBook.__init__(self)
         self.add_tick = 0
+        self.tick = 0
 
 
 class LocalFavoriteDb(object):
@@ -226,63 +228,25 @@ class LocalFavoriteDb(object):
             data[int(fid)].add(bookId)
         return data
 
-    def SearchFavorite(self, page, sortKey=0, sortId=0, fid=0, searchText=""):
-        if not searchText:
-            sql = "select bookId, title, author, chineseTeam, description, epsCount, pages, finished, categories, tags, created_at, updated_at, path, fileServer, tick  " \
-                  "from favorite as book  where 1 "
-            if fid != 0:
-                sql += f" and bookId in (select bookId from favorite_fid where fid={fid}) "
-        else:
-            sql = "select bookId, title, author, chineseTeam, description, epsCount, pages, finished, categories, tags, created_at, updated_at, path, fileServer, tick  " \
-                  "from favorite as book where 1 "
-            if fid != 0:
-                sql += f" and bookId in (select bookId from favorite_fid where fid={fid}) "
-            sql += " and (book.title like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.author like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.description like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.tags like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.bookId like '%{}%' or ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-            sql += " book.categories like '%{}%')  ".format(Converter('zh-hans').convert(searchText).replace("'", "''"))
-
-        if sortKey == 1:
-            if sortId == 0:
-                sql += "ORDER BY book.updated_at DESC, book.tick DESC, book.bookId ASC"
-            else:
-                sql += "ORDER BY book.updated_at ASC, book.tick ASC, book.bookId ASC"
-        elif sortKey == 0:
-            if sortId == 0:
-                sql += "ORDER BY book.tick DESC, book.bookId ASC"
-            else:
-                sql += "ORDER BY book.tick ASC, book.bookId ASC"
-
-
-        if page >= 0:
-            sql += "  limit {},{};".format((page - 1) * 100, 100)
-
-        self.db.exec()
+    def QueryFavorites(self, criteria, page=None):
+        statement = criteria.statement(page)
         query = QSqlQuery(self.db)
-        suc = query.exec_(sql)
-        data = []
-        if not suc:
+        query.prepare(statement.sql)
+        for value in statement.params:
+            query.addBindValue(value)
+        if not query.exec():
             Log.Warn(query.lastError().text())
+            return []
+        record = query.record()
+        columns = [record.fieldName(index) for index in range(record.count())]
+        data = []
         while query.next():
-            # select bookId, title, author, chineseTeam, description, epsCount, pages, finished, categories, tags, created_at, updated_at, path, fileServer, tick
-            info = LocalFavoriteItem()
-            bookId = query.value(0)
-            info.id = bookId
-            info.title = query.value(1)
-            info.author = query.value(2)
-            info.chineseTeam = query.value(3)
-            info.description = query.value(4)
-            info.epsCount = query.value(5)
-            info.pages = query.value(6)
-            info.finished = bool(query.value(7))
-            info.categories = query.value(8)
-            info.tags = query.value(9)
-            info.created_at = query.value(10)
-            info.updated_at = query.value(11)
-            info.path = query.value(12)
-            info.fileServer = query.value(13)
-            info.tick = query.value(14)
-            data.append(info)
+            row = [query.value(index) for index in range(len(columns))]
+            data.append(book_from_row(columns, row, LocalFavoriteItem))
         return data
+
+    def SearchFavorite(self, page, sortKey=0, sortId=0, fid=0, searchText=""):
+        """兼容旧列表查询入口，负页号表示读取完整匹配集合。"""
+        criteria = FavoriteQuery.from_legacy(searchText, fid, sortKey, sortId)
+        request = None if page < 0 else PageRequest(max(1, page), FAVORITE_PAGE_SIZE)
+        return self.QueryFavorites(criteria, request)

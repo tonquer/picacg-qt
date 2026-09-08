@@ -62,8 +62,12 @@ class NasStatus(QtTaskBase):
         return
 
     def _SetTaskPause(self, task2):
-        from task.task_download import TaskDownload
-        TaskDownload().Cancel(task2.cleanFlag)
+        from task.task_http import TaskHttp
+        from task.task_sql import TaskSql
+        from task.task_upload import TaskUpload
+        TaskUpload().Cancel(task2.cleanFlag)
+        TaskSql().Cancel(task2.cleanFlag)
+        TaskHttp().Cancel(task2.cleanFlag)
         self._SetDownloadTaskNone(task2)
         return
 
@@ -119,7 +123,7 @@ class NasStatus(QtTaskBase):
 
         if newStatus == task.Uploading:
             task.type = 1
-            self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
+            task.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
 
         if newStatus == Str.SpaceEps:
             task.type = 0
@@ -133,7 +137,7 @@ class NasStatus(QtTaskBase):
         return
 
     def GetXmlInfo(self, task):
-        self.AddSqlTask("book", task.bookId, SqlServer.TaskTypeCacheBook, callBack=self.GetXmlInfoBack, backParam=task.key)
+        task.AddSqlTask("book", task.bookId, SqlServer.TaskTypeCacheBook, callBack=self.GetXmlInfoBack, backParam=task.key)
         return True
 
     def GetXmlInfoBack(self, books, taskId):
@@ -143,7 +147,7 @@ class NasStatus(QtTaskBase):
         book = BookMgr().GetBook(task.bookId)
         if not book:
             # self.SetNewStatus(task, task.Error, Str.CvXMLErr)
-            self.AddHttpTask(req.GetComicsBookReq(task.bookId), self.GetXmlInfoBack2, taskId)
+            task.AddHttpTask(req.GetComicsBookReq(task.bookId), self.GetXmlInfoBack2, taskId)
             return
         self.StartItemDownload(task)
 
@@ -169,7 +173,7 @@ class NasStatus(QtTaskBase):
             if newStatus == task.Uploading:
                 newStatus, (nasInfo, srcDir, desFile, upDirPath) = task.GetNextParams()
                 if newStatus == task.Uploading:
-                    self.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
+                    task.AddUploadTask(nasInfo, task.type, srcDir, desFile, upDirPath, task.bookId, task.curPreUpIndex, task.key, self.UploadStCallBack)
 
                 if newStatus == Str.SpaceEps:
                     task.UploadNextEps()

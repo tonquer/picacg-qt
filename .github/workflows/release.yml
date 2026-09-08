@@ -33,6 +33,9 @@ on:
         description: '打包 Linux ARM64 (无图片超分)'
         type: boolean
         default: false
+permissions:
+  contents: read
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -44,36 +47,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: '0'
-      - name: get-package_prefix
+      - name: 生成构建版本
         id: get-package_prefix
-        run: |
-          LIB_NAME=bika
-          TAG_NAME=$(git describe --abbrev=0 --tags)
-          HEAD_SHA_SHORT=$(git rev-parse --short HEAD)
-          echo "::set-output name=PACKAGE_PREFIX::${LIB_NAME}_${TAG_NAME}"
-          echo "::set-output name=TAG_NAME::${TAG_NAME}"
-          echo "::set-output name=HEAD_SHA_SHORT::${HEAD_SHA_SHORT}"
-
-  release:
-    needs: [setup]
-    runs-on: ubuntu-latest
-    outputs:
-      Up_Url: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: create_release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ needs.setup.outputs.TAG_NAME }}
-          release_name: ${{ needs.setup.outputs.TAG_NAME }}
-          draft: true
-          prerelease: true
+        run: python3 script/release_metadata.py
 
   macos:
     if: github.event_name == 'push' || github.event.inputs.build_macos == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: macos-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_universal2
@@ -142,19 +122,10 @@ jobs:
       with:
           name: ${{ env.PACKAGENAME }}
           path: ${{ env.PACKAGENAME }}.dmg
-    - name: upload-macos
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.release.outputs.Up_Url }}
-        asset_path: ${{ env.PACKAGENAME }}.dmg
-        asset_name: ${{ env.PACKAGENAME }}.dmg
-        asset_content_type: application/gzip
-
+          if-no-files-found: error
   macos-nosr:
     if: github.event_name == 'push' || github.event.inputs.build_macos_nosr == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: macos-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_universal2_nosr
@@ -220,19 +191,10 @@ jobs:
       with:
           name: ${{ env.PACKAGENAME }}
           path: ${{ env.PACKAGENAME }}.dmg
-    - name: upload-macos
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.release.outputs.Up_Url }}
-        asset_path: ${{ env.PACKAGENAME }}.dmg
-        asset_name: ${{ env.PACKAGENAME }}.dmg
-        asset_content_type: application/gzip
-
+          if-no-files-found: error
   windows:
     if: github.event_name == 'push' || github.event.inputs.build_windows == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: windows-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64
@@ -290,20 +252,11 @@ jobs:
         with:
           name: ${{ env.PACKAGENAME }}
           path: ${{ env.PACKAGENAME }}.7z
-
-      - name: upload-win
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url:         ${{ needs.release.outputs.Up_Url }}
-          asset_path:         ${{ env.PACKAGENAME }}.7z
-          asset_name:         ${{ env.PACKAGENAME }}.7z
-          asset_content_type: application/x-7z-compressed
+          if-no-files-found: error
 
   windows-nosr:
     if: github.event_name == 'push' || github.event.inputs.build_windows_nosr == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: windows-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64_nosr
@@ -361,16 +314,7 @@ jobs:
         with:
           name: ${{ env.PACKAGENAME }}
           path: ${{ env.PACKAGENAME }}.7z
-
-      - name: upload-win
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url:         ${{ needs.release.outputs.Up_Url }}
-          asset_path:         ${{ env.PACKAGENAME }}.7z
-          asset_name:         ${{ env.PACKAGENAME }}.7z
-          asset_content_type: application/x-7z-compressed
+          if-no-files-found: error
 
   # linux-arm64-nosr:
   #   if: github.event_name == 'push' || github.event.inputs.build_linux_arm64_nosr == 'true'
@@ -438,3 +382,34 @@ jobs:
   #         asset_path:         ${{ env.PACKAGENAME }}.7z
   #         asset_name:         ${{ env.PACKAGENAME }}.7z
   #         asset_content_type: application/zip
+
+  release:
+    name: 发布标签构建产物
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: [setup, macos, macos-nosr, windows, windows-nosr]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          merge-multiple: true
+      - name: 创建或更新草稿预发布
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG_NAME: ${{ needs.setup.outputs.TAG_NAME }}
+        shell: bash
+        run: |
+          mapfile -d '' assets < <(find release-artifacts -type f \( -name '*.dmg' -o -name '*.7z' \) -print0)
+          if [ "${#assets[@]}" -eq 0 ]; then
+            echo "没有可发布的构建产物" >&2
+            exit 1
+          fi
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            gh release upload "$TAG_NAME" "${assets[@]}" --clobber
+          else
+            gh release create "$TAG_NAME" "${assets[@]}" --title "$TAG_NAME" --draft --prerelease --verify-tag
+          fi

@@ -1,9 +1,7 @@
-import json
 import os
-from this import d
 
 from PySide6.QtCore import Signal, QUrl
-from PySide6.QtGui import QAction, Qt, QDesktopServices
+from PySide6.QtGui import QAction, QDesktopServices
 from PySide6.QtWidgets import QWidget, QMenu, QFileDialog
 from natsort import natsorted
 
@@ -15,6 +13,8 @@ from task.qt_task import QtTaskBase
 from task.task_local import LocalData
 from tools.str import Str
 from tools.tool import time_me
+from tools.pagination import LOCAL_BOOK_PAGE_SIZE
+from tools.page_result import PageRequest, PageResult
 from view.tool.local_read_db import LocalReadDb
 
 
@@ -143,28 +143,29 @@ class LocalReadView(QWidget, Ui_Local, QtTaskBase):
 
     @time_me
     def ShowPages(self, page=1):
-        showLen = 30
-        maxPage = len(self.sortAllBookIds) // showLen + 1
-        showStart = (page - 1) * showLen
-        showEnd = page * showLen
-
-        self.spinBox.setValue(page)
-        self.spinBox.setMaximum(maxPage)
-        self.bookList.UpdatePage(page, maxPage)
+        request = PageRequest(page, LOCAL_BOOK_PAGE_SIZE).clamp(len(self.sortAllBookIds))
+        items = self.sortAllBookIds[request.offset:request.offset + request.page_size]
+        result = PageResult.from_total(items, request, len(self.sortAllBookIds))
+        self.spinBox.setMaximum(result.pages)
+        self.spinBox.setValue(result.page)
+        self.bookList.UpdatePage(result.page, result.pages)
+        self.bookList.UpdateState(True)
         self.pages.setText(self.bookList.GetPageStr())
-        self.nums.setText("{}：{} ".format(Str.GetStr(Str.FavoriteNum), len(self.sortAllBookIds)))
+        self.nums.setText("{}：{} ".format(Str.GetStr(Str.FavoriteNum), result.total))
 
-        showIds2 = self.sortAllBookIds[showStart:showEnd]
-        for id in showIds2:
+        for id in result.items:
             v = self.allBookInfos.get(id)
             if v:
                 categoryList = self.bookCategory.get(v.id, [])
                 categoryStr = ",".join(categoryList)
-                if not self.searchText or self.searchText in v.title:
-                    self.bookList.AddBookByLocal(v, categoryStr)
+                self.bookList.AddBookByLocal(v, categoryStr)
+        self.bookList.UpdateState()
         return
 
     def LoadNextPage(self):
+        if self.bookList.page >= self.bookList.pages:
+            self.bookList.UpdateState()
+            return
         self.ShowPages(self.bookList.page + 1)
 
     def JumpPage(self):

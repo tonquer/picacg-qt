@@ -61,7 +61,7 @@ class Task(object):
     def __init__(self, request, backParam="", cacheAndLoadPath="", loadPath=""):
         self.req = request
         self.res = None
-        self.timeout = 5
+        self.timeout = request.timeout
         self.backParam = backParam
         self.status = Status.Ok
         self.cacheAndLoadPath = cacheAndLoadPath
@@ -299,6 +299,26 @@ class Server(Singleton):
                 return self._Send(Task(request, backParam), index)
 
     def _Send(self, task, index, isOld=False):
+        while True:
+            # 每次尝试独立记录结果，避免成功重试仍携带上次失败状态。
+            task.status = Status.Ok
+            task.res = res.BaseRes("", False)
+            self._SendAttempt(task, index, isOld)
+            if task.status == Status.OfflineModel:
+                return task.res
+            if task.status == Status.Ok or task.req.resetCnt < 0:
+                break
+            task.req.ResetToSwitchNextUrl()
+
+        try:
+            self.handler.get(task.req.__class__.__name__)(task)
+        except Exception as es:
+            task.status = Status.NetError
+            Log.Warn(task.req.url + " " + es.__repr__())
+            Log.Debug(es)
+        return task.res
+
+    def _SendAttempt(self, task, index, isOld=False):
         try:
             task.req.resetCnt -= 1
             Log.Info("request{}-> backId:{}, {}".format(index, task.bakParam, task.req))
@@ -354,28 +374,9 @@ class Server(Singleton):
             task.status = Status.NetError
             Log.Warn(f"error:{task.req.GetPri()}")
             Log.Error(es)
-        except:
-            Log.Error(f"error:{task.req.GetPri()}")
         finally:
             Log.Info("response{}-> backId:{}, {}, st:{}, {}".format(index, task.backParam, task.req.__class__.__name__,
                                                                     task.status, task.res))
-
-        if task.status != Status.Ok and task.req.resetCnt >= 0:
-            task.req.ResetToSwitchNextUrl()
-            self._Send(task, index, isOld)
-            return
-
-        try:
-            self.handler.get(task.req.__class__.__name__)(task)
-            # if isinstance(task.res.raw, requests2.Response):
-            #     task.res.raw.close()
-        except Exception as es:
-            task.status = Status.NetError
-            # Log.Error(es)
-            Log.Warn(task.req.url + " " + es.__repr__())
-            Log.Debug(es)
-        finally:
-            return task.res
 
     def Post(self, task, index=0, isOld=False):
         request = task.req

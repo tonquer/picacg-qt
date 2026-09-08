@@ -20,40 +20,32 @@ class TaskHttp(TaskBase):
         self.taskObj.taskBack.connect(self.HandlerTask)
 
     def AddHttpTask(self, req, callBack=None, backParam=None, cleanFlag=None):
-        self.taskId += 1
-        info = QtHttpTask(self.taskId)
+        info = QtHttpTask(0)
         info.callBack = callBack
         info.backParam = backParam
-        self.tasks[self.taskId] = info
-        if cleanFlag:
-            info.cleanFlag = cleanFlag
-            taskIds = self.flagToIds.setdefault(cleanFlag, set())
-            taskIds.add(self.taskId)
-
-        if isinstance(req, FunctionType):
-            req(self.taskId)
-        else:
-            from server.server import Server
-            Server().Send(req, backParam=self.taskId)
+        taskId = self._RegisterTask(info, cleanFlag)
+        try:
+            if isinstance(req, FunctionType):
+                req(taskId)
+            else:
+                from server.server import Server
+                Server().Send(req, backParam=taskId)
+        except Exception:
+            self._TakeTask(taskId)
+            raise
         return
 
     def HandlerTask(self, taskId, data):
         try:
-            info = self.tasks.get(taskId)
+            info = self._TakeTask(taskId)
             if not info:
-                Log.Warn("[Task] not find taskId:{}, {}".format(taskId, data))
                 return
             data = pickle.loads(data)
             assert isinstance(info, QtHttpTask)
-            if info.cleanFlag:
-                taskIds = self.flagToIds.get(info.cleanFlag, set())
-                taskIds.discard(info.taskId)
             if info.callBack:
                 if info.backParam is None:
                     info.callBack(data)
                 else:
                     info.callBack(data, info.backParam)
-                del info.callBack
-            del self.tasks[taskId]
         except Exception as es:
             Log.Error(es)
