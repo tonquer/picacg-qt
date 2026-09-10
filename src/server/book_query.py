@@ -132,7 +132,7 @@ class BookQuery:
 
 def books_by_ids_statement(book_ids, has_share_id=True, metrics_only=False):
     ids = tuple(book_ids)
-    projection = "id, totalLikes, totalViews" if metrics_only else book_projection(has_share_id)
+    projection = "id, created_at, updated_at, epsCount, pages, totalLikes, totalViews" if metrics_only else book_projection(has_share_id)
     return SqlStatement("SELECT {} FROM book WHERE id IN ({})".format(
         projection, ",".join("?" for _ in ids)), ids)
 

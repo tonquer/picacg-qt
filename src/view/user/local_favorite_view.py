@@ -183,7 +183,8 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
             self.LoadSnapshotPage(page, replace)
             return
         books = self.db.QueryFavorites(criteria)
-        if sortKey in (3, 4) and books:
+        # sortKey==0为收藏时间，其他只有book里才有最新的数据
+        if sortKey > 0 and books and QtOwner().canUseDb:
             sql = SqlServer.GetBookMetrics([book.id for book in books])
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.ReceiveSortMetrics,
                             (books, key, page, replace))
