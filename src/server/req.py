@@ -1124,10 +1124,10 @@ class GetProxyIpInfoReq(ServerReq):
         else:
             url = f"https://check.jpacg.cc/resolve?proxyip=proxyip.cmliussss.net"
         method = "GET"
-        super(self.__class__, self).__init__(url, {}, {}, method, isOtherCloudFlare=True)
+        super(self.__class__, self).__init__(url, {}, {}, method)
         self.timeout = 7
         self.headers = {}
         self.isParseRes = False
         realUrl = ToolUtil.GetUrlHost(url)
-        self.resetUrl = [url.replace(realUrl, "proxyip.jpacg.cc")]
+        self.resetUrl = [url.replace(realUrl, "check2.jpacg.cc")]
         self.resetCnt = len(self.resetUrl)
