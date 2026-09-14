@@ -38,7 +38,7 @@ class LoginNewView(QtWidgets.QWidget, Ui_LoginNew, QtTaskBase):
         self.dohDomainList = []
         # 每5分钟更新echconfig
         self.timer = QTimer(self)
-        self.timer.setInterval(1000*(5*60))
+        self.timer.setInterval(1000*(15*60))
         self.timer.timeout.connect(self.HourTimeOut)
 
     def retranslateUi(self, Nas):
@@ -124,7 +124,7 @@ class LoginNewView(QtWidgets.QWidget, Ui_LoginNew, QtTaskBase):
                 self.echTick.setStyleSheet("background-color:transparent;color:{}".format("#ff4081"))
                 Log.Info(f"update ech config, {data}")
                 self.timer.stop()
-                self.timer.setInterval(1000 * (5 * 60))
+                self.timer.setInterval(1000 * (15 * 60))
                 self.timer.start()
         except Exception as es:
             Log.Error(es)
