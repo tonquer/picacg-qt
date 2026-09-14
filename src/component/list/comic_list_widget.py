@@ -182,8 +182,6 @@ class ComicListWidget(BaseListWidget):
                     else:
                         for k, v in nasDict.items():
                             action = nas.addAction(v.showTitle)
-                            if QtOwner().nasView.IsInUpload(k, widget.id):
-                                action.setEnabled(False)
                             action.triggered.connect(partial(self.BatchNasUploadHandler, k))
                     popMenu.addMenu(nas)
 
