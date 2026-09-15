@@ -31,8 +31,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.dbUpdateUrl = [config.DatabaseUpdate, config.DatabaseUpdate2]
-        self.dbUpdateDbUrl = [config.DatabaseDownload, config.DatabaseDownload2]
+        self.dbUpdateUrl = [config.DatabaseUpdate, config.DatabaseUpdate2, config.DatabaseUpdate3]
+        self.dbUpdateDbUrl = [config.DatabaseDownload, config.DatabaseDownload2, config.DatabaseDownload3]
         self.curIndex = 0
         self.curSubVersion = 0
         self.curUpdateTick = 0

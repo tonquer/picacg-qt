@@ -40,8 +40,11 @@ UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
 DatabaseUpdate = "https://raw.jpacg.cc/bika-robot/picacg-database/main/version3.txt"
 DatabaseDownload = "https://raw.jpacg.cc/bika-robot/picacg-database/main/data3/"
 
-DatabaseUpdate2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
-DatabaseDownload2 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
+DatabaseUpdate2 = "https://raw2.jpacg.cc/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload2 = "https://raw2.jpacg.cc/bika-robot/picacg-database/main/data3/"
+
+DatabaseUpdate3 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/version3.txt"
+DatabaseDownload3 = "https://raw.githubusercontent.com/bika-robot/picacg-database/main/data3/"
 
 
 Issues1 = "https://github.com/tonquer/picacg-qt/issues"
