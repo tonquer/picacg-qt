@@ -394,6 +394,15 @@ class DownloadDatabaseReqHandler(object):
 
 @handler(req.CheckUpdateReq)
 class CheckUpdateHandler(object):
+
+    @staticmethod
+    def GetVersion(info):
+        if len(info) >= 4:
+            version = int(info[0]) * 1000 + int(info[1]) * 100 + int(info[2]) * 10 + int(info[3]) * 1
+        else:
+            version = int(info[0]) * 1000 + int(info[1]) * 100 + int(info[2]) * 10
+        return version
+
     def __call__(self, task):
         data = {"st": task.status, "data": ""}
         try:
@@ -403,16 +412,11 @@ class CheckUpdateHandler(object):
                 return
             verData = task.res.GetText()
             info = verData.replace("v", "").split(".")
-            if len(info) >= 4:
-                version = int(info[0]) * 1000 + int(info[1]) * 100 + int(info[2]) * 10 + int(info[3]) * 1
-            else:
-                version = int(info[0]) * 1000 + int(info[1]) * 100 + int(info[2]) * 10
-            
+            version = self.GetVersion(info)
+
             info2 = re.findall(r"\d+\d*", os.path.basename(config.RealVersion))
-            if len(info) >= 4:
-                curversion = int(info2[0]) * 1000 + int(info2[1]) * 100 + int(info2[2]) * 10 + int(info2[3]) * 1
-            else:
-                curversion = int(info2[0]) * 1000 + int(info2[1]) * 100 + int(info2[2]) * 10
+            curversion = self.GetVersion(info2)
+
             from config.setting import Setting
             if not Setting.IsPreUpdate.value:
                 version //= 10
