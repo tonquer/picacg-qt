@@ -147,11 +147,13 @@ jobs:
         python3 script/build_qrc.py
         cd src
         pyinstaller --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
-        cd dist
+        
         cd db
         unzip -o book.zip
         rm book.zip
-        cd ..        
+        cd .. 
+        
+        cd dist       
         mkdir -p picacg.AppRun/usr/bin
         cp -r ../../res/appimage/* picacg.AppRun/
         cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
