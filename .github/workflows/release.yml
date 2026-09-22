@@ -236,7 +236,7 @@ jobs:
 
   ubuntu:
     if: github.event_name == 'push' || github.event.inputs.build_ubuntu_deb == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: ubuntu-latest
     container:
       image: tonquer/ubuntu-python:22.04
@@ -302,7 +302,7 @@ jobs:
 
   uos:
     if: github.event_name == 'push' || github.event.inputs.build_uos_deb == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: ubuntu-latest
     container:
       image: tonquer/deepin-python:v20
@@ -368,7 +368,7 @@ jobs:
 
   ubuntu-appimage228:
     if: github.event_name == 'push' || github.event.inputs.build_ubuntu_glibc228 == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: ubuntu-latest
     container:
       image: tonquer/deepin-python:v20
@@ -442,7 +442,7 @@ jobs:
 
   ubuntu-appimage239:
     if: github.event_name == 'push' || github.event.inputs.build_ubuntu_glibc239 == 'true'
-    needs: [setup, release]
+    needs: [setup]
     runs-on: ubuntu-latest
     container:
       image: tonquer/ubuntu-python:24.04
