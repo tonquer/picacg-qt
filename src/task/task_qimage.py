@@ -1,3 +1,5 @@
+import threading
+
 from PySide6.QtGui import QImage
 from PySide6.QtCore import Qt
 
@@ -23,7 +25,19 @@ class TaskQImage(TaskBase):
     def __init__(self):
         TaskBase.__init__(self)
         self.taskObj.imageBack.connect(self.HandlerTask)
-        self.thread.start()
+        self.threadNum = 4
+        self.threadList = []
+        for i in range(self.threadNum+1):
+            thread = threading.Thread(target=self.Run)
+            thread.setName("Task-" + str(self.__class__.__name__)+str(i))
+            thread.setDaemon(True)
+            thread.start()
+            self.threadList.append(thread)
+
+    def Stop(self):
+        for i in range(self.threadNum+1):
+            self._inQueue.put("")
+        return
 
     def Run(self):
         while True:

@@ -417,6 +417,7 @@ class ComicListWidget(BaseListWidget):
                 return
             assert isinstance(widget, ComicItemWidget)
             widget.SetPicture(data)
+            self.ConvertQImage(widget, data, index)
             if Setting.CoverIsOpenWaifu.value:
                 item = self.item(index)
                 indexModel = self.indexFromItem(item)
@@ -429,6 +430,22 @@ class ComicListWidget(BaseListWidget):
                 return
             assert isinstance(widget, ComicItemWidget)
             widget.SetPictureErr(status)
+        return
+
+    def ConvertQImage(self, widget: ComicItemWidget, data, index):
+        toW = widget.picLabel.width()
+        toH = widget.picLabel.height()
+        widget.cacheImageTaskId = self.AddQImageTask(data, self.devicePixelRatio(), toW, toH, 0,
+                                                self.ConvertQImageBack, index)
+
+    def ConvertQImageBack(self, data, index):
+        item = self.item(index)
+        widget = self.itemWidget(item)
+        if not widget:
+            return
+        assert isinstance(widget, ComicItemWidget)
+        widget.cacheImageTaskId = 0
+        widget.SetQImage(data)
         return
 
     def SelectItem(self, item):
@@ -504,12 +521,14 @@ class ComicListWidget(BaseListWidget):
         assert isinstance(widget, ComicItemWidget)
         if widget.isWaifu2x and widget.picData:
             widget.SetPicture(widget.picData)
+            self.ConvertQImage(widget, widget.picData, index)
 
     def Waifu2xPictureBack(self, data, waifuId, index, tick):
         widget = self.indexWidget(index)
         if data and widget:
             assert isinstance(widget, ComicItemWidget)
             widget.SetWaifu2xData(data)
+            self.ConvertQImage(widget, data, index)
         return
 
     def CopyHandler(self, index):

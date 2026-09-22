@@ -23,6 +23,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.category = ""
         self.tags = ""
         self.rawBook = None
+        self.cacheImageTaskId = 0
 
         self.index = 0
         self.url = ""
@@ -151,28 +152,34 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
 
     def SetPicture(self, data):
         self.picData = data
-        pic = QPixmap()
-        if data:
-            pic.loadFromData(data)
+        # pic = QPixmap()
+        # if data:
+        #     pic.loadFromData(data)
         self.isWaifu2x = False
         self.isWaifu2xLoading = False
-        radio = self.devicePixelRatio()
-        pic.setDevicePixelRatio(radio)
-        newPic = pic.scaled(self.picLabel.width() * radio, self.picLabel.height() * radio, Qt.KeepAspectRatio,
-                            Qt.SmoothTransformation)
-        self.picLabel.setPixmap(newPic)
+        if not data:
+            self.picLabel.setQpixmap(QPixmap())
+        # radio = self.devicePixelRatio()
+        # pic.setDevicePixelRatio(radio)
+        # newPic = pic.scaled(self.picLabel.width() * radio, self.picLabel.height() * radio, Qt.KeepAspectRatio,
+        #                     Qt.SmoothTransformation)
+        # self.picLabel.setPixmap(newPic)
+
+    def SetQImage(self, image):
+        pic = QPixmap(image)
+        self.picLabel.setPixmap(pic)
 
     def SetWaifu2xData(self, data):
-        pic = QPixmap()
+        # pic = QPixmap()
         if not data:
             return
         self.isWaifu2x = True
         self.isWaifu2xLoading = False
-        pic.loadFromData(data)
-        radio = self.devicePixelRatio()
-        pic.setDevicePixelRatio(radio)
-        newPic = pic.scaled(self.picLabel.width()*radio, self.picLabel.height()*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.picLabel.setPixmap(newPic)
+        # pic.loadFromData(data)
+        # radio = self.devicePixelRatio()
+        # pic.setDevicePixelRatio(radio)
+        # newPic = pic.scaled(self.picLabel.width()*radio, self.picLabel.height()*radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # self.picLabel.setPixmap(newPic)
 
     def SetPictureErr(self, status):
         self.picLabel.setText(Str.GetStr(status))
