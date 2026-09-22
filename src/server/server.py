@@ -1,3 +1,4 @@
+import copy
 import json
 import pickle
 import threading
@@ -5,7 +6,7 @@ import time
 from queue import Queue
 
 import curl_cffi.requests.exceptions as exceptions
-from curl_cffi import requests as requests2, CurlOpt, CurlHttpVersion, CurlSslVersion
+from curl_cffi import requests as requests2, CurlOpt, CurlHttpVersion, CurlSslVersion, Session
 
 import server.req as req
 import server.res as res
@@ -17,6 +18,8 @@ from tools.log import Log
 from tools.singleton import Singleton
 from tools.status import Status
 from tools.tool import ToolUtil
+import socket
+import urllib
 
 host_table = {}
 
@@ -60,6 +63,7 @@ def handler(request):
 class Task(object):
     def __init__(self, request, backParam="", cacheAndLoadPath="", loadPath=""):
         self.req = request
+        self.session = None
         self.res = None
         self.timeout = request.timeout
         self.backParam = backParam
@@ -93,12 +97,16 @@ class Server(Singleton):
         self.token = ""
         self._inQueue = Queue()
         self._downloadQueue = Queue()
+        # self._oldQueue = Queue()
         self._speedQueue = Queue()
         self.threadHandler = 0
         self.threadNum = config.ThreadNum
 
         # from config.setting import Setting
+        # self.downloadNum = Setting.MultiNum.value
+        self.speedThreadNum = 8
         self.downloadNum = config.DownloadThreadNum
+        self.allWaitThread = []
         # self.threadSession = []
         # self.downloadSession = []
         # self.oldSession = []
@@ -118,6 +126,7 @@ class Server(Singleton):
             thread.setName("HTTP-" + str(i))
             thread.setDaemon(True)
             thread.start()
+            self.allWaitThread.append(thread)
 
         for i in range(self.downloadNum):
             # self.downloadSession.append(self.GetNewSession())
@@ -125,13 +134,15 @@ class Server(Singleton):
             thread.setName("Download-" + str(i))
             thread.setDaemon(True)
             thread.start()
+            self.allWaitThread.append(thread)
 
-        for i in range(8):
+        for i in range(self.speedThreadNum):
             # self.threadSession.append(self.GetNewSession())
             thread = threading.Thread(target=self.RunSpeed, args=[i])
             thread.setName("Speed-" + str(i))
             thread.setDaemon(True)
             thread.start()
+            self.allWaitThread.append(thread)
 
     # def GetNewSession(self, isOpenHttp3=False, isOpenEch=False, isOpenDoh=False, dohUrl=""):
     #     curlDict = {}
@@ -168,9 +179,10 @@ class Server(Singleton):
             task = self._inQueue.get(True)
             self._inQueue.task_done()
             try:
-                if task == "":
-                    break
-                self._Send(task, index)
+                with requests2.Session() as session:
+                    if task == "":
+                        break
+                    self._Send(task, index, session)
             except Exception as es:
                 Log.Error(es)
         pass
@@ -181,9 +193,10 @@ class Server(Singleton):
             task = self._speedQueue.get(True)
             self._speedQueue.task_done()
             try:
-                if task == "":
-                    break
-                self._Send(task, index)
+                with requests2.Session() as session:
+                    if task == "":
+                        break
+                    self._Send(task, index, session)
             except Exception as es:
                 Log.Error(es)
         pass
@@ -201,10 +214,22 @@ class Server(Singleton):
     #     pass
 
     def Stop(self):
+        for q in [self._inQueue, self._downloadQueue, self._speedQueue]:
+            while not q.empty():
+                q.get(False)
+                q.task_done()
+
         for i in range(self.threadNum):
             self._inQueue.put("")
         for i in range(self.downloadNum):
             self._downloadQueue.put("")
+        for i in range(self.speedThreadNum):
+            self._speedQueue.put("")
+
+        for thread in self.allWaitThread:
+            Log.Info(f"wait {thread.name} end")
+            thread.join()
+        Log.Info("all thread end")
 
     def RunDownload(self, index):
         time.sleep(2)
@@ -212,63 +237,13 @@ class Server(Singleton):
             task = self._downloadQueue.get(True)
             self._downloadQueue.task_done()
             try:
-                if task == "":
-                    break
-                self._Download(task, index)
+                with requests2.Session(impersonate="chrome110") as session:
+                    if task == "":
+                        break
+                    self._Download(task, index, session)
             except Exception as es:
                 Log.Error(es)
         pass
-
-    def UpdateDns(self, address, imageAddress, loginProxy=""):
-        for domain in GlobalConfig.Url2List.value:
-            domain = ToolUtil.GetUrlHost(domain)
-            if ToolUtil.IsipAddress(address):
-                host_table[domain] = address
-            elif not address and domain in host_table:
-                host_table.pop(domain)
-
-        for domain in GlobalConfig.PicUrlList.value:
-            domain = ToolUtil.GetUrlHost(domain)
-            if ToolUtil.IsipAddress(imageAddress):
-                host_table[domain] = imageAddress
-            elif not imageAddress and domain in host_table:
-                host_table.pop(domain)
-        domain = ToolUtil.GetUrlHost(GlobalConfig.Url.value)
-        if loginProxy:
-            host_table[domain] = loginProxy
-        else:
-            if loginProxy in host_table:
-                host_table.pop(domain)
-
-        # 换一个，清空pool
-        # self.session = requests.session()
-        return
-
-    def ClearDns(self):
-        host_table.clear()
-
-    # def UpdateProxy(self):
-    #     from config.setting import Setting
-    #     self.UpdateProxy2(Setting.IsOpenHTTP3.value,
-    #                     Setting.EnableEch.value,
-    #                       Setting.IsOpenDoh.value,
-    #                       Setting.DohAddress.value)
-    #
-    # def UpdateProxy2(self, isOpenHttp3=False, isOpenEch=False, isOpenDoh=False, dohUrl=""):
-    #     from tools.str import Str
-    #
-    #     for i in range(self.threadNum):
-    #         if i+1 > len(self.threadSession):
-    #             self.threadSession.append(self.GetNewSession(isOpenHttp3, isOpenEch, isOpenDoh, dohUrl))
-    #         else:
-    #             self.threadSession[i] = self.GetNewSession(isOpenHttp3, isOpenEch, isOpenDoh, dohUrl)
-    #
-    #     for i in range(self.downloadNum):
-    #         if i+1 > len(self.downloadSession):
-    #             self.downloadSession.append(self.GetNewSession(isOpenHttp3, isOpenEch, isOpenDoh, dohUrl))
-    #         else:
-    #             self.downloadSession[i] = self.GetNewSession(isOpenHttp3, isOpenEch, isOpenDoh, dohUrl)
-    #     return
 
     def __DealHeaders(self, request, token):
         # if not request.isUseHttps:
@@ -285,25 +260,31 @@ class Server(Singleton):
             if isASync:
                 return self._downloadQueue.put(Task(request, backParam))
             else:
-                return self._Download(Task(request, backParam), index)
+                with requests2.Session() as session:
+                    return self._Download(Task(request, backParam), index, session)
         else:
             if isinstance(request, (req.SpeedTestPingReq, req.SpeedTestPing2Req)):
                 if isASync:
                     return self._speedQueue.put(Task(request, backParam))
                 else:
-                    return self._Send(Task(request, backParam), index)
+                    with requests2.Session() as session:
+                        return self._Send(Task(request, backParam), index, session)
 
             if isASync:
                 return self._inQueue.put(Task(request, backParam))
             else:
-                return self._Send(Task(request, backParam), index)
+                with requests2.Session() as session:
+                    return self._Send(Task(request, backParam), index, session)
 
-    def _Send(self, task, index, isOld=False):
+    def _Send(self, task, index, session):
         while True:
             # 每次尝试独立记录结果，避免成功重试仍携带上次失败状态。
             task.status = Status.Ok
-            task.res = res.BaseRes("", False)
-            self._SendAttempt(task, index, isOld)
+            task.res = res.BaseRes("", False)# 复制curl_opts
+            session.curl_options = copy.deepcopy(task.req.curl_opt)
+            task.session = session
+
+            self._SendAttempt(task, index)
             if task.status == Status.OfflineModel:
                 return task.res
             if task.status == Status.Ok or task.req.resetCnt < 0:
@@ -316,9 +297,13 @@ class Server(Singleton):
             task.status = Status.NetError
             Log.Warn(task.req.url + " " + es.__repr__())
             Log.Debug(es)
-        return task.res
+        finally:
+            respose = task.res
+            task.res = None
+            task.session = None
+            return respose
 
-    def _SendAttempt(self, task, index, isOld=False):
+    def _SendAttempt(self, task, index):
         try:
             task.req.resetCnt -= 1
             Log.Info("request{}-> backId:{}, {}".format(index, task.bakParam, task.req))
@@ -329,15 +314,15 @@ class Server(Singleton):
                 return
 
             if task.req.method.lower() == "post":
-                self.Post(task, index, isOld)
+                self.Post(task, index)
             elif task.req.method.lower() == "post2":
                 self.Post(task)
             elif task.req.method.lower() == "get":
-                self.Get(task, index, isOld)
+                self.Get(task, index)
             elif task.req.method.lower() == "get2":
                 self.Get(task)
             elif task.req.method.lower() == "put":
-                self.Put(task, index, isOld)
+                self.Put(task, index)
             else:
                 return
         except exceptions.DNSError as es:
@@ -374,11 +359,13 @@ class Server(Singleton):
             task.status = Status.NetError
             Log.Warn(f"error:{task.req.GetPri()}")
             Log.Error(es)
+        except:
+            Log.Error(f"error:{task.req.GetPri()}")
         finally:
             Log.Info("response{}-> backId:{}, {}, st:{}, {}".format(index, task.backParam, task.req.__class__.__name__,
                                                                     task.status, task.res))
 
-    def Post(self, task, index=0, isOld=False):
+    def Post(self, task, index=0):
         request = task.req
         if request.params == None:
             request.params = {}
@@ -392,13 +379,11 @@ class Server(Singleton):
         task.res = res.BaseRes("", False)
 
         if task.req.cookies:
-            r = requests2.post(request.url, proxies=request.proxy, headers=request.headers, data=request.params,
-                               timeout=task.timeout, cookies=task.req.cookies,
-                               curl_options=task.req.curl_opt, json=task.req.json)
+            r = task.session.post(request.url, proxies=request.proxy, headers=request.headers, data=request.params,
+                                  timeout=task.timeout, cookies=task.req.cookies, json=task.req.json)
         else:
-            r = requests2.post(request.url, proxies=request.proxy, headers=request.headers, data=request.params,
-                               timeout=task.timeout,
-                               curl_options=task.req.curl_opt, json=task.req.json)
+            r = task.session.post(request.url, proxies=request.proxy, headers=request.headers, data=request.params,
+                                  timeout=task.timeout, json=task.req.json)
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 
@@ -420,7 +405,7 @@ class Server(Singleton):
     #     task.res = res.BaseRes(r, request.isParseRes)
     #     return task
 
-    def Put(self, task, index=0, isOld=False):
+    def Put(self, task, index=0):
         request = task.req
         if request.params == None:
             request.params = {}
@@ -434,12 +419,11 @@ class Server(Singleton):
         # else:
         #     session = self.threadSession[index]
 
-        r = requests2.put(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout,
-                          curl_options=task.req.curl_opt, json=task.req.json)
+        r = task.session.put(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout, json=task.req.json)
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 
-    def Get(self, task, index=0, isOld=False):
+    def Get(self, task, index=0):
         request = task.req
         if request.params == None:
             request.params = {}
@@ -453,11 +437,10 @@ class Server(Singleton):
         # else:
         #     session = self.threadSession[index]
         if task.req.cookies:
-            r = requests2.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout,
-                              cookies=task.req.cookies, curl_options=task.req.curl_opt, json=task.req.json)
+            r = task.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout,
+                                 cookies=task.req.cookies, json=task.req.json)
         else:
-            r = requests2.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout,
-                              curl_options=task.req.curl_opt, json=task.req.json)
+            r = task.session.get(request.url, proxies=request.proxy, headers=request.headers, timeout=task.timeout, json=task.req.json)
         task.res = res.BaseRes(r, request.isParseRes)
         return task
 
@@ -483,14 +466,15 @@ class Server(Singleton):
         if isASync:
             self._downloadQueue.put(task)
         else:
-            self._Download(task, 0)
+            with requests2.Session() as session:
+                self._Download(task, 0, session)
 
     def ReDownload(self, task):
         task.res = ""
         task.status = Status.Ok
         self._downloadQueue.put(task)
 
-    def _Download(self, task, index):
+    def _Download(self, task, index, session):
         try:
             task.req.resetCnt -= 1
             if not task.req.isReload:
@@ -508,6 +492,10 @@ class Server(Singleton):
                 task.status = Status.OfflineModel
                 self.handler.get(task.req.__class__.__name__)(task)
                 return
+
+            # 复制curl_opts
+            session.curl_options = copy.deepcopy(task.req.curl_opt)
+            task.session = session
 
             request = task.req
             if request.params == None:
@@ -531,9 +519,15 @@ class Server(Singleton):
             #     task.req.isReset = True
             #     self.ReDownload(task)
             #     return
-        return self.handler.get(task.req.__class__.__name__)(task)
-        # if task.res:
-        #     task.res.close()
+        try:
+            self.handler.get(task.req.__class__.__name__)(task)
+        except Exception as es:
+            task.status = Status.NetError
+            Log.Warn(task.req.url + " " + es.__repr__())
+            Log.Debug(es)
+        finally:
+            task.res = None
+            task.session = None
 
     def TestSpeed(self, request, bakParams=""):
         self.__DealHeaders(request, "")

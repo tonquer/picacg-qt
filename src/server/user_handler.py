@@ -249,9 +249,8 @@ class DownloadBookHandler(object):
             data = b""
             try:
                 try:
-                    with closing(requests2.get(request.url, headers=request.headers, timeout=backData.timeout, impersonate="chrome110",
-                                               proxies=request.proxy, curl_options=request.curl_opt, stream=True)) as r:
-
+                    with task.session.stream("GET", request.url, headers=request.headers,
+                                                 timeout=backData.timeout, proxies=request.proxy) as r:
                         fileSize = int(r.headers.get('Content-Length', 0))
                         cfHit = r.headers.get("cf-cache-status", False)
                         now = time.time()
@@ -634,23 +633,12 @@ class SpeedTestHandler(object):
             request = backData.req
             index = backData.index
             try:
-                r = requests2.get(request.url, headers=request.headers,timeout=backData.timeout, impersonate="chrome110",
-                               proxies=request.proxy, curl_options=request.curl_opt, stream=True)
+                now = time.time()
+                r = requests2.get(request.url, headers=request.headers,timeout=backData.timeout,
+                               proxies=request.proxy, curl_options=request.curl_opt)
 
                 fileSize = int(r.headers.get('Content-Length', 0))
-                getSize = 0
-                now = time.time()
-                # 网速快，太卡了，优化成最多100ms一次
-                try:
-                    for chunk in r.iter_content():
-                        getSize += len(chunk)
-                        consume = time.time() - now
-                        if consume >= 3.0:
-                            break
-
-                except Exception as es:
-                    Log.Error(es)
-
+                getSize = len(r.content)
                 consume = time.time() - now
                 if consume == 0:
                     consume = 0.1

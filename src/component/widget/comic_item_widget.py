@@ -158,7 +158,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.isWaifu2x = False
         self.isWaifu2xLoading = False
         if not data:
-            self.picLabel.setQpixmap(QPixmap())
+            self.picLabel.setPixmap(QPixmap())
         # radio = self.devicePixelRatio()
         # pic.setDevicePixelRatio(radio)
         # newPic = pic.scaled(self.picLabel.width() * radio, self.picLabel.height() * radio, Qt.KeepAspectRatio,
