@@ -9,28 +9,24 @@ on:
         description: '打包 macOS 双架构'
         type: boolean
         default: false
-      build_macos_nosr:
-        description: '打包 macOS 双架构 (无图片超分)'
-        type: boolean
-        default: false
       build_windows:
         description: '打包 Windows x64'
         type: boolean
         default: true
-      build_windows_nosr:
-        description: '打包 Windows x64 (无图片超分)'
+      build_ubuntu_glibc239:
+        description: '打包 linux x64 glibc2.39+ AppImage'
         type: boolean
         default: false
-      build_windows7:
-        description: '打包 Windows7 x64 专用'
+      build_ubuntu_glibc228:
+        description: '打包 linux x64 glibc2.28+ AppImage'
         type: boolean
         default: false
-      build_windows7_nosr:
-        description: '打包 Windows7 x64 专用 (无图片超分)'
+      build_uos_deb:
+        description: '打包 uos V20(deepin V20) deb'
         type: boolean
         default: false
-      build_linux_arm64_nosr:
-        description: '打包 Linux ARM64 (无图片超分)'
+      build_ubuntu_deb:
+        description: '打包 ubuntu deb'
         type: boolean
         default: false
 permissions:
@@ -57,6 +53,7 @@ jobs:
     runs-on: macos-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_universal2
+      PACKAGENAME_NOSR: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_nosr_universal2
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.10
@@ -68,31 +65,57 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
+        cd script
+        pip install delocate wheel_filename==1.4.2
+        python build_universal2.py pillow
+        python build_universal2.py cffi 1.17.1
+        python build_universal2.py curl_cffi 0.13.0
+        python build_universal2.py pyyaml 6.0.2
+        pip install *.whl
+        cd ..
+        pip install -r src/requirements_macos.txt
+        brew install create-dmg
+    - name: Build_nosr
+      run: |
+        python script/build_qrc.py
+        cd src
+        cd db
+        unzip -o book.zip
+        rm book.zip
+        cd ..
+        cp ../res/icon/Icon.icns ./
+        pyinstaller -y --target-architecture=universal2 --clean --onedir --name PicACG \
+            --hidden-import PySide6 --hidden-import requests \
+            --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
+            --hidden-import config \
+            --hidden-import component \
+            --hidden-import server \
+            --hidden-import task \
+            --hidden-import tools \
+            --hidden-import view \
+            --add-data "db:db" \
+            --strip --windowed -i Icon.icns \
+            start.py
+        xattr -cr dist/PicACG.app
+        xattr -dr com.apple.quarantine dist/PicACG.app
+        create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --hide-extension "PicACG.app" --app-drop-link 600 185 \
+            ${{ env.PACKAGENAME_NOSR }}.dmg dist/PicACG.app
+        mv ${{ env.PACKAGENAME_NOSR }}.dmg ..
+        cd ..
+    - name: Build
+      run: |
         pip install sr-vulkan
         pip install sr-vulkan-model-waifu2x
         pip install sr-vulkan-model-realcugan
         pip install sr-vulkan-model-realesrgan
-        cd script
-        pip install delocate wheel_filename==1.4.2
-        python build_universal2.py pillow
-        python build_universal2.py cffi 1.17.1
-        python build_universal2.py curl_cffi 0.13.0
-        python build_universal2.py pyyaml 6.0.2
-        pip install *.whl
-        cd ..
-        pip install -r src/requirements_macos.txt
-        brew install create-dmg
-    - name: Build 
-      run: |
-        python script/build_qrc.py
         cd src
-        cd db
-        unzip -o book.zip
-        rm book.zip
-        cd ..
         cp ../res/icon/Icon.icns ./
-        pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
-            --hidden-import sr_ncnn_vulkan --hidden-import PySide6 --hidden-import requests \
+        pyinstaller -y --target-architecture=universal2 --clean --onedir --name PicACG \
+            --hidden-import PySide6 --hidden-import requests \
             --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
             --hidden-import config \
             --hidden-import component \
@@ -100,9 +123,9 @@ jobs:
             --hidden-import task \
             --hidden-import tools \
             --hidden-import view \
+            --add-data "db:db" \
             --strip --windowed -i Icon.icns \
             start.py
-        cp -avf db dist/PicACG.app/Contents/Frameworks
         xattr -cr dist/PicACG.app
         xattr -dr com.apple.quarantine dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
@@ -111,93 +134,28 @@ jobs:
             --icon-size 100 \
             --hide-extension "PicACG.app" --app-drop-link 600 185 \
             ${{ env.PACKAGENAME }}.dmg dist/PicACG.app
-
-        zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
         mv ${{ env.PACKAGENAME }}.dmg ..
-        mv bika.zip ..
         cd ..
-
+    - name: upload-macos-artifact-nosr
+      uses: actions/upload-artifact@v4
+      with:
+          name: ${{ env.PACKAGENAME_NOSR }}
+          path: ${{ env.PACKAGENAME_NOSR }}.dmg
+          if-no-files-found: error
     - name: upload-macos-artifact
       uses: actions/upload-artifact@v4
       with:
           name: ${{ env.PACKAGENAME }}
           path: ${{ env.PACKAGENAME }}.dmg
           if-no-files-found: error
-  macos-nosr:
-    if: github.event_name == 'push' || github.event.inputs.build_macos_nosr == 'true'
-    needs: [setup]
-    runs-on: macos-latest
-    env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_macos_universal2_nosr
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-
-        cd script
-        pip install delocate wheel_filename==1.4.2
-        python build_universal2.py pillow
-        python build_universal2.py cffi 1.17.1
-        python build_universal2.py curl_cffi 0.13.0
-        python build_universal2.py pyyaml 6.0.2
-        pip install *.whl
-        cd ..
-        pip install -r src/requirements_macos.txt
-        brew install create-dmg
-    - name: Build 
-      run: |
-        python script/build_qrc.py
-        cd src
-        cd db
-        unzip -o book.zip
-        rm book.zip
-        cd ..
-        cp ../res/icon/Icon.icns ./
-        pyinstaller --target-architecture=universal2 --clean --onedir --name PicACG \
-            --hidden-import sr_ncnn_vulkan --hidden-import PySide6 --hidden-import requests \
-            --hidden-import urllib3 --hidden-import websocket-client --hidden-import pillow \
-            --hidden-import config \
-            --hidden-import component \
-            --hidden-import server \
-            --hidden-import task \
-            --hidden-import tools \
-            --hidden-import view \
-            --strip --windowed -i Icon.icns \
-            start.py
-        cp -avf db dist/PicACG.app/Contents/Frameworks
-        xattr -cr dist/PicACG.app
-        xattr -dr com.apple.quarantine dist/PicACG.app
-        create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
-            --window-pos 200 120 \
-            --window-size 800 400 \
-            --icon-size 100 \
-            --hide-extension "PicACG.app" --app-drop-link 600 185 \
-            ${{ env.PACKAGENAME }}.dmg dist/PicACG.app
-
-        zip -9 bika.zip ${{ env.PACKAGENAME }}.dmg
-        mv ${{ env.PACKAGENAME }}.dmg ..
-        mv bika.zip ..
-        cd ..
-        
-    - name: upload-macos-artifact
-      uses: actions/upload-artifact@v4
-      with:
-          name: ${{ env.PACKAGENAME }}
-          path: ${{ env.PACKAGENAME }}.dmg
-          if-no-files-found: error
   windows:
     if: github.event_name == 'push' || github.event.inputs.build_windows == 'true'
     needs: [setup]
     runs-on: windows-latest
     env:
       PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64
+      PACKAGENAME_NOSR: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_nosr_x64
       EXE_NAME: start.exe
     steps:
       - uses: actions/checkout@v4
@@ -209,11 +167,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip        
           pip install pyinstaller
-          pip install -r src\requirements.txt
+          pip install -r src\requirements_nosr.txt
           Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
           Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
           Remove-Item "upx.zip"
-      - name: Build
+      - name: Build_nosr
         run: |
           python script/build_qrc.py
           cd src
@@ -222,7 +180,7 @@ jobs:
           Remove-Item book.zip
           cd ..
           Copy-Item ..\res\icon\icon.ico .         
-          pyinstaller --hidden-import=_cffi_backend --collect-all curl_cffi -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
+          pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
           # python -m nuitka `
           #   --onefile `
           #   --onefile-no-compression `
@@ -243,61 +201,15 @@ jobs:
           Copy-Item -Recurse db               $pkg\
           Copy-Item ..\LICENSE                $pkg\
           Copy-Item ..\CHANGELOG              $pkg\
-          7z a -t7z -mx9 "$env:PACKAGENAME.7z" $pkg
-          Move-Item "${env:PACKAGENAME}.7z" ..\
+          7z a -t7z -mx9 "$env:PACKAGENAME_NOSR.7z" $pkg
+          Move-Item "${env:PACKAGENAME_NOSR}.7z" ..\
           cd ..
-          
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.PACKAGENAME }}
-          path: ${{ env.PACKAGENAME }}.7z
-          if-no-files-found: error
-
-  windows-nosr:
-    if: github.event_name == 'push' || github.event.inputs.build_windows_nosr == 'true'
-    needs: [setup]
-    runs-on: windows-latest
-    env:
-      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_windows_x64_nosr
-      EXE_NAME: start.exe
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install build dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyinstaller
-          pip install -r src\requirements_nosr.txt
-          Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
-          Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
-          Remove-Item "upx.zip"
       - name: Build
         run: |
-          python script/build_qrc.py
+          pip install -r src\requirements.txt
           cd src
-          cd db 
-          7z x book.zip
-          Remove-Item book.zip
-          cd ..
-          Copy-Item ..\res\icon\icon.ico .
-          pyinstaller --hidden-import=_cffi_backend --collect-all curl_cffi -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
-          # python -m nuitka `
-          #   --onefile `
-          #   --output-dir=dist `
-          #   --onefile-no-compression `
-          #   --output-filename=PicACG `
-          #   --windows-console-mode=disable `
-          #   --msvc=latest `
-          #   --clang `
-          #   --assume-yes-for-downloads `
-          #   --windows-icon-from-ico=icon.ico `
-          #   --plugin-enable=pyside6,upx --upx-binary="D:\upx-5.0.1-win64" `
-          #   start.py
-          
+          Copy-Item ..\res\icon\icon.ico .         
+          pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi -F -w -i icon.ico start.py --upx-dir "D:\upx-5.0.1-win64"
           $pkg = "bika"
           Remove-Item -Recurse -Force $pkg -ErrorAction SilentlyContinue
           New-Item $pkg -ItemType Directory
@@ -308,6 +220,12 @@ jobs:
           7z a -t7z -mx9 "$env:PACKAGENAME.7z" $pkg
           Move-Item "${env:PACKAGENAME}.7z" ..\
           cd ..
+      - name: Upload artifact nosr
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGENAME_NOSR }}
+          path: ${{ env.PACKAGENAME_NOSR }}.7z
+          if-no-files-found: error
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -316,72 +234,285 @@ jobs:
           path: ${{ env.PACKAGENAME }}.7z
           if-no-files-found: error
 
-  # linux-arm64-nosr:
-  #   if: github.event_name == 'push' || github.event.inputs.build_linux_arm64_nosr == 'true'
-  #   needs: [setup, release]
-  #   runs-on: ubuntu-24.04-arm
-  #   env:
-  #     PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_arm64_nosr
-  #     BINARY_NAME: bika
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Build with Nuitka
-  #       run: |
-  #         docker run --rm --platform linux/arm64 \
-  #           -v "$PWD":/workspace -w /workspace/src \
-  #           cyberspace0000/linux-arm-py10:1 sh -exc '
-  #             source /opt/miniforge/bin/activate
-  #             conda activate py310
-  #             pip3 install --upgrade nuitka
-  #             UPX_VER=5.0.1
-  #             curl -L -o /tmp/upx.tar.xz \
-  #               "https://github.com/upx/upx/releases/download/v${UPX_VER}/upx-${UPX_VER}-arm64_linux.tar.xz"
-  #             mkdir -p /tmp/upx
-  #             tar -xf /tmp/upx.tar.xz -C /tmp/upx --strip-components=1
-  #             export UPX_BIN=/tmp/upx/upx
-  #             chmod +x "$UPX_BIN"
-  #             grep -v -i "^pyside6" requirements_nosr.txt > /tmp/requirements_nosr.txt
-  #             pip3 install -r /tmp/requirements_nosr.txt
-  #             mkdir -p db
-  #             curl -L -o db/book.db \
-  #                  https://github.com/bika-robot/picacg-database/releases/download/v1.5.4/book.db
-  #             nuitka start.py \
-  #               --onefile --output-dir=dist --static-libpython=yes \
-  #               --onefile-no-compression \
-  #               --plugin-enable=pyside6,upx --upx-binary="$UPX_BIN" \
-  #               --assume-yes-for-downloads \
-  #               --linux-icon=../res/icon/icon.ico
-  #             mkdir -p /workspace/out
-  #             mv dist/start.bin "/workspace/out/${BINARY_NAME}/start"
-  #             cp -r db             /workspace/out/
-  #             cp ../LICENSE        /workspace/out/
-  #             cp ../CHANGELOG      /workspace/out/
-  #             chown -R 1001:1001   /workspace
-  #           '
-  #     - name: Create 7z archive
-  #       run: |
-  #         rm -rf src/dist src/*.onefile-build
-  #         mkdir package
-  #         mv out package/bika
-  #         cd package
-  #         7z a -t7z -mx9 -r "${{ env.PACKAGENAME }}.7z" bika
-  #         mv "${{ env.PACKAGENAME }}.7z" ..
+  ubuntu:
+    if: github.event_name == 'push' || github.event.inputs.build_ubuntu_deb == 'true'
+    needs: [setup, release]
+    runs-on: ubuntu-latest
+    container:
+      image: tonquer/ubuntu-python:22.04
+      options: --privileged
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_ubuntu_amd64
+      PACKAGENAME_NOSR: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_ubuntu_nosr_amd64
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r src/requirements_nosr.txt
+        python3 script/build_qrc.py
+    - name: Build_nosr
+      run: |
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+        
+        cd db
+        unzip -o book.zip
+        rm book.zip
+        cd ..
+        
+        cd dist
+        cp -r ../../res/ubuntu .
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* ubuntu/opt/PicACG/
+        cp -r ../db ubuntu/opt/PicACG/
+        chmod -R 755 ubuntu
+        dpkg-deb --root-owner-group  -b ubuntu picacg.deb
+        mv picacg.deb ../../${{ env.PACKAGENAME_NOSR }}.deb
+        cd ../..
+    - name: Build
+      run: |
+        pip install -r src/requirements.txt
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+        cd dist
+        cp -r ../../res/ubuntu .
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* ubuntu/opt/PicACG/
+        cp -r ../db ubuntu/opt/PicACG/
+        chmod -R 755 ubuntu
+        dpkg-deb --root-owner-group  -b ubuntu picacg.deb
+        mv picacg.deb ../../${{ env.PACKAGENAME }}.deb
+        cd ../..
 
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: ${{ env.PACKAGENAME }}
-  #         path: ${{ env.PACKAGENAME }}.7z
+    - name: Upload artifact nosr
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME_NOSR }}
+        path: ${{ env.PACKAGENAME_NOSR }}.deb
+        if-no-files-found: error
 
-  #     - name: Upload release asset
-  #       uses: actions/upload-release-asset@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         upload_url:         ${{ needs.release.outputs.Up_Url }}
-  #         asset_path:         ${{ env.PACKAGENAME }}.7z
-  #         asset_name:         ${{ env.PACKAGENAME }}.7z
-  #         asset_content_type: application/zip
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}.deb
+        if-no-files-found: error
+
+  uos:
+    if: github.event_name == 'push' || github.event.inputs.build_uos_deb == 'true'
+    needs: [setup, release]
+    runs-on: ubuntu-latest
+    container:
+      image: tonquer/deepin-python:v20
+      options: --privileged
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_uos_amd64
+      PACKAGENAME_NOSR: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_uos_nosr_amd64
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r src/requirements_nosr.txt
+        python3 script/build_qrc.py
+    - name: Build_nosr
+      run: |
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+        
+        cd db
+        unzip -o book.zip
+        rm book.zip
+        cd ..
+
+        cd dist
+        cp -r ../../res/uos .
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* uos/opt/apps/org.tonquer.picacg/files/
+        cp -r ../db uos/opt/apps/org.tonquer.picacg/files/
+        chmod -R 755 uos
+        dpkg-deb --root-owner-group  -b uos picacg.deb
+        mv picacg.deb ../../${{ env.PACKAGENAME_NOSR }}.deb
+        cd ../..
+    - name: Build
+      run: |
+        pip install -r src/requirements.txt
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+        cd dist
+        cp -r ../../res/uos .
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* uos/opt/apps/org.tonquer.picacg/files/
+        cp -r ../db uos/opt/apps/org.tonquer.picacg/files/
+        chmod -R 755 uos
+        dpkg-deb --root-owner-group  -b uos picacg.deb
+        mv picacg.deb ../../${{ env.PACKAGENAME }}.deb
+        cd ../..
+
+    - name: Upload artifact nosr
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME_NOSR }}
+        path: ${{ env.PACKAGENAME_NOSR }}.deb
+        if-no-files-found: error
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}.deb
+        if-no-files-found: error
+
+  ubuntu-appimage228:
+    if: github.event_name == 'push' || github.event.inputs.build_ubuntu_glibc228 == 'true'
+    needs: [setup, release]
+    runs-on: ubuntu-latest
+    container:
+      image: tonquer/deepin-python:v20
+      options: --privileged
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux-glibc2.28
+      PACKAGENAME_NOSR: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_nosr-glibc2.28
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r src/requirements_nosr.txt
+        python3 script/build_qrc.py
+    - name: Build_nosr
+      run: |
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+                
+        cd db
+        unzip -o book.zip
+        rm book.zip
+        cd ..
+        
+        cd dist
+        mkdir -p picacg.AppRun/usr/bin
+        cp -r ../db picacg.AppRun/
+        cp -r ../../res/appimage/* picacg.AppRun/
+        cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* picacg.AppRun/usr/bin/
+
+        chmod +x picacg.AppRun/AppRun
+        chmod +x picacg.AppRun/usr/bin/start
+        appimagetool-x86_64.AppImage picacg.AppRun
+        mv PicACG-x86_64.AppImage ../../${{ env.PACKAGENAME_NOSR }}.AppImage
+        cd ../..
+    - name: Build
+      run: |
+        pip install -r src/requirements.txt
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+        cd dist
+        mkdir -p picacg.AppRun/usr/bin
+        cp -r ../db picacg.AppRun/
+        cp -r ../../res/appimage/* picacg.AppRun/
+        cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* picacg.AppRun/usr/bin/
+
+        chmod +x picacg.AppRun/AppRun
+        chmod +x picacg.AppRun/usr/bin/start
+        appimagetool-x86_64.AppImage picacg.AppRun
+        mv PicACG-x86_64.AppImage ../../${{ env.PACKAGENAME }}.AppImage
+        cd ../..
+
+    - name: Upload artifact nosr
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME_NOSR }}
+        path: ${{ env.PACKAGENAME_NOSR }}.AppImage
+        if-no-files-found: error
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}.AppImage
+        if-no-files-found: error
+
+  ubuntu-appimage239:
+    if: github.event_name == 'push' || github.event.inputs.build_ubuntu_glibc239 == 'true'
+    needs: [setup, release]
+    runs-on: ubuntu-latest
+    container:
+      image: tonquer/ubuntu-python:24.04
+      options: --privileged
+    env:
+      PACKAGENAME: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux-glibc2.39.AppImage
+      PACKAGENAME_NOSR: ${{ needs.setup.outputs.PACKAGE_PREFIX }}_linux_nosr-glibc2.39.AppImage
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r src/requirements_nosr.txt
+        python3 script/build_qrc.py
+    - name: Build_nosr
+      run: |
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+                
+        cd db
+        unzip -o book.zip
+        rm book.zip
+        cd ..
+        
+        cd dist
+        mkdir -p picacg.AppRun/usr/bin
+        cp -r ../db picacg.AppRun/
+        cp -r ../../res/appimage/* picacg.AppRun/
+        cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* picacg.AppRun/usr/bin/
+
+        chmod +x picacg.AppRun/AppRun
+        chmod +x picacg.AppRun/usr/bin/start
+        appimagetool-x86_64.AppImage picacg.AppRun
+        mv PicACG-x86_64.AppImage ../../${{ env.PACKAGENAME_NOSR }}.AppImage
+        cd ../..
+    - name: Build
+      run: |
+        pip install -r src/requirements.txt
+        cd src
+        pyinstaller -y --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+        cd dist
+        mkdir -p picacg.AppRun/usr/bin
+        cp -r ../db picacg.AppRun/
+        cp -r ../../res/appimage/* picacg.AppRun/
+        cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
+        find start -name "libxkbcommon*" -delete
+        cp -r start/* picacg.AppRun/usr/bin/
+
+        chmod +x picacg.AppRun/AppRun
+        chmod +x picacg.AppRun/usr/bin/start
+        appimagetool-x86_64.AppImage picacg.AppRun
+        mv PicACG-x86_64.AppImage ../../${{ env.PACKAGENAME }}.AppImage
+        cd ../..
+
+    - name: Upload artifact nosr
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME_NOSR }}
+        path: ${{ env.PACKAGENAME_NOSR }}.AppImage
+        if-no-files-found: error
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGENAME }}
+        path: ${{ env.PACKAGENAME }}.AppImage
+        if-no-files-found: error
 
   release:
     name: 发布标签构建产物
@@ -403,7 +534,7 @@ jobs:
           TAG_NAME: ${{ needs.setup.outputs.TAG_NAME }}
         shell: bash
         run: |
-          mapfile -d '' assets < <(find release-artifacts -type f \( -name '*.dmg' -o -name '*.7z' \) -print0)
+          mapfile -d '' assets < <(find release-artifacts -type f \( -name '*.dmg' -o -name '*.7z' -o -name '*.AppImage' -o -name '*.deb' \) -print0)
           if [ "${#assets[@]}" -eq 0 ]; then
             echo "没有可发布的构建产物" >&2
             exit 1

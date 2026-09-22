@@ -1,7 +1,7 @@
 {
     "appid": "org.tonquer.picacg",
     "name": "PicACG",
-    "version": "1.5.5.0",
+    "version": "1.5.5.1",
     "arch": ["amd64"],
     "permissions": {
         "autostart": false,

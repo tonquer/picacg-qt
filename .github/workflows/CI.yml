@@ -58,9 +58,9 @@ jobs:
             --hidden-import task \
             --hidden-import tools \
             --hidden-import view \
+            --add-data "db:db" \
             --strip --windowed -i Icon.icns \
             start.py
-        cp -avf db dist/PicACG.app/Contents/Frameworks
         xattr -cr dist/PicACG.app
         xattr -dr com.apple.quarantine dist/PicACG.app
         create-dmg --volname "PicACG" --volicon "Icon.icns" --icon "PicACG.app" 200 190 \
@@ -128,49 +128,44 @@ jobs:
         path: ${{ env.PACKAGENAME }}
         retention-days: 7
 
-  ubuntu:
+  ubuntu-appimage:
     runs-on: ubuntu-latest
+    container:
+      image: tonquer/ubuntu-python:24.04
+      options: --privileged
     env:
-      PACKAGENAME: bika_py310_linux
+      PACKAGENAME: picacg_py310_linux_glibc2.39
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+    - uses: actions/checkout@v7
     - name: Install dependencies
       run: |
-        sudo apt-get install -y fuse libfuse2
-        python -m pip install --upgrade pip
+        python3 -m pip install --upgrade pip
         pip install pyinstaller
         pip install -r src/requirements.txt
     - name: Build
       run: |
-        python script/build_qrc.py
+        python3 script/build_qrc.py
         cd src
-        pyinstaller --hidden-import=_cffi_backend --collect-all curl_cffi -w start.py
+        pyinstaller --hidden-import=_cffi_backend --collect-all curl_cffi  -w start.py
+        cd dist
         cd db
         unzip -o book.zip
         rm book.zip
-        cd ..
-        cd dist
+        cd ..        
         mkdir -p picacg.AppRun/usr/bin
-        wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-        chmod +x appimagetool-x86_64.AppImage
         cp -r ../../res/appimage/* picacg.AppRun/
         cp -r ../../res/icon/logo_round.png picacg.AppRun/PicACG.png
         cp -r start/* picacg.AppRun/usr/bin/
         cp -r ../db  picacg.AppRun/
 
-        mv picacg.AppRun/usr/bin/start picacg.AppRun/usr/bin/PicACG
         chmod +x picacg.AppRun/AppRun
-        chmod +x picacg.AppRun/usr/bin/PicACG
-        ./appimagetool-x86_64.AppImage picacg.AppRun
-        mv PicACG-x86_64.AppImage ../../${{ env.PACKAGENAME }}-x86_64.AppImage
+        chmod +x picacg.AppRun/usr/bin/start
+        appimagetool-x86_64.AppImage picacg.AppRun
+        mv PicACG-x86_64.AppImage ../../${{ env.PACKAGENAME }}.AppImage
         cd ../..
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PACKAGENAME }}
-        path: ${{ env.PACKAGENAME }}-x86_64.AppImage
+        path: ${{ env.PACKAGENAME }}.AppImage
         retention-days: 7
