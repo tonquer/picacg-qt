@@ -20,6 +20,7 @@ class QConvertTask(object):
         self.backParam = None
         self.cleanFlag = ""
         self.status = Status.Ok
+        self.path = ""
         self.tick = 0
         self.loadPath = ""  #
         self.preDownPath = ""  #
@@ -28,6 +29,7 @@ class QConvertTask(object):
         self.savePath = ""  #
         self.imgData = b""
         self.saveData = b""
+        self.isCacheFetch = False
 
         self.model = {
             "isForce":0,
@@ -41,6 +43,8 @@ class TaskWaifu2x(TaskBase):
 
     def __init__(self):
         TaskBase.__init__(self)
+        from task.task_cache import TaskCache
+        TaskCache().InitWaifu2x()
         self.taskObj.convertBack.connect(self.HandlerTask)
         self.thread.start()
 
@@ -167,7 +171,11 @@ class TaskWaifu2x(TaskBase):
             info.tick = tick
             try:
                 if not info.noSaveCache:
-                    for path in [info.cachePath, info.savePath]:
+                    if info.cachePath:
+                        from task.task_cache import TaskCache
+                        TaskCache().AddCacheDiskPath(ToolUtil.GetPictureName(info.cachePath, format), data)
+
+                    for path in [info.savePath]:
                         ToolUtil.SavePicture(data, path, format)
             except Exception as es:
                 info.status = Status.SaveError
@@ -182,6 +190,7 @@ class TaskWaifu2x(TaskBase):
         info.backParam = backParam
         info.imgData = imgData
         info.model = model
+        info.path = path
         info.preDownPath = preDownPath
         info.noSaveCache = noSaveCache
         if not noSaveCache and path and Setting.SavePath.value:
@@ -189,8 +198,13 @@ class TaskWaifu2x(TaskBase):
 
         taskId = self._RegisterTask(info, cleanFlag)
         Log.Debug("add convert info, taskId:{}, cachePath:{}".format(info.taskId, info.cachePath))
-        self._inQueue.put(taskId)
-        return taskId
+
+        from task.task_cache import TaskCache
+        isCache = TaskCache().AddConvertFromCache(info)
+        if not isCache:
+            self._inQueue.put(taskId)
+            return taskId
+        return 0
 
     def AddConvertTaskByPath(self, loadPath, savePath, callBack, backParam=None, cleanFlag=None):
         info = QConvertTask()

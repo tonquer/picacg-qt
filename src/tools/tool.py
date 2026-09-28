@@ -38,6 +38,7 @@ def time_me(fn):
             strLog = 'time_me consume,{} ms, {}.{}'.format(diff, clsName, fn.__name__)
             Log.Warn(strLog)
         return rt
+
     return _wrapper
 
 
@@ -51,7 +52,7 @@ class ToolUtil(object):
             data += quote(str(k)) + '=' + quote(str(v))
             data += '&'
         return data.strip('&')
-    
+
     @classmethod
     def GetHeader(cls, _url: str, method: str) -> dict:
         now = str(int(time.time()))
@@ -101,9 +102,9 @@ class ToolUtil(object):
     def GetNewChatHeader():
         header = {
             "user-agent": "Dart/2.19 (dart:io)",
-            "accept-encoding":"gzip",
+            "accept-encoding": "gzip",
             "api-version": "1.0.3",
-            "content-type":"application/json; charset=UTF-8",
+            "content-type": "application/json; charset=UTF-8",
         }
         return header
 
@@ -252,7 +253,7 @@ class ToolUtil(object):
     @staticmethod
     def GetDateStr(createdTime):
         timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%f%z")
-        tick = int(time.mktime(timeArray)-time.timezone)
+        tick = int(time.mktime(timeArray) - time.timezone)
         now = int(time.time())
         day = int((int(now - time.timezone) / 86400) - (int(tick - time.timezone) / 86400))
         return time.localtime(tick), day
@@ -262,13 +263,13 @@ class ToolUtil(object):
         if not createdTime:
             return ""
         timeArray = time.strptime(createdTime, "%Y-%m-%dT%H:%M:%S.%f%z")
-        tick = int(time.mktime(timeArray)-time.timezone)
+        tick = int(time.mktime(timeArray) - time.timezone)
         return ToolUtil.GetUpdateStrByTick(tick)
 
     @staticmethod
     def GetUpdateStrByTick(tick):
         now = int(time.time())
-        day = (now - tick) // (24*3600)
+        day = (now - tick) // (24 * 3600)
         hour = (now - tick) // 3600
         minute = (now - tick) // 60
         second = (now - tick)
@@ -390,7 +391,7 @@ class ToolUtil(object):
         data["model"] = getattr(sr, modelName, 0)
         data["model_name"] = modelName
         return data
-    
+
     @staticmethod
     def GetShowModelName(name):
         if "WAIFU2X_CUNET" in name:
@@ -412,17 +413,17 @@ class ToolUtil(object):
         elif "REALESRGAN_ANIMAVIDEOV3" in name:
             return "AnimaVideoV3"
         return name
-    
+
     @staticmethod
     def GetCanSaveName(name):
         # 限制文件夹名称为255/3的长度
-        return (str(re.sub('[\\\/:*?"<>|\0\t\r\n]', '', name))[:254//3-1]).rstrip(".").strip(" ")
+        return (str(re.sub('[\\\/:*?"<>|\0\t\r\n]', '', name))[:254 // 3 - 1]).rstrip(".").strip(" ")
 
     @staticmethod
     def LoadCachePicture(filePath):
         try:
             c = CTime()
-            formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng"]
+            formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg"]
             for mat in formatList:
                 if filePath[-4:] in formatList:
                     path = filePath
@@ -450,16 +451,22 @@ class ToolUtil(object):
         if path and not os.path.isdir(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))
 
-        formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", "jpeg"]
         if path and data:
+            ToolUtil.GetPictureName(path, format)
+            with open(path, "wb+") as f:
+                f.write(data)
+
+    @staticmethod
+    def GetPictureName(path, format):
+        formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", "jpeg"]
+        if path:
             if path[-4:] in formatList:
                 pass
             elif path[-5:] in formatList:
                 pass
             else:
                 path = path + "." + format
-            with open(path, "wb+") as f:
-                f.write(data)
+        return path
 
     @staticmethod
     def IsHaveFile(filePath):
@@ -599,7 +606,7 @@ class ToolUtil(object):
         series.text = str(bookInfo.title)
 
         number = etree.SubElement(root, "Number")  # 当前章节
-        number.text = str(epsId+1)
+        number.text = str(epsId + 1)
 
         count = etree.SubElement(root, "Count")  # 总章节
         count.text = str(bookInfo.epsCount)
@@ -660,7 +667,7 @@ class ToolUtil(object):
                 if noHtag.lower() in tag.lower():
                     isHave = True
                     break
-        return  isHave
+        return isHave
 
     @staticmethod
     def IsipAddress(hostname) -> bool:

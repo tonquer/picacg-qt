@@ -33,7 +33,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.setupUi(self)
         self.bookId = ""
         self.shareId = 0
-        self.url = ""
+        self.fileServer = ""
+        self.filePath = ""
         self.path = ""
         self.bookName = ""
         self.lastEpsId = -1
@@ -114,6 +115,12 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.readOffline.clicked.connect(self.StartRead2)
         self.flowLayout = FlowLayout(self.tagList)
         self.uploadButton.clicked.connect(self.ShowMenu)
+
+    def GetBookUrl(self):
+        return self.fileServer
+
+    def GetBookUrlPath(self):
+        return self.filePath
 
     def UpdateFavoriteIcon(self):
         p = QPixmap()
@@ -342,7 +349,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             fileServer = info.thumb.get("fileServer")
             path = info.thumb.get("path")
             name = info.thumb.get("originalName")
-            self.url = fileServer
+            self.fileServer = fileServer
+            self.filePath = path
             dayStr = ToolUtil.GetUpdateStr(info.updated_at)
             self.updateTick.setText(str(dayStr) + Str.GetStr(Str.Update))
 
@@ -362,7 +370,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                 if QtOwner().isOfflineModel:
                     self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture)
                 else:
-                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture, isReload=True)
+                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture)
             if not QtOwner().isOfflineModel:
                 self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)

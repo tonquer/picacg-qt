@@ -791,8 +791,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                 QtOwner().localReadView.AddDataToDB(self.cacheBook.id)
         else:
             bookName = QtOwner().bookInfoView.bookName
-            url = QtOwner().bookInfoView.url
-            path = QtOwner().bookInfoView.path
+            url = QtOwner().bookInfoView.GetBookUrl()
+            path = QtOwner().bookInfoView.GetBookUrlPath()
             QtOwner().historyView.AddHistory(self.bookId, bookName, self.epsId, self.curIndex, url, path)
         return
 
@@ -807,6 +807,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         if waifu2xId <= 0 or not p:
             Log.Error("Not found waifu2xId ：{}, index: {}".format(str(waifu2xId), str(index)))
             return
+        assert isinstance(p, QtFileData)
+        p.waifu2xTaskId = 0
         p.SetWaifuData(data, round(tick, 2))
         if data:
             model = self.qtTool.stripModel

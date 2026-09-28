@@ -20,6 +20,7 @@ from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
 from task.task_qimage import TaskQImage
 from task.task_waifu2x import TaskWaifu2x
+from task.task_cache import TaskCache
 from tools.log import Log
 from view.download.download_dir_view import DownloadDirView
 
@@ -277,12 +278,16 @@ class MainView(Main, QtTaskBase):
         self.searchView.InitWord()
         self.msgLabel = MsgLabel(self)
         self.msgLabel.hide()
-        if not Setting.SavePath.value:
+        if not Setting.SavePath.value or not Setting.IsInitSave.value:
             view = DownloadDirView(self)
-            view.show()
             view.closed.connect(self.OpenLoginView)
+            view.exec()
         else:
             self.OpenLoginView()
+
+
+        TaskCache().Init()
+
         # self.timer.start()
 
     # def AfterStartSuc(self):

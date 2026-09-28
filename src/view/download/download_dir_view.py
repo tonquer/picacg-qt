@@ -22,6 +22,17 @@ class DownloadDirView(BaseMaskDialog, Ui_DownloadDir, QtTaskBase):
         self.setupUi(self.widget)
         self.selectDir.clicked.connect(self.SelectSavePath)
         self.saveDir.clicked.connect(self.SavePath)
+        self.openMemBox.setChecked(bool(Setting.IsOpenMemCache.value))
+        self.openDiskBox.setChecked(bool(Setting.IsOpenDiskCache.value))
+        self.memBox.setValue(Setting.MemCacheSize.value)
+        self.diskBox.setValue(Setting.DiskCacheSize.value)
+        self.diskDayBox.setValue(Setting.DiskCacheDay.value)
+        if Setting.SavePath.value:
+            self.lineEdit.setText(Setting.SavePath.value)
+            self.downloadDir.setText(os.path.join(Setting.SavePath.value, config.SavePathDir))
+            self.chatDir.setText(os.path.join(Setting.GetCachePath(), config.ChatSavePath))
+            self.cacheDir.setText(Setting.GetCachePath())
+            self.waifu2xDir.setText(os.path.join(Setting.GetCachePath(), config.Waifu2xPath))
 
     def SelectSavePath(self):
         url = QFileDialog.getExistingDirectory(self, Str.GetStr(Str.SelectFold))
@@ -38,4 +49,10 @@ class DownloadDirView(BaseMaskDialog, Ui_DownloadDir, QtTaskBase):
             QtOwner().ShowMsg(Str.GetStr(Str.SetDir))
             return
         Setting.SavePath.SetValue(path)
+        Setting.IsOpenMemCache.SetValue(int(self.openMemBox.isChecked()))
+        Setting.IsOpenDiskCache.SetValue(int(self.openDiskBox.isChecked()))
+        Setting.MemCacheSize.SetValue(self.memBox.value())
+        Setting.DiskCacheSize.SetValue(self.diskBox.value())
+        Setting.DiskCacheDay.SetValue(self.diskDayBox.value())
+        Setting.IsInitSave.SetValue(1)
         self.close()

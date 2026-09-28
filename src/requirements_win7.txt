@@ -12,3 +12,4 @@ pysmb
 lxml
 smbprotocol
 curl_cffi
+cachetools

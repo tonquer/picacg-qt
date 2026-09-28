@@ -136,8 +136,14 @@ class Setting:
 
     NewProxySelectIndex = SettingValue("ProxySetting", 1, False)
     # 下载与缓存
+    IsInitSave = SettingValue("DownloadSetting", 0, False)
     SavePath = SettingValue("DownloadSetting", "", False)
     SaveNameType = SettingValue("DownloadSetting", 0, False)
+    IsOpenMemCache = SettingValue("DownloadSetting", 1, False)
+    MemCacheSize = SettingValue("DownloadSetting", 512, False)
+    IsOpenDiskCache = SettingValue("DownloadSetting", 1, False)
+    DiskCacheSize = SettingValue("DownloadSetting", 10240, False)
+    DiskCacheDay = SettingValue("DownloadSetting", 30, False)
 
     # Waifu2x设置
     SelectEncodeGpu = SettingValue("Waifu2xSetting", "", True)

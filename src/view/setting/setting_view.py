@@ -152,6 +152,8 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             BindCheck(Setting.CrossChapterPrefetch, self.crossChapterPrefetch),
             BindCheck(Setting.PrefetchWholeChapter, self.prefetchWholeChapter),
             BindCheck(Setting.IsGrabGesture, self.grabGestureBox),
+            BindCheck(Setting.IsOpenMemCache, self.openMemBox),
+            BindCheck(Setting.IsOpenDiskCache, self.openDiskBox),
             BindLine(Setting.HttpProxy, self.httpEdit),
             BindLine(Setting.Sock5Proxy, self.sockEdit),
             BindIndex(Setting.DownloadCoverLv, self.coverLvBox),
@@ -176,6 +178,9 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             BindSpin(Setting.PicturePrefetchFrontCount, self.prefetchFrontCount),
             BindSpin(Setting.PictureShowCount, self.showCount),
             BindSpin(Setting.PictureShowFrontCount, self.showFrontCount),
+            BindSpin(Setting.MemCacheSize, self.memBox),
+            BindSpin(Setting.DiskCacheSize, self.diskBox),
+            BindSpin(Setting.DiskCacheDay, self.diskDayBox),
             BindSpin(Setting.LookScale, self.readScale, float),
             BindSpin(Setting.CoverLookScale, self.coverScale, float),
             BindSpin(Setting.DownloadScale, self.downScale, float),
@@ -229,6 +234,9 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
 
     def SwitchCurrent(self, **kwargs):
         self.InitSetting()
+        from task.task_cache import TaskCache
+        self.memLabel.setText(str(TaskCache().GetMemSize()))
+        self.diskLabel.setText(str(TaskCache().GetDiskSize()))
         return
 
     def LoadSetting(self):

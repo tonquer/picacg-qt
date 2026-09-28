@@ -13,3 +13,4 @@ pysmb
 lxml
 smbprotocol
 curl_cffi>=0.13.0,<=0.15.0
+cachetools

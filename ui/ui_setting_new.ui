@@ -102,9 +102,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-346</y>
+          <y>-2428</y>
           <width>727</width>
-          <height>3121</height>
+          <height>3177</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -2443,9 +2443,153 @@
                </font>
               </property>
               <property name="text">
-               <string>下载和缓存路径（缓存文件需自己手动清除）</string>
+               <string>下载和缓存路径（设置需重启）</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_32">
+              <item>
+               <widget class="QCheckBox" name="openMemBox">
+                <property name="text">
+                 <string>内存缓存</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_50">
+                <property name="text">
+                 <string>当前</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="memLabel">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_51">
+                <property name="text">
+                 <string>MB，</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_52">
+                <property name="text">
+                 <string>设置最大值(MB)：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="WheelSpinBox" name="memBox">
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximum">
+                 <number>8192</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_29">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_33">
+              <item>
+               <widget class="QCheckBox" name="openDiskBox">
+                <property name="text">
+                 <string>磁盘缓存</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_54">
+                <property name="text">
+                 <string>当前</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="diskLabel">
+                <property name="text">
+                 <string>0</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_56">
+                <property name="text">
+                 <string>MB，</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_57">
+                <property name="text">
+                 <string>设置最大值(MB)：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="WheelSpinBox" name="diskBox">
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximum">
+                 <number>102400</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_55">
+                <property name="text">
+                 <string>缓存天数：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="WheelSpinBox" name="diskDayBox">
+                <property name="maximum">
+                 <number>9999</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_30">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -2768,11 +2912,11 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="logGroup"/>
-  <buttongroup name="themeGroup"/>
-  <buttongroup name="saveNameGroup"/>
-  <buttongroup name="showCloseButtonGroup"/>
   <buttongroup name="languageGroup"/>
+  <buttongroup name="themeGroup"/>
   <buttongroup name="proxyGroup"/>
+  <buttongroup name="logGroup"/>
+  <buttongroup name="showCloseButtonGroup"/>
+  <buttongroup name="saveNameGroup"/>
  </buttongroups>
 </ui>

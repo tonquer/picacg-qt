@@ -6,6 +6,7 @@ from config import config
 from config.setting import Setting
 from server.sql_server import SqlServer
 from task.qt_task import TaskBase, QtTaskBase
+from task.task_cache import TaskCache
 from tools.book import BookMgr, BookEps, Picture
 from tools.log import Log
 from tools.status import Status
@@ -30,6 +31,7 @@ class QtDownloadTask(object):
         self.downloadCallBack = None       # addData, laveSize
         self.downloadCompleteBack = None   # data, status
         self.statusBack = None
+        self.isReload = False
         self.fileSize = 0
         self.url = ""
         self.path = ""
@@ -42,7 +44,10 @@ class QtDownloadTask(object):
         self.loadPath = ""    # 只加载
         self.cachePath = ""   # 缓存路径
         self.savePath = ""    # 下载保存路径
+        self.memCacheKey = ""  ## 计算内存缓存Key
         self.isLoadTask = False
+
+        self.isCacheFetch = False
 
         self.bookId = ""      # 下载的bookId
         self.epsId = 0        # 下载的章节
@@ -58,6 +63,8 @@ class TaskDownload(TaskBase, QtTaskBase):
     def __init__(self):
         TaskBase.__init__(self)
         QtTaskBase.__init__(self)
+        from task.task_cache import TaskCache
+        TaskCache().InitDownload()
         self.taskObj.downloadBack.connect(self.HandlerTask)
         self.taskObj.downloadStBack.connect(self.HandlerTaskSt)
         self.thread.start()
@@ -82,12 +89,15 @@ class TaskDownload(TaskBase, QtTaskBase):
         data.loadPath = loadPath
         data.cachePath = cachePath
         data.savePath = savePath
+        if cachePath:
+            data.memCacheKey = TaskCache().GetPathCacheKey(cachePath)
         Log.Debug("add download info, cachePath:{}, loadPath:{}, savePath:{}".format(data.cachePath, data.loadPath, data.savePath))
         taskId = self._RegisterTask(data, cleanFlag, id_attr="downloadId")
         try:
-            from server.server import Server
-            from server import req
-            Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath, data.isReload, resetCnt=resetCnt), backParams=taskId)
+            # from server.server import Server
+            # from server import req
+            TaskCache().AddDownloadFromCache(data, resetCnt)
+            # Server().Download(req.DownloadBookReq(url, data.loadPath, data.cachePath, data.savePath, data.isReload, resetCnt=resetCnt), backParams=taskId)
         except Exception:
             self._TakeTask(taskId)
             raise
@@ -157,7 +167,7 @@ class TaskDownload(TaskBase, QtTaskBase):
         data.loadPath = loadPath
         data.cachePath = cachePath
         data.savePath = savePath
-        Log.Debug("add download info, savePath:{}, loadPath:{}".format(data.savePath, data.loadPath))
+        Log.Debug("add download book, savePath:{}, loadPath:{}".format(data.savePath, data.loadPath))
         taskId = self._RegisterTask(data, cleanFlag, id_attr="downloadId")
         self._inQueue.put(taskId)
         return taskId
@@ -308,8 +318,21 @@ class TaskDownload(TaskBase, QtTaskBase):
                         checkPaths.append(cachePath2)
                         task.cachePath = cachePath2
 
+                    # 修改优先mem缓存
                     for cachePath in checkPaths:
                         if cachePath:
+                            task.memCacheKey = TaskCache().GetPathCacheKey(cachePath)
+                            imgData = TaskCache().GetMemDataByKey(task.memCacheKey)
+                            if imgData:
+                                task.isCacheFetch = True
+                                TaskBase.taskObj.downloadBack.emit(taskId, len(imgData), b"")
+                                TaskBase.taskObj.downloadBack.emit(taskId, 0, imgData)
+                                isReset or self.SetTaskStatus(taskId, backData, task.Cache)
+                                return
+
+                    for cachePath in checkPaths:
+                        if cachePath:
+                            task.memCacheKey = TaskCache().GetPathCacheKey(cachePath)
                             imgData = ToolUtil.LoadCachePicture(cachePath)
                             if imgData:
                                 TaskBase.taskObj.downloadBack.emit(taskId, len(imgData), b"")
@@ -325,7 +348,7 @@ class TaskDownload(TaskBase, QtTaskBase):
 
                 picInfo = epsInfo.pics[task.index]
                 assert isinstance(picInfo, Picture)
-                from server.server import Server
+                # from server.server import Server
                 url = ToolUtil.GetRealUrl(picInfo.fileServer, picInfo.path)
                 resetCnt = config.ResetDownloadCnt
                 self.AddDownloadTask(

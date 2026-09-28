@@ -88,7 +88,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -346, 727, 3121))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -2428, 727, 3177))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -1321,6 +1321,99 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_13.addWidget(self.label_21)
 
+        self.horizontalLayout_32 = QHBoxLayout()
+        self.horizontalLayout_32.setObjectName(u"horizontalLayout_32")
+        self.openMemBox = QCheckBox(self.frame_11)
+        self.openMemBox.setObjectName(u"openMemBox")
+
+        self.horizontalLayout_32.addWidget(self.openMemBox)
+
+        self.label_50 = QLabel(self.frame_11)
+        self.label_50.setObjectName(u"label_50")
+
+        self.horizontalLayout_32.addWidget(self.label_50)
+
+        self.memLabel = QLabel(self.frame_11)
+        self.memLabel.setObjectName(u"memLabel")
+
+        self.horizontalLayout_32.addWidget(self.memLabel)
+
+        self.label_51 = QLabel(self.frame_11)
+        self.label_51.setObjectName(u"label_51")
+
+        self.horizontalLayout_32.addWidget(self.label_51)
+
+        self.label_52 = QLabel(self.frame_11)
+        self.label_52.setObjectName(u"label_52")
+
+        self.horizontalLayout_32.addWidget(self.label_52)
+
+        self.memBox = WheelSpinBox(self.frame_11)
+        self.memBox.setObjectName(u"memBox")
+        self.memBox.setMinimumSize(QSize(100, 0))
+        self.memBox.setMaximum(8192)
+
+        self.horizontalLayout_32.addWidget(self.memBox)
+
+        self.horizontalSpacer_29 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_32.addItem(self.horizontalSpacer_29)
+
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_32)
+
+        self.horizontalLayout_33 = QHBoxLayout()
+        self.horizontalLayout_33.setObjectName(u"horizontalLayout_33")
+        self.openDiskBox = QCheckBox(self.frame_11)
+        self.openDiskBox.setObjectName(u"openDiskBox")
+
+        self.horizontalLayout_33.addWidget(self.openDiskBox)
+
+        self.label_54 = QLabel(self.frame_11)
+        self.label_54.setObjectName(u"label_54")
+
+        self.horizontalLayout_33.addWidget(self.label_54)
+
+        self.diskLabel = QLabel(self.frame_11)
+        self.diskLabel.setObjectName(u"diskLabel")
+
+        self.horizontalLayout_33.addWidget(self.diskLabel)
+
+        self.label_56 = QLabel(self.frame_11)
+        self.label_56.setObjectName(u"label_56")
+
+        self.horizontalLayout_33.addWidget(self.label_56)
+
+        self.label_57 = QLabel(self.frame_11)
+        self.label_57.setObjectName(u"label_57")
+
+        self.horizontalLayout_33.addWidget(self.label_57)
+
+        self.diskBox = WheelSpinBox(self.frame_11)
+        self.diskBox.setObjectName(u"diskBox")
+        self.diskBox.setMinimumSize(QSize(100, 0))
+        self.diskBox.setMaximum(102400)
+
+        self.horizontalLayout_33.addWidget(self.diskBox)
+
+        self.label_55 = QLabel(self.frame_11)
+        self.label_55.setObjectName(u"label_55")
+
+        self.horizontalLayout_33.addWidget(self.label_55)
+
+        self.diskDayBox = WheelSpinBox(self.frame_11)
+        self.diskDayBox.setObjectName(u"diskDayBox")
+        self.diskDayBox.setMaximum(9999)
+
+        self.horizontalLayout_33.addWidget(self.diskDayBox)
+
+        self.horizontalSpacer_30 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_33.addItem(self.horizontalSpacer_30)
+
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_33)
+
         self.horizontalLayout_10 = QHBoxLayout()
         self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
         self.setDirButton = QPushButton(self.frame_11)
@@ -1642,7 +1735,18 @@ class Ui_SettingNew(object):
         self.saveNameButton0.setText(QCoreApplication.translate("SettingNew", u"\u4f5c\u54c1\u540d\uff08\u9ed8\u8ba4\uff09", None))
         self.saveNameButton1.setText(QCoreApplication.translate("SettingNew", u"[\u4f5c\u8005\u540d]\u4f5c\u54c1\u540d", None))
         self.saveNameButton2.setText(QCoreApplication.translate("SettingNew", u"\u4f5c\u8005\u540d\u5355\u72ec\u76ee\u5f55\uff08\u5982\u65e0\u4f5c\u8005\u540d\u5c06\u653e\u5165default\u76ee\u5f55\uff09", None))
-        self.label_21.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84\uff08\u7f13\u5b58\u6587\u4ef6\u9700\u81ea\u5df1\u624b\u52a8\u6e05\u9664\uff09", None))
+        self.label_21.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84\uff08\u8bbe\u7f6e\u9700\u91cd\u542f\uff09", None))
+        self.openMemBox.setText(QCoreApplication.translate("SettingNew", u"\u5185\u5b58\u7f13\u5b58", None))
+        self.label_50.setText(QCoreApplication.translate("SettingNew", u"\u5f53\u524d", None))
+        self.memLabel.setText(QCoreApplication.translate("SettingNew", u"0", None))
+        self.label_51.setText(QCoreApplication.translate("SettingNew", u"MB\uff0c", None))
+        self.label_52.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u6700\u5927\u503c(MB)\uff1a", None))
+        self.openDiskBox.setText(QCoreApplication.translate("SettingNew", u"\u78c1\u76d8\u7f13\u5b58", None))
+        self.label_54.setText(QCoreApplication.translate("SettingNew", u"\u5f53\u524d", None))
+        self.diskLabel.setText(QCoreApplication.translate("SettingNew", u"0", None))
+        self.label_56.setText(QCoreApplication.translate("SettingNew", u"MB\uff0c", None))
+        self.label_57.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u6700\u5927\u503c(MB)\uff1a", None))
+        self.label_55.setText(QCoreApplication.translate("SettingNew", u"\u7f13\u5b58\u5929\u6570\uff1a", None))
         self.setDirButton.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u76ee\u5f55", None))
         self.setLogDirButton.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u65e5\u5fd7\u76ee\u5f55", None))
         self.label_3.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d", None))

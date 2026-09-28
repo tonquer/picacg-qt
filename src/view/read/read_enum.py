@@ -6,7 +6,7 @@ from PySide6.QtCore import QSize, QPoint
 from config import config
 from config.setting import Setting
 from tools.str import Str
-from tools.tool import ToolUtil
+from tools.tool import ToolUtil, time_me
 
 
 class ReadMode(Enum):
@@ -127,6 +127,7 @@ class QtFileData(object):
         self.state = self.DownloadSuc
         self.size = len(data)
 
+    @time_me
     def SetWaifuData(self, data, tick):
         if not data:
             self.waifuState = self.WaifuStateFail
