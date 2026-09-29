@@ -102,9 +102,9 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-2428</y>
+          <y>-2432</y>
           <width>727</width>
-          <height>3177</height>
+          <height>3209</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -2443,7 +2443,7 @@
                </font>
               </property>
               <property name="text">
-               <string>下载和缓存路径（设置需重启）</string>
+               <string>下载和缓存路径（修改大小需重启）</string>
               </property>
              </widget>
             </item>
@@ -2499,6 +2499,37 @@
               </item>
               <item>
                <spacer name="horizontalSpacer_29">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_36">
+              <item>
+               <widget class="QPushButton" name="diskRefreshButton">
+                <property name="text">
+                 <string>刷新磁盘缓存统计</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_49">
+                <property name="text">
+                 <string>(如果自行删除了缓存文件，或者修改了目录请点击刷新)</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_31">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -2912,11 +2943,11 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="showCloseButtonGroup"/>
+  <buttongroup name="saveNameGroup"/>
+  <buttongroup name="logGroup"/>
   <buttongroup name="languageGroup"/>
   <buttongroup name="themeGroup"/>
   <buttongroup name="proxyGroup"/>
-  <buttongroup name="logGroup"/>
-  <buttongroup name="showCloseButtonGroup"/>
-  <buttongroup name="saveNameGroup"/>
  </buttongroups>
 </ui>

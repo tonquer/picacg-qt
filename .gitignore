@@ -145,3 +145,5 @@ src/data/batch_sr_tool.db
 src/data/nas.db
 src/data/favorite.db
 src/db/book.db*
+src/data/disk_cache.db-journal
+src/data/disk_cache.db

@@ -141,7 +141,7 @@ class Setting:
     SaveNameType = SettingValue("DownloadSetting", 0, False)
     IsOpenMemCache = SettingValue("DownloadSetting", 1, False)
     MemCacheSize = SettingValue("DownloadSetting", 512, False)
-    IsOpenDiskCache = SettingValue("DownloadSetting", 1, False)
+    IsOpenDiskCache = SettingValue("DownloadSetting", 0, False)
     DiskCacheSize = SettingValue("DownloadSetting", 10240, False)
     DiskCacheDay = SettingValue("DownloadSetting", 30, False)
 

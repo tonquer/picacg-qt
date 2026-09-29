@@ -91,7 +91,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             QScroller.scroller(self.scrollArea).setScrollerProperties(propertiesOne)
 
         self._settingControlsReady = True
-
+        self.diskRefreshButton.clicked.connect(self.StartUpdateDiskCache)
         #     QScroller.grabGesture(self.scrollArea, QScroller.LeftMouseButtonGesture)
     #     self.grabGestureBox.installEventFilter(self)
     #
@@ -234,10 +234,20 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
 
     def SwitchCurrent(self, **kwargs):
         self.InitSetting()
+        self.UpdateCacheLabe()
+        return
+
+    def StartUpdateDiskCache(self):
+        self.diskRefreshButton.setEnabled(False)
+        self.diskLabel.setText(str(-1))
+        from task.task_cache import TaskCache
+        TaskCache().InitDiskCache()
+
+    def UpdateCacheLabe(self):
+        self.diskRefreshButton.setEnabled(True)
         from task.task_cache import TaskCache
         self.memLabel.setText(str(TaskCache().GetMemSize()))
         self.diskLabel.setText(str(TaskCache().GetDiskSize()))
-        return
 
     def LoadSetting(self):
         self.InitSetting()

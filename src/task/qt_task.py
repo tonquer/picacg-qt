@@ -21,6 +21,7 @@ class QtTaskQObject(QObject):
     localBack = Signal(int, int, list)
     localReadBack = Signal(int, int, bytes)
     uploadBack = Signal(int, int, str)
+    diskCacheRefresh = Signal()
 
     def __init__(self):
         super(self.__class__, self).__init__()

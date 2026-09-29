@@ -88,7 +88,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -2428, 727, 3177))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -2432, 727, 3209))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -1362,6 +1362,25 @@ class Ui_SettingNew(object):
 
         self.verticalLayout_13.addLayout(self.horizontalLayout_32)
 
+        self.horizontalLayout_36 = QHBoxLayout()
+        self.horizontalLayout_36.setObjectName(u"horizontalLayout_36")
+        self.diskRefreshButton = QPushButton(self.frame_11)
+        self.diskRefreshButton.setObjectName(u"diskRefreshButton")
+
+        self.horizontalLayout_36.addWidget(self.diskRefreshButton)
+
+        self.label_49 = QLabel(self.frame_11)
+        self.label_49.setObjectName(u"label_49")
+
+        self.horizontalLayout_36.addWidget(self.label_49)
+
+        self.horizontalSpacer_31 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_36.addItem(self.horizontalSpacer_31)
+
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_36)
+
         self.horizontalLayout_33 = QHBoxLayout()
         self.horizontalLayout_33.setObjectName(u"horizontalLayout_33")
         self.openDiskBox = QCheckBox(self.frame_11)
@@ -1735,12 +1754,14 @@ class Ui_SettingNew(object):
         self.saveNameButton0.setText(QCoreApplication.translate("SettingNew", u"\u4f5c\u54c1\u540d\uff08\u9ed8\u8ba4\uff09", None))
         self.saveNameButton1.setText(QCoreApplication.translate("SettingNew", u"[\u4f5c\u8005\u540d]\u4f5c\u54c1\u540d", None))
         self.saveNameButton2.setText(QCoreApplication.translate("SettingNew", u"\u4f5c\u8005\u540d\u5355\u72ec\u76ee\u5f55\uff08\u5982\u65e0\u4f5c\u8005\u540d\u5c06\u653e\u5165default\u76ee\u5f55\uff09", None))
-        self.label_21.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84\uff08\u8bbe\u7f6e\u9700\u91cd\u542f\uff09", None))
+        self.label_21.setText(QCoreApplication.translate("SettingNew", u"\u4e0b\u8f7d\u548c\u7f13\u5b58\u8def\u5f84\uff08\u4fee\u6539\u5927\u5c0f\u9700\u91cd\u542f\uff09", None))
         self.openMemBox.setText(QCoreApplication.translate("SettingNew", u"\u5185\u5b58\u7f13\u5b58", None))
         self.label_50.setText(QCoreApplication.translate("SettingNew", u"\u5f53\u524d", None))
         self.memLabel.setText(QCoreApplication.translate("SettingNew", u"0", None))
         self.label_51.setText(QCoreApplication.translate("SettingNew", u"MB\uff0c", None))
         self.label_52.setText(QCoreApplication.translate("SettingNew", u"\u8bbe\u7f6e\u6700\u5927\u503c(MB)\uff1a", None))
+        self.diskRefreshButton.setText(QCoreApplication.translate("SettingNew", u"\u5237\u65b0\u78c1\u76d8\u7f13\u5b58\u7edf\u8ba1", None))
+        self.label_49.setText(QCoreApplication.translate("SettingNew", u"(\u5982\u679c\u81ea\u884c\u5220\u9664\u4e86\u7f13\u5b58\u6587\u4ef6\uff0c\u6216\u8005\u4fee\u6539\u4e86\u76ee\u5f55\u8bf7\u70b9\u51fb\u5237\u65b0)", None))
         self.openDiskBox.setText(QCoreApplication.translate("SettingNew", u"\u78c1\u76d8\u7f13\u5b58", None))
         self.label_54.setText(QCoreApplication.translate("SettingNew", u"\u5f53\u524d", None))
         self.diskLabel.setText(QCoreApplication.translate("SettingNew", u"0", None))
