@@ -14,6 +14,8 @@ class Universal2Bundler:
         with tempfile.TemporaryDirectory() as tmp_dir:
             if package == "cffi":
                 amd64_binary = "macosx_10_15_x86_64"
+            elif package == "pyyaml":
+                amd64_binary = "macosx_10_13_x86_64"
             else:
                 amd64_binary = "macosx_10_10_x86_64"
             arm64_binary = "macosx_11_0_arm64"
