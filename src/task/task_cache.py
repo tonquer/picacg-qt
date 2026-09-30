@@ -373,7 +373,7 @@ class TaskCache(TaskBase, QtTaskBase):
         self.diskCache.clear()
         self.__diskDB.DelAll()
         now = int(time.time())
-        formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg"]
+        formatList = ToolUtil.AllUseFormat
         pathList = ["book", "category", "cover", "game", "user", "waifu2x"]
         allFiles = []
         for path in pathList:

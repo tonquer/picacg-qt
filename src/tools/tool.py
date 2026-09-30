@@ -43,6 +43,7 @@ def time_me(fn):
 
 
 class ToolUtil(object):
+    AllUseFormat = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg"]
 
     @staticmethod
     def DictToUrl(paramDict):
@@ -423,25 +424,27 @@ class ToolUtil(object):
     def LoadCachePicture(filePath):
         try:
             c = CTime()
-            formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg"]
-            for mat in formatList:
-                if filePath[-4:] in formatList:
+            path = ""
+            for mat in ToolUtil.AllUseFormat:
+                if filePath[-4:] in ToolUtil.AllUseFormat:
                     path = filePath
-                elif filePath[-5:] in formatList:
+                    mat = filePath[-4:]
+                elif filePath[-5:] in ToolUtil.AllUseFormat:
                     path = filePath
+                    mat = filePath[-5:]
                 else:
                     path = filePath + mat
                 if not os.path.isfile(path):
                     continue
-
+                data = None
                 with open(path, "rb") as f:
                     data = f.read()
-                    c.Refresh("LoadCache", path)
                     if len(data) < 20:
                         Log.Debug(f"load_fail_picture, {path}")
                         continue
-                    return data
 
+                return data
+            c.Refresh("LoadCache", path)
         except Exception as es:
             Log.Error(es)
         return None
@@ -452,17 +455,16 @@ class ToolUtil(object):
             os.makedirs(os.path.dirname(path))
 
         if path and data:
-            ToolUtil.GetPictureName(path, format)
+            path = ToolUtil.GetPictureName(path, format)
             with open(path, "wb+") as f:
                 f.write(data)
 
     @staticmethod
     def GetPictureName(path, format):
-        formatList = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", "jpeg"]
         if path:
-            if path[-4:] in formatList:
+            if path[-4:] in ToolUtil.AllUseFormat:
                 pass
-            elif path[-5:] in formatList:
+            elif path[-5:] in ToolUtil.AllUseFormat:
                 pass
             else:
                 path = path + "." + format

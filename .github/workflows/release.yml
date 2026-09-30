@@ -68,9 +68,9 @@ jobs:
         cd script
         pip install delocate wheel_filename==1.4.2
         python build_universal2.py pillow
-        python build_universal2.py cffi 1.17.1
-        python build_universal2.py curl_cffi 0.13.0
-        python build_universal2.py pyyaml 6.0.2
+        python build_universal2.py cffi 2.1.1
+        python build_universal2.py curl_cffi 0.16.3
+        python build_universal2.py pyyaml 6.0.3
         pip install *.whl
         cd ..
         pip install -r src/requirements_macos.txt
