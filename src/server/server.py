@@ -175,30 +175,30 @@ class Server(Singleton):
 
     def Run(self, index):
         time.sleep(2)
-        while True:
-            task = self._inQueue.get(True)
-            self._inQueue.task_done()
-            try:
-                with requests2.Session() as session:
+        with requests2.Session() as session:
+            while True:
+                task = self._inQueue.get(True)
+                self._inQueue.task_done()
+                try:
                     if task == "":
                         break
                     self._Send(task, index, session)
-            except Exception as es:
-                Log.Error(es)
+                except Exception as es:
+                    Log.Error(es)
         pass
 
     def RunSpeed(self, index):
         time.sleep(2)
-        while True:
-            task = self._speedQueue.get(True)
-            self._speedQueue.task_done()
-            try:
-                with requests2.Session() as session:
+        with requests2.Session() as session:
+            while True:
+                task = self._speedQueue.get(True)
+                self._speedQueue.task_done()
+                try:
                     if task == "":
                         break
                     self._Send(task, index, session)
-            except Exception as es:
-                Log.Error(es)
+                except Exception as es:
+                    Log.Error(es)
         pass
 
     # def RunOld(self, index):
@@ -233,16 +233,16 @@ class Server(Singleton):
 
     def RunDownload(self, index):
         time.sleep(2)
-        while True:
-            task = self._downloadQueue.get(True)
-            self._downloadQueue.task_done()
-            try:
-                with requests2.Session(impersonate="chrome110") as session:
+        with requests2.Session(impersonate="chrome110") as session:
+            while True:
+                task = self._downloadQueue.get(True)
+                self._downloadQueue.task_done()
+                try:
                     if task == "":
                         break
                     self._Download(task, index, session)
-            except Exception as es:
-                Log.Error(es)
+                except Exception as es:
+                    Log.Error(es)
         pass
 
     def __DealHeaders(self, request, token):
@@ -472,7 +472,9 @@ class Server(Singleton):
     def ReDownload(self, task):
         task.res = ""
         task.status = Status.Ok
-        self._downloadQueue.put(task)
+        task.session = None
+        newTask = Task(task.req, task.backParam)
+        self._downloadQueue.put(newTask)
 
     def _Download(self, task, index, session):
         try:

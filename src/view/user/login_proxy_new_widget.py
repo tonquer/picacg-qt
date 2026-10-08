@@ -398,7 +398,7 @@ class LoginProxyNewWidget(object):
             self.otherProxyIps = GlobalConfig.ProxyIpList.value[:]
         self.GetBestCfIp()       
         
-    def GetBestCfIp(self, raw):
+    def GetBestCfIp(self):
         request = req.GetBestCfIpReq()
         self.owner.AddHttpTask(request, self.GetBestCfIpBack)
     
