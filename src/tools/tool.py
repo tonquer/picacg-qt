@@ -6,6 +6,7 @@ import os
 import re
 import time
 import uuid
+import ipaddress
 from hashlib import sha256
 from urllib.parse import quote
 
@@ -731,3 +732,22 @@ class ToolUtil(object):
         if sock:
             sock.close()
         return has_ipv6
+    
+    @staticmethod
+    def ExportIpsByStr(text): 
+        _IPV4 = re. compile ( r'(?<![\w.])' r'(?:25[0-5]|2[0-4]\d|1?\d?\d)' r'(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}' r'(?![\w.])') 
+        _IPV6 = re. compile ( r'(?<![0-9A-Fa-f:])([0-9A-Fa-f:]{2,39})(?![0-9A-Fa-f:])')
+        found, seen = [], set()
+        for raw in _IPV4.findall(text) + _IPV6.findall(text):
+            if not raw or raw in seen:
+                continue
+            try:
+                ip = ipaddress.ip_address(raw)
+            except ValueError:
+                continue
+            if (ip.is_loopback or ip.is_link_local or ip.is_unspecified
+                    or ip.is_multicast or ip.is_reserved):
+                continue
+            seen.add(raw)
+            found.append(raw)
+        return found

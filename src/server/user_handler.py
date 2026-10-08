@@ -591,17 +591,23 @@ class GetProxyIpInfoReqHandler(object):
                 return
 
             from natsort import natsorted
-            ips = json.loads(task.res.raw.content)
-            allIps = []
-            if isinstance(ips, list):
-                for ip in ips:
-                    v = ip.split(":")
-                    if not v or not v[0]:
-                        continue
-                    allIps.append(v[0])
-                data['list'] = natsorted(allIps)
-            else:
-                data['list'] = []
+            data['list'] = natsorted(ToolUtil.ExportIpsByStr(task.res.raw.text))
+        except Exception as es:
+            data["st"] = Status.ParseError
+            Log.Error(es)
+        finally:
+            if task.backParam:
+                TaskBase.taskObj.taskBack.emit(task.backParam, pickle.dumps(data))
+
+@handler(req.GetBestCfIpReq)
+class GetBestCfIpReqHandler(object):
+    def __call__(self, task):
+        data = {"st": task.status, "data": task.res.GetText()}
+        try:
+            if task.status != Status.Ok:
+                return
+
+            data['list'] = ToolUtil.ExportIpsByStr(task.res.raw.text)
         except Exception as es:
             data["st"] = Status.ParseError
             Log.Error(es)

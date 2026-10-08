@@ -117,6 +117,7 @@ class Setting:
     LastProxyResult = SettingValue("ProxySetting", {}, False)
     # IsUseSniPretend = SettingValue("ProxySetting", 1, False)
     ProxyIpLastList =  SettingValue("ProxySetting", "", False)
+    BestCfIpLastList =  SettingValue("ProxySetting", "", False)
     ProxyIpValue =  SettingValue("ProxySetting", "", False)
 
     ProxySelectIndex = SettingValue("ProxySetting", 1, False)

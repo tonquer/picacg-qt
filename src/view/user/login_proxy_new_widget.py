@@ -15,6 +15,7 @@ from qt_owner import QtOwner
 from server import req, Server
 from tools.log import Log
 from tools.str import Str
+from tools.tool import ToolUtil
 
 
 class IpItem(object):
@@ -140,6 +141,10 @@ class LoginProxyNewWidget(object):
         self.otherProxyIps = Setting.ProxyIpLastList.value.split(",")
         if not self.otherProxyIps:
             self.otherProxyIps = GlobalConfig.ProxyIpList.value[:]
+
+        self.otherCDNIps = Setting.BestCfIpLastList.value.split(",")
+        if not self.otherCDNIps:
+            self.otherCDNIps = GlobalConfig.BestCfIpList.value[:]
 
         self.ShowAllItem()
         self.LoadHistory()
@@ -383,8 +388,7 @@ class LoginProxyNewWidget(object):
         if st == Str.Ok:
             ipList = raw.get("list", [])    
             self.otherProxyIps = ipList
-
-            self.owner.proxyIpLabel.setText(f"<font color=#d71345>成功获取{len(ipList)}个节点</font>")
+            self.owner.proxyIpLabel.setText(f"<font color=#d71345>成功获取{len(ipList)}个proxyip节点</font>")
             Setting.ProxyIpLastList.SetValue(",".join(self.otherProxyIps))
         else:
 
@@ -392,8 +396,26 @@ class LoginProxyNewWidget(object):
             Setting.ProxyIpLastList.SetValue("")
         if not self.otherProxyIps:
             self.otherProxyIps = GlobalConfig.ProxyIpList.value[:]
-        self.StartTestIp2()       
+        self.GetBestCfIp()       
+        
+    def GetBestCfIp(self, raw):
+        request = req.GetBestCfIpReq()
+        self.owner.AddHttpTask(request, self.GetBestCfIpBack)
     
+    def GetBestCfIpBack(self, raw):
+        st = raw["st"]
+        if st == Str.Ok:
+            ipList = raw.get("list", [])    
+            self.otherCDNIps = ipList
+            self.owner.proxyIpLabel.setText(self.owner.proxyIpLabel.text() + f" <font color=#d71345>成功获取{len(ipList)}个CDN节点</font>")
+            Setting.BestCfIpLastList.SetValue(",".join(self.otherCDNIps))
+        else:
+            self.owner.proxyIpLabel.setText(self.owner.proxyIpLabel.text() + " <font color=#d71345>{}</font>".format(Str.GetStr(st)))
+            Setting.BestCfIpLastList.SetValue("")
+        if not self.otherCDNIps:
+            self.otherCDNIps = GlobalConfig.BestCfIpList.value[:]
+        self.StartTestIp2()       
+
     def StartTestIp2(self):
         self.ShowAllItem()
         # url = GlobalConfig.CdnApiUrl.value
@@ -580,7 +602,7 @@ class LoginProxyNewWidget(object):
             self.UpdateRow(item)
             index += 1
 
-        for j, ip in enumerate(re.split(r'[、，；;,\s]\s*', Setting.PreferCDNList.value)):
+        for j, ip in enumerate(ToolUtil.ExportIpsByStr(Setting.PreferCDNList.value)):
             if not ip:
                 continue
             if ip in allips:
@@ -594,7 +616,7 @@ class LoginProxyNewWidget(object):
             self.AddRow(index)
             self.UpdateRow(item)
             index += 1
-        for j, ip in enumerate(GlobalConfig.BestCfIpList.value):
+        for j, ip in enumerate(self.otherCDNIps):
             if not ip:
                 continue
             

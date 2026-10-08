@@ -1132,3 +1132,18 @@ class GetProxyIpInfoReq(ServerReq):
         realUrl = ToolUtil.GetUrlHost(url)
         self.resetUrl = [url.replace(realUrl, "check2.jpacg.cc")]
         self.resetCnt = len(self.resetUrl)
+
+
+# 获取bestcf
+class GetBestCfIpReq(ServerReq):
+    def __init__(self):
+        url = f"https://parse.jpacg.cc/bestcf"
+        method = "GET"
+        super(self.__class__, self).__init__(url, {}, {}, method)
+        self.headers = {
+            "version": config.RealVersion
+        }
+        self.isParseRes = False
+        realUrl = ToolUtil.GetUrlHost(url)
+        self.resetUrl = [url.replace(realUrl, "parse2.jpacg.cc")]
+        self.resetCnt = len(self.resetUrl)
