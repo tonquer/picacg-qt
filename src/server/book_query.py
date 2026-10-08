@@ -14,8 +14,9 @@ SEARCH_FIELDS = {
     "categories": ("categories",),
     "creator": ("creator",),
 }
-SORT_FIELDS = ("updated_at", "created_at", "totalLikes", "totalViews", "epsCount", "pages", "id")
+SORT_FIELDS = ("updated_at", "created_at", "totalLikes", "totalViews", "epsCount", "pages", "book.id")
 
+FAVORITE_SORT_FIELDS = ("favorite.sortId", "updated_at", "created_at", "totalLikes", "totalViews", "epsCount", "pages", "book.id")
 
 @dataclass(frozen=True)
 class SqlStatement:
@@ -54,11 +55,12 @@ class BookQuery:
     limit_ids: Optional[Tuple[str, ...]] = None
     sort_field: str = "updated_at"
     descending: bool = True
+    link_favorite_user: str = ""
 
     def __post_init__(self):
         if any(field not in SEARCH_FIELDS for field in self.fields):
             raise ValueError("未知的搜索字段")
-        if self.sort_field not in SORT_FIELDS:
+        if self.sort_field not in SORT_FIELDS and self.sort_field not in FAVORITE_SORT_FIELDS:
             raise ValueError("未知的排序字段")
 
     @classmethod
@@ -67,12 +69,12 @@ class BookQuery:
                     finished_only=False, limit_ids=None):
         enabled = (is_title, is_author, is_description, is_tag, is_category, is_creator)
         fields = tuple(field for field, selected in zip(SEARCH_FIELDS, enabled) if selected)
-        sort_field = SORT_FIELDS[sort_key] if 0 <= sort_key < 6 else "id"
+        sort_field = SORT_FIELDS[sort_key] if 0 <= sort_key < 6 else "book.id"
         return cls(text, fields, tuple(categories), bool(finished_only),
                    tuple(limit_ids) if limit_ids is not None else None, sort_field, sort_id == 0)
 
     def for_facets(self):
-        return replace(self, categories=(), sort_field="id", descending=False)
+        return replace(self, categories=(), sort_field="book.id", descending=False)
 
     def _where(self, include_categories=True):
         text = Converter("zh-hans").convert(self.text).strip(" ")
@@ -106,7 +108,7 @@ class BookQuery:
         if self.finished_only:
             clauses.append("finished=1")
         if self.limit_ids is not None:
-            clauses.append("id IN ({})".format(",".join("?" for _ in self.limit_ids)))
+            clauses.append("book.id IN ({})".format(",".join("?" for _ in self.limit_ids)))
             params.extend(self.limit_ids)
         if include_categories and self.categories:
             clauses.append("(" + " OR ".join("categories LIKE ?" for _ in self.categories) + ")")
@@ -118,27 +120,35 @@ class BookQuery:
         where, params = self._where()
         facet_where, facet_params = self._where(include_categories=False)
         order = self.sort_field + (" DESC" if self.descending else " ASC")
-        if self.sort_field != "id":
-            order += ", id ASC"
+        if self.sort_field != "book.id":
+            order += ", book.id ASC"
         sql = "SELECT {} FROM book WHERE {} ORDER BY {}".format(book_projection(has_share_id), where, order)
         row_params = params
-        if page is not None:
-            sql += " LIMIT ? OFFSET ?"
-            row_params += (page.page_size, page.offset)
-        return (SqlStatement(sql, row_params),
-                SqlStatement("SELECT id FROM book WHERE " + facet_where, facet_params),
-                SqlStatement("SELECT count(*) FROM book WHERE " + where, params))
-
+        if not self.link_favorite_user:
+            if page is not None:
+                sql += " LIMIT ? OFFSET ?"
+                row_params += (page.page_size, page.offset)
+            return (SqlStatement(sql, row_params),
+                    SqlStatement("SELECT book.id FROM book WHERE " + facet_where, facet_params),
+                    SqlStatement("SELECT count(*) FROM book WHERE " + where, params))
+        else:
+            sql = "SELECT {} FROM book, favorite WHERE book.id = favorite.id and favorite.user='{}' and ({}) ORDER BY {}".format(book_projection(has_share_id), self.link_favorite_user, where, order)
+            if page is not None:
+                sql += " LIMIT ? OFFSET ?"
+                row_params += (page.page_size, page.offset)
+            return (SqlStatement(sql, row_params),
+                    SqlStatement("SELECT book.id FROM book, favorite WHERE book.id = favorite.id and favorite.user='{}' and ".format(self.link_favorite_user)+ facet_where, facet_params),
+                    SqlStatement("SELECT count(*) FROM book, favorite WHERE book.id = favorite.id and favorite.user='{}' and ".format(self.link_favorite_user) + where, params))
 
 def books_by_ids_statement(book_ids, has_share_id=True, metrics_only=False):
     ids = tuple(book_ids)
-    projection = "id, created_at, updated_at, epsCount, pages, totalLikes, totalViews" if metrics_only else book_projection(has_share_id)
+    projection = "book.id, created_at, updated_at, epsCount, pages, totalLikes, totalViews" if metrics_only else book_projection(has_share_id)
     return SqlStatement("SELECT {} FROM book WHERE id IN ({})".format(
         projection, ",".join("?" for _ in ids)), ids)
 
 
-FAVORITE_SORT_FIELDS = ("tick", "updated_at", "created_at", "totalLikes", "totalViews", "epsCount", "pages")
-FAVORITE_COLUMNS = ("bookId AS id", "title", "author", "chineseTeam", "description",
+LOCAL_FAVORITE_SORT_FIELDS = ("tick", "updated_at", "created_at", "totalLikes", "totalViews", "epsCount", "pages")
+LOCAL_FAVORITE_COLUMNS = ("bookId AS id", "title", "author", "chineseTeam", "description",
                     "epsCount", "pages", "finished", "categories", "tags", "created_at",
                     "updated_at", "path", "fileServer", "tick")
 
@@ -151,7 +161,7 @@ class FavoriteQuery:
     descending: bool = True
 
     def __post_init__(self):
-        if self.sort_field not in FAVORITE_SORT_FIELDS:
+        if self.sort_field not in LOCAL_FAVORITE_SORT_FIELDS:
             raise ValueError("未知的收藏排序字段")
 
     @classmethod
@@ -175,7 +185,7 @@ class FavoriteQuery:
             order.append("tick" + direction)
         order.append("bookId ASC")
         sql = "SELECT {} FROM favorite WHERE {} ORDER BY {}".format(
-            ", ".join(FAVORITE_COLUMNS), " AND ".join(clauses) or "1", ", ".join(order))
+            ", ".join(LOCAL_FAVORITE_COLUMNS), " AND ".join(clauses) or "1", ", ".join(order))
         if page is not None:
             sql += " LIMIT ? OFFSET ?"
             params.extend((page.page_size, page.offset))

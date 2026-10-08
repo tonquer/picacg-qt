@@ -1,5 +1,5 @@
 BOOK_COLUMNS = (
-    "id", "title", "title2", "author", "chineseTeam", "description", "epsCount",
+    "book.id", "title", "title2", "author", "chineseTeam", "description", "epsCount",
     "pages", "finished", "likesCount", "categories", "tags", "created_at",
     "updated_at", "path", "fileServer", "creator", "totalLikes", "totalViews", "shareId",
 )

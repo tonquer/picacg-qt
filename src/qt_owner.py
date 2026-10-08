@@ -82,8 +82,8 @@ class QtOwner(Singleton):
         self._app = None
         self._localServer = None
         self.backSock = None
-        self.isUseDb = True
         self.canUseDb = False
+        self.isUseDb = True
         self.isDbHavePicaID = False
         self.isOfflineModel = False
         self.closeType = 1  # 1普通， 2关闭弹窗触发， 3任务栏触发

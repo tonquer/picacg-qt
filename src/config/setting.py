@@ -222,6 +222,7 @@ class Setting:
     IsForbidTitle = SettingValue("Other", False, False)
     IsSkipSpace = SettingValue("Other", 0, False)
     IsSkipPic = SettingValue("Other", 0, False)
+    IsOpenLocalFavorite = SettingValue("Other", False, False)
 
     @staticmethod
     def InitLoadSetting():

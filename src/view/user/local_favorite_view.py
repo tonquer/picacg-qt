@@ -7,7 +7,7 @@ from interface.ui_local_favorite import Ui_LocalFavorite
 from qt_owner import QtOwner
 from server import req, Log
 from server.sql_server import SqlServer
-from server.book_query import FavoriteQuery, FAVORITE_SORT_FIELDS
+from server.book_query import FavoriteQuery, LOCAL_FAVORITE_SORT_FIELDS
 from task.qt_task import QtTaskBase
 from tools.book import Book
 from tools.status import Status
@@ -177,7 +177,7 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
         name = self.folderBox.currentText()
         fid = self.GetFidByName(name)
         criteria = FavoriteQuery(text=self.searchText, folder_id=fid,
-                                 sort_field=FAVORITE_SORT_FIELDS[sortKey], descending=sortId == 0)
+                                 sort_field=LOCAL_FAVORITE_SORT_FIELDS[sortKey], descending=sortId == 0)
         key = (criteria, QtOwner().canUseDb)
         if self._snapshot is not None and key == self._snapshotKey:
             self.LoadSnapshotPage(page, replace)
