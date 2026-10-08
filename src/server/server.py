@@ -470,9 +470,6 @@ class Server(Singleton):
                 self._Download(task, 0, session)
 
     def ReDownload(self, task):
-        task.res = ""
-        task.status = Status.Ok
-        task.session = None
         newTask = Task(task.req, task.backParam)
         self._downloadQueue.put(newTask)
 
