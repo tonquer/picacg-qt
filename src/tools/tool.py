@@ -361,9 +361,9 @@ class ToolUtil(object):
                     mat = "gif"
                 elif img.format.upper() == "WEBP":
                     mat = "webp"
-                elif img.format.upper() == "jxl":
+                elif img.format.upper() == "JXL":
                     mat = "jxl"
-                elif img.format.upper() == "avif":
+                elif img.format.upper() == "AVIF":
                     mat = "avif"
                 else:
                     mat = "jpg"

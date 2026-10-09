@@ -301,7 +301,8 @@ class TaskCache(TaskBase, QtTaskBase):
             return
         if task.isCacheFetch:
             return
-
+        if not task.saveData:
+            return
         assert isinstance(task, QConvertTask)
         file = FilePicCache()
         file.data = task.saveData

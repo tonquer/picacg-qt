@@ -94,21 +94,19 @@ class TaskWaifu2x(TaskBase):
                     data = ToolUtil.LoadCachePicture(task.loadPath)
                     if data:
                         w, h, mat,_ = ToolUtil.GetPictureSize(data)
-                        if mat.lower() in ToolUtil.NeedConvertFormat:
-                            data = ToolUtil.GetCanUseData(data)
-
                         model = ToolUtil.GetDownloadScaleModel(w, h, mat)
                         if not task.model.get("isForce"):
                             task.model = model
-                        else:
-                            if model.get('format') and not task.model.get('format'):
-                                task.model['format'] = model['format']
                         task.imgData = data
 
                 if not task.imgData:
                     task.status = Status.FileError
                     self.taskObj.convertBack.emit(taskId)
                     continue
+
+                w, h, mat, _ = ToolUtil.GetPictureSize(task.imgData)
+                if mat.lower() in ToolUtil.NeedConvertFormat:
+                    task.imgData = ToolUtil.GetCanUseData(task.imgData)
 
                 if isFind:
                     continue
