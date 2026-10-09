@@ -325,20 +325,26 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.zoom(1.1)
         return
 
+
     def OpenPicture(self):
         try:
-            filename = QFileDialog.getOpenFileName(self, "Open Image", ".", "Image Files(*.jpg *.png *.gif *.webp)")
+            filename = QFileDialog.getOpenFileName(self, "Open Image", ".", "Image Files(*)")
             if filename and len(filename) >= 1:
                 name = filename[0]
                 if os.path.isfile(name):
                     f = open(name, "rb")
                     data = f.read()
                     f.close()
-                    self.data = data
+                    data2 = ToolUtil.GetCanUseData(data)
+                    width, height, mat, isAnima = ToolUtil.GetPictureSize(data2)
+                    if not width or not height:
+                        QtOwner().ShowError(Str.GetStr(Str.NotSupportFmt))
+                        return
+                    self.data = data2
                     self.waifu2xData = None
                     self.ClearConvert()
                     self.backStatus = ""
-                    self.ShowImg(data)
+                    self.ShowImg(data2)
         except Exception as ex:
             Log.Error(ex)
         return

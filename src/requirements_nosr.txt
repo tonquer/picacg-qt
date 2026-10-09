@@ -5,6 +5,8 @@ websocket-client==0.59.0
 #sr-vulkan-model-realcugan
 #sr-vulkan-model-realesrgan
 pillow
+pillow-jxl-plugin
+pillow-avif-plugin
 Pysocks
 natsort
 webdavclient3

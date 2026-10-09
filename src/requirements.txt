@@ -5,6 +5,8 @@ sr-vulkan-model-waifu2x
 sr-vulkan-model-realcugan
 sr-vulkan-model-realesrgan
 pillow
+pillow-jxl-plugin
+pillow-avif-plugin
 Pysocks
 natsort
 webdavclient3

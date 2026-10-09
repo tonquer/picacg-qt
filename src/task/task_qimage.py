@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt
 
 from task.qt_task import TaskBase
 from tools.log import Log
+from tools.tool import ToolUtil
 
 
 class QtQImageTask(object):

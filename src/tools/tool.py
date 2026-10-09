@@ -44,7 +44,7 @@ def time_me(fn):
 
 
 class ToolUtil(object):
-    AllUseFormat = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg", ".JXL", ".PNG"]
+    AllUseFormat = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg", ".jxl", ".avif"]
     AllFormatStr = [v.replace(".", "") for v in AllUseFormat]
     NeedConvertFormat = ["jxl", "avif"]
 
@@ -389,10 +389,10 @@ class ToolUtil(object):
             ):
                 if img.format.lower() in ToolUtil.NeedConvertFormat:
                     toMat = "PNG"
-                    buffer = io.BytesIO()
-                    img.save(buffer, format=toMat)
-                    newData = buffer.getvalue()
-                    buffer.close()
+                    newBuffer = BytesIO()
+                    img.save(newBuffer, format=toMat)
+                    newData = newBuffer.getvalue()
+                    newBuffer.close()
                     return newData
                 else:
                     return data

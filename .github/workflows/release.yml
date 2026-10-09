@@ -68,6 +68,8 @@ jobs:
         cd script
         pip install delocate wheel_filename==1.4.2
         python build_universal2.py pillow
+        python build_universal2.py pillow-jxl-plugin
+        python build_universal2.py pillow-avif-plugin
         python build_universal2.py cffi 2.1.1
         python build_universal2.py curl_cffi 0.16.3
         python build_universal2.py pyyaml 6.0.3
