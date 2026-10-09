@@ -19,7 +19,7 @@ from tools.tool import ToolUtil
 
 
 class ServerReq(object):
-    def __init__(self, url, header=None, json=None, method="POST", isOtherCloudFlare=False) -> None:
+    def __init__(self, url, header=None, json=None, method="POST") -> None:
         self.resetCnt = 0
         self.isReload = False
         self.url = url
@@ -45,7 +45,7 @@ class ServerReq(object):
 
         host = ToolUtil.GetUrlHost(url)
         self.timeout = 5
-        self.isOtherCloudFlare = isOtherCloudFlare
+        self.isOtherCloudFlare = host in GlobalConfig.OtherCloudflareDomain.value
         self.isApi = False
         self.isImg = False
         if host in GlobalConfig.AllApiDomain.value:
@@ -69,6 +69,8 @@ class ServerReq(object):
             self.ipList = GlobalConfig.GetAddress(Setting.ProxySelectIndex.value)
         elif self.isImg and not self.proxyUrl:
             self.ipList = GlobalConfig.GetImageAdress(Setting.ProxyImgSelectIndex.value)
+        elif self.isOtherCloudFlare:
+            self.ipList = GlobalConfig.GetAddress(Setting.ProxySelectIndex.value)
         else:
             self.ipList = []
         self.SetCurlOpt(Setting.EnableEch.value, QtOwner().echConfig, self.ipList)
@@ -966,7 +968,7 @@ class GetRecommendByIdReq(ServerReq):
         method = "Get"
         self.bookId = bookId
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
-                                             {}, method, isOtherCloudFlare=True)
+                                             {}, method)
         self.isParseRes = False
 
 
@@ -978,7 +980,7 @@ class GetCfDnsReq(ServerReq):
         method = "Get"
         self.domain = domain
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
-                                             {}, method, isOtherCloudFlare=True)
+                                             {}, method)
 
 
 # Doh域名解析

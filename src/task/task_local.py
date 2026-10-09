@@ -13,6 +13,7 @@ from natsort import natsorted
 
 from tools.status import Status
 from tools.str import Str
+from tools.tool import ToolUtil
 
 
 class QLocalTask(object):
@@ -43,7 +44,7 @@ class LocalData(object):
     
     TypeLoadPicFile = 7  # 加载所以图片资源
 
-    AllPictureFormat = ["jpg", "jpeg", "webp", "gif", "apng", "png", "bmp"]
+    # AllPictureFormat = ["jpg", "jpeg", "webp", "gif", "apng", "png", "bmp"]
 
     def __init__(self) -> None:
         self.id     = ""   # md5 或者 生成Id
@@ -127,8 +128,8 @@ class TaskLocal(TaskBase, QtTaskBase):
         self.thread.start()
 
         self.thread2 = threading.Thread(target=self.RunLoad2)
-        self.thread2.setName("Task-" + str("Waifu2x"))
-        self.thread2.setDaemon(True)
+        self.thread2.name = "Task-" + str("Waifu2x")
+        self.thread2.daemon = True
         self.thread2.start()
 
         self.taskObj.localBack.connect(self.HandlerTask)
@@ -298,7 +299,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                     if len(data) < 2:
                         continue
                     mat = data[-1]
-                    if mat not in LocalData.AllPictureFormat:
+                    if mat not in ToolUtil.AllFormatStr:
                         continue
                     isNotPicture = False
                     allPictureName.append(v.name)
@@ -380,7 +381,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                     mat = data[-1]
                     if mat == "zip" or mat == "cbz":
                         zipFile.append(v.name)
-                    if mat in LocalData.AllPictureFormat:
+                    if mat in ToolUtil.AllFormatStr:
                         picNum += 1
             for zipName in zipFile:
                 st, l = self.ParseBookInfoByFile(os.path.join(dirName, zipName))
@@ -422,7 +423,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                     if len(data) < 2:
                         continue
                     mat = data[-1]
-                    if mat not in LocalData.AllPictureFormat:
+                    if mat not in ToolUtil.AllFormatStr:
                         continue
                     path = os.path.dirname(v.filename)
                     name = os.path.basename(v.filename)
@@ -541,7 +542,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                     if len(data) < 2:
                         continue
                     mat = data[-1]
-                    if mat not in LocalData.AllPictureFormat:
+                    if mat not in ToolUtil.AllFormatStr:
                         continue
                     subPath = filepath.replace(dirName, "").lstrip("\\").lstrip("/")
                     self.taskObj.localBack.emit(taskId, Str.Waiting, [(subPath, filename)])

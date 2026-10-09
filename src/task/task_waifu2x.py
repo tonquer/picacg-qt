@@ -49,8 +49,8 @@ class TaskWaifu2x(TaskBase):
         self.thread.start()
 
         self.thread2 = threading.Thread(target=self.RunLoad2)
-        self.thread2.setName("Task-" + str("Waifu2x"))
-        self.thread2.setDaemon(True)
+        self.thread2.name = "Task-" + str("Waifu2x")
+        self.thread2.daemon = True
 
     def Start(self):
         self.thread2.start()
@@ -94,9 +94,15 @@ class TaskWaifu2x(TaskBase):
                     data = ToolUtil.LoadCachePicture(task.loadPath)
                     if data:
                         w, h, mat,_ = ToolUtil.GetPictureSize(data)
+                        if mat.lower() in ToolUtil.NeedConvertFormat:
+                            data = ToolUtil.GetCanUseData(data)
+
                         model = ToolUtil.GetDownloadScaleModel(w, h, mat)
                         if not task.model.get("isForce"):
                             task.model = model
+                        else:
+                            if model.get('format') and not task.model.get('format'):
+                                task.model['format'] = model['format']
                         task.imgData = data
 
                 if not task.imgData:
@@ -111,12 +117,12 @@ class TaskWaifu2x(TaskBase):
                 if config.CanWaifu2x:
                     from sr_vulkan import sr_vulkan as sr
                     scale = task.model.get("scale", 0)
-                    mat = task.model.get("format", "")
+                    toMat = task.model.get("format", "")
                     tileSize = Setting.Waifu2xTileSize.GetIndexV()
                     if scale <= 0:
-                        sts = sr.add(task.imgData, task.model.get('model', 0), task.taskId, task.model.get("width", 0), task.model.get("high", 0), format=mat, tileSize=tileSize)
+                        sts = sr.add(task.imgData, task.model.get('model', 0), task.taskId, task.model.get("width", 0), task.model.get("high", 0), format=toMat, tileSize=tileSize)
                     else:
-                        sts = sr.add(task.imgData, task.model.get('model', 0), task.taskId, scale, format=mat, tileSize=tileSize)
+                        sts = sr.add(task.imgData, task.model.get('model', 0), task.taskId, scale, format=toMat, tileSize=tileSize)
 
                     if sts <= 0:
                         err = sr.getLastError()

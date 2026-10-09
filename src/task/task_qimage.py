@@ -29,8 +29,8 @@ class TaskQImage(TaskBase):
         self.threadList = []
         for i in range(self.threadNum+1):
             thread = threading.Thread(target=self.Run)
-            thread.setName("Task-" + str(self.__class__.__name__)+str(i))
-            thread.setDaemon(True)
+            thread.name = "Task-" + str(self.__class__.__name__)+str(i)
+            thread.daemon = True
             thread.start()
             self.threadList.append(thread)
 
@@ -58,8 +58,9 @@ class TaskQImage(TaskBase):
                 continue
             newQ = QImage()
             try:
+                newData = ToolUtil.GetCanUseData(info.data)
                 q = QImage()
-                q.loadFromData(info.data)
+                q.loadFromData(newData)
                 q.setDevicePixelRatio(info.radio)
                 if info.toW > 0:
                     newQ = q.scaled(info.toW * info.radio, info.toH * info.radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)

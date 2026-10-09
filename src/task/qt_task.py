@@ -167,8 +167,8 @@ class TaskBase(Singleton):
         Singleton.__init__(self)
         self._inQueue = Queue()
         self.thread = threading.Thread(target=self.Run)
-        self.thread.setName("Task-" + str(self.__class__.__name__))
-        self.thread.setDaemon(True)
+        self.thread.name = "Task-" + str(self.__class__.__name__)
+        self.thread.daemon = True
         self.tasks = {}
         self.flagToIds = {}
         self._taskLock = threading.RLock()

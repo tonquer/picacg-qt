@@ -44,7 +44,9 @@ def time_me(fn):
 
 
 class ToolUtil(object):
-    AllUseFormat = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg"]
+    AllUseFormat = [".jpg", ".png", ".gif", ".webp", ".bmp", ".apng", ".jpeg", ".JXL", ".PNG"]
+    AllFormatStr = [v.replace(".", "") for v in AllUseFormat]
+    NeedConvertFormat = ["jxl", "avif"]
 
     @staticmethod
     def DictToUrl(paramDict):
@@ -322,14 +324,14 @@ class ToolUtil(object):
         try:
             from PIL import Image
             from io import BytesIO
-            a = BytesIO(data)
-            img = Image.open(a)
-
-            format = ""
-            if getattr(img, "is_animated", ""):
-                format = img.format
-            a.close()
-            return format
+            with (
+                BytesIO(data) as buffer,
+                Image.open(buffer) as img,
+            ):
+                format = ""
+                if getattr(img, "is_animated", ""):
+                    format = img.format
+                return format
         except Exception as es:
             Log.Error(es)
         return ""
@@ -338,25 +340,65 @@ class ToolUtil(object):
     def GetPictureSize(data):
         if not data:
             return 0, 0, "jpg", False
+        
+        try:
+            import pillow_jxl
+            import pillow_avif
+        except Exception as es:
+            Log.Error(es)
+
         try:
             from PIL import Image
             from io import BytesIO
-            a = BytesIO(data)
-            img = Image.open(a)
-            isAnima = getattr(img, "is_animated", False)
-            if img.format == "PNG":
-                mat = "png"
-            elif img.format == "GIF":
-                mat = "gif"
-            elif img.format == "WEBP":
-                mat = "webp"
-            else:
-                mat = "jpg"
-            a.close()
-            return img.width, img.height, mat, isAnima
+            with (
+                BytesIO(data) as buffer,
+                Image.open(buffer) as img,
+            ):
+                isAnima = getattr(img, "is_animated", False)
+                if img.format.upper() == "PNG":
+                    mat = "png"
+                elif img.format.upper() == "GIF":
+                    mat = "gif"
+                elif img.format.upper() == "WEBP":
+                    mat = "webp"
+                elif img.format.upper() == "jxl":
+                    mat = "jxl"
+                elif img.format.upper() == "avif":
+                    mat = "avif"
+                else:
+                    mat = "jpg"
+                return img.width, img.height, mat, isAnima
         except Exception as es:
             Log.Error(es)
         return 0, 0, "jpg", False
+
+    @staticmethod
+    def GetCanUseData(data):
+        try:
+            import pillow_jxl
+            import pillow_avif
+        except Exception as es:
+            Log.Error(es)
+
+        try:
+            from PIL import Image
+            from io import BytesIO
+            with (
+                BytesIO(data) as buffer,
+                Image.open(buffer) as img,
+            ):
+                if img.format.lower() in ToolUtil.NeedConvertFormat:
+                    toMat = "PNG"
+                    buffer = io.BytesIO()
+                    img.save(buffer, format=toMat)
+                    newData = buffer.getvalue()
+                    buffer.close()
+                    return newData
+                else:
+                    return data
+        except Exception as es:
+            Log.Error(es)
+        return data
 
     # @staticmethod
     # def GetLookModel(category):
@@ -392,6 +434,8 @@ class ToolUtil(object):
         from sr_vulkan import sr_vulkan as sr
         data["model"] = getattr(sr, modelName, 0)
         data["model_name"] = modelName
+        if mat.lower() in ToolUtil.NeedConvertFormat:
+            data["format"] = "png"
         return data
 
     @staticmethod

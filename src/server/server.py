@@ -123,24 +123,24 @@ class Server(Singleton):
         for i in range(self.threadNum):
             # self.threadSession.append(self.GetNewSession())
             thread = threading.Thread(target=self.Run, args=[i])
-            thread.setName("HTTP-" + str(i))
-            thread.setDaemon(True)
+            thread.name = "HTTP-" + str(i)
+            thread.daemon = True
             thread.start()
             self.allWaitThread.append(thread)
 
         for i in range(self.downloadNum):
             # self.downloadSession.append(self.GetNewSession())
             thread = threading.Thread(target=self.RunDownload, args=[i])
-            thread.setName("Download-" + str(i))
-            thread.setDaemon(True)
+            thread.name = "Download-" + str(i)
+            thread.daemon = True
             thread.start()
             self.allWaitThread.append(thread)
 
         for i in range(self.speedThreadNum):
             # self.threadSession.append(self.GetNewSession())
             thread = threading.Thread(target=self.RunSpeed, args=[i])
-            thread.setName("Speed-" + str(i))
-            thread.setDaemon(True)
+            thread.name = "Speed-" + str(i)
+            thread.daemon = True
             thread.start()
             self.allWaitThread.append(thread)
 

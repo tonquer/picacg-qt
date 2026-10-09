@@ -47,7 +47,7 @@ class SqlServer(Singleton):
         for i in self.DbInfos.keys():
             self._inQueue[i] = Queue()
             thread = threading.Thread(target=self._Run, args=(i, ))
-            thread.setName("DB-"+str(i))
+            thread.name = "DB-"+str(i)
             # thread.setDaemon(True)
             thread.start()
 

@@ -77,6 +77,12 @@ class GlobalConfig:
 
     EchDomain = GlobalItem("cloudflare-ech.com")
 
+    # 其他cloudflare域名，启用ech和ip分流
+    OtherCloudflareDomain = GlobalItem([
+        "raw2.jpacg.cc", 
+        "check.jpacg.cc",
+        "macapi1.com"])
+
     ProxyIpList = GlobalItem([
         "158.180.231.216",
         "163.47.42.64",

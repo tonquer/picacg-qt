@@ -15,8 +15,8 @@ class ChatWebSocket:
         self.ws = None
         self._inQueue = Queue()
         self.sendThread = threading.Thread(target=self.SendDataRun)
-        self.sendThread.setName("ChatSendThread")
-        self.sendThread.setDaemon(True)
+        self.sendThread.name = "ChatSendThread"
+        self.sendThread.daemon = True
         self.sendThread.start()
         pass
 
@@ -102,7 +102,7 @@ class ChatWebSocket:
                 ws.run_forever(ping_interval=30)
 
         thread = threading.Thread(target=Run)
-        thread.setDaemon(True)
+        thread.daemon = True
         thread.start()
 
     def Close(self):
