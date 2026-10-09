@@ -14,6 +14,7 @@ from qt_owner import QtOwner
 from config.setting import Setting
 from tools.log import Log
 from tools.str import Str
+from tools.tool import time_me
 from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_opengl import ReadOpenGL
 from view.read.read_pool import QtReadImgPoolManager
@@ -693,6 +694,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             return True
         return False
 
+    @time_me
     def SetPixIem(self, index, data, isWaifu2x=False):
         if not self.allItems and ReadMode.isScroll(self.readImg.stripModel):
             return

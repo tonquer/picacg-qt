@@ -226,6 +226,7 @@ class TaskLocal(TaskBase, QtTaskBase):
             st = Str.Ok
         elif type == LocalData.TypeLoadPicFile:
             return self.ParseAllPicPath(taskId, dir)
+
         self.taskObj.localBack.emit(taskId, st, datas)
 
     def _LoadRead2(self, taskId):
@@ -489,8 +490,17 @@ class TaskLocal(TaskBase, QtTaskBase):
         #         return Str.NotFoundEps, ""
         #     v = v.eps[epsId-1]
         try:
+            from task.task_cache import TaskCache
             if v.isZip:
                 if self.cacheBookId == v.bookId and self.cacheBookZip:
+                    if v.filePath:
+                        fullPath = os.path.join(v.path, os.path.join(v.filePath, v.fileName))
+                    else:
+                        fullPath = os.path.join(v.path, v.fileName)
+                    imgData = TaskCache().GetMemDataByKey(TaskCache().GetPathCacheKey(fullPath))
+                    if imgData:
+                        return Status.Ok, imgData
+
                     f = self.cacheBookZip
                     if v.filePath:
                         data = f.read(v.filePath + "/" + v.fileName)
@@ -498,6 +508,11 @@ class TaskLocal(TaskBase, QtTaskBase):
                         data = f.read(v.fileName)
                 else:
                     f = zipfile.ZipFile(v.path, 'r')
+                    if v.filePath:
+                        fullPath = os.path.join(v.path, os.path.join(v.filePath, v.fileName))
+                    else:
+                        fullPath = os.path.join(v.path, v.fileName)
+
                     if self.cacheBookZip:
                         self.cacheBookZip.close()
                         self.cacheBookZip = None
@@ -505,6 +520,13 @@ class TaskLocal(TaskBase, QtTaskBase):
                     if v.index != -1:
                         self.cacheBookZip = f
                         self.cacheBookId = v.bookId
+
+                    imgData = TaskCache().GetMemDataByKey(TaskCache().GetPathCacheKey(fullPath))
+                    if imgData:
+                        if v.index == -1:
+                            f.close()
+                        return Status.Ok, imgData
+
                     if v.filePath:
                         data = f.read(v.filePath+"/"+v.fileName)
                     else:
@@ -513,11 +535,20 @@ class TaskLocal(TaskBase, QtTaskBase):
                         f.close()
             else:
                 filePath = os.path.join(v.path, os.path.join(v.filePath, v.fileName))
+                fullPath = filePath
+                imgData = TaskCache().GetMemDataByKey(TaskCache().GetPathCacheKey(fullPath))
+                if imgData:
+                    return Status.Ok, imgData
+
                 if not os.path.isfile(filePath):
                     return Str.NotFoundPicture, ""
                 f = open(filePath, "rb")
                 data = f.read()
                 f.close()
+
+            ## 添加cache缓存
+            TaskCache().LoadDataSuc(fullPath, data)
+
         except RuntimeError as es:
             if 'encrypted' in str(es):
                 return Str.FileLock, b""

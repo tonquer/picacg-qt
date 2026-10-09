@@ -9,7 +9,7 @@ from task.qt_task import TaskBase, QtTaskBase
 from tools.log import Log
 from cachetools import LRUCache, TLRUCache
 
-from tools.tool import ToolUtil
+from tools.tool import ToolUtil, time_me
 
 
 class LRUDiskCache(TLRUCache):
@@ -278,6 +278,7 @@ class TaskCache(TaskBase, QtTaskBase):
         Server().Download(req.DownloadBookReq(data.url, data.loadPath, data.cachePath, data.savePath, data.isReload,
                                               resetCnt=resetCnt), backParams=taskId)
 
+    @time_me
     def AddConvertFromCache(self, data):
         from task.task_waifu2x import QConvertTask
         assert isinstance(data, QConvertTask)
@@ -334,6 +335,21 @@ class TaskCache(TaskBase, QtTaskBase):
         Log.Debug("add cache info, taskId:{}, key:{}, path:{}, size:{}".format(downloadId, file.key, file.path, len(data)))
         with self._taskLock:
             self.memeryCache[file.key] = file
+
+    def LoadDataSuc(self, path, data):
+        if not path or not data:
+            return
+        if not self.isOpenMem:
+            return
+        file = FilePicCache()
+        file.data = data
+        file.path = path
+        file.key = self.GetPathCacheKey(file.path)
+        file.size = len(file.data)
+        Log.Debug("add cache data info, key:{}, path:{}, size:{}".format(file.key, file.path, len(file.data)))
+        with self._taskLock:
+            self.memeryCache[file.key] = file
+        return
 
     def __InitDiskDB(self):
         self.__diskDB.Init()
