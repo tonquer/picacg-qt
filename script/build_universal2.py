@@ -16,7 +16,7 @@ class Universal2Bundler:
                 amd64_binary = "macosx_10_15_x86_64"
             elif package == "pyyaml":
                 amd64_binary = "macosx_10_13_x86_64"
-            elif package == "pillow-jxl-plugin":
+            elif package == "pillow_jxl_plugin":
                 amd64_binary = "macosx_10_12_x86_64"
             else:
                 amd64_binary = "macosx_10_10_x86_64"
