@@ -292,7 +292,7 @@ class Setting:
 
     @staticmethod
     def GetDBPath():
-        if sys.platform != "linux":
+        if sys.platform == "win32":
             return "db"
         return Setting._xdgDir("XDG_STATE_HOME", ".local/state")
 

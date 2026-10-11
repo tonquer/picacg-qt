@@ -1,6 +1,8 @@
 import os
 import pickle
+import shutil
 import sqlite3
+import sys
 import threading
 import time
 from datetime import timezone, timedelta, datetime
@@ -66,11 +68,35 @@ class SqlServer(Singleton):
         for i in self.DbInfos.keys():
             self._inQueue[i].put((self.TaskTypeClose, "", ""))
 
+    def CheckMacOSInitDb(self, bookPath):
+        if not sys.platform == "darwin":
+            return
+        srcPath = "db"
+        srcDbPath = os.path.join(srcPath, bookPath)
+        destPath = Setting.GetDBPath()
+        destDbPath = os.path.join(destPath, bookPath)
+        versionFile = os.path.join(destPath, "version")
+        if os.path.isfile(versionFile) and os.path.isfile(destDbPath):
+            with open(versionFile, "r", encoding="utf8") as f:
+                data = f.read()
+                ver = data.strip("\n").strip("\r").strip(" ")
+            if ver >= config.UpdateVersion:
+                return
+        if not os.path.isfile(srcDbPath):
+            return
+        if srcDbPath == destDbPath:
+            return
+        shutil.copy2(srcDbPath, destDbPath)
+        with open(versionFile, "w", encoding="utf8") as f:
+            f.write(config.UpdateVersion)
+        return
+
     def _Run(self, bookName):
         bookPath = self.DbInfos.get(bookName)
         isInit = True
         conn = None
         try:
+            self.CheckMacOSInitDb(bookPath)
             path = os.path.join(Setting.GetDBPath(), bookPath)
             if not os.path.isfile(path):
                 QtOwner().isUseDb = False
