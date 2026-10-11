@@ -2,10 +2,10 @@ import base64
 import json
 import pickle
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import partial
 
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QUrl, QTimer
 from PySide6.QtGui import QDesktopServices, Qt
 from PySide6.QtWidgets import QWidget, QMessageBox
 
@@ -31,8 +31,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         Ui_Help.__init__(self)
         QtTaskBase.__init__(self)
         self.setupUi(self)
-        self.dbUpdateUrl = [config.DatabaseUpdate, config.DatabaseUpdate2, config.DatabaseUpdate3]
-        self.dbUpdateDbUrl = [config.DatabaseDownload, config.DatabaseDownload2, config.DatabaseDownload3]
+        self.dbUpdateUrl = GlobalConfig.DBUpdateUrl.value[:]
+        # self.dbUpdateDbUrl = [config.DatabaseDownload, config.DatabaseDownload2, config.DatabaseDownload3]
         self.curIndex = 0
         self.curSubVersion = 0
         self.curUpdateTick = 0
@@ -66,6 +66,19 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.configUrlIndex = 0
         self.updateUrlIndex = 0
 
+        self.timer = QTimer(self)
+        minute = 10
+        self.timer.setInterval(1000 * (minute * 60))
+        self.timer.timeout.connect(self.HourTimeOut)
+        self.timer.start()
+        self.isUpdating = False
+
+        self.localDbMaxNum = 0
+        self.checkJson = {}
+        self.allDbBookIds = set()
+        self.curFetchLaterPage = 0
+        self.maxFetchLaterPage = 20
+
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)
         self.version.setText(config.RealVersion)
@@ -95,7 +108,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         #     self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
         #     return
         self.updateUrlIndex = 0
-        self.AddHttpTask(req.CheckUpdateReq(self.configUrlList[self.updateUrlIndex], Setting.IsPreUpdate.value), self.InitUpdateBack)
+        self.AddHttpTask(req.CheckUpdateReq(self.configUrlList[self.updateUrlIndex], Setting.IsPreUpdate.value),
+                         self.InitUpdateBack)
 
     def InitUpdateBack(self, raw):
         try:
@@ -116,14 +130,17 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 self.UpdateText(self.verCheck, Str.AlreadyUpdate, "#ff4081", True)
                 return
 
-            self.AddHttpTask(req.CheckUpdateInfoReq(self.configUrlList[self.updateUrlIndex], data), self.InitUpdateInfoBack)
+            self.AddHttpTask(req.CheckUpdateInfoReq(self.configUrlList[self.updateUrlIndex], data),
+                             self.InitUpdateInfoBack)
             self.UpdateText(self.verCheck, Str.HaveUpdate, "#d71345", True)
         except Exception as es:
             Log.Error(es)
 
     def InitUpdateInfoBack(self, raw):
         data = raw.get("data")
-        self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex], Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", "+ Str.GetStr(Str.CheckUpdateAndUp) + "\n\n" + data)
+        self.SetNewUpdate(self.updateBackUrl[self.checkUpdateIndex],
+                          Str.GetStr(Str.CurVersion) + config.UpdateVersion + ", " + Str.GetStr(
+                              Str.CheckUpdateAndUp) + "\n\n" + data)
 
     def InitUpdateConfig(self):
         self.AddHttpTask(req.CheckUpdateConfigReq(self.configUrlList[self.configUrlIndex]), self.InitUpdateConfigBack)
@@ -136,7 +153,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
                 if self.configUrlIndex >= len(self.configUrlList):
                     # self.StartCheckDns()
                     return
-                self.AddHttpTask(req.CheckUpdateConfigReq(self.configUrlList[self.configUrlIndex]), self.InitUpdateConfigBack)
+                self.AddHttpTask(req.CheckUpdateConfigReq(self.configUrlList[self.configUrlIndex]),
+                                 self.InitUpdateConfigBack)
                 return
             # self.StartCheckDns()
             data = raw.get("data")
@@ -187,16 +205,21 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         if data is None:
             QtOwner().ShowError(Str.GetStr(Str.Error))
             return
+
         dbVer, num, timeStr, version = data
         config.DbVersion = dbVer
         self.curSubVersion = version
-        self.curUpdateTick = ToolUtil.GetTimeTickEx(timeStr)
-        self.localVer.setText(dbVer)
-        # curEndTime = datetime.now() - timedelta(7)
-        # newTick = int(curEndTime.timestamp())
-        # self.curUpdateTick = newTick
+        lastUpdateDate = datetime.strptime(timeStr+" +0800", "%Y-%m-%d %H:%M:%S %z")
+        self.curUpdateTick = int(lastUpdateDate.timestamp())
 
+        self.localVer.setText(dbVer)
+        self.localDbMaxNum = num
         self.localNum.setText(str(num))
+
+        sysNum = self.checkJson.get("num", 0)
+        if sysNum:
+            self.localNum.setText(Str.GetStr(Str.Local) + f":{self.localDbMaxNum}," + Str.GetStr(Str.Remote) + f":{sysNum}")
+
         self.localTime.setText(timeStr)
         QtOwner().searchView.UpdateTime(timeStr)
         # if config.RealVersion != dbVer:
@@ -208,8 +231,15 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             self.ReUpdateDatabase()
         return
 
+    def HourTimeOut(self):
+        if self.isUpdating:
+            return
+        self.ReUpdateDatabase()
+
     def ReUpdateDatabase(self):
         self.curIndex = 0
+        self.dbUpdateUrl = GlobalConfig.DBUpdateUrl.value[:]
+        self.isUpdating = True
         self.InitUpdateDatabase()
 
     def InitUpdateDatabase(self):
@@ -217,10 +247,11 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             return
 
         if self.curIndex >= len(self.dbUpdateUrl):
+            self.UpdateText(self.dbCheck, Str.NetError, "#d71345", True)
+            self.FinishFailUpdateDatabase()
             return
 
         if self.curUpdateTick <= 0:
-
             return
 
         self.UpdateText(self.dbCheck, Str.CheckUp, "#7fb80e", False)
@@ -231,14 +262,14 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
     def InitUpdateDatabaseBack(self, raw):
         try:
             data = raw["data"]
-            updateTick = int(data)
-            self.CheckLoadNextDayData(updateTick)
-
+            self.checkJson = json.loads(data)
+            updateTick = self.checkJson.get("version", 0)
+            updateDateList = ToolUtil.GetAllNeedUpdateDate(self.curUpdateTick, updateTick)
+            self.CheckLoadNextDayData(updateDateList)
         except Exception as es:
             Log.Error(es)
             self.curIndex += 1
             self.InitUpdateDatabase()
-
             self.UpdateText(self.dbCheck, Str.NetError, "#d71345", True)
 
     def UpdateText(self, label, text, color, enable):
@@ -251,106 +282,88 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             label.setCursor(Qt.ArrowCursor)
         return
 
-    def CheckLoadNextDayData(self, newTick):
-        if newTick <= self.curUpdateTick:
+    def CheckLoadNextDayData(self, updateDateList):
+        if not updateDateList:
             if self.curSubVersion > 0:
                 self.UpdateText(self.dbCheck, Str.DailyUpdated, "#7fb80e", True)
             else:
                 self.UpdateText(self.dbCheck, Str.Updated, "#7fb80e", True)
+            self.FinishSucUpdateDatabase()
             return
-        day = ToolUtil.DiffDays(newTick, self.curUpdateTick)
-        url = self.dbUpdateDbUrl[self.curIndex]
 
-        # 由于时区的问题，只能加上一个偏移时间
-        offset = (time.timezone if (time.localtime().tm_isdst == 0) else time.altzone) + 8*3600
-
-        curTime = datetime.fromtimestamp(self.curUpdateTick+offset)
-
-        curFirstTime = curTime - timedelta(curTime.weekday())
-
-        nowTime = datetime.fromtimestamp(int(time.time())+offset)
-        nowFirstTIme = nowTime - timedelta(nowTime.weekday())
-
-        ## 判断是否同一周
-        if curFirstTime.date() == nowFirstTIme.date():
-            if day <= 0:
-                self.AddHttpTask(req.DownloadDatabaseReq(url, newTick), self.DownloadDataBack, backParam=(newTick, newTick))
-            else:
-                self.curSubVersion = 0
-                self.AddHttpTask(req.DownloadDatabaseReq(url, self.curUpdateTick+offset), self.DownloadDataBack, backParam=(ToolUtil.GetCurZeroDatatime(self.curUpdateTick + 24*3600), newTick))
+        if self.curIndex >= len(self.dbUpdateUrl):
+            self.UpdateText(self.dbCheck, Str.NetError, "#d71345", True)
+            self.FinishFailUpdateDatabase()
             return
+
+        url = self.dbUpdateUrl[self.curIndex]
+        dateStr, newTick, type = updateDateList[0]
+        if type == "day":
+            self.AddHttpTask(req.DownloadDatabaseReq(url, dateStr), self.DownloadDataBack, backParam=updateDateList)
         else:
-            self.curSubVersion = 0
-            curEndTime = curTime + timedelta(7 - curTime.weekday())
-            curEndTime = datetime(curEndTime.year, curEndTime.month, curEndTime.day)
-            weekTick = int(curEndTime.timestamp()-offset)
+            assert (type == "week")
+            self.AddHttpTask(req.DownloadDatabaseWeekReq(url, dateStr), self.DownloadDataBack, backParam=updateDateList)
 
-            self.AddHttpTask(req.DownloadDatabaseWeekReq(url, self.curUpdateTick+offset), self.DownloadWeekDataBack, backParam=(weekTick, newTick))
+    def FinishSucUpdateDatabase(self):
+        self.isUpdating = False
+        self.timer.setInterval(1000 * 3600)
+        self.AddSqlTask("book", "", SqlServer.TaskTypeSelectBookAllIds, self.CheckLocalDbNumBack)
+        # 如果数量不对等，则自己爬取数据
+        pass
 
-    def DownloadDataBack(self, raw, v):
-        updateTick, newTick = v
+    def CheckLocalDbNumBack(self, data):
+        if isinstance(data, set):
+            self.allDbBookIds = data
+            self.localDbMaxNum = len(self.allDbBookIds)
+            ver = self.checkJson.get("version", 0)
+            sysNum = self.checkJson.get("num", 0)
+            self.localNum.setText(Str.GetStr(Str.Local)+ f":{self.localDbMaxNum},"+Str.GetStr(Str.Remote)+ f":{sysNum}")
+            if sysNum > 0 and sysNum > self.localDbMaxNum:
+                Log.Warn("db num not equal, ver: {}, sysNum: {}, curNum: {}".format(ver, sysNum, self.localDbMaxNum))
+                # self.StartFetchLater()
+        return
+
+    def FinishFailUpdateDatabase(self):
+        self.isUpdating = False
+        self.timer.setInterval(1000 * 60)
+        pass
+
+    def DownloadDataBack(self, raw, updateDateList):
+        if not updateDateList:
+            return
+        dateStr, newTick, type = updateDateList[0]
         try:
-            data = raw["data"]
-            if not data:
-                return
-            Log.Info("db: check update, {}->{}->{}".format(time.strftime('%Y-%m-%d', time.localtime(self.curUpdateTick)), time.strftime('%Y-%m-%d', time.localtime(updateTick)), time.strftime('%Y-%m-%d', time.localtime(newTick))))
-            if len(data) <= 200:
-                Log.Info("Update code: {}".format(data))
-                return
-            elif data:
-                offset = (time.timezone if (time.localtime().tm_isdst == 0) else time.altzone) + 8 * 3600
-                if ToolUtil.DiffDays(updateTick+offset, self.curUpdateTick+offset) <= 0:
-                    # 分割数据
-                    dataList = data.split("\r\n")
-                    dataList = list(filter(lambda data: data != "", dataList))
-                    rawList = dataList[self.curSubVersion:]
-                    self.curSubVersion = len(dataList)
-                else:
-                    # 全部更新
-                    rawList = data.split("\r\n")
-                addData = self.ParseBookInfo(rawList)
-                self.AddSqlTask("book", (addData, updateTick, self.curSubVersion), SqlServer.TaskTypeUpdateBook)
+            CHINA_TZ = timezone(timedelta(hours=8))
+            lastUpdateDate = datetime.fromtimestamp(self.curUpdateTick, tz=CHINA_TZ)
+
+            st = raw.get("st")
+            data = raw.get('data')
+            bookList = raw.get('list', [])
+            if st == Str.Ok:
+                if not bookList:
+                    return
+                Log.Info("db: check update, {}, {}->{}, len:{}".format(
+                    type,
+                    lastUpdateDate.strftime('%Y-%m-%d'),
+                    dateStr, len(bookList))
+                )
+                if datetime.now(tz=CHINA_TZ).strftime('%Y-%m-%d') == dateStr:
+                    self.curSubVersion = len(bookList)
+                self.curUpdateTick = newTick
+                updateDateList.pop(0)
+                self.AddSqlTask("book", (bookList, newTick, self.curSubVersion), SqlServer.TaskTypeUpdateBook)
+            else:
+                Log.Warn("db: check update err, index:{}, {}, {}->{}, st:{}, data:{}".format(
+                    self.curIndex, type,
+                    lastUpdateDate.strftime('%Y-%m-%d'),
+                    dateStr, st, data)
+                )
+                self.curIndex += 1
         except Exception as es:
+            self.curIndex += 1
             Log.Error(es)
         finally:
-            self.curUpdateTick = updateTick
-            self.CheckLoadNextDayData(newTick)
-
-    def DownloadWeekDataBack(self, raw, v):
-        updateTick, newTick = v
-        try:
-            data = raw["data"]
-            if not data:
-                return
-            Log.Info("db: check week update, {}->{}->{}".format(time.strftime('%Y-%m-%d', time.localtime(self.curUpdateTick)), time.strftime('%Y-%m-%d', time.localtime(updateTick)), time.strftime('%Y-%m-%d', time.localtime(newTick))))
-            if len(data) <= 200:
-                Log.Info("Update code: {}".format(data))
-                return
-            elif data:
-                rawList = data.split("\r\n")
-                addData = self.ParseBookInfo(rawList)
-                self.AddSqlTask("book", (addData, updateTick, self.curSubVersion), SqlServer.TaskTypeUpdateBook)
-        except Exception as es:
-            Log.Error(es)
-        finally:
-            self.curUpdateTick = updateTick
-            self.CheckLoadNextDayData(newTick)
-
-    def ParseBookInfo(self, rawList):
-        infos = []
-        try:
-            for raw in rawList:
-                if not raw:
-                    continue
-                data = base64.b64decode(raw.encode('utf-8'))
-                # book = pickle.loads(data)
-                book = DbBook()
-                book.CopyFromJson(json.loads(data))
-                infos.append(book)
-        except Exception as es:
-            Log.Error(es)
-        finally:
-            return infos
+            self.CheckLoadNextDayData(updateDateList)
 
     def OpenUrl(self):
         UrlList = [config.Issues1]
@@ -377,3 +390,13 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
     def OpenUpdateUrl(self):
         QDesktopServices.openUrl(QUrl(self.selectUrl))
         return
+
+    def Stop(self):
+        self.timer.stop()
+
+    # def StartFetchLater(self, fetchPage=20):
+    #     self.curFetchLaterPage = 0
+    #     self.maxFetchLaterPage = self.checkJson.get("fetch_page", 0)
+    #     if self.maxFetchLaterPage <= 0:
+    #         self.maxFetchLaterPage = fetchPage
+    #     pass

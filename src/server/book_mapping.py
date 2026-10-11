@@ -1,3 +1,8 @@
+import base64
+import json
+
+from tools.log import Log
+
 BOOK_COLUMNS = (
     "book.id", "title", "title2", "author", "chineseTeam", "description", "epsCount",
     "pages", "finished", "likesCount", "categories", "tags", "created_at",
@@ -37,6 +42,22 @@ class DbBook:
         for key, value in data.items():
             setattr(self, key, value)
 
+    @staticmethod
+    def ParseBookInfo(rawList):
+        infos = []
+        try:
+            for raw in rawList:
+                if not raw:
+                    continue
+                data = base64.b64decode(raw.encode('utf-8'))
+                # book = pickle.loads(data)
+                book = DbBook()
+                book.CopyFromJson(json.loads(data))
+                infos.append(book)
+        except Exception as es:
+            Log.Error(es)
+        finally:
+            return infos
 
 def book_projection(has_share_id=True, alias=""):
     """旧库缺少分享编号时提供同名默认列，避免改变结果列的含义。"""

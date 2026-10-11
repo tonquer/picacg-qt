@@ -7,6 +7,7 @@ import re
 import time
 import uuid
 import ipaddress
+from datetime import timezone, timedelta, datetime
 from hashlib import sha256
 from urllib.parse import quote
 
@@ -208,6 +209,8 @@ class ToolUtil(object):
             msg = "我們不支授此郵箱...QQ和163電郵君不想跟我們做朋友，所以請你用其他電郵服務商吧。例如：Gmail, Yahoo 和 Outlook"
         elif code == "1023":
             msg = "吼！你的要求太多了！有問題你直接找團長吧！"
+        elif code == "1017":
+            msg = "收藏已满"
         elif code == "1019":
             msg = """小紳紳的等級不夠或者沒有認證帳戶！
 
@@ -340,7 +343,7 @@ class ToolUtil(object):
     def GetPictureSize(data):
         if not data:
             return 0, 0, "jpg", False
-        
+
         try:
             import pillow_jxl
             import pillow_avif
@@ -776,11 +779,12 @@ class ToolUtil(object):
         if sock:
             sock.close()
         return has_ipv6
-    
+
     @staticmethod
-    def ExportIpsByStr(text): 
-        _IPV4 = re. compile ( r'(?<![\w.])' r'(?:25[0-5]|2[0-4]\d|1?\d?\d)' r'(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}' r'(?![\w.])') 
-        _IPV6 = re. compile ( r'(?<![0-9A-Fa-f:])([0-9A-Fa-f:]{2,39})(?![0-9A-Fa-f:])')
+    def ExportIpsByStr(text):
+        _IPV4 = re.compile(
+            r'(?<![\w.])' r'(?:25[0-5]|2[0-4]\d|1?\d?\d)' r'(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}' r'(?![\w.])')
+        _IPV6 = re.compile(r'(?<![0-9A-Fa-f:])([0-9A-Fa-f:]{2,39})(?![0-9A-Fa-f:])')
         found, seen = [], set()
         for raw in _IPV4.findall(text) + _IPV6.findall(text):
             if not raw or raw in seen:
@@ -795,3 +799,43 @@ class ToolUtil(object):
             seen.add(raw)
             found.append(raw)
         return found
+
+    @staticmethod
+    def GetAllNeedUpdateDate(start_timestamp, end_timestamp):
+        # 1. 显式指定东八区转换时间戳
+        # 定义东八区（UTC+8）
+        CHINA_TZ = timezone(timedelta(hours=8))
+        start_dt = datetime.fromtimestamp(start_timestamp, tz=CHINA_TZ)
+        end_dt = datetime.fromtimestamp(end_timestamp, tz=CHINA_TZ)
+
+        start_date = start_dt.date()
+        end_date = end_dt.date()
+        if end_timestamp <= start_timestamp:
+            return []
+        today = end_dt.date()
+        current_week_start = today - timedelta(days=today.weekday())
+        current_week_end = current_week_start + timedelta(days=6)
+
+        aggregated_results = set()
+
+        # 2. 遍历日期
+        current_date = start_date
+        while current_date <= end_date:
+            # 如果是在本周内
+            if current_week_start <= current_date <= current_week_end:
+                dt = datetime.combine(current_date, datetime.min.time(), tzinfo=CHINA_TZ)
+                if current_date == end_date:
+                    aggregated_results.add((current_date.strftime('%Y-%m-%d'), end_timestamp, "day"))
+                else:
+                    aggregated_results.add((current_date.strftime('%Y-%m-%d'), int(dt.timestamp()), "day"))
+                current_date += timedelta(days=1)
+            else:
+                # 如果不在本周内
+                days_to_sunday = 6 - current_date.weekday()
+                sunday_date = current_date + timedelta(days=days_to_sunday)
+                dt = datetime.combine(sunday_date, datetime.min.time(), tzinfo=CHINA_TZ)
+                aggregated_results.add((sunday_date.strftime('%Y-%m-%d'), int(dt.timestamp()), "week"))
+
+                current_date = sunday_date + timedelta(days=1)
+
+        return sorted(list(aggregated_results), key=lambda x: x[1])

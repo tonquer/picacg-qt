@@ -383,19 +383,41 @@ class DownloadBookHandler(object):
                     TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, b"")
 
 
-@handler(req.CheckUpdateDatabaseReq)
 @handler(req.DownloadDatabaseReq)
 @handler(req.DownloadDatabaseWeekReq)
 class DownloadDatabaseReqHandler(object):
     def __call__(self, task):
-        data = {"st": task.status, "data": ""}
-        if not task.res.GetText() or task.status == Status.NetError:
+        data = {"st": task.status, "data": task.res.GetText(), "list": []}
+        try:
+            if task.status != Status.Ok:
+                return
+
+            if task.res.raw.status_code == 404:
+                return
+
+            if task.res.raw.status_code != 200:
+                task.status = Status.Error
+                return
+
+            rawData = task.res.GetText()
+            rawList = rawData.split("\r\n")
+
+            from server.sql_server import DbBook as DbBook
+            addData = []
+            try:
+                addData = DbBook.ParseBookInfo(rawList)
+            except Exception as es:
+                Log.Error(es)
+            data['list'] = addData
+            # 出现错误数据
+            if len(rawData) > 200 and len(addData) == 0:
+                task.status = Status.ParseError
+
+        except Exception as es:
+            Log.Error(es)
+        finally:
             if task.backParam:
                 TaskBase.taskObj.taskBack.emit(task.backParam, pickle.dumps(data))
-            return
-        if task.backParam:
-            data["data"] = task.res.GetText()
-            TaskBase.taskObj.taskBack.emit(task.backParam, pickle.dumps(data))
 
 
 @handler(req.CheckUpdateReq)
@@ -475,6 +497,7 @@ class CheckUpdateConfigHandler(object):
                 TaskBase.taskObj.taskBack.emit(task.backParam, pickle.dumps(data))
 
 
+@handler(req.CheckUpdateDatabaseReq)
 @handler(req.GetUserCommentReq)
 @handler(req.FavoritesAdd)
 @handler(req.FavoritesReq)
@@ -598,6 +621,7 @@ class GetProxyIpInfoReqHandler(object):
         finally:
             if task.backParam:
                 TaskBase.taskObj.taskBack.emit(task.backParam, pickle.dumps(data))
+
 
 @handler(req.GetBestCfIpReq)
 class GetBestCfIpReqHandler(object):

@@ -312,6 +312,8 @@ class Str:
     ActorsName = 199           # 登场人物
     NotSupportFmt = 200            # 不支持该格式
     ReSign = 201            # 补签
+    Local = 202             # 本地
+    Remote = 203            # 远程
 
     @classmethod
     def Reload(cls):
@@ -610,6 +612,8 @@ class Str:
         cls.strDict[cls.ActorsName] = QCoreApplication.translate("cls.obj", "登场人物", None)
         cls.strDict[cls.NotSupportFmt] = QCoreApplication.translate("cls.obj", "不支持该格式", None)
         cls.strDict[cls.ReSign] = QCoreApplication.translate("cls.obj", "补签", None)
+        cls.strDict[cls.Local] = QCoreApplication.translate("cls.obj", "本地", None)
+        cls.strDict[cls.Remote] = QCoreApplication.translate("cls.obj", "远程", None)
 
 
     @classmethod

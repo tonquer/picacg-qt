@@ -115,7 +115,6 @@ class ServerReq(object):
         else:
             self.proxy = {"http": None, "https": None}
 
-
     def SetCurlOpt(self, isEch=False, echConfig="", dnsIpList=None):
         self.ipList = dnsIpList
         self.curl_opt = dict()
@@ -166,16 +165,19 @@ class ServerReq(object):
         if CurlOpt.ECH in self.curl_opt:
             ech = True
         if Setting.LogIndex.value <= 1:
-            return "{}, ech:{}, url:{}, ip:{}, proxy:{}".format(self.__class__.__name__, ech, self.url, self.ipList, self.proxy)
+            return "{}, ech:{}, url:{}, ip:{}, proxy:{}".format(self.__class__.__name__, ech, self.url, self.ipList,
+                                                                self.proxy)
         headers = dict()
         headers.update(self.headers)
         params = self.params
         if isinstance(self, (LoginReq, RegisterReq, ForgotPasswordReq, ResetPasswordReq)):
             params = {}
-        return "{}, ech:{}, url:{}, ip:{}, proxy:{}, method:{}, headers:{}, params:{}, proxy:{}".format(self.__class__.__name__, ech, self.url, self.ipList, self.proxy, self.method, headers, params, self.proxy)
+        return "{}, ech:{}, url:{}, ip:{}, proxy:{}, method:{}, headers:{}, params:{}, proxy:{}".format(
+            self.__class__.__name__, ech, self.url, self.ipList, self.proxy, self.method, headers, params, self.proxy)
 
     def __str__(self):
         return self.GetPri()
+
 
 # 获得分流Ip
 class InitReq(ServerReq):
@@ -448,7 +450,7 @@ class DownloadBookReq(ServerReq):
         }
         # 封面会出现301跳转，可以提前设置好域名
         host = ToolUtil.GetUrlHost(url)
-        isJump = "/static/tobeimg" in url and  host in jumpDomain
+        isJump = "/static/tobeimg" in url and host in jumpDomain
         if isJump:
             url = url.replace(host, jumpDomain[host])
             url = url.replace("/static/tobeimg", "")
@@ -483,7 +485,7 @@ class DownloadBookReq(ServerReq):
             allDomain.remove(realHost)
         random.shuffle(allDomain)
         self.resetUrl = [oldUrl2.replace(realHost, i) for i in allDomain]
-        self.resetCnt = max(resetCnt, len(self.resetUrl)//2)
+        self.resetCnt = max(resetCnt, len(self.resetUrl) // 2)
 
     def FixCover(self, url):
         if Setting.DownloadCoverLv.value == 0:
@@ -494,6 +496,7 @@ class DownloadBookReq(ServerReq):
             return url.replace(":300:400", ":600:800")
         else:
             return re.sub(r"\/rs:fill:\d+:\d+:\d+\/\w:\w", "", url)
+
 
 # 获得评论
 class GetCommentsReq(ServerReq):
@@ -566,9 +569,11 @@ class CheckUpdateConfigReq(ServerReq):
         self.isParseRes = False
         self.useImgProxy = False
 
+
 # 检查更新
 class CheckUpdateDatabaseReq(ServerReq):
     def __init__(self, url):
+        url = "https://" + ToolUtil.GetUrlHost(url) + "/bika-robot/picacg-database/main/json.data"
         method = "GET"
         header = {
             "Pragma": "No-cache",
@@ -583,10 +588,9 @@ class CheckUpdateDatabaseReq(ServerReq):
 
 # 下载
 class DownloadDatabaseReq(ServerReq):
-    def __init__(self, url, tick):
+    def __init__(self, url, dateStr):
         import time
-        day = time.strftime('%Y-%m-%d', time.localtime(tick))
-        url = url + day + ".data"
+        url = "https://" + ToolUtil.GetUrlHost(url) + "/bika-robot/picacg-database/main/data3/" + dateStr + ".data"
         method = "GET"
         header = {
             "Pragma": "No-cache",
@@ -601,14 +605,8 @@ class DownloadDatabaseReq(ServerReq):
 
 # 下载
 class DownloadDatabaseWeekReq(ServerReq):
-    def __init__(self, url, tick):
-        import time
-        curTime = datetime.fromtimestamp(tick)
-        curEndTime = curTime + timedelta(6-curTime.weekday())
-        newTick = curEndTime.timestamp()
-
-        day = time.strftime('%Y-%m-%d', time.localtime(newTick))
-        url = url +"week/"+ day + "_week.data"
+    def __init__(self, url, dateStr):
+        url = "https://" + ToolUtil.GetUrlHost(url) + "/bika-robot/picacg-database/main/data3/" + "week/" + dateStr + "_week.data"
         method = "GET"
         header = {
             "Pragma": "No-cache",
@@ -839,7 +837,7 @@ class GetGameInfoReq(ServerReq):
 # 游戏区评论列表
 class GetGameCommentsReq(ServerReq):
     def __init__(self, gameId, page=1):
-        url = config.Url + "games/{}/comments?page={}".format(gameId,page)
+        url = config.Url + "games/{}/comments?page={}".format(gameId, page)
         method = "Get"
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {}, method)
@@ -862,6 +860,7 @@ class SendGameCommentsReq(ServerReq):
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
                                              {"content": content}, method)
 
+
 # 新聊天频道登录
 class GetNewChatLoginReq(ServerReq):
     def __init__(self, user, passwd):
@@ -874,7 +873,9 @@ class GetNewChatLoginReq(ServerReq):
         }
         super(self.__class__, self).__init__(url, header,
                                              data, method)
-#{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9ucXVlcjIiLCJpZCI6IjYwMTIyODdjNjFhYWU4MmZkMmMwZDM1NSIsImVtYWlsIjoidG9ucXVlcjIiLCJpYXQiOjE2Nzk1NDQ0MzMsImV4cCI6MTcxNTU0NDQzM30.DyFOhNnJtgfei0FzTFem66GVWrWyiPbnx7dP_IdO1Ho"}
+
+
+# {"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidG9ucXVlcjIiLCJpZCI6IjYwMTIyODdjNjFhYWU4MmZkMmMwZDM1NSIsImVtYWlsIjoidG9ucXVlcjIiLCJpYXQiOjE2Nzk1NDQ0MzMsImV4cCI6MTcxNTU0NDQzM30.DyFOhNnJtgfei0FzTFem66GVWrWyiPbnx7dP_IdO1Ho"}
 
 # 获取新聊天频道
 class GetNewChatReq(ServerReq):
@@ -886,6 +887,8 @@ class GetNewChatReq(ServerReq):
         super(self.__class__, self).__init__(url, header,
                                              {}, method)
         self.token = "Bearer " + token
+
+
 # {"rooms":[{"isAvailable":true,"id":"63de3c05eaa71845c0647003","title":"嗶咔公眾澡堂","description":"嗶咔公眾澡堂","minLevel":1,"minRegisterDays":2,"isPublic":true,"allowedCharacters":[],"icon":"https://live-server.bidobido.xyz/media/0pTiqgSSCrDw8bA_GTM8-.jpg"},{"isAvailable":true,"id":"63de1a77ba9358b220392bd4","title":"嗶咔高級會所","description":"嗶咔高級會所","minLevel":20,"minRegisterDays":365,"isPublic":true,"allowedCharacters":[],"icon":"https://live-server.bidobido.xyz/media/-YCNHEpt7KJQdyITWWjML.jpg"},{"isAvailable":true,"id":"63de14e8ba9358b220392bac","title":"嗶咔學習教室","description":"嗶咔學習教室","minLevel":2,"minRegisterDays":10,"isPublic":true,"allowedCharacters":[],"icon":"https://live-server.bidobido.xyz/media/01tXnwXH0NhR2SazzmHfg.jpg"}]}
 
 # 获取新聊天用户信息
@@ -897,7 +900,7 @@ class GetNewChatProfileReq(ServerReq):
         header["authorization"] = "Bearer " + token,
         super(self.__class__, self).__init__(url, header,
                                              {}, method)
-                                             
+
         self.token = "Bearer " + token
 
 
@@ -1045,7 +1048,7 @@ class GetEchConfigReq(ServerReq):
         return ""
 
     @staticmethod
-    def parse_dns_response(response: bytes) :
+    def parse_dns_response(response: bytes):
         if len(response) < 12:
             return ""
         ancount = struct.unpack("!H", response[6:8])[0]
@@ -1057,13 +1060,13 @@ class GetEchConfigReq(ServerReq):
             offset = GetEchConfigReq._skip_dns_name(response, offset)
             if offset + 10 > len(response):
                 break
-            rr_type = struct.unpack("!H", response[offset : offset + 2])[0]
+            rr_type = struct.unpack("!H", response[offset: offset + 2])[0]
             offset += 8
-            data_len = struct.unpack("!H", response[offset : offset + 2])[0]
+            data_len = struct.unpack("!H", response[offset: offset + 2])[0]
             offset += 2
             if offset + data_len > len(response):
                 break
-            data = response[offset : offset + data_len]
+            data = response[offset: offset + data_len]
             offset += data_len
             if rr_type == GetEchConfigReq.TYPE_HTTPS:
                 ech = GetEchConfigReq.parse_https_record(data)
@@ -1076,9 +1079,9 @@ class GetEchConfigReq(ServerReq):
         method = "POST"
         super(self.__class__, self).__init__(url, {}, {}, method)
         headers = {
-                    "Accept": "application/dns-message",
-                    "Content-Type": "application/dns-message",
-                    "version": config.RealVersion
+            "Accept": "application/dns-message",
+            "Content-Type": "application/dns-message",
+            "version": config.RealVersion
         }
         self.timeout = 5
         self.params = self.build_dns_query(domain, GetEchConfigReq.TYPE_HTTPS)
@@ -1116,7 +1119,7 @@ class GetIpInfoReq(ServerReq):
         self.isParseRes = False
         self.resetUrl = [f"https://parse2.jpacg.cc/ipinfo?ip={ip}"]
         self.resetCnt = len(self.resetUrl)
-        
+
 
 # 获取proxyip
 class GetProxyIpInfoReq(ServerReq):

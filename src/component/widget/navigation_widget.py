@@ -121,7 +121,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.UpdateProxyName()
         if not User().isLogin:
             self.loginButton.setText(Str.GetStr(Str.Login))
-            QtOwner().owner.favorityView.InitFavorite()
+            QtOwner().favorityView.InitFavorite()
             return
         QtOwner().owner.LoginSucBack()
         self.loginButton.setText(Str.GetStr(Str.LoginOut))
@@ -153,7 +153,6 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.timer.setInterval(1000*3600)
         if not User().isLogin:
             return
-        QtOwner().owner.helpView.ReUpdateDatabase()
         self.AddHttpTask(req.GetUserInfo(), self.UpdateUserBack)
 
     def UpdateUserBack(self, raw):

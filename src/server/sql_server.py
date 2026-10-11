@@ -3,6 +3,7 @@ import pickle
 import sqlite3
 import threading
 import time
+from datetime import timezone, timedelta, datetime
 from queue import Queue
 
 # 一本书
@@ -31,13 +32,15 @@ class SqlServer(Singleton):
     TaskTypeSelectWord = 101
     TaskTypeSelectUpdate = 102
     TaskTypeSelectFavorite = 103
-    TaskTypeCacheBook = 104          # 缓存
-    TaskTypeCacheBookByShareId = 107          # 缓存
-    TaskTypeCategoryBookNum = 105    # 查询分类数量
-    TaskTypeSearchBookNum = 106      # 查询分页数量
-    TaskTypeSelectBookPage = 108     # 查询书籍与分页总数
+    TaskTypeCacheBook = 104  # 缓存
+    TaskTypeCacheBookByShareId = 107  # 缓存
+    TaskTypeCategoryBookNum = 105  # 查询分类数量
+    TaskTypeSearchBookNum = 106  # 查询分页数量
+    TaskTypeSelectBookPage = 108  # 查询书籍与分页总数
+
+    TaskTypeSelectBookAllIds = 109  # 获取所有bookIds
     TaskTypeUpdateBook = 2
-    TaskTypeUpdateFavorite= 3
+    TaskTypeUpdateFavorite = 3
     TaskTypeClose = 4
 
     def __init__(self):
@@ -46,8 +49,8 @@ class SqlServer(Singleton):
         self.data = []
         for i in self.DbInfos.keys():
             self._inQueue[i] = Queue()
-            thread = threading.Thread(target=self._Run, args=(i, ))
-            thread.name = "DB-"+str(i)
+            thread = threading.Thread(target=self._Run, args=(i,))
+            thread.name = "DB-" + str(i)
             # thread.setDaemon(True)
             thread.start()
 
@@ -117,6 +120,8 @@ class SqlServer(Singleton):
                             result = self._UpdateFavorite(conn, data, backId)
                         elif taskType == self.TaskTypeUpdateBook:
                             result = self._UpdateBookInfo(conn, data, backId)
+                        elif taskType == self.TaskTypeSelectBookAllIds:
+                            result = self._SelectBookAllIds(conn)
                     response = pickle.dumps(result)
                 except Exception as es:
                     Log.Error(es)
@@ -176,7 +181,9 @@ class SqlServer(Singleton):
     def _SelectCategoryBookNum(self, conn, sql, backId):
         from tools.category import CateGoryMgr
         if isinstance(sql, SqlStatement):
-            statement = SqlStatement("select category, count(*) from category where bookId in ({}) group by category".format(sql.sql), sql.params)
+            statement = SqlStatement(
+                "select category, count(*) from category where bookId in ({}) group by category".format(sql.sql),
+                sql.params)
         else:
             statement = "select category, count(*) from category where bookId in ({}) group by category".format(sql)
         return {CateGoryMgr().indexCategories.get(category): count
@@ -189,6 +196,14 @@ class SqlServer(Singleton):
         for data in cur.fetchall():
             words.append(data[1])
         return words
+
+    def _SelectBookAllIds(self, conn):
+        cur = conn.cursor()
+        cur.execute("select id from book where 1;")
+        allBookIds = set()
+        for data in cur.fetchall():
+            allBookIds.add(data[0])
+        return allBookIds
 
     def _SelectUpdateInfo(self, conn, sql, backId):
         cur = conn.cursor()
@@ -246,7 +261,8 @@ class SqlServer(Singleton):
                           "VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', {6}, {7}, {8}, {9}, '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', {17}, {18}, {19}); " \
                         .format(book.id, book.title, book.title2, book.author, book.chineseTeam, book.description,
                                 book.epsCount, book.pages, int(book.finished), book.likesCount,
-                                book.categories, book.tags, book.created_at, book.updated_at, book.path, book.fileServer,
+                                book.categories, book.tags, book.created_at, book.updated_at, book.path,
+                                book.fileServer,
                                 book.creator, book.totalLikes, book.totalViews, book.shareId)
                 else:
                     sql = "replace INTO book(id, title, title2, author, chineseTeam, description, epsCount, pages, finished, likesCount, categories, tags," \
@@ -270,8 +286,10 @@ class SqlServer(Singleton):
                     sql = sql.replace("\0", "")
                     cur.execute(sql)
 
-            timeArray = time.localtime(tick)
-            strTime = "{}-{}-{} {}:{}:{}".format(timeArray.tm_year, timeArray.tm_mon, timeArray.tm_mday, timeArray.tm_hour, timeArray.tm_min, timeArray.tm_sec)
+            CHINA_TZ = timezone(timedelta(hours=8))
+            lastUpdateDate = datetime.fromtimestamp(tick, tz=CHINA_TZ)
+            strTime = lastUpdateDate.strftime('%Y-%m-%d %H:%M:%S')
+
             sql = "update system set sub_version={}, time='{}' where id='{}'".format(version, strTime, config.DbVersion)
             cur.execute(sql)
 
@@ -284,7 +302,9 @@ class SqlServer(Singleton):
             for bookId, sortId in addData:
                 if not bookId:
                     continue
-                sql = "replace INTO favorite(id, user, sortId) VALUES ('{0}', '{1}', {2});".format(bookId, Setting.UserId.value, sortId)
+                sql = "replace INTO favorite(id, user, sortId) VALUES ('{0}', '{1}', {2});".format(bookId,
+                                                                                                   Setting.UserId.value,
+                                                                                                   sortId)
                 sql = sql.replace("\0", "")
                 cur.execute(sql)
         return {"st": Status.Ok}
@@ -302,8 +322,8 @@ class SqlServer(Singleton):
                 categorys, page, sortKey=0, sortId=0, isFinish=False, limitIds=None):
         """兼容原有三段字符串 SQL 接口，新分页调用直接传入查询条件。"""
         query = BookQuery.from_legacy(wordList, isTitle, isAuthor, isDes, isTag,
-                                     isCategory, isCreator, categorys, sortKey,
-                                     sortId, isFinish, limitIds)
+                                      isCategory, isCreator, categorys, sortKey,
+                                      sortId, isFinish, limitIds)
         request = None if page < 0 else PageRequest(max(1, page))
         return tuple(statement.legacy_sql() for statement in query.statements(
             request, QtOwner().isDbHavePicaID))

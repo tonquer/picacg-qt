@@ -238,7 +238,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
     def GetShareIdBack(self, raw):
         st = raw["st"]
         if st == Status.Ok:
-            info = BookMgr().books.get(self.bookId)
+            info = BookMgr().GetBook(self.bookId)
             if info and info.shareId:
                 self.shareIdLabel.setText("pica" + str(info.shareId))
                 pass
@@ -308,7 +308,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.categoriesList.clear()
         self.autorList.clear()
         self.ClearTags()
-        info = BookMgr().books.get(self.bookId)
+        info = BookMgr().GetBook(self.bookId)
         st = raw["st"]
         if info:
             self.autorList.AddItem(info.author)
@@ -452,7 +452,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
     def UpdateEpsData(self):
         self.epsListWidget.clear()
-        info = BookMgr().books.get(self.bookId)
+        info = BookMgr().GetBook(self.bookId)
         if not info:
             return
         assert isinstance(info, Book)
@@ -474,7 +474,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             self.pageBox.setVisible(True)
 
     def UpdateEpsPageData(self, index):
-        info = BookMgr().books.get(self.bookId)
+        info = BookMgr().GetBook(self.bookId)
         if not info:
             return
         if index < 0:
@@ -494,7 +494,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         st = raw["st"]
         if st == Status.Ok:
             # downloadIds = QtOwner().owner.downloadForm.GetDownloadCompleteEpsId(self.bookId)
-            info = BookMgr().books.get(self.bookId)
+            info = BookMgr().GetBook(self.bookId)
             if not info:
                 return
             assert isinstance(info, Book)
@@ -545,14 +545,31 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
         self.UpdateLikeIcon()
 
     def AddFavorite(self):
-        self.AddHttpTask(req.FavoritesAdd(self.bookId))
-        self.isFavorite = not self.isFavorite
+        QtOwner().ShowLoading()
+        self.AddHttpTask(req.FavoritesAdd(self.bookId), callBack=self.AddFavoriteBack)
+
+    def AddFavoriteBack(self, raw):
+        QtOwner().CloseLoading()
+        st = raw.get('st')
+        if st != Str.Ok:
+            QtOwner().ShowError(Str.GetStr(st))
+            return
+        data = json.loads(raw.get('data'))
+        if data.get("code") != 200:
+            QtOwner().CheckShowMsg(data)
+            return
+        if data.get('data').get('action') == "un_favourite":
+            self.isFavorite = False
+        elif data.get('data').get('action') == "favourite":
+            self.isFavorite = True
+        else:
+            self.isFavorite = not self.isFavorite
         self.UpdateFavoriteIcon()
         if self.isFavorite:
             QtOwner().ShowMsg(Str.GetStr(Str.AddFavoriteSuc))
-            QtOwner().favoriteView.AddFavorites(self.bookId)
+            QtOwner().favorityView.AddFavorites(self.bookId)
         else:
-            QtOwner().favoriteView.DelAndFavoritesBack({"st": Status.Ok}, self.bookId)
+            QtOwner().favorityView.DelAndFavoritesBack({"st": Status.Ok}, self.bookId)
 
     def AddLocalFavorite(self):
         if QtOwner().localFavoriteView.IsHave(self.bookId):

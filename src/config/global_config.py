@@ -83,6 +83,12 @@ class GlobalConfig:
         "check.jpacg.cc",
         "macapi1.com"])
 
+    # 其他cloudflare域名，启用ech和ip分流
+    DBUpdateUrl = GlobalItem([
+        "raw.jpacg.cc",
+        "raw2.jpacg.cc",
+        "raw3.jpacg.cc"])
+
     ProxyIpList = GlobalItem([
         "158.180.231.216",
         "163.47.42.64",

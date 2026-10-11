@@ -36,6 +36,7 @@ class LoginNewWidget(object):
             self.owner.passwdEdit_2.setText(passwd)
         self.loginIsInit = False
         self.owner.loginButton.setShortcut(Qt.Key_Return)
+        self.isLogining = False
 
         # self.buttonGroup = QtWidgets.QButtonGroup(self)
         # self.buttonGroup.addButton(self.selectIp1)
@@ -62,6 +63,10 @@ class LoginNewWidget(object):
         self.autoTimer.stop()
         if not Setting.AutoLogin.value:
             return
+        if self.isLogining:
+            return
+        if not QtOwner().IsCurView(self.owner):
+            return
         self.ClickButton()
 
     def ClickButton(self):
@@ -69,11 +74,13 @@ class LoginNewWidget(object):
 
     def Login(self):
         QtOwner().ShowLoading()
+        self.isLogining = True
         userId = self.owner.userEdit_2.text()
         passwd = self.owner.passwdEdit_2.text()
         self.owner.AddHttpTask(req.LoginReq(userId, passwd), self.LoginBack)
 
     def LoginBack(self, raw):
+        self.isLogining = False
         QtOwner().CloseLoading()
         st = raw["st"]
         QtOwner().CheckShowMsg(raw)

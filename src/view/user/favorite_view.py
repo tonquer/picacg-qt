@@ -99,7 +99,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
     def InitFavorite(self):
         if not QtOwner().canUseDb:
             self.SetLocal(False)
-            self.localWidget.setVisible(False)
+            # self.localWidget.setVisible(False)
             return
         if not Setting.IsOpenLocalFavorite.value:
             self.SetLocal(False)
@@ -145,7 +145,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         QtOwner().CloseLoading()
         st = raw["st"]
         if st == Status.Ok:
-            info = BookMgr().books.get(bookId)
+            info = BookMgr().GetBook(bookId)
             if info:
                 info.isFavourite = False
             if self.isLocal:

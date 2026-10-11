@@ -45,7 +45,10 @@ class Book(object):
         self.epsCount = 0         # 章节数
         self.pagesCount = 0
         self.totalLikes = 0
+        self.totalViews = 0
         self.finished = False     # 是否完本
+        self.isFavourite = False
+        self.isLiked = False
         self.updated_at = ""
         self.created_at = ""
         self.categories = []      # 分类
@@ -78,7 +81,7 @@ class BookMgr(Singleton):
         from server.server import Server
         return Server()
 
-    def GetBook(self, bookId):
+    def GetBook(self, bookId) -> Book :
         return self.books.get(bookId)
 
     def AddBookByIdBack(self, backData):
@@ -86,7 +89,7 @@ class BookMgr(Singleton):
             return backData.status
         try:
             if backData.res.data.get("comic"):
-                info = self.books.get(backData.res.data['comic']['_id'])
+                info = self.GetBook(backData.res.data['comic']['_id'])
                 if not info:
                     info = Book()
                 ToolUtil.ParseFromData(info, backData.res.data['comic'])
@@ -110,7 +113,7 @@ class BookMgr(Singleton):
                 if v.get('shareId'):
                     shareId = v.get('shareId')
                     bookId = backData.req.bookId
-                    info = self.books.get(bookId)
+                    info = self.GetBook(bookId)
                     if not info:
                         return
 
@@ -158,7 +161,7 @@ class BookMgr(Singleton):
         try:
             r = backData.res
             bookId = backData.req.bookId
-            info = self.books.get(bookId)
+            info = self.GetBook(bookId)
             if r.message == "under review":
                 return Status.UnderReviewBook
             elif r.message == 'unauthorized':
@@ -219,7 +222,7 @@ class BookMgr(Singleton):
             bookId = backData.req.bookId
             epsId = backData.req.epsId
 
-            bookInfo = self.books.get(bookId)
+            bookInfo = self.GetBook(bookId)
             epsInfo = bookInfo.epsDict[epsId-1]
             if r.code == 500 and r.error == "Cannot read property '_id' of null":
                 Log.Warn("eps space, book_id:{}, eps_id:{}, raw:{}".format(bookId, epsId-1, r.GetText()))

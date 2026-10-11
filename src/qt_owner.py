@@ -65,6 +65,8 @@ if TYPE_CHECKING:
     from view.user.login_new_view import LoginNewView
     from component.widget.navigation_widget import NavigationWidget
 
+    from component.widget.animation_stack_widget import AnimationStackWidget
+
 from PySide6.QtCore import QFile
 from PySide6.QtNetwork import QLocalServer
 from PySide6.QtWidgets import QApplication
@@ -108,8 +110,9 @@ class QtOwner(Singleton):
     def CheckShowMsg(self, raw):
         msg = raw.get("st")
         code = raw.get("code")
-        if code:
-            errorMsg = ToolUtil.GetCodeErrMsg(code)
+        error = raw.get("error")
+        if code and error:
+            errorMsg = ToolUtil.GetCodeErrMsg(error)
             if errorMsg:
                 return self.ShowError(errorMsg)
 
@@ -221,8 +224,8 @@ class QtOwner(Singleton):
         return self.owner.readView
 
     @property
-    def favoriteView(self) -> LocalFavoriteView:
-        return self.owner.favoriteView
+    def favorityView(self) -> FavoriteView:
+        return self.owner.favorityView
 
     @property
     def indexView(self) -> IndexView:
@@ -279,6 +282,14 @@ class QtOwner(Singleton):
     @property
     def localReadAllView(self) -> LocalReadAllView:
         return self.owner.localReadAllView
+
+    @property
+    def subStackWidget(self) -> AnimationStackWidget:
+        return self.owner.subStackWidget
+
+    def IsCurView(self, view):
+        index = self.subStackWidget.currentIndex()
+        return view == self.subStackWidget.widget(index)
 
     def UpdateProxyName(self):
         self.owner.navigationWidget.UpdateProxyName()

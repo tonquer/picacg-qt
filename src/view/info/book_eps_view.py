@@ -40,7 +40,7 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
         QtOwner().ShowLoading()
         self.bookId = bookId
         self.listWidget.clear()
-        if bookId not in BookMgr().books:
+        if BookMgr().GetBook(bookId):
             self.OpenLocalBack()
         else:
             self.LoadEpsData()
@@ -62,7 +62,7 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
             QtOwner().ShowError(Str.GetStr(Str.ChapterLoadFail) + ", {}".format(Str.GetStr(st)))
 
     def LoadEpsData(self, page=1):
-        info = BookMgr().books.get(self.bookId)
+        info = BookMgr().GetBook(self.bookId)
         if not info:
             return
         assert isinstance(info, Book)
@@ -98,7 +98,7 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
 
     def UpdateEpsInfo(self):
         self.listWidget.clear()
-        info = BookMgr().books.get(self.bookId)
+        info = BookMgr().GetBook(self.bookId)
         if not info:
             return
         downloadEpsId = QtOwner().downloadView.GetDownloadEpsId(self.bookId)
