@@ -270,8 +270,9 @@ class TaskCache(TaskBase, QtTaskBase):
                 file = self.memeryCache.get(key)
             if file:
                 data.isCacheFetch = True
-                TaskBase.taskObj.downloadBack.emit(data.downloadId, file.size, b"")
-                TaskBase.taskObj.downloadBack.emit(data.downloadId, 0, file.data)
+                from task.task_async import TaskAsync
+                TaskAsync().AddAsyncCall("downloadBack", (data.downloadId, file.size, b""))
+                TaskAsync().AddAsyncCall("downloadBack", (data.downloadId, 0, file.data))
                 Log.Debug("fetch cache info, taskId:{}, key:{}, path:{}, size:{}".format(taskId, key, data.path, len(file.data)))
                 return
 
@@ -290,7 +291,9 @@ class TaskCache(TaskBase, QtTaskBase):
             if file:
                 data.saveData = file.data
                 data.isCacheFetch = True
-                TaskBase.taskObj.convertBack.emit(taskId)
+                from task.task_async import TaskAsync
+                TaskAsync().AddAsyncCall("convertBack", (taskId,))
+
                 Log.Debug("fetch cache waifu2x info, taskId:{}, key:{}, path:{}, size:{}".format(taskId, key, data.path, len(file.data)))
                 return True
         return False
@@ -463,3 +466,6 @@ class TaskCache(TaskBase, QtTaskBase):
 
     def GetUrlCacheKey(self, url):
         return hashlib.md5(url.encode("utf-8")).hexdigest()
+
+    def Stop(self):
+        self._inQueue.put("")

@@ -9,6 +9,7 @@ from PySide6.QtGui import QImage
 from config import config
 from config.setting import Setting
 from tools.singleton import Singleton
+from tools.tool import time_me
 
 
 class QtTaskQObject(QObject):

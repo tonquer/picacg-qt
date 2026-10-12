@@ -18,6 +18,7 @@ from server import req
 from server.server import Server
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
+from task.task_async import TaskAsync
 from task.task_qimage import TaskQImage
 from task.task_waifu2x import TaskWaifu2x
 from task.task_cache import TaskCache
@@ -496,6 +497,8 @@ class MainView(Main, QtTaskBase):
         self.readView.Stop()
         self.batchSrView.Stop()
         self.navigationWidget.Stop()
+        TaskAsync().Stop()
+        TaskCache().Stop()
         TaskWaifu2x().Stop()
         TaskQImage().Stop()
         Server().Stop()

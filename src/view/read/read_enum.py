@@ -38,6 +38,34 @@ class ReadMode(Enum):
         return model in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
 
 
+class ReadShowState(object):
+    def __init__(self) -> None:
+        self.index = 0
+        self.cacheScaleCnt = 0
+        self.scaleCnt = 0
+        self.toW = 0
+        self.toH = 0
+        # self.w = 0
+        # self.h = 0
+        # self.toW = 0
+        # self.toH = 0
+        self.isWaifu2x = False
+
+    def Clear(self):
+        self.__init__()
+
+    def IsSame(self, other):
+        if not other:
+            return False
+        return (self.index == other.index and
+                self.scaleCnt == other.scaleCnt and
+                self.cacheScaleCnt == other.cacheScaleCnt and
+                self.toW == other.toW and
+                self.toH == other.toH and
+                self.isWaifu2x == other.isWaifu2x)
+
+
+
 class QtFileData(object):
     Downloading = Str.Downloading
     Converting = Str.Converting
@@ -71,10 +99,14 @@ class QtFileData(object):
         self.model = {}
 
         self.cacheImage = None
-        self.cacheImageScale = ""
+        self.cacheState = ReadShowState()
+
         self.cacheImageTaskId = 0
+
         self.cacheWaifu2xImage = None
-        self.cacheWaifu2xImageScale = ""
+        self.cacheWaifu2xState = ReadShowState()
+
+        self.cacheWaifu2xImageScale = 0
         self.cacheWaifu2xImageTaskId = 0
 
         self.downloadSize = 0
@@ -98,6 +130,20 @@ class QtFileData(object):
     @property
     def waifuQSize(self):
         return QSize(self.scaleW, self.scaleH)
+
+    def IsNeedConvertWaifu2xQImage(self, readView):
+        toW, toH = QtFileData.GetReadScale(readView.qtTool.stripModel, readView.frame.scaleCnt, readView.scrollArea.width(),
+                                           readView.scrollArea.height())
+        return not (not self.waifuData or self.cacheWaifu2xImage or self.cacheWaifu2xImageTaskId > 0) \
+        or (self.cacheWaifu2xImage and (self.cacheWaifu2xState.cacheScaleCnt != readView.frame.scaleCnt or
+                                        self.cacheWaifu2xState.toW != toW or self.cacheWaifu2xState.toH != toH))
+
+    def IsNeedConvertQImage(self, readView):
+        toW, toH = QtFileData.GetReadScale(readView.qtTool.stripModel, readView.frame.scaleCnt, readView.scrollArea.width(),
+                                           readView.scrollArea.height())
+        return not (self.cacheImage or self.cacheImageTaskId > 0) \
+            or (self.cacheImage and (self.cacheState.cacheScaleCnt != readView.frame.scaleCnt or
+                self.cacheState.toW != toW or self.cacheState.toH != toH))
 
     def SetData(self, data, category):
         if not data:
@@ -140,7 +186,7 @@ class QtFileData(object):
         return
 
     @staticmethod
-    def GetReadScale(stripModel, scaleCnt, maxWidth, maxHeight, isToQImage):
+    def GetReadScale(stripModel, scaleCnt, maxWidth, maxHeight):
         # 不进行缩放了，因为导致模糊
         if stripModel == ReadMode.LeftRight:
             scale = (1 + scaleCnt * 0.1)
@@ -177,13 +223,13 @@ class QtFileData(object):
             toScaleW = maxWidth * scale
             toScaleH = maxHeight * scale * 10
         else:
-            return maxWidth, maxHeight
+            return int(maxWidth), int(maxHeight)
 
         # if not ReadMode.isScroll(stripModel):
-        if isToQImage:
-            toScaleH = 0
-            toScaleW = 0
-        return toScaleW, toScaleH
+        # if isToQImage:
+        #     toScaleH = 0
+        #     toScaleW = 0
+        return int(toScaleW), int(toScaleH)
 
     @staticmethod
     def GetReadToPos(stripModel, maxWidth, maxHeight, toWidth, toHeight, index, curIndex, oldPos):

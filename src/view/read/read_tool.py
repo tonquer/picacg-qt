@@ -1,3 +1,11 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from view.read.read_frame import ReadFrame
+    from view.read.read_view import ReadView
+    from view.read.read_graphics import ReadGraphicsView
+
 import sys
 import weakref
 
@@ -131,15 +139,15 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         self.modelNameButton.setToolTip(Setting.LookModelName.value)
 
     @property
-    def imgFrame(self):
+    def imgFrame(self) -> ReadFrame:
         return self._imgFrame()
 
     @property
-    def scrollArea(self):
+    def scrollArea(self) -> ReadGraphicsView:
         return self.readImg.scrollArea
 
     @property
-    def readImg(self):
+    def readImg(self) -> ReadView:
         return self.imgFrame.readImg
 
     @property
@@ -606,7 +614,13 @@ class ReadTool(QtWidgets.QWidget, Ui_ReadImg):
         for index, v in self.readImg.pictureData.items():
             assert isinstance(v, QtFileData)
             v.cacheWaifu2xImage = None
+            v.cacheState.Clear()
+            v.cacheWaifu2xState.Clear()
             v.cacheImage = None
+            v.cacheWaifu2xImage = None
+            if index in self.scrollArea.allItemsState:
+                self.scrollArea.allItemsState.pop(index)
+            
             if v.cacheImageTaskId:
                 self.readImg.ClearQImageTaskById(v.cacheImageTaskId)
                 v.cacheImageTaskId = 0

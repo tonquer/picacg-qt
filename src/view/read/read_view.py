@@ -1,3 +1,9 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from view.read.read_graphics import ReadGraphicsView
+
 import os
 import time
 from functools import partial
@@ -17,7 +23,7 @@ from tools.book import BookMgr
 from tools.str import Str
 from tools.tool import time_me, ToolUtil
 from view.download.download_item import DownloadItem, DownloadEpsItem
-from view.read.read_enum import ReadMode, QtFileData
+from view.read.read_enum import ReadMode, QtFileData, ReadShowState
 from view.read.read_frame import ReadFrame
 
 # 每个图片预取队列最多同时下载 5 张，避免较大的预取范围占满下载线程和网络连接池。
@@ -36,7 +42,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         self.resetCnt = config.ResetCnt
         self.curIndex = 0
 
-        self.pictureData = {}
+        self.pictureData: dict[int, QtFileData] = {}
         self.maxPic = 0
         # desktop = QGuiApplication.primaryScreen().geometry()
         # self.resize(desktop.width() // 4 * 3, desktop.height() - 100)
@@ -88,7 +94,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         return self._cacheBook
 
     @property
-    def scrollArea(self):
+    def scrollArea(self) -> ReadGraphicsView:
         return self.frame.scrollArea
 
     def retranslateUi(self, View):
@@ -331,12 +337,23 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                 return
             p.isWaifu2x = isWaifu2x
 
+    def DelayLoadPicture(self):
+        self.scrollArea.scaleTimer.stop()
+        self.scrollArea.scaleTimer.start(200)
+
     def CheckLoadPicture(self):
         if not self.maxPic:
             return
 
-        # 预转换QImage
-        preRealQImage = list(range(max(0, self.curIndex-min(Setting.PictureShowFrontCount.value, Setting.PicturePrefetchFrontCount.value)), self.curIndex + Setting.PictureShowCount.value))
+        # 预转换QImage，滚动模式下走设置，其他模式只需要预加载部分
+        if ReadMode.isDouble(self.stripModel):
+            preRealQImage = list(range(max(0, self.curIndex-2), min(self.curIndex + 4, self.maxPic)))
+        elif not ReadMode.isScroll(self.stripModel):
+            preRealQImage = list(range(max(0, self.curIndex-1), min(self.curIndex + 2, self.maxPic)))
+        else:
+            preRealQImage = list(range(max(0, self.curIndex-min(Setting.PictureShowFrontCount.value,
+                                                                Setting.PicturePrefetchFrontCount.value)),
+                                       self.curIndex + Setting.PictureShowCount.value))
 
         # The setting counts pages after the current page. Keep the current page
         # in memory separately, so page 10 + count 10 means pages 11 through 20.
@@ -399,11 +416,12 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             if not p or not p.data:
                 continue
             assert isinstance(p, QtFileData)
-            IsConvert = (p.cacheWaifu2xImageTaskId > 0 or not not p.cacheWaifu2xImage)
-            if not (not p.waifuData or p.cacheWaifu2xImage or p.cacheWaifu2xImageTaskId > 0):
+            IsConvert = (p.cacheWaifu2xImageTaskId > 0 or not p.cacheWaifu2xImage)
+
+            if p.IsNeedConvertWaifu2xQImage(self):
                 IsConvert = self.CheckToQImage(i, p, True)
 
-            if (not IsConvert or not p.isWaifu2x) and not (p.cacheImage or p.cacheImageTaskId > 0):
+            if (not IsConvert or not p.isWaifu2x) and p.IsNeedConvertQImage(self):
                 self.CheckToQImage(i, p, False)
 
         # 删除多余的QImage，节约内存
@@ -419,7 +437,11 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                 self.ClearQImageTaskById(p.cacheWaifu2xImageTaskId)
                 p.cacheWaifu2xImageTaskId = 0
             p.cacheImage = None
+            p.cacheState.Clear()
             p.cacheWaifu2xImage = None
+            p.cacheWaifu2xState.Clear()
+            if i in self.scrollArea.allItemsState:
+                self.scrollArea.allItemsState.pop(i)
 
         self.CheckCrossChapterPrefetch()
         pass
@@ -493,35 +515,39 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         else:
             p.SetData(data, self.category)
             # self.CheckToQImage()
-            self.CheckLoadPicture()
+            self.DelayLoadPicture()
         self.CheckSetProcess()
 
     def CheckToQImage(self, index, p, isWaifu2x=False):
         assert isinstance(p, QtFileData)
         model = self.qtTool.stripModel
-        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, 0, self.scrollArea.width(),
-                                           self.scrollArea.height(), True)
+        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.frame.scaleCnt, self.scrollArea.width(),
+                                           self.scrollArea.height())
         if not isWaifu2x:
             if p.data:
-                p.cacheImage = None
-                p.cacheImageScale = self.frame.scaleCnt
-                p.cacheImageTaskId = self.AddQImageTask(p.data, self.devicePixelRatio(), toW, toH, model, self.ConvertQImageBack, index)
+                p.cacheImageTaskId = self.AddQImageTask(p.data, self.devicePixelRatio(), toW, toH, model, self.ConvertQImageBack, 
+                                                        (index, toW, toH, self.frame.scaleCnt))
                 return True
         else:
             if p.waifuData:
-                p.cacheWaifu2xImage = None
-                p.cacheWaifu2xImageScale = self.frame.scaleCnt
-                p.cacheImageWaifu2xTaskId = self.AddQImageTask(p.waifuData, self.devicePixelRatio(), toW, toH, model, self.ConvertQImageWaifu2xBack, index)
+                p.cacheImageWaifu2xTaskId = self.AddQImageTask(p.waifuData, self.devicePixelRatio(), toW, toH, model, self.ConvertQImageWaifu2xBack, 
+                                                               (index, toW, toH, self.frame.scaleCnt))
                 return True
         return False
 
-    def ConvertQImageBack(self, data, index):
+    def ConvertQImageBack(self, data, v):
+        (index, toW, toH, scaleCnt) = v
+                                           
         assert isinstance(data, QImage)
         p = self.pictureData.get(index)
         if not p:
             return
+
         assert isinstance(p, QtFileData)
         p.cacheImage = data
+        p.cacheState.cacheScaleCnt = scaleCnt
+        p.cacheState.toH = toH
+        p.cacheState.toW = toW
         p.cacheImageTaskId = 0
 
         if index == self.curIndex:
@@ -590,12 +616,16 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         else:
             start = self.curIndex
             size = 1
+        allLoadIndex = set(range(start, self.curIndex + size))
+        for key in list(self.scrollArea.allItemsState.keys()):
+            if key not in allLoadIndex:
+                self.scrollArea.allItemsState.pop(key)
 
         for index in range(start, self.curIndex + size):
             self.ShowImg(index)
         self.CheckSetProcess()
         self.CheckSetWaifu2xProcess()
-        self.CheckLoadPicture()
+        self.DelayLoadPicture()
 
     @time_me
     def ShowImg(self, index):
@@ -624,12 +654,22 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
 
         assert isinstance(p, QtFileData)
         waifu2x = False
+        newState = ReadShowState()
+        newState.scaleCnt = self.frame.scaleCnt
+        newState.index = index
+        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.frame.scaleCnt, self.scrollArea.width(),
+                                           self.scrollArea.height())
+        newState.toW = toW
+        newState.toH = toH
+
         if not p.isWaifu2x:
             if isCurIndex:
                 # self.frame.waifu2xProcess.hide()
                 self.qtTool.SetData(waifuSize=QSize(0, 0), waifuDataLen=0)
 
             p2 = p.cacheImage
+            newState.isWaifu2x = False
+            newState.cacheScaleCnt = p.cacheState.cacheScaleCnt
 
         elif p.cacheWaifu2xImage:
             p2 = p.cacheWaifu2xImage
@@ -639,6 +679,8 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
                 self.qtTool.SetData(waifuSize=p.waifuQSize, waifuDataLen=p.waifuDataSize,
                                     waifuTick=p.waifuTick)
 
+            newState.isWaifu2x = True
+            newState.cacheScaleCnt = p.cacheWaifu2xState.cacheScaleCnt
         else:
             p2 = p.cacheImage
             # if isCurIndex:
@@ -646,25 +688,28 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
             #         self.frame.waifu2xProcess.show()
             #     else:
             #         self.frame.waifu2xProcess.hide()
+            newState.isWaifu2x = False
+            newState.cacheScaleCnt = p.cacheState.cacheScaleCnt
 
         if isCurIndex:
             self.qtTool.SetData(pSize=p.qSize, dataLen=p.size, state=p.state, waifuState=p.waifuState)
             self.qtTool.UpdateText(p.model)
 
-        if self.frame.scrollArea.IsAlreadLoad(index, waifu2x):
+        if self.frame.scrollArea.IsAlreadLoad(newState):
             # print("already load, {}".format(index))
             return
+        Log.Info(f"show img, index:{index}")
 
         if p.isGif and not ReadMode.isScroll(self.stripModel):
             if p.isWaifu2x and p.waifuData:
-                self.scrollArea.SetGifData(index, p.waifuData, p2, True)
+                self.scrollArea.SetGifData(index, p.waifuData, p2, newState)
             else:
-                self.scrollArea.SetGifData(index, p.data, p2)
+                self.scrollArea.SetGifData(index, p.data, p2, newState)
         else:
             pixMap = QPixmap(p2)
             pixMap.setDevicePixelRatio(p2.devicePixelRatio())
             # print("set index 1, {}".format(index))
-            self.scrollArea.SetPixIem(index, pixMap, waifu2x)
+            self.scrollArea.SetPixIem(index, pixMap, newState)
         # self.graphicsView.setSceneRect(QRectF(QPointF(0, 0), QPointF(pixMap.width(), pixMap.height())))
         # self.frame.ScalePicture()
         return True
@@ -812,7 +857,7 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         p.SetWaifuData(data, round(tick, 2))
         if data:
             model = self.qtTool.stripModel
-            self.CheckLoadPicture()
+            self.DelayLoadPicture()
             # self.CheckToQImage(index, p, True)
             # toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.frame.scaleCnt, self.scrollArea.width(), self.scrollArea.height())
             # self.AddQImageTask(data, self.devicePixelRatio(), toW, toH, model, self.ConvertQImageWaifu2xBack, index)
@@ -823,18 +868,23 @@ class ReadView(QtWidgets.QWidget, QtTaskBase):
         elif self.stripModel in [ReadMode.UpDown, ReadMode.RightLeftScroll,
                                  ReadMode.LeftRightScroll, ReadMode.RightLeftScroll2] and self._IsPrefetchIndex(index):
             # self.ShowOtherPage()
-            self.CheckLoadPicture()
+            self.DelayLoadPicture()
         else:
-            self.CheckLoadPicture()
+            self.DelayLoadPicture()
 
-    def ConvertQImageWaifu2xBack(self, data, index):
+    def ConvertQImageWaifu2xBack(self, data, v):
+        (index, toW, toH, scaleCnt) = v
+                                           
         assert isinstance(data, QImage)
         p = self.pictureData.get(index)
         if not p:
             return
         assert isinstance(p, QtFileData)
-
         p.cacheWaifu2xImage = data
+        p.cacheWaifu2xState.cacheScaleCnt = scaleCnt
+        p.cacheWaifu2xState.toH = toH
+        p.cacheWaifu2xState.toW = toW
+
         p.cacheWaifu2xImageTaskId = 0
         if index == self.curIndex:
             self.ShowImg(index)

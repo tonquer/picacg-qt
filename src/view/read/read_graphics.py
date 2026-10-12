@@ -1,6 +1,13 @@
-import time
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
-from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect, QFile
+if TYPE_CHECKING:
+    from view.read.read_tool import ReadTool
+    from view.read.read_view import ReadView
+    from view.read.read_frame import ReadFrame
+
+import time
+from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QRect, QFile, QTimer, QSize
 from PySide6.QtGui import QPainter, QFont, QPixmap, QFontMetrics, QWheelEvent, QSurfaceFormat
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtWidgets import QGraphicsView, QFrame, QGraphicsItem, QGraphicsScene, \
@@ -15,7 +22,7 @@ from config.setting import Setting
 from tools.log import Log
 from tools.str import Str
 from tools.tool import time_me
-from view.read.read_enum import ReadMode, QtFileData
+from view.read.read_enum import ReadMode, QtFileData, ReadShowState
 from view.read.read_opengl import ReadOpenGL
 from view.read.read_pool import QtReadImgPoolManager
 from view.read.read_qgraphics_proxy_widget import ReadQGraphicsProxyWidget
@@ -93,8 +100,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.testItem = QGraphicsPixmapItem()
         self.allItems = []
-        self.allItemsState = {}
-        self.allItemsScale = {}
+        self.allItemsState : dict[int, ReadShowState] = {}
+        # self.allItemsScale = {}
 
         self.itemWight = {}
         self.labelSize = {}
@@ -120,18 +127,20 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         # self.horizontalScrollBar().actionTriggered.connect(self.OnActionTriggered)
         self.verticalScrollBar()
         self.startPos = QPoint()
-        self.labelWaifu2xState = {}
+        # self.labelWaifu2xState = {}
         # self.setSceneRect(-self.width()//2, -self.height()//2, self.width(), self.height())
         QtOwner().owner.WindowsSizeChange.connect(self.ResetSize)
         self.isLastPageMode = False   # 是否切换到上一页
-
+        self.scaleTimer = QTimer(self)
+        self.scaleTimer.setSingleShot(True)
+        self.scaleTimer.timeout.connect(self.ChangeScaleFinish)
 
     @property
-    def readImg(self):
+    def readImg(self) -> ReadView:
         return self.parent().readImg
 
     @property
-    def frame(self):
+    def frame(self) -> ReadFrame:
         return self.parent()
 
     @property
@@ -139,7 +148,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         return self.parent().readImg.maxPic
 
     @property
-    def qtTool(self):
+    def qtTool(self) -> ReadTool:
         return self.parent().readImg.qtTool
 
     @property
@@ -284,7 +293,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.GetScrollBar().SaveLastPositionEnd()
 
     def ResetSize(self):
-        self.qtTool.ChangeReadMode2(self.readImg.stripModel.value)
+        # self.qtTool.ChangeReadMode2(self.readImg.stripModel.value)
+        self.readImg.ShowImgAll()
 
     def ScaleResetVer(self):
         if not ReadMode.isScroll(self.initReadMode) or self.initReadMode == ReadMode.UpDown:
@@ -678,34 +688,29 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
 
     def ClearPixItem(self):
         self.allItemsState.clear()
-        self.allItemsScale.clear()
+        # self.allItemsScale.clear()
         self.ClearOtherPictureShow([])
         # self.SetPixIem(self.readImg.curIndex, None)
         # if self.readImg.curIndex + 1 < self.readImg.maxPic:
         #     self.SetPixIem(self.readImg.curIndex + 1, None)
         return
 
-    def IsAlreadLoad(self, index, waifu2x):
-        if waifu2x:
-            state = 2
-        else:
-            state = 1
-        if self.allItemsState.get(index) == state and self.allItemsScale.get(index) == self.scaleCnt and ReadMode.isScroll(self.readImg.stripModel):
-            return True
-        return False
+    def IsAlreadLoad(self, newState: ReadShowState):
+        return newState.IsSame(self.allItemsState.get(newState.index))
 
     @time_me
-    def SetPixIem(self, index, data, isWaifu2x=False):
+    def SetPixIem(self, index, data, newState=None):
         if not self.allItems and ReadMode.isScroll(self.readImg.stripModel):
             return
+
+        self.allItemsState[index] = newState
         notPic = False
         if not data:
             notPic = True
             # self.labelWaifu2xState[index] = isWaifu2x
             if ReadMode.isScroll(self.initReadMode):
                 self.PixmapToLabel(index)
-                self.allItemsState[index] = 0
-                self.allItemsScale[index] = 0
+                # self.allItemsScale[index] = 0
                 return
             else:
                 data = self.MakePixItem(index)
@@ -734,24 +739,24 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         # else:
         #     newData = data
 
-        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height(), False)
-        data2 = QPixmap(data)
-        newData = data2.scaled(toW * radio, toH * radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height())
+        data2 = data
 
+        ## 如果缩放的太快导致没有计算去转换成QImage, 则先快速缩放
+        if data:
+            newSize = QSize(data.size()).scaled(toW * radio, toH * radio, Qt.KeepAspectRatio)
+            if data.size() != newSize:
+                data2 = data.scaled(toW * radio, toH * radio, Qt.KeepAspectRatio, Qt.FastTransformation)
+
+        newData = QPixmap(data2)
         pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), newData.width() / radio,
                                       newData.height() // radio, index, self.readImg.curIndex, oldPos)
         # print(index, pos, radio, newData.size(), self.size())
         label.setPos(pos)
         # print("set index, {}".format(index))
         label.setPixmap(newData)
-        self.allItemsScale[index] = self.scaleCnt
-        if not notPic:
-            if isWaifu2x:
-                self.allItemsState[index] = 2
-            else:
-                self.allItemsState[index] = 1
-        else:
-            self.allItemsState[index] = 0
+        # self.allItemsScale[index] = self.scaleCnt
+
         if self.initReadMode == ReadMode.UpDown:
             self.UpdateOtherHeight(index, oldHeight, label.pixmap().height() // radio)
         else:
@@ -759,14 +764,15 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
         self.GetScrollBar().SaveLastPositionEnd()
         self.PrintDebugPos()
 
-    def SetGifData(self, index, data, p2, isWaifu2x=False):
+    def SetGifData(self, index, data, p2, newState=None):
         label = self.GetLabel(index)
-        # self.labelWaifu2xState[index] = isWaifu2x
+        self.allItemsState[index] = newState
+
         oldPos = label.pos()
         radio = p2.devicePixelRatio()
 
-        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height(), False)
-        newData = p2.scaled(toW * radio, toH * radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        toW, toH = QtFileData.GetReadScale(self.qtTool.stripModel, self.scaleCnt, self.width(), self.height())
+        newData = p2.scaled(toW * radio, toH * radio, Qt.KeepAspectRatio, Qt.FastTransformation)
 
         pos = QtFileData.GetReadToPos(self.qtTool.stripModel, self.width(), self.height(), newData.width()/radio ,
                                       newData.height()//radio , index, self.readImg.curIndex, oldPos)
@@ -940,7 +946,7 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
             for i, state in self.allItemsState.items():
                 if i in indexSet:
                     continue
-                if state > 0 and i < self.maxPic:
+                if state and i < self.maxPic:
                     self.SetPixIem(i, None)
             # self.SetPixIem(oldIndex, None)
             # for newIndex in range(oldIndex + 1, min(oldIndex + config.PreLoading, self.maxPic)):
@@ -952,6 +958,8 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
     def ChangeScale(self, scale=1):
         print("change scale, mode={}, scale={}, change:={}".format(self.initReadMode, self.frame.scaleCnt, scale))
         self.readImg.ShowImgAll()
+        self.scaleTimer.stop()
+        self.scaleTimer.start(1000)
         return
         if not ReadMode.isScroll(self.initReadMode):
             # 非滚动模式，通过QPixmap进行缩放
@@ -980,7 +988,10 @@ class ReadGraphicsView(QGraphicsView, SmoothScroll):
 
         return
 
-    # 
+    def ChangeScaleFinish(self):
+        self.scaleTimer.stop()
+        self.readImg.CheckLoadPicture()
+
     def ReloadImg(self):
         if self.initReadMode in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftDouble,
                                  ReadMode.LeftRight, ReadMode.Samewight]:
