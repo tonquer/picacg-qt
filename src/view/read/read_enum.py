@@ -26,6 +26,10 @@ class ReadMode(Enum):
         return model in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]
 
     @staticmethod
+    def isLeftRight(model):
+        return model in [ReadMode.LeftRight, ReadMode.LeftRightDouble, ReadMode.LeftRightScroll]
+
+    @staticmethod
     def isRightLeft(model):
         return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
 
@@ -36,6 +40,10 @@ class ReadMode(Enum):
     @staticmethod
     def isScroll(model):
         return model in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
+
+    @staticmethod
+    def isRightScroll(model):
+        return model in [ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
 
 
 class ReadShowState(object):
