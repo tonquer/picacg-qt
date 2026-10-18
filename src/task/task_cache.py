@@ -258,6 +258,9 @@ class TaskCache(TaskBase, QtTaskBase):
                 return file.data
         return None
 
+    def ClearMemData(self, bookId):
+        return
+
     def AddDownloadFromCache(self, data, resetCnt):
         from task.task_download import QtDownloadTask
         assert isinstance(data, QtDownloadTask)

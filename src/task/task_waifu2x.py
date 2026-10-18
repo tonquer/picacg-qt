@@ -22,6 +22,7 @@ class QConvertTask(object):
         self.backParam = None
         self.cleanFlag = ""
         self.status = Status.Ok
+        self.bookId = ""
         self.path = ""
         self.tick = 0
         self.loadPath = ""  #

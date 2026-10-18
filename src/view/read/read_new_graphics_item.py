@@ -29,7 +29,7 @@ class ReadNewGraphicsItem(QGraphicsItem):
     性能：PixmapItem 确实快一点，但快的几乎全是"PySide6 每次 paint 从 C++
     回调进 Python"的开销（约 10us/item，一屏 2~3 张 = 0.03ms/帧，不足 60fps
     一帧预算的 0.2%）。真正的绘制大头是"绘制时缩放位图"（1x→4x 位图慢 3 倍），
-    这个已由 DecodeTask 的降采样（max_px）规避，跟 item 类型无关。"""
+    这个已由 DecodeTask 的降采样（按渲染尺寸解码）规避，跟 item 类型无关。"""
 
     # 图片尺寸未知时（还没探测到文件头）的兜底宽高比 h/w = 1.2，即假设图片比
     # 正方形略"竖"。尺寸一旦探测到就立即修正（见 _correct_len）。

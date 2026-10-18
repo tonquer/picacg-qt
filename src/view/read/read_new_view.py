@@ -227,6 +227,7 @@ class ReadNewView(QtWidgets.QWidget):
         if QtOwner().owner.windowState() == Qt.WindowFullScreen:
             self.qtTool.FullScreen(True)
         QtOwner().CloseReadView()
+        self.scrollArea.clear_all_item()
 
     def Stop(self):
         self.frame.process.timer.stop()

@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import bisect
 from typing import TYPE_CHECKING
 
 from qt_owner import QtOwner
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
 
 import math
 from tools.log import Log
-from tools.tool import ToolUtil
+from tools.tool import ToolUtil, time_me
 from view.read.read_new_pool import ReadNewPoolManager
 from PySide6.QtCore import (Qt, QRectF, QSize, QBuffer, QByteArray, QIODevice,
                             QUrl, QObject, QRunnable, QThreadPool, Signal, QTimer,
@@ -63,11 +65,16 @@ class ReadNewGraphics(QGraphicsView):
     # 否则目标图加载失败时 UI 上的页码会一直停在跳转前的旧值上。
     HOLD_MAX_MISS = 60
 
-    PREFETCH_BACK = 3  # 已读方向（往回）预取几张
-    PREFETCH_AHEAD = 12  # 未读方向（往后）预取几张
+    # PREFETCH_BACK = 3  # 已读方向（往回）预取几张
+    # PREFETCH_AHEAD = 12  # 未读方向（往后）预取几张
 
-    PIXMAP_BUDGET_MB = 512    # 已解码位图的总预算（MB）
+    PIXMAP_BUDGET_MB = 2048    # 已解码位图的总预算（MB）
     # RAW_BUDGET_MB = 64        # 保留的原始压缩字节总预算（MB），用于位图回收后重解
+
+    # ---- 到顶/到底后的"继续滚"触发 ----
+    # 已经在最前/最后，还继续往外滚这么多下就发 scrolledPastStart / scrolledPastEnd。
+    # 用来接"上/下一章"之类的逻辑（本 Demo 不消费，只发信号）。
+    EDGE_SCROLL_TRIGGER = 3
 
     """三种阅读方向共用的图片流视图。
 
@@ -83,6 +90,13 @@ class ReadNewGraphics(QGraphicsView):
     indexChanged = Signal(int)         # 阅读位置所在的图序号变了（0 起；-1=还没有图）。
                                        # 只在真的跨越到另一张图时发一次，滚动过程中
                                        # 不会每帧都发——可以直接拿它刷新"第 N/M 张"标签
+    # ---- "到顶/到底后再往外滚 N 下"的信号（用来接上/下一章之类的逻辑）----
+    # 已经在最前（第一张/第一页）还继续往回滚，连续 N 下 -> scrolledPastStart
+    # 已经在最后（最后一张/最后一页）还继续往后滚，连续 N 下 -> scrolledPastEnd
+    # N 由 set_edge_scroll_trigger() 设置（默认 EDGE_SCROLL_TRIGGER = 3）。
+    # 触发后计数自动清零；滚回内容内部、跳转、切模式也会清零。
+    scrolledPastStart = Signal()
+    scrolledPastEnd = Signal()
 
     def __init__(self, mode: ReadMode = ReadMode.UpDown, parent=None):
         """mode：阅读方向，ReadMode.UpDown / MODE_LTR / MODE_RTL，可运行时 set_mode 切换。
@@ -108,8 +122,12 @@ class ReadNewGraphics(QGraphicsView):
         # GL 每帧是 glClear 到透明黑，看过去就是"空白区发黑 / 上一帧残留"。
         self._scene.setBackgroundBrush(self._default_bg())
         # 预下载范围：以当前页 _cur_idx 为基准，往前/往后各几张（与视窗大小无关）
-        self._prefetch_back = self.PREFETCH_BACK
-        self._prefetch_ahead = self.PREFETCH_AHEAD
+        # self._prefetch_back = self.PREFETCH_BACK
+        # self._prefetch_ahead = self.PREFETCH_AHEAD
+        # 到顶/到底后"再滚 N 下"触发 scrolledPastStart / scrolledPastEnd
+        self._edge_scroll_trigger = max(0, int(self.EDGE_SCROLL_TRIGGER))
+        self._edge_start = 0          # 已到最前、连续往外滚的次数
+        self._edge_end = 0            # 已到最后、连续往外滚的次数
 
         self._items : list[ReadNewGraphicsItem] = []   # ReadNewGraphicsItem 列表，按阅读顺序排列
         self._mode = mode                         # 当前阅读方向
@@ -226,6 +244,8 @@ class ReadNewGraphics(QGraphicsView):
             self.set_opengl(True)
         self.indexChanged.connect(self.after_index_change)
         self.zoomChanged.connect(self.after_zoom_change)
+        self.scrolledPastStart.connect(self.after_switch_last_eps)
+        self.scrolledPastEnd.connect(self.after_switch_next_eps)
         self._scene.installEventFilter(self)
 
     @staticmethod
@@ -493,16 +513,21 @@ class ReadNewGraphics(QGraphicsView):
             its = [it for it in self._items
                    if it._s + it._len >= s0 - L and it._s <= s0 + L * 2.5]
 
-        max_px = self._decode_max_px()        # 与 DecodeTask / QMovie 同一套口径
+        # max_px = self._decode_max_px()        # 与 DecodeTask / QMovie 同一套口径
         for it in its:
             # 动图不重新下载：它的原图字节还在 _raw 里，只需要把每帧解码得更
             # 大一点——_refresh_playing 会发现 setScaledSize 需要更新并改掉
             if it.pixmap is None or it._reply is not None or it._failed:
                 continue
+
+            target = self._decode_target_size(it)  # 与 DecodeTask 同一套口径
+            if not target.isValid():
+                continue
+            dpr = self.devicePixelRatioF()
             have = it.pixmap.width()     # 已解码位图的宽（物理像素）
             src = it._size.width() if (it._size and it._size.isValid()) else 0
             # 位图不够 + 原图确实有更高分辨率，才值得重新下载
-            if have < max_px * 0.99 and src > have * 1.25:
+            if have < (target.width()*dpr) * 0.99 and src > have * 1.25:
                 self._start_download(it)
 
     @property
@@ -558,33 +583,82 @@ class ReadNewGraphics(QGraphicsView):
         self._anims_enabled = on
         self._refresh_playing()
 
-    def _decode_max_px(self) -> int:
-        """解码/播放的目标宽度上限（**物理像素**）。
+    def _decode_target_size(self, it: ReadNewGraphicsItem) -> QSize:
+        """这张图"解码后应该多大"（**物理像素**）——按它实际会被渲染的尺寸算。
 
-        图片不会比这更大就需要像素：连续模式横排最长 cross×MAX_ASPECT，页模式
-        最大放大到 视口×zoom。放大高清 + 省内存 + 绘制更快，三件事一次解决。"""
-        dpr = self.devicePixelRatioF()
-        if not ReadMode.isScroll(self._mode):
-            return int(max(self.viewport().width(), self.viewport().height())
-                       * dpr * max(1.0, self._zoom))
-        return int(self._cross * dpr
-                   * (1.0 if ReadMode.isUpDown(self._mode) else self.MAX_ASPECT))
+        ⚠️ 为什么不能用"视口最大边"当宽度上限：竖屏（高>宽）时最大边是"高"，
+        拿它当宽度上限会把竖图解成比实际显示大好几倍；横排模式、单页 contain-fit
+        也一样。这里按各模式的真实渲染尺寸算，只缩不放，解出来正好够显示。
+
+        渲染尺寸（逻辑像素）：
+        - 连续 ttb：宽 = cross，高 = cross×(h/w)
+        - 连续 横排：高 = cross，宽 = cross×(w/h)
+        - 单页/双页/封面：按 contain-fit 放进槽位
+        - 单页等宽：cross 轴铺满，滚动轴按比例"""
+        # dpr = self.devicePixelRatioF()
+        sz = it._size
+        aspect = (sz.height() / sz.width()) if (
+            sz and sz.isValid() and sz.width() > 0) else it._def_aspect   # h/w
+        aspect = max(0.05, aspect)
+        z = self._zoom
+
+        if ReadMode.isScroll(self._mode):
+            cross = self._cross                     # 已经含了 zoom
+            if ReadMode.isUpDown(self._mode):
+                w, h = cross, cross * aspect
+            else:
+                w, h = cross / aspect, cross
+        elif self._mode == ReadMode.Samewight:
+            vw = float(self.viewport().width())
+            vh = float(self.viewport().height())
+            if ReadMode.isUpDown(self._mode):
+                w, h = vw, vw * aspect
+            else:
+                w, h = vh / aspect, vh
+            w *= z
+            h *= z
+        else:
+            # 单页 / 双页 / 双页(首图单独)：contain-fit 进槽位，再乘 zoom。
+            # 注意：解码可能发生在相邻页（page-1/page+1）的预取上，所以要按
+            # **这张图自己所在页**的槽位算，不能一律用当前页。
+            try:
+                idx = self._items.index(it)
+            except ValueError:
+                idx = 0
+            pg = self._page_of_index(idx)
+            slots = self._page_slot_rects(pg)
+            if not slots:
+                return QSize()
+            i = min(max(idx - self._page_first_index(pg), 0), len(slots) - 1)
+            x, y, sw, sh = slots[i]
+            if sw <= 0 or sh <= 0:
+                return QSize()
+            if aspect > sh / sw:                    # 比槽位更"竖" -> 高度受限
+                w, h = sh / aspect, sh
+            else:                                   # 宽度受限
+                w, h = sw, sw * aspect
+            w *= z
+            h *= z
+        return QSize(max(1, int(round(w))), max(1, int(round(h))))
 
     def _movie_scaled_size(self, it: ReadNewGraphicsItem) -> QSize:
-        """动图的帧解码尺寸（物理像素）：只缩不放，等比。
+        """动图的帧解码尺寸（物理像素）：按渲染目标等比缩，只缩不放。
 
         为什么用 QMovie.setScaledSize 而不是绘制时缩放：让解码器在解码阶段就
         把每帧缩到显示尺寸，绘制时是 1:1 搬运。反过来（原尺寸解码 + 每次 paint
-        缩放）会慢好几倍——和静态图走 DecodeTask(max_px) 降采样是同一个道理。"""
+        缩放）会慢好几倍——和静态图走 DecodeTask 降采样是同一个道理。"""
         if it._size is None or not it._size.isValid():
             return QSize()
         w, h = it._size.width(), it._size.height()
         if w <= 0 or h <= 0:
             return QSize()
-        cap = self._decode_max_px()
-        if w > cap:
-            h = max(1, int(round(h * cap / w)))
-            w = cap
+        target = self._decode_target_size(it)
+        dpr = self.devicePixelRatioF()
+        tw, th = int(math.trunc(target.width()*dpr)), int(math.trunc(target.height()*dpr))
+        if tw > 0 and th > 0 and (w > tw or h > th):
+            s = min(tw / w, th / h)                 # 等比缩进目标框
+            w = max(1, int(round(w * s)))
+            h = max(1, int(round(h * s)))
         return QSize(w, h)
 
     def _ensure_movie(self, it: ReadNewGraphicsItem):
@@ -656,15 +730,18 @@ class ReadNewGraphics(QGraphicsView):
             total -= x._raw.size()
             x._raw = QByteArray()
 
-    def _refresh_playing(self):
+    def _refresh_playing(self, vis=None):
         """让"该播的播、不该播的停"。
 
         只播当前屏幕上看得见的：离屏的 GIF 没人看还在解帧纯属浪费 CPU 和电。
         这个方法在滚动时会每帧调用（挂在 _load_visible 上），但 _anims 通常
-        只有个位数元素，开销可忽略。"""
+        只有个位数元素，开销可忽略。
+
+        vis：调用方已经算好的 visible_indices()，传进来省一次重算。"""
         if not self._anims or not self.isVisible():
             return
-        vis = set(self.visible_indices())
+        if vis is None:
+            vis = self.visible_indices()
         live = [self._items[i] for i in vis if i < len(self._items)]
         want = set(id(x) for x in live)
         for it in self._anims:
@@ -740,12 +817,18 @@ class ReadNewGraphics(QGraphicsView):
                 i0 = self._page_first_index(p)
                 idxs.update(range(i0, i0 + len(self._page_items(p))))
             return sorted(idxs)
-        # 连续模式：item 按 s 升序，扫到第一条看不见的就可以收工（早退很重要，
-        # 这个方法在滚动时每帧都会被调用）
+        # 连续模式：item 按 _s 升序。先用二分找到"s0 之后的第一张"，再往回看一张
+        # （可能有一张起点在 s0 之前、但尾部伸进视口的长图），然后顺序扫到 s1。
+        # 这样每次是 O(log n + 可见张数)，不再是"从第 0 张开始扫"的 O(n)。
         s0 = self._scroll_min_s()
         s1 = s0 + self._viewport_len()
+        items = self._items
+        lo = bisect.bisect_left(items, s0, key=lambda it: it._s)
+        if lo > 0 and items[lo - 1]._s + items[lo - 1]._len > s0 + 1.0:
+            lo -= 1
         out = []
-        for i, it in enumerate(self._items):
+        for i in range(lo, len(items)):
+            it = items[i]
             if it._s >= s1:
                 break                             # 后面的都还在视口下方/右方
             # 至少露出 1px 才算"可见"：停在两张图交界处时（比如 jump_to_index
@@ -900,6 +983,7 @@ class ReadNewGraphics(QGraphicsView):
             return
         idx = max(0, min(int(idx), len(self._items) - 1))
         self._initial_idx = idx
+        self._reset_edge_counts()     # 跳转后重新算"到顶/到底"的连续次数
         if not ReadMode.isScroll(self._mode):
             # self._stop_page_auto()
             self.qtTool.CloseScrollAndTurn()
@@ -975,7 +1059,7 @@ class ReadNewGraphics(QGraphicsView):
         self._initial_hold = True
         self._hold_miss = 0
 
-    def _first_visible_index(self) -> int:
+    def _first_visible_index(self, vis=None) -> int:
         """visible_indices 的第 0 项（-1=没有图）。模式切换时要保证不返回
         动画途中邻页的序号，所以这里独立算，不含邻页。
 
@@ -984,20 +1068,24 @@ class ReadNewGraphics(QGraphicsView):
             ttb：s 向下增大 -> s 最小的可见项 = 最上面那张
             ltr：s 向右增大 -> 最左边那张
             rtl：s 向左增大（场景 x=-s）-> 最右边那张
-        """
+
+        vis：调用方已经算好的 visible_indices()，传进来可以省一次重算。"""
         if not ReadMode.isScroll(self._mode):
             return min(self._page_first_index(self._page),
                        max(0, len(self._items) - 1))
-        v = self.visible_indices()
-        return v[0] if v else -1
+        if vis is None:
+            vis = self.visible_indices()
+        return vis[0] if vis else -1
 
-    def _refresh_index(self):
+    def _refresh_index(self, vis=None):
         """重算"当前第几张"，跨到新的一张时才发 indexChanged。
 
         调用点都是"阅读位置可能变了"的地方：_load_visible（滚动/翻页/模式切换
         都走它）、_end_page_drag（松手判定后）。60fps 下每帧都会进来，所以
-        visible_indices 里的早退很重要。"""
-        idx = self.current_index()
+        visible_indices 用二分找起点、并且由 _load_visible 传进来复用。
+
+        vis：调用方已经算好的 visible_indices()。"""
+        idx = self._first_visible_index(vis)
         if self._initial_hold and idx != self._clamped_initial_idx():
             # 首屏校准期：位置还在被尺寸修正推来推去（目标图前面的图陆续探测到
             # 真实尺寸），这里看到的只是中间态。别发出去——否则 UI 上的
@@ -1012,6 +1100,7 @@ class ReadNewGraphics(QGraphicsView):
         if idx != self._cur_idx:
             self._cur_idx = idx
             self.indexChanged.emit(idx)
+
     # ---- 页模式（翻页器）：几何 / 显示 / 翻页 ----
 
     def _page_per_screen(self) -> int:
@@ -1591,6 +1680,7 @@ class ReadNewGraphics(QGraphicsView):
         mode = ReadMode(index)
         if mode == self._mode and not isForce:
             return
+        self._reset_edge_counts()        # 切方向后重新算"到顶/到底"的连续次数
         if not ReadMode.isScroll(mode):
             # 页模式切方向：不经过滚动条机制，重摆当前页即可
             # （双页的槽位方向跟着变：横排左右并排 <-> ttb 上下叠放）
@@ -1713,7 +1803,18 @@ class ReadNewGraphics(QGraphicsView):
     def _set_scroll_min_s(self, s: float, snap: bool = False):
         """写入滚动位置。snap=False 时启用亚像素渲染：整数部分进滚动条，
         小数部分进视图 transform——否则低速滚动时每帧位移被量化成
-        1,2,1,2 像素交替，瞬时速度波动 ±50%（滚动"粘连感"来源之一）。"""
+        1,2,1,2 像素交替，瞬时速度波动 ±50%（滚动"粘连感"来源之一）。
+        ⚠️ 这里有两道防线，都是为了绕开 QGraphicsView 的一个坑：
+        `setTransform` 会同步触发 Qt 的 updateScrollBars()，它**按新的 transform
+        重新推导滚动条 range 和 value**，于是：
+          1) 亚像素平移 |f| > 0.5 时，range 的 min/max 会整体挪 1px；
+          2) 即使 |f| < 0.5，value 也可能（受上一帧 transform 残留影响）被挪 1px。
+        表现就是用户看到的：setValue(4257) 之后 transform 一设，值又弹回 4256。
+        RTL 的 `-(s+L)` 是负数，floor 很容易给出 _sub > 0.5，尤其容易中招。
+
+        防线 1：整数部分用**四舍五入**把 _sub 控在 (-0.5, 0.5)，range 不偏移；
+        防线 2：transform 之后把整数位**写回去**，抵消 value 的 ±1 漂移。
+        位置语义不变：_scroll_min_s() 仍 = value + _sub = 原 s（误差 ≤1e-9）。"""
         L = self._viewport_len()
         s = max(0.0, min(s, max(0.0, self._total - L)))
         v = self._s_to_bar(s)
@@ -1721,16 +1822,29 @@ class ReadNewGraphics(QGraphicsView):
             self._sub = 0.0
             v = round(v)
         else:
-            vi = math.floor(v)
-            self._sub = v - vi
+            vi = int(round(v))
+            sub = v - vi
+            # 精确落在 ±0.5 正好是 range 会动的边界（LTR 的 +0.5 / RTL 的 -0.5），
+            # 收进开区间：位置只差 1e-9，肉眼无感，但 range 不会偏。
+            if abs(sub) >= 0.5 - 1e-9:
+                sub = math.copysign(0.5 - 1e-9, sub)
+            self._sub = sub
             v = vi
-        self._bar().setValue(int(v))
+        bar = self._bar()
+        bar.setValue(int(v))
         self._apply_sub_transform()
+        # 防线 2：setTransform 可能让 updateScrollBars 把 value 挪 1px，写回去。
+        # 此时 range 已经被防线 1 保住，所以这个 setValue 不会二次被夹。
+        if bar.value() != int(v):
+            bar.setValue(int(v))
 
     def _apply_sub_transform(self):
         """把亚像素偏移放进视图 transform（沿滚动轴平移 -f）。
-        f 是 [0,1) 的小数：滚动条停在整数 v，transform 再补上 v→v+f 的位移。
-        去重：偏移没变就不 setTransform（它触发全量重绘，60fps 下也不能白做）。"""
+
+        f = `_sub` ∈ (-0.5, 0.5)：滚动条停在整数 v，transform 再补上 v→v+f 的
+        位移。**必须把 |f| 压在 0.5 以内**——Qt 的 setTransform 会触发
+        updateScrollBars()，|f| > 0.5 时滚动条 range 会被整体挪 1px、value 被夹
+        （见 _set_scroll_min_s 的注释）。"""
         if abs(self._sub - self._sub_applied) < 1e-9:
             return
         self._sub_applied = self._sub
@@ -1949,6 +2063,7 @@ class ReadNewGraphics(QGraphicsView):
             self._scene.removeItem(item)
             ReadNewPoolManager().AddProxyItem(item)
         self._items = []
+        self._total = 0.0
         self._first_show = True
         for i in range(maxNum):
             self.add_image(i)
@@ -2002,18 +2117,83 @@ class ReadNewGraphics(QGraphicsView):
 
     # ================ 惰性加载：预下载（按序号）/ 预解码（按视窗） ================
 
-    def set_prefetch_range(self, back: int, ahead: int):
-        """设置预下载范围：以当前页 _cur_idx 为基准，往前/往后各预取几张图。
+    # def set_prefetch_range(self, back: int, ahead: int):
+    #     """设置预下载范围：以当前页 _cur_idx 为基准，往前/往后各预取几张图。
+    #
+    #     与视窗大小无关——一屏里可能只有 1 张长图、也可能有 10 张小图，按张数
+    #     预取才能保证翻到下一张时它已经下好。改完立即触发一次加载。"""
+    #     self._prefetch_back = max(0, int(back))
+    #     self._prefetch_ahead = max(0, int(ahead))
+    #     self._load_visible()
+    #
+    # def prefetch_range(self):
+    #     """当前预下载范围 (back, ahead)，单位：张。"""
+    #     return (self._prefetch_back, self._prefetch_ahead)
 
-        与视窗大小无关——一屏里可能只有 1 张长图、也可能有 10 张小图，按张数
-        预取才能保证翻到下一张时它已经下好。改完立即触发一次加载。"""
-        self._prefetch_back = max(0, int(back))
-        self._prefetch_ahead = max(0, int(ahead))
-        self._load_visible()
+    # ---- 到顶/到底后"再滚 N 下"触发（接上/下一章等） ----
 
-    def prefetch_range(self):
-        """当前预下载范围 (back, ahead)，单位：张。"""
-        return (self._prefetch_back, self._prefetch_ahead)
+    def set_edge_scroll_trigger(self, count: int):
+        """设置"已经在最前/最后，再往外滚几下"触发一次信号（<=0 关闭）。
+
+        触发的是 scrolledPastStart / scrolledPastEnd 两个信号，本 Demo 不消费，
+        用来接"加载上一章 / 下一章"这类逻辑。"""
+        self._edge_scroll_trigger = max(0, int(count))
+        self._reset_edge_counts()
+
+    def edge_scroll_trigger(self) -> int:
+        """当前的触发次数阈值（0 = 关闭）。"""
+        return self._edge_scroll_trigger
+
+    def _reset_edge_counts(self):
+        self._edge_start = 0
+        self._edge_end = 0
+
+    def _at_content_start(self) -> bool:
+        """阅读位置是否已经在最前（第一张图 / 第一页 / 单页等宽的页首）。"""
+        if not ReadMode.isScroll(self._mode):
+            if self._page > 0:
+                return False
+            if self._mode == ReadMode.Samewight:
+                return self._page_scroll <= 0.5
+            return True
+        return self._scroll_min_s() <= 0.5
+
+    def _at_content_end(self) -> bool:
+        """阅读位置是否已经在最后（最后一张图 / 最后一页 / 单页等宽的页尾）。"""
+        if not ReadMode.isScroll(self._mode):
+            if self._page < self._max_page():
+                return False
+            if self._mode == ReadMode.Samewight:
+                return self._page_scroll >= self._page_scroll_max(self._page) - 0.5
+            return True
+        hi = max(0.0, self._total - self._viewport_len())
+        return self._scroll_min_s() >= hi - 0.5
+
+    def _note_edge_scroll(self, forward: bool, at_start: bool, at_end: bool):
+        """记一次滚轮/键盘"滚动"。已经在边界还继续往外滚就累加，到阈值发信号。
+
+        at_start/at_end 是**滚之前**的边界状态：这样"刚好翻到最后一页"的那一下
+        不算越界，只有之后继续往外的滚动才开始累加。"""
+        if self._edge_scroll_trigger <= 0:
+            return
+        if forward:                       # 往阅读方向（最后面）滚
+            if at_end:
+                self._edge_end += 1
+                self._edge_start = 0
+                if self._edge_end >= self._edge_scroll_trigger:
+                    self._edge_end = 0
+                    self.scrolledPastEnd.emit()
+            else:
+                self._reset_edge_counts()
+        else:                             # 往反方向（最前面）滚
+            if at_start:
+                self._edge_start += 1
+                self._edge_end = 0
+                if self._edge_start >= self._edge_scroll_trigger:
+                    self._edge_start = 0
+                    self.scrolledPastStart.emit()
+            else:
+                self._reset_edge_counts()
 
     def _load_visible(self):
         """刷新当前序号/动图，然后做两件互不影响的事：
@@ -2028,10 +2208,15 @@ class ReadNewGraphics(QGraphicsView):
 
         顺带在这里刷新"当前是第几张图"：滚动/翻页/模式切换/追加图片最终都会
         走到这个方法（滚动时每帧都进）。"""
-        self._refresh_index()
-        self._refresh_playing()              # 可见集合变了：该播的播、该停的停
-        self._download_around_current()      # 预下载：按序号
-        self._decode_visible()               # 预解码：按视窗
+        self._last_load_s = self._scroll_min_s()
+        # 可见集合只算一次，_refresh_index/_refresh_playing 复用；页模式且没动图时
+        # 两边都用不到，干脆不算（省一次 visible_indices）。
+        vis = self.visible_indices() if (
+            ReadMode.isScroll(self._mode) or self._anims) else None
+        self._refresh_index(vis)
+        self._refresh_playing(vis)            # 可见集合变了：该播的播、该停的停
+        self._download_around_current()       # 预下载：按序号
+        self._decode_visible()                # 预解码：按视窗
 
     def _download_around_current(self):
         """预下载：[_cur_idx - back, _cur_idx + ahead] 之内、还没下过的图。"""
@@ -2039,8 +2224,10 @@ class ReadNewGraphics(QGraphicsView):
         if n == 0:
             return
         cur = self._cur_idx if self._cur_idx >= 0 else max(0, self.current_index())
-        lo = max(0, cur - self._prefetch_back)
-        hi = min(n - 1, cur + self._prefetch_ahead)
+        _prefetch_back = Setting.PicturePrefetchCount.value
+        _prefetch_ahead = Setting.PicturePrefetchFrontCount.value
+        lo = max(0, cur - _prefetch_back)
+        hi = min(n - 1, cur + _prefetch_ahead)
         for i in range(lo, hi + 1):
             self._maybe_download(self._items[i])
 
@@ -2052,14 +2239,17 @@ class ReadNewGraphics(QGraphicsView):
                     for it in self._page_items(p):
                         self._start_decode_if_ready(it)
             return
-        L = self._viewport_len()
-        s0 = self._scroll_min_s()
-        top, bottom = s0 - L * 1.5, s0 + L * 2.5
-        for it in self._items:               # 按 s 升序，可提前退出
-            if it._s > bottom:
-                break                        # 后面的都更远，不用看了
-            if it._s + it._len < top:
-                continue                     # 在窗口上方（已滚过）
+        front = Setting.PictureShowFrontCount.value
+        after = Setting.PictureShowCount.value
+        # L = self._viewport_len()
+        # s0 = self._scroll_min_s()
+        # top, bottom = s0 - L * 1.5, s0 + L * 2.5
+        curIdx = self._cur_idx
+        for it in self._items[curIdx - front:curIdx + after+1]:
+            # if it._s > bottom:
+            #     break                        # 后面的都更远，不用看了
+            # if it._s + it._len < top:
+            #     continue                     # 在窗口上方（已滚过）
             self._start_decode_if_ready(it)
 
     def _maybe_download(self, it: ReadNewGraphicsItem):
@@ -2096,37 +2286,51 @@ class ReadNewGraphics(QGraphicsView):
 
         Log.Info(f"Start decode, index{it.index}, is_force:{isForce}, is_waifu:{it.is_need_waifu2x}")
         it._decoding = True
+        toW, toH = 0, 0
         it.update()                          # 立刻显示"解码中…"
         if it.isAnima:
             self._on_animated(it, it._size, it._buf)
         elif it.is_need_waifu2x:
-            self.read_task.AddQImageTask(it._waifu_buf, self.devicePixelRatioF(), self._decode_max_px(), 0, self._mode,
+            size = self._decode_target_size(it)
+            if it.waifu_file_data.w > size.width() or it.waifu_file_data.h > size.height():
+                toW = size.width()
+                toH = size.height()
+            self.read_task.AddQImageTask(it._waifu_buf, self.devicePixelRatioF(), toW, toH, self._mode,
                                          callBack=self._on_loaded, backParam=(it.index, True))
         else:
-            self.read_task.AddQImageTask(it._buf, self.devicePixelRatioF(), self._decode_max_px(), 0, self._mode, callBack=self._on_loaded, backParam=(it.index, False))
+            size = self._decode_target_size(it)
+            if it.file_data.w > size.width() or it.file_data.h > size.height():
+                toW = size.width()
+                toH = size.height()
+            self.read_task.AddQImageTask(it._buf, self.devicePixelRatioF(), toW, toH, self._mode, callBack=self._on_loaded, backParam=(it.index, False))
 
     def _maybe_decode(self, it: ReadNewGraphicsItem):
         """下载刚完成时调用：只有落进"预解码窗口"才立刻解，否则留着字节等滚到附近。"""
-        if self._in_decode_window(it):
+        curIdx = self._cur_idx
+        front = Setting.PictureShowFrontCount.value
+        after = Setting.PictureShowCount.value
+        if curIdx - front <= it.index <= curIdx+after:
+        # if self._in_decode_window(it):
             self._start_decode_if_ready(it)
 
-    def _in_decode_window(self, it: ReadNewGraphicsItem) -> bool:
-        """这张图是否落在当前"预解码窗口"内（视窗 ±1.5/2.5 屏，或页模式 ±1 页）。"""
-        if not ReadMode.isScroll(self._mode):
-            try:
-                idx = self._items.index(it)
-            except ValueError:
-                return False
-            return abs(self._page_of_index(idx) - self._page) <= 1
-        L = self._viewport_len()
-        s0 = self._scroll_min_s()
-        return (it._s + it._len >= s0 - L * 1.5) and (it._s <= s0 + L * 2.5)
+    # def _in_decode_window(self, it: ReadNewGraphicsItem) -> bool:
+    #     """这张图是否落在当前"预解码窗口"内（视窗 ±1.5/2.5 屏，或页模式 ±1 页）。"""
+    #     if not ReadMode.isScroll(self._mode):
+    #         try:
+    #             idx = self._items.index(it)
+    #         except ValueError:
+    #             return False
+    #         return abs(self._page_of_index(idx) - self._page) <= 1
+    #     L = self._viewport_len()
+    #     s0 = self._scroll_min_s()
+    #     return (it._s + it._len >= s0 - L * 1.5) and (it._s <= s0 + L * 2.5)
 
     # ---- 解码位图 / 压缩字节的 LRU 回收（200 张大图也不会把内存吃光）----
 
     def _trim_caches(self):
         """按预算回收位图/压缩字节：离当前页最远的先丢，当前可见的永远不动。"""
         self._trim_pixmaps()
+        self._trim_pixmaps_max_len()
         # self._trim_buffers()
 
     def _trim_pixmaps(self):
@@ -2157,6 +2361,36 @@ class ReadNewGraphics(QGraphicsView):
             if it._buf:
                 it._pending_decode = True         # 有字节：滚回来能直接重解
             it.update()
+            Log.Info(f"free over budget pixmap, {it.index}")
+
+    def _trim_pixmaps_max_len(self):
+        """已解码位图超预算 数量限制"""
+        # min_budget = 5
+        # max_budget = 10
+        keep = set(self.visible_indices())     # 当前屏幕上真正可见的：绝不回收
+        # min_cands = []
+        max_cands = []
+        curIdx = self._cur_idx
+        front = Setting.PictureShowFrontCount.value
+        after = Setting.PictureShowCount.value
+        for i, it in enumerate(self._items):
+            if it.pixmap is None:
+                continue
+            if i in keep or it.is_animated:
+                continue
+            if not (curIdx - front <= it.index <= curIdx+after):
+                max_cands.append((i, it))
+
+        if len(max_cands) <= 0:
+            return
+        cur = self._cur_idx if self._cur_idx >= 0 else 0
+        max_cands.sort(key=lambda t: -abs(t[0] - cur))   # 离得越远越先丢
+        for i, it in max_cands:
+            it.pixmap = None
+            if it._buf:
+                it._pending_decode = True         # 有字节：滚回来能直接重解
+            it.update()
+            Log.Info(f"free over index pixmap, {it.index}")
 
     # def _trim_buffers(self):
     #     """压缩字节超预算 -> 从离当前页最远的开始丢（丢了之后要用会重新下载）。"""
@@ -2317,7 +2551,7 @@ class ReadNewGraphics(QGraphicsView):
             model = ToolUtil.GetLookScaleModel(self.read_view.category, item._size.width(), item._size.height(), item.fmt)
             if not model or item.isAnima:
                 item._waifu2x_state = -1
-                self._start_decode_if_ready(item)
+                self._maybe_decode(item)
             else:
                 item._waifu_reply = self.read_task.AddCovertData(item.index, item._buf, model, self._on_waifu_finished)
 
@@ -2340,14 +2574,15 @@ class ReadNewGraphics(QGraphicsView):
 
         reply, item._waifu_reply = item._waifu_reply, None
         item.waifu_file_data = fileData
-
+        item._waifu_tick = tick
         self._try_probe_size(item, fileData)           # 兜底：万一中途一直没探测到
 
         if item.isAnima:
             self._on_animated(item, item._size, QByteArray(fileData.data))
         else:
-            self._start_decode_if_ready(item)
+            self._maybe_decode(item)
 
+    @time_me
     def _on_loaded(self, img: QImage, v):
         """后台解码完成（主线程槽）：修正布局 + 像素填进固定矩形。"""
         (index, isWaifu2x) = v
@@ -2358,6 +2593,7 @@ class ReadNewGraphics(QGraphicsView):
             self._on_decode_failed(item)
             return
 
+        Log.Info(f"finish decode, index{index}, size:{img.size()}, is_waifu:{isWaifu2x}")
         item._progress = None
         item._decoding = False
         item._pending_decode = False
@@ -2468,31 +2704,34 @@ class ReadNewGraphics(QGraphicsView):
             ev.accept()
             return
 
+        # 先记下"滚之前"是否已经在边界：这样刚好翻到最后一页的那一下不算越界
+        at_start, at_end = self._at_content_start(), self._at_content_end()
+        forward = -d > 0              # 滚轮向下 = 往阅读方向（最后面）前进
         if self._mode == ReadMode.Samewight:
             # 单页等宽：滚轮平滑滚当前页，滚到顶/底再翻页
             step = max(60.0, self._page_axis_len() / 6.0)
             self._sw_scroll_by(-d / 120.0 * step)   # 滚轮向下 = 前进
-            ev.accept()
-            return
 
-        if not ReadMode.isScroll(self._mode):
+        elif not ReadMode.isScroll(self._mode):
             # 页模式：滚轮一格 = 翻一页（带滑动动画；拖拽中忽略滚轮）
             if not self._page_dragging:
                 n = int(round(-d / 120.0))     # 滚轮向下 = 下一页
                 self._flip_page(max(-3, min(3, n)))
             ev.accept()
             return
-        # 连续模式：一格滚轮 ≈ 视口的 1/6（最少 60px），d/120 归一化为"格数"
-
-        # step = max(60.0, self._viewport_len() / 6.0)
-        step = max(60.0, Setting.ScrollInitSpeed.value)
-        self._scroller.scroll_by(-d / 120.0 * step)   # 滚轮向下 = 往阅读方向前进
-        ev.accept()
+        else:
+            # 连续模式：一格滚轮 ≈ 视口的 1/6（最少 60px），d/120 归一化为"格数"
+            step = max(60.0, self._viewport_len() / 6.0)
+            self._scroller.scroll_by(-d / 120.0 * step)   # 滚轮向下 = 往阅读方向前进
+        # 到顶/到底后继续往外滚 -> 累加，够次数发 scrolledPastStart/End
+        if not self._page_dragging:      # 页模式拖拽中滚轮被忽略，不参与计数
+            self._note_edge_scroll(forward, at_start, at_end)
 
     def keyPressEvent(self, ev):
         """页模式的键盘翻页：方向键按阅读方向解释（RTL 下左=下一页）、
         PageDown/Space/回车 下一页、PageUp 上一页。连续模式走 Qt 默认行为。
-        两种模式通用的缩放快捷键：Ctrl+= 放大 / Ctrl+- 缩小 / Ctrl+0 重置。"""
+        两种模式通用的缩放快捷键：Ctrl+= 放大 / Ctrl+- 缩小 / Ctrl+0 重置。
+        翻页/滚动键也会参与"到顶/到底后再按 N 下"的触发计数。"""
         # 缩放快捷键（以视口中心为锚点）
         if ev.modifiers() & Qt.ControlModifier:
             k = ev.key()
@@ -2509,32 +2748,44 @@ class ReadNewGraphics(QGraphicsView):
                 self.reset_zoom()
                 ev.accept()
                 return
-        if ReadMode.isScroll(self._mode):
-            self._release_initial_hold()   # 方向键/PageUp 等：用户接管位置
-            super().keyPressEvent(ev)
-            return
-        self._release_initial_hold()   # 方向键/PageUp 等：用户接管位置
         k = ev.key()
-        nxt = back = None               # 本模式下"下一页/上一页"对应的键
+        # 本模式下"前进/后退"对应的键（RTL 下左才是前进）
         if ReadMode.isUpDown(self._mode):
             nxt, back = Qt.Key_Down, Qt.Key_Up
-        elif ReadMode.isWheelLeftRight(self._mode):
+        elif ReadMode.isLeftRight(self._mode):
             nxt, back = Qt.Key_Right, Qt.Key_Left
-        else:                           # rtl：往左才是前进
+        else:
             nxt, back = Qt.Key_Left, Qt.Key_Right
-        if k in (Qt.Key_PageDown, Qt.Key_Space, Qt.Key_Return, nxt):
+        is_fwd = k in (Qt.Key_PageDown, Qt.Key_Space, Qt.Key_Return, nxt)
+        is_back = k in (Qt.Key_PageUp, back)
+
+        if ReadMode.isScroll(self._mode):
+            self._release_initial_hold()   # 方向键/PageUp 等：用户接管位置
+            if not (is_fwd or is_back):
+                super().keyPressEvent(ev)
+                return
+            at_start, at_end = self._at_content_start(), self._at_content_end()
+            super().keyPressEvent(ev)
+            self._note_edge_scroll(is_fwd, at_start, at_end)
+            return
+        self._scroller.stop_auto()      # 键盘操作停止自动滚动/自动翻页
+        self._stop_page_auto()
+        self._release_initial_hold()
+        if not (is_fwd or is_back):
+            super().keyPressEvent(ev)
+            return
+        at_start, at_end = self._at_content_start(), self._at_content_end()
+        if is_fwd:
             if self._mode == ReadMode.Samewight:
                 self._sw_scroll_by(max(60.0, self._page_axis_len() * 0.9))
             else:
                 self._flip_page(1)
-        elif k in (Qt.Key_PageUp, back):
+        else:
             if self._mode == ReadMode.Samewight:
                 self._sw_scroll_by(-max(60.0, self._page_axis_len() * 0.9))
             else:
                 self._flip_page(-1)
-        else:
-            super().keyPressEvent(ev)
-            return
+        self._note_edge_scroll(is_fwd, at_start, at_end)
         ev.accept()
 
     def _snap_rest(self):
@@ -2655,9 +2906,16 @@ class ReadNewGraphics(QGraphicsView):
         super().mouseReleaseEvent(ev)
 
     def scrollContentsBy(self, dx, dy):
-        """滚动条位置变了（用户拖滚动条/键盘/我们的 setValue 都会到这）。"""
+        """滚动条位置变了（用户拖滚动条/键盘/我们的 setValue 都会到这）。
+
+        注意：平滑滚动时每帧会多次进来（动画写 setValue、亚像素 transform 重算
+        range、尺寸修正补偿……），位移不到 0.5px 的那些没必要重算加载窗口——
+        可见集合/预取窗口都不可能在这个尺度上变化。真正需要刷新时（跳转/切
+        模式/追加图片）都是直接调 _load_visible()，不经过这里。"""
         super().scrollContentsBy(dx, dy)
         self._was_at_end = self._at_end()   # 记录是否贴末端，rangeChanged 锚点要用
+        if abs(self._scroll_min_s() - self._last_load_s) < 0.5:
+            return
         self._load_visible()                # 滚到新位置 -> 刷新预下载/预解码
 
     def hideEvent(self, ev):
@@ -2724,6 +2982,8 @@ class ReadNewGraphics(QGraphicsView):
     def after_index_change(self, index):
         if self._first_show:
             return
+        if index < 0:
+            return
         self.qtTool.slider.setValue(index+1)
         Log.Info(f"change index, {index}")
         self.update_tool_label(index)
@@ -2743,15 +3003,32 @@ class ReadNewGraphics(QGraphicsView):
         size = 0
         dataLen = 0
         status = QtFileData.Downloading
-        if item._size:
-            size = QSize(item._size)
-        if item._buf:
-            dataLen = len(item._buf)
+        waifuSize = None
+        waifuDataLen = 0
+        waifuState = ""
+        if item.file_data:
+            size = QSize(item.file_data.w, item.file_data.h)
+        if item.file_data:
+            dataLen = len(item.file_data.data)
             status = QtFileData.DownloadSuc
         elif item._failed:
             status = QtFileData.DownloadReset
+        elif item._reply:
+            status = QtFileData.Downloading
+        if item.isAnima:
+            waifuState = QtFileData.AnimationNotAuto
 
-        self.qtTool.SetData(size, dataLen, status)
+        if item.waifu_file_data:
+            waifuSize = QSize(item.waifu_file_data.w, item.waifu_file_data.h)
+            waifuState = QtFileData.WaifuStateEnd
+        if item.waifu_file_data:
+            waifuDataLen = len(item.waifu_file_data.data)
+        if item.is_not_waifu2x:
+            waifuState = QtFileData.WaifuStateCancle
+        if item._waifu_reply:
+            waifuState = QtFileData.WaifuStateStart
+
+        self.qtTool.SetData(size, dataLen, status, waifuSize, waifuDataLen, waifuState, item._waifu_tick)
 
     def eventFilter(self, obj, ev) -> bool:
         # print(obj, ev.type())
@@ -2772,8 +3049,8 @@ class ReadNewGraphics(QGraphicsView):
                 #     self.ScrollNextPage()
                 elif ev.key() == Qt.Key_Escape:
                     self.qtTool.ReturnPage()
-                # elif ev.key() == Qt.Key_F5:
-                #     self.qtTool.SwitchScrollAndTurn()
+                elif ev.key() == Qt.Key_F5:
+                    self.qtTool.SwitchScrollAndTurn()
                 elif ev.key() == Qt.Key_F10:
                     self.change_double_page()
                 elif ev.key() == Qt.Key_F11:
@@ -2807,9 +3084,6 @@ class ReadNewGraphics(QGraphicsView):
             elif ev.type() == QEvent.GraphicsSceneMouseRelease:
                 if not self.frame.helpLabel.isHidden():
                     self.frame.helpLabel.hide()
-                    return True
-                if self.qtTool.IsStartScrollAndTurn():
-                    self.qtTool.CloseScrollAndTurn()
                     return True
 
                 if ev.button() == Qt.MouseButton.LeftButton:
@@ -2895,3 +3169,18 @@ class ReadNewGraphics(QGraphicsView):
 
     def check_waifu2x_state(self):
         self._load_visible()
+
+    def after_switch_last_eps(self):
+        self.qtTool.OpenLastEps()
+
+    def after_switch_next_eps(self):
+        self.qtTool.OpenNextEps()
+
+    def clear_all_item(self):
+        self._reset_edge_counts()     # 跳转后重新算"到顶/到底"的连续次数
+        self.stop_auto()
+        self._release_initial_hold()
+        for item in self._items:
+            self._scene.removeItem(item)
+            ReadNewPoolManager().AddProxyItem(item)
+        self._items = []

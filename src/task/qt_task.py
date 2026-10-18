@@ -8,6 +8,7 @@ from PySide6.QtGui import QImage
 
 from config import config
 from config.setting import Setting
+from tools.log import Log
 from tools.singleton import Singleton
 from tools.tool import time_me
 
@@ -218,6 +219,7 @@ class TaskBase(Singleton):
             taskIds = list(self.flagToIds.get(cleanFlag, ()))
             removedIds = self._RemoveTasksByIds(taskIds)
             self.flagToIds.pop(cleanFlag, None)
+            taskIds and Log.Info(f"cancel {self.__class__.__name__} taskId, {taskIds}")
             return removedIds
 
     def _RemoveTasksByIds(self, taskIds):
