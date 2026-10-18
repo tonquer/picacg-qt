@@ -23,6 +23,7 @@ from task.task_qimage import TaskQImage
 from task.task_waifu2x import TaskWaifu2x
 from task.task_cache import TaskCache
 from tools.log import Log
+from tools.tool import time_me
 from view.download.download_dir_view import DownloadDirView
 
 
@@ -37,6 +38,7 @@ class MainView(Main, QtTaskBase):
         # self.setAttribute(Qt.WA_PaintOnScreen, False)  # 禁用屏幕缓存
         # self.setAttribute(Qt.WA_NoSystemBackground, True)  # 去除系统背景
         # self.setAttribute(Qt.WA_OpaquePaintEvent, True)  # 设置为不透明的paint event
+        # self.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings, True)
         self.resize(600, 600)
         self.setWindowTitle(config.ProjectName)
         self.setWindowIcon(QIcon(":/png/icon/logo_round.png"))
@@ -213,6 +215,7 @@ class MainView(Main, QtTaskBase):
         self.waifu2xToolView.retranslateUi(self.waifu2xToolView)
         self.navigationWidget.retranslateUi(self.navigationWidget)
 
+    @time_me
     def Init(self):
         print(self.size())
         IsCanUse = False

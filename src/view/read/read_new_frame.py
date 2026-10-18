@@ -9,10 +9,8 @@ from component.progress_bar.dwater_progress_bar import DWaterProgress
 from config.setting import Setting
 from tools.str import Str
 from view.read.read_enum import ReadMode
-from view.read.read_graphics import ReadGraphicsView
 from view.read.read_new_graphics import ReadNewGraphics
 from view.read.read_new_tool import ReadNewTool
-from view.read.read_tool import ReadTool
 
 
 class ReadNewFrame(QFrame):
@@ -20,7 +18,6 @@ class ReadNewFrame(QFrame):
         QFrame.__init__(self, readImg)
         self._readImg = weakref.ref(readImg)
         self.resize(readImg.width(), readImg.height())
-        # self.scrollArea = ReadScrollArea(self)
         self.scrollArea = ReadNewGraphics(ReadMode(Setting.LookReadMode.value), self)
         self.qtTool = ReadNewTool(self)
         self.qtTool.hide()

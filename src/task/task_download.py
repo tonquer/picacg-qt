@@ -11,7 +11,17 @@ from tools.book import BookMgr, BookEps, Picture
 from tools.log import Log
 from tools.status import Status
 from tools.str import Str
+from tools.tool import ToolUtil
 
+
+class FileData(object):
+    def __init__(self, data):
+        self.data = data
+        w, h, fmt, isAnima = ToolUtil.GetPictureSize(data)
+        self.w = w
+        self.h = h
+        self.isAnima = isAnima
+        self.fmt = fmt
 
 class QtDownloadTask(object):
     Waiting = Str.Waiting
@@ -30,6 +40,7 @@ class QtDownloadTask(object):
         self.downloadId = downloadId
         self.downloadCallBack = None       # addData, laveSize
         self.downloadCompleteBack = None   # data, status
+        self.downloadCompleteBack2 = None  # FileData
         self.statusBack = None
         self.isReload = False
         self.fileSize = 0
@@ -77,10 +88,11 @@ class TaskDownload(TaskBase, QtTaskBase):
                 break
             self.HandlerDownload({"st": Status.Ok}, (v, QtDownloadTask.Waiting))
 
-    def DownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isReload=False, resetCnt=1):
+    def DownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isReload=False, resetCnt=1, completeCallBack2=None):
         data = QtDownloadTask()
         data.downloadCallBack = downloadCallBack
         data.downloadCompleteBack = completeCallBack
+        data.downloadCompleteBack2 = completeCallBack2
         data.backParam = backParam
         data.statusBack = downloadStCallBack
         data.isReload = isReload
@@ -126,6 +138,12 @@ class TaskDownload(TaskBase, QtTaskBase):
                         info.downloadCompleteBack(b"", st, info.backParam)
                     else:
                         info.downloadCompleteBack(b"", st)
+                if info.downloadCompleteBack2:
+                    if info.backParam is not None:
+                        info.downloadCompleteBack2(None, st, info.backParam)
+                    else:
+                        info.downloadCompleteBack2(None, st)
+
             except Exception as es:
                 Log.Error(es)
             return
@@ -133,31 +151,39 @@ class TaskDownload(TaskBase, QtTaskBase):
         if info.lastLaveSize <= 0:
             info.lastLaveSize = laveFileSize
 
-        if info.downloadCallBack:
             try:
-                if info.backParam is not None:
-                    info.downloadCallBack(info.lastLaveSize-laveFileSize, laveFileSize, info.backParam)
-                else:
-                    info.downloadCallBack(info.lastLaveSize-laveFileSize, laveFileSize)
+                if info.downloadCallBack:
+                    if info.backParam is not None:
+                        info.downloadCallBack(info.lastLaveSize-laveFileSize, laveFileSize, info.backParam)
+                    else:
+                        info.downloadCallBack(info.lastLaveSize-laveFileSize, laveFileSize)
             except Exception as es:
                 Log.Error(es)
             info.lastLaveSize = laveFileSize
 
         if laveFileSize == 0 and data != b"":
-            if info.downloadCompleteBack:
                 try:
-                    if info.backParam is not None:
-                        info.downloadCompleteBack(data, Status.Ok, info.backParam)
-                    else:
-                        info.downloadCompleteBack(data, Status.Ok)
+                    if info.downloadCompleteBack:
+                        if info.backParam is not None:
+                            info.downloadCompleteBack(data, Status.Ok, info.backParam)
+                        else:
+                            info.downloadCompleteBack(data, Status.Ok)
+
+                    if info.downloadCompleteBack2:
+                        if info.backParam is not None:
+                            info.downloadCompleteBack2(FileData(data), Status.Ok, info.backParam)
+                        else:
+                            info.downloadCompleteBack2(FileData(data), Status.Ok)
+
                 except Exception as es:
                     Log.Error(es)
 
     def DownloadBook(self, bookId, epsId, index, statusBack=None, downloadCallBack=None, completeCallBack=None,
-                    backParam=None, loadPath="", cachePath="", savePath="", cleanFlag=None, isInit=False):
+                    backParam=None, loadPath="", cachePath="", savePath="", cleanFlag=None, isInit=False, downloadCompleteBack2=None):
         data = QtDownloadTask()
         data.downloadCallBack = downloadCallBack
         data.downloadCompleteBack = completeCallBack
+        data.downloadCompleteBack2 = downloadCompleteBack2
         data.isInit = isInit
         data.statusBack = statusBack
         data.backParam = backParam
@@ -172,9 +198,10 @@ class TaskDownload(TaskBase, QtTaskBase):
         self._inQueue.put(taskId)
         return taskId
 
-    def DownloadCache(self, filePath, completeCallBack=None, backParam = 0, cleanFlag=""):
+    def DownloadCache(self, filePath, completeCallBack=None, backParam = 0, cleanFlag="", downloadCompleteBack2=None):
         data = QtDownloadTask()
         data.downloadCompleteBack = completeCallBack
+        data.downloadCompleteBack2 = downloadCompleteBack2
         data.loadPath = filePath
         data.backParam = backParam
         data.isLoadTask = True
@@ -353,7 +380,7 @@ class TaskDownload(TaskBase, QtTaskBase):
                 resetCnt = config.ResetDownloadCnt
                 self.AddDownloadTask(
                     url, "", task.downloadCallBack, task.downloadCompleteBack, task.statusBack,
-                    task.backParam, task.loadPath, task.cachePath, task.savePath, task.cleanFlag, resetCnt=resetCnt)
+                    task.backParam, task.loadPath, task.cachePath, task.savePath, task.cleanFlag, resetCnt=resetCnt, completeCallBack2=task.downloadCompleteBack2)
         except Exception as es:
             Log.Error(es)
             self.SetTaskStatus(taskId, backData, task.Error)

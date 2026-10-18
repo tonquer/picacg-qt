@@ -6,6 +6,7 @@ from queue import Queue
 
 from qt_owner import QtOwner
 from task.qt_task import TaskBase, QtTaskBase
+from task.task_download import FileData
 from tools.log import Log
 from tools.singleton import Singleton
 import os
@@ -20,6 +21,7 @@ class QLocalTask(object):
     def __init__(self, taskId=0):
         self.taskId = taskId
         self.callBack = None       # addData, laveSize
+        self.callBack2 = None
         self.backParam = None
         self.cleanFlag = ""
         self.status = Status.Ok
@@ -195,6 +197,11 @@ class TaskLocal(TaskBase, QtTaskBase):
                     info.callBack(newData, st)
                 else:
                     info.callBack(newData, st, info.backParam)
+            if info.callBack2:
+                if info.backParam is None:
+                    info.callBack2(FileData(newData), st)
+                else:
+                    info.callBack2(FileData(newData), st, info.backParam)
         except Exception as es:
             Log.Error(es)
 
@@ -247,7 +254,7 @@ class TaskLocal(TaskBase, QtTaskBase):
         self._inQueue.put(taskId)
         return taskId
 
-    def AddLoadReadPicture(self, v2, index, backParam, callBack, cleanFlag):
+    def AddLoadReadPicture(self, v2, index, backParam, callBack, cleanFlag, completeCallBack2):
         assert isinstance(v2, LocalData)
         if index == -1 and v2.eps:
             v = v2.eps[0]
@@ -256,6 +263,7 @@ class TaskLocal(TaskBase, QtTaskBase):
 
         info = QLocalTask(0)
         info.callBack = callBack
+        info.callBack2 = completeCallBack2
         info.backParam = backParam
         info.bookId = v.id
         info.index = index

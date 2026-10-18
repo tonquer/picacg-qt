@@ -22,6 +22,10 @@ class ReadMode(Enum):
     RightLeftScroll2 = 8  # 右左滚动(滚轮正序)
 
     @staticmethod
+    def isUpDown(model):
+        return model in [ReadMode.UpDown, ReadMode.Samewight]
+
+    @staticmethod
     def isDouble(model):
         return model in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]
 
@@ -30,12 +34,16 @@ class ReadMode(Enum):
         return model in [ReadMode.LeftRight, ReadMode.LeftRightDouble, ReadMode.LeftRightScroll]
 
     @staticmethod
+    def isWheelLeftRight(model):
+        return model in [ReadMode.LeftRight, ReadMode.LeftRightDouble, ReadMode.LeftRightScroll, ReadMode.LeftRightDouble, ReadMode.RightLeftScroll]
+
+    @staticmethod
     def isRightLeft(model):
         return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
 
-    @staticmethod
-    def isUpDown(model):
-        return model not in [ReadMode.LeftRightScroll, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
+    # @staticmethod
+    # def isUpDown(model):
+    #     return model not in [ReadMode.LeftRightScroll, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
 
     @staticmethod
     def isScroll(model):
@@ -194,40 +202,40 @@ class QtFileData(object):
         return
 
     @staticmethod
-    def GetReadScale(stripModel, scaleCnt, maxWidth, maxHeight):
+    def GetReadScale(stripModel, scale, maxWidth, maxHeight):
         # 不进行缩放了，因为导致模糊
         if stripModel == ReadMode.LeftRight:
-            scale = (1 + scaleCnt * 0.1)
+            # scale = (1 + scaleCnt * 0.1)
             wight = int(maxWidth * scale)
             height = maxHeight * scale
             toScaleW = wight
             toScaleH = height
         elif stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]:
-            scale = (1 + scaleCnt * 0.1)
+            # scale = (1 + scaleCnt * 0.1)
             toScaleW =int(maxWidth // 2 * scale)
             toScaleH = maxHeight * scale
 
         elif stripModel in [ReadMode.LeftRightDouble]:
-            scale = (1 + scaleCnt * 0.1)
+            # scale = (1 + scaleCnt * 0.1)
 
             toScaleW = int(maxWidth // 2 * scale)
             toScaleH = maxHeight * scale
         elif stripModel in [ReadMode.LeftRightScroll]:
-            scale = (1 + scaleCnt * 0.1)
+            # scale = (1 + scaleCnt * 0.1)
             toScaleW = maxWidth * scale * 10
             toScaleH = min(maxHeight, maxHeight * scale)
 
         elif stripModel in [ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]:
-            scale = (1 + scaleCnt * 0.1)
+            # scale = (1 + scaleCnt * 0.1)
             toScaleW = maxWidth * scale * 10
             toScaleH = min(maxHeight, maxHeight * scale)
 
         elif stripModel in [ReadMode.UpDown]:
-            scale = (1 + scaleCnt * 0.1)
+            # scale = (1 + scaleCnt * 0.1)
             toScaleW = min(maxWidth, maxWidth * scale)
             toScaleH = maxHeight * scale * 10
         elif stripModel in [ReadMode.Samewight]:
-            scale = (1 + scaleCnt * 0.1)
+            # scale = (1 + scaleCnt * 0.1)
             toScaleW = maxWidth * scale
             toScaleH = maxHeight * scale * 10
         else:

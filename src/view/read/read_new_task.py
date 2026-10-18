@@ -46,18 +46,18 @@ class ReadNewTask(QtTaskBase):
     def epsId(self):
         return self.readView.epsId
 
-    def AddDownload(self, i, downloadCallBack=None, completeCallBack=None):
+    def AddDownload(self, i, downloadCallBack=None, completeCallBack2=None):
         loadPath = QtOwner().downloadView.GetDownloadFilePath(self.bookId, self.epsId, i)
         if self.isLocal:
             assert isinstance(self.cacheBook, LocalData)
-            return self.AddLocalTaskLoadPicture(self.cacheBook, i, callBack=completeCallBack, backparam=i)
+            return self.AddLocalTaskLoadPicture(self.cacheBook, i, completeCallBack2=completeCallBack2, backparam=i)
         elif not self.isOffline:
             return self.AddDownloadBook(self.bookId, self.epsId, i,
                                  downloadCallBack=downloadCallBack,
-                                 completeCallBack=completeCallBack,
+                                 completeCallBack2=completeCallBack2,
                                  backParam=i, loadPath=loadPath)
         else:
-            return self.AddDownloadBookCache(loadPath, completeCallBack=completeCallBack, backParam=i)
+            return self.AddDownloadBookCache(loadPath, completeCallBack2=completeCallBack2, backParam=i)
 
     def AddCovertData(self, i, data, model, callBack=None):
         path = ToolUtil.GetRealPath(i + 1, "book/{}/{}".format(self.bookId, self.epsId + 1))
@@ -67,9 +67,9 @@ class ReadNewTask(QtTaskBase):
             filePath = ""
 
         if self.isLocal:
-            return self.AddConvertTask(path, data, model, callBack, i, noSaveCache=True)
+            return self.AddConvertTask(path, data, model, completeCallBack2=callBack, backParam=i, noSaveCache=True)
         else:
-            return self.AddConvertTask(path, data, model, callBack, i, preDownPath=filePath)
+            return self.AddConvertTask(path, data, model, completeCallBack2=callBack, backParam=i, preDownPath=filePath)
 
 
 class _DecodeSignals(QObject):

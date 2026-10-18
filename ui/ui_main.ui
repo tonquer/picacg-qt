@@ -124,19 +124,13 @@
         </item>
        </layout>
       </widget>
-      <widget class="ReadView" name="readView"/>
+      <widget class="ReadNewView" name="readView"/>
      </widget>
     </item>
    </layout>
   </widget>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>ReadView</class>
-   <extends>QWidget</extends>
-   <header location="global">view.read.read_view.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>IndexView</class>
    <extends>QWidget</extends>
@@ -327,6 +321,12 @@
    <class>LocalFavoriteView</class>
    <extends>QWidget</extends>
    <header location="global">view.user.local_favorite_view.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ReadNewView</class>
+   <extends>QWidget</extends>
+   <header>view.read.read_new_view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

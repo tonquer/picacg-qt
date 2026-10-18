@@ -4,6 +4,7 @@ import platform
 import random
 import re
 import struct
+import sys
 import urllib
 import uuid
 from datetime import datetime, timedelta
@@ -531,7 +532,7 @@ class CheckUpdateReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
-        data["platform"] = platform.platform()
+        data["platform"] = sys.platform
         if not isPre:
             url = url2 + "/version.txt?"
         else:
@@ -548,7 +549,7 @@ class CheckUpdateInfoReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
-        data["platform"] = platform.platform()
+        data["platform"] = sys.platform
         url = url2 + "/{}.txt?".format(newVersion)
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
@@ -562,7 +563,7 @@ class CheckUpdateConfigReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
-        data["platform"] = platform.platform()
+        data["platform"] = sys.platform
         url = url2 + "/config.txt?"
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)

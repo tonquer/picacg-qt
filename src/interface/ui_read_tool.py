@@ -30,7 +30,7 @@ class Ui_ReadImg(object):
     def setupUi(self, ReadImg):
         if not ReadImg.objectName():
             ReadImg.setObjectName(u"ReadImg")
-        ReadImg.resize(328, 750)
+        ReadImg.resize(505, 750)
         ReadImg.setAutoFillBackground(False)
         ReadImg.setStyleSheet(u"")
         self.gridLayout_2 = QGridLayout(ReadImg)
@@ -41,7 +41,7 @@ class Ui_ReadImg(object):
         self.scrollArea22.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 301, 897))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 478, 895))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
@@ -376,24 +376,6 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_12)
 
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label_2 = QLabel(self.scrollAreaWidgetContents)
-        self.label_2.setObjectName(u"label_2")
-
-        self.horizontalLayout_2.addWidget(self.label_2)
-
-        self.scrollTime = WheelSpinBox(self.scrollAreaWidgetContents)
-        self.scrollTime.setObjectName(u"scrollTime")
-        self.scrollTime.setMinimum(50)
-        self.scrollTime.setMaximum(2000)
-        self.scrollTime.setValue(500)
-
-        self.horizontalLayout_2.addWidget(self.scrollTime)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
-
         self.horizontalLayout_13 = QHBoxLayout()
         self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
         self.label_11 = QLabel(self.scrollAreaWidgetContents)
@@ -419,6 +401,11 @@ class Ui_ReadImg(object):
         self.line_8.setFrameShadow(QFrame.Sunken)
 
         self.verticalLayout.addWidget(self.line_8)
+
+        self.openGLBox = QCheckBox(self.scrollAreaWidgetContents)
+        self.openGLBox.setObjectName(u"openGLBox")
+
+        self.verticalLayout.addWidget(self.openGLBox)
 
         self.pushButton_2 = QPushButton(self.scrollAreaWidgetContents)
         self.pushButton_2.setObjectName(u"pushButton_2")
@@ -521,7 +508,6 @@ class Ui_ReadImg(object):
         self.waifu2xSave.clicked.connect(ReadImg.Waifu2xSave)
         self.waifu2xCancle.clicked.connect(ReadImg.Waifu2xCancle)
         self.zoomSlider.valueChanged.connect(ReadImg.ScalePicture)
-        self.comboBox.currentIndexChanged.connect(ReadImg.ChangeReadMode)
 
         QMetaObject.connectSlotsByName(ReadImg)
     # setupUi
@@ -573,8 +559,8 @@ class Ui_ReadImg(object):
         self.label_7.setText(QCoreApplication.translate("ReadImg", u"\u81ea\u52a8\u6eda\u52a8/\u7ffb\u9875", None))
         self.label_12.setText(QCoreApplication.translate("ReadImg", u"\u624b\u52a8\u6eda\u52a8\uff08\u50cf\u7d20\uff09\uff1a", None))
         self.label_10.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u901f\u5ea6\uff08\u50cf\u7d20\uff09\uff1a", None))
-        self.label_2.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u65f6\u95f4\uff08\u6beb\u79d2\uff09\uff1a", None))
         self.label_11.setText(QCoreApplication.translate("ReadImg", u"\u7ffb\u9875\u901f\u5ea6\uff08\u79d2\uff09\uff1a", None))
+        self.openGLBox.setText(QCoreApplication.translate("ReadImg", u"\u6253\u5f00OpenGL\u52a0\u901f", None))
         self.pushButton_2.setText(QCoreApplication.translate("ReadImg", u"\u9690\u85cf", None))
         self.fullButton.setText(QCoreApplication.translate("ReadImg", u"\u5168\u5c4f", None))
         self.returePage.setText(QCoreApplication.translate("ReadImg", u"\u8fd4\u56de", None))

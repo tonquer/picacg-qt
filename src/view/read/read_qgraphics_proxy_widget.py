@@ -1,6 +1,6 @@
-from PySide6.QtCore import QByteArray, QBuffer, Qt, QSize
-from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QGraphicsProxyWidget, QLabel
+from PySide6.QtCore import QByteArray, QBuffer, Qt, QSize, QRectF
+from PySide6.QtGui import QPixmap, QMovie, QPainter, QColor
+from PySide6.QtWidgets import QGraphicsProxyWidget, QLabel, QGraphicsItem, QStyleOptionGraphicsItem
 
 from tools.tool import ToolUtil
 

@@ -5,6 +5,7 @@ from view.read.read_new_frame import ReadNewFrame
 from view.read.read_new_graphics import ReadNewGraphics
 from view.read.read_new_task import ReadNewTask
 from view.read.read_new_tool import ReadNewTool
+from view.setting.setting_binding import BindSpin
 
 if TYPE_CHECKING:
     from view.read.read_graphics import ReadGraphicsView
@@ -28,8 +29,6 @@ from tools.book import BookMgr
 from tools.str import Str
 from tools.tool import time_me, ToolUtil
 from view.download.download_item import DownloadItem, DownloadEpsItem
-from view.read.read_enum import ReadMode, QtFileData, ReadShowState
-from view.read.read_frame import ReadFrame
 
 # 每个图片预取队列最多同时下载 5 张，避免较大的预取范围占满下载线程和网络连接池。
 PICTURE_PREFETCH_CONCURRENCY = 5
@@ -45,9 +44,8 @@ class ReadNewView(QtWidgets.QWidget):
         self.token = ""
         self.epsId = 0
         self.resetCnt = config.ResetCnt
-        self.curIndex = 0
 
-        self.pictureData: dict[int, QtFileData] = {}
+        # self.pictureData: dict[int, QtFileData] = {}
         self.maxPic = 0
         # desktop = QGuiApplication.primaryScreen().geometry()
         # self.resize(desktop.width() // 4 * 3, desktop.height() - 100)
@@ -57,6 +55,7 @@ class ReadNewView(QtWidgets.QWidget):
         self.gridLayout.setSpacing(0)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.frame = ReadNewFrame(self)
+        self.qtTool.comboBox.currentIndexChanged.connect(self.qtTool.ChangeReadMode2)
         # self.gridLayout.addWidget(self.scrollArea)
         self.gridLayout.addWidget(self.frame)
         self.setMinimumSize(300, 300)
@@ -64,19 +63,24 @@ class ReadNewView(QtWidgets.QWidget):
         self.isInit = False
         self.epsName = ""
 
-        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.SelectMenu)
+        # self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        # self.customContextMenuRequested.connect(self.SelectMenu)
         self.isShowMenu = False
 
         # self.stripModel = ReadMode(Setting.LookReadMode.value)
         # self.frame.scrollArea.initReadMode = self.stripModel
 
         # self.ChangeReadMode(Setting.LookReadMode.value)
-        self.qtTool.ChangeReadMode2(Setting.LookReadMode.value)
+        self.qtTool.ChangeReadMode(Setting.LookReadMode.value)
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
         self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
         self.qtTool.scrollInitSpeed.setValue(Setting.ScrollInitSpeed.value)
-        self.qtTool.scrollTime.setValue(Setting.ScrollTime.value)
+
+        for binding in (BindSpin(Setting.ScrollInitSpeed, self.qtTool.scrollInitSpeed),
+        BindSpin(Setting.TurnSpeed, self.qtTool.turnSpeed),
+        BindSpin(Setting.ScrollSpeed, self.qtTool.scrollSpeed)):
+            binding.signal.connect(partial(QtOwner().settingView._SaveSettingBinding, binding))
+        # self.qtTool.scrollTime.setValue(Setting.ScrollTime.value)
         self.pageIndex = -1
         self.isOffline = False
         self.isLocal = False
@@ -89,6 +93,10 @@ class ReadNewView(QtWidgets.QWidget):
         self._prefetchReady = False
         self._prefetchChapterMax = 0
         # QtOwner().owner.WindowsSizeChange.connect(self.qtTool.ClearQImage)
+
+    @property
+    def curIndex(self):
+        return self.scrollArea._cur_idx
 
     @property
     def cacheBook(self):
@@ -107,8 +115,15 @@ class ReadNewView(QtWidgets.QWidget):
         self.qtTool.modelNameButton.setText(ToolUtil.GetShowModelName(Setting.LookModelName.value))
         self.qtTool.modelNameButton.setToolTip(Setting.LookModelName.value)
 
-    def SelectMenu(self):
-        popMenu = QMenu(self)
+    def SelectMenu(self, view):
+        # TODO bug: 现在opengl全屏模式下无法显示右键菜单
+        if view:
+            popMenu = QMenu(view)
+            # popMenu.setWindowFlag(popMenu.windowFlags() | Qt.SubWindow)
+        else:
+            popMenu = QMenu(self)
+        # popMenu.setWindowFlags(popMenu.windowFlags() | Qt.ToolTip | Qt.FramelessWindowHint)
+
         action = popMenu.addAction(Str.GetStr(Str.Menu) + "(F12)")
         action.triggered.connect(self.ShowAndCloseTool)
 
@@ -122,18 +137,17 @@ class ReadNewView(QtWidgets.QWidget):
                 action = popMenu.addAction(Str.GetStr(Str.OpenAutoWaifu2x))
             action.triggered.connect(self.qtTool.checkBox.click)
 
-        p = self.pictureData.get(self.curIndex)
-        if config.CanWaifu2x:
-            if p:
-                if p.isWaifu2x:
-                    action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x) + "(F2)")
-                else:
-                    action = popMenu.addAction(Str.GetStr(Str.OpenCurWaifu2x) + "(F2)")
-                action.triggered.connect(self.qtTool.curWaifu2x.click)
+        item = self.scrollArea.get_cur_item()
+        if item:
+            if item.is_need_waifu2x:
+                action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x) + "(F2)")
+            else:
+                action = popMenu.addAction(Str.GetStr(Str.OpenCurWaifu2x) + "(F2)")
+            action.triggered.connect(self.qtTool.curWaifu2x.click)
 
         menu2 = popMenu.addMenu(Str.GetStr(Str.ReadMode))
         action = menu2.addAction(Str.GetStr(Str.ToggleDoublePageAlign) + "(F10)")
-        # action.triggered.connect(self.ChangeDoublePage)
+        action.triggered.connect(self.scrollArea.change_double_page)
 
         def AddReadMode(name, value):
             action = menu2.addAction(name)
@@ -157,9 +171,9 @@ class ReadNewView(QtWidgets.QWidget):
         def AddScaleMode(name, value):
             action = menu3.addAction(name)
             action.triggered.connect(partial(self.qtTool.ScalePicture2, value))
-            if (self.frame.scaleCnt + 10) * 10 == value:
-                action.setCheckable(True)
-                action.setChecked(True)
+            # if (self.frame.scaleCnt + 10) * 10 == value:
+            #     action.setCheckable(True)
+                # action.setChecked(True)
 
         AddScaleMode("50%", 50)
         AddScaleMode("60%", 60)
@@ -189,8 +203,8 @@ class ReadNewView(QtWidgets.QWidget):
         action = menu4.addAction(Str.GetStr(Str.CopyFileLast) + "(F4)")
         action.triggered.connect(self.CopyLastFile)
 
-        # action = popMenu.addAction(Str.GetStr(Str.AutoScroll) + "(F5)")
-        # action.triggered.connect(self.qtTool.SwitchScrollAndTurn)
+        action = popMenu.addAction(Str.GetStr(Str.AutoScroll) + "(F5)")
+        action.triggered.connect(self.qtTool.SwitchScrollAndTurn)
 
         action = popMenu.addAction(Str.GetStr(Str.Exit) + "(Esc)")
         action.triggered.connect(self.Close)
@@ -222,7 +236,7 @@ class ReadNewView(QtWidgets.QWidget):
         Setting.TurnSpeed.SetValue(int(self.qtTool.turnSpeed.value() * 1000))
         Setting.ScrollSpeed.SetValue(int(self.qtTool.scrollSpeed.value()))
         Setting.ScrollInitSpeed.SetValue(int(self.qtTool.scrollInitSpeed.value()))
-        Setting.ScrollTime.SetValue(int(self.qtTool.scrollTime.value()))
+        # Setting.ScrollTime.SetValue(int(self.qtTool.scrollTime.value()))
         self.qtTool.UpdateText("")
         self.frame.UpdateProcessBar(None)
         self.frame.UpdateProcessBar2(None)
@@ -230,9 +244,7 @@ class ReadNewView(QtWidgets.QWidget):
         self.bookId = ""
         self.epsId = 0
         self.maxPic = 0
-        self.curIndex = 0
         self.frame.oldValue = 0
-        self.pictureData.clear()
         self._prefetchChapter = None
         self._prefetchCount = 0
         self._prefetchNextIndex = 0
@@ -336,7 +348,7 @@ class ReadNewView(QtWidgets.QWidget):
         title = raw.get("title", "")
         self.epsName = title
         self.AddHistory()
-        self.scrollArea.init_all_image(self.maxPic, self.curIndex)
+        self.scrollArea.init_all_image(self.maxPic, self.pageIndex)
         self.qtTool.UpdateSlider()
         self.qtTool.InitSlider(self.maxPic)
         return
@@ -384,22 +396,22 @@ class ReadNewView(QtWidgets.QWidget):
                 self.StartLoadPicUrlBack(raw, "")
 
     def CopyFile(self):
-        info = self.pictureData.get(self.curIndex)
+        # info = self.pictureData.get(self.curIndex)
+        info = self.scrollArea.get_cur_item()
         if not info:
             return
-        assert isinstance(info, QtFileData)
-        if not info.data and not info.waifuData:
+        if not info._buf and not info._waifu_buf:
             return
 
         # today = time.strftime("%Y%m%d%H%M%S", time.localtime(time.time()))
-        if info.waifuData:
-            _, _, mat, _ = ToolUtil.GetPictureSize(info.waifuData)
+        if info._waifu_buf:
+            _, _, mat, _ = ToolUtil.GetPictureSize(info._waifu_buf)
             path = "{}_{}_waifu2x.{}".format(self.bookId, self.curIndex + 1, mat)
-            data = info.waifuData
+            data = info._waifu_buf
         else:
-            _, _, mat, _ = ToolUtil.GetPictureSize(info.data)
+            _, _, mat, _ = ToolUtil.GetPictureSize(info._buf)
             path = "{}_{}.{}".format(self.bookId, self.curIndex + 1, mat)
-            data = info.data
+            data = info._buf
         if not data:
             return
         try:
@@ -419,21 +431,20 @@ class ReadNewView(QtWidgets.QWidget):
             Log.Error(es)
 
     def CopyLastFile(self):
-        info = self.pictureData.get(self.curIndex)
+        info = self.scrollArea.get_cur_item()
         if not info:
             return
-        assert isinstance(info, QtFileData)
-        if not info.data and not info.waifuData:
+        if not info._buf and not info._waifu_buf:
             return
 
-        if info.waifuData:
-            _, _, mat, _ = ToolUtil.GetPictureSize(info.waifuData)
+        if info._waifu_buf:
+            _, _, mat, _ = ToolUtil.GetPictureSize(info._waifu_buf)
             path = "{}_{}_waifu2x.{}".format(self.bookId, self.curIndex + 1, mat)
-            data = info.waifuData
+            data = info._waifu_buf
         else:
-            _, _, mat, _ = ToolUtil.GetPictureSize(info.data)
+            _, _, mat, _ = ToolUtil.GetPictureSize(info._buf)
             path = "{}_{}.{}".format(self.bookId, self.curIndex + 1, mat)
-            data = info.data
+            data = info._buf
         if not data:
             return
         try:
@@ -460,16 +471,15 @@ class ReadNewView(QtWidgets.QWidget):
             Log.Error(es)
 
     def CopyPicture(self):
-        info = self.pictureData.get(self.curIndex)
+        info = self.scrollArea.get_cur_item()
         if not info:
             return
-        assert isinstance(info, QtFileData)
-        if not info.data and not info.waifuData:
+        if not info._buf and not info._waifu_buf:
             return
-        if info.waifuData:
-            data = info.waifuData
+        if info._waifu_buf:
+            data = info._waifu_buf
         else:
-            data = info.data
+            data = info._buf
         p = QImage()
         p.loadFromData(data)
 

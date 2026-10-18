@@ -13,12 +13,14 @@ class ReadNewPoolManager(Singleton):
         self.proxyItem = []
 
     def GetProxyItem(self):
+        # return ReadNewGraphicsItem(-1)
         if not self.proxyItem:
             a = ReadNewGraphicsItem(-1)
             return a
         return self.proxyItem.pop()
 
     def AddProxyItem(self, item: ReadNewGraphicsItem):
+        # del item
         item.init()
         item.setPos(0, 0)
         self.proxyItem.append(item)

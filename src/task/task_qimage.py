@@ -63,7 +63,9 @@ class TaskQImage(TaskBase):
                 q = QImage()
                 q.loadFromData(newData)
                 q.setDevicePixelRatio(info.radio)
-                if info.toW > 0:
+                if 0 < info.toW < q.width() and info.toH == 0:
+                    newQ = q.scaledToWidth(info.toW, Qt.SmoothTransformation)
+                elif info.toW > 0 and info.toH > 0:
                     newQ = q.scaled(info.toW * info.radio, info.toH * info.radio, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 else:
                     newQ = q

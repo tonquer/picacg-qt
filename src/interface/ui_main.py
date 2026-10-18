@@ -40,7 +40,7 @@ from view.info.book_eps_view import BookEpsView
 from view.info.book_info_view import BookInfoView
 from view.info.game_info_view import GameInfoView
 from view.nas.nas_view import NasView
-from view.read.read_view import ReadView
+from view.read.read_new_view import ReadNewView
 from view.search.search_view import SearchView
 from view.setting.setting_view import SettingView
 from view.tool.batch_sr_tool_view import BatchSrToolView
@@ -207,7 +207,7 @@ class Ui_Main(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout)
 
         self.totalStackWidget.addWidget(self.subMainWindow)
-        self.readView = ReadView()
+        self.readView = ReadNewView()
         self.readView.setObjectName(u"readView")
         self.totalStackWidget.addWidget(self.readView)
 

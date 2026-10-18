@@ -7,6 +7,7 @@ from zlib import crc32
 from config import config
 from config.setting import Setting
 from task.qt_task import TaskBase
+from task.task_download import FileData
 from tools.log import Log
 from tools.status import Status
 from tools.str import Str
@@ -17,6 +18,7 @@ class QConvertTask(object):
     def __init__(self, taskId=0):
         self.taskId = taskId
         self.callBack = None       # addData, laveSize
+        self.callBack2 = None
         self.backParam = None
         self.cleanFlag = ""
         self.status = Status.Ok
@@ -188,9 +190,10 @@ class TaskWaifu2x(TaskBase):
             self.taskObj.convertBack.emit(taskId)
             t1.Refresh("RunLoad")
 
-    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag=None):
+    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag=None, completeCallBack2=None):
         info = QConvertTask()
         info.callBack = callBack
+        info.callBack2 = completeCallBack2
         info.backParam = backParam
         info.imgData = imgData
         info.model = model
@@ -242,6 +245,8 @@ class TaskWaifu2x(TaskBase):
             assert isinstance(info, QConvertTask)
             if info.callBack:
                 info.callBack(info.saveData, info.status, info.backParam, info.tick)
+            if info.callBack2:
+                info.callBack2(FileData(info.saveData), info.status, info.backParam, info.tick)
         except Exception as es:
             Log.Error(es)
 

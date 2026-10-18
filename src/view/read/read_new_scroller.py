@@ -53,9 +53,18 @@ class ReadNewScroller(QObject):
         self._anim = QVariantAnimation(self)
         self._anim.setEasingCurve(QEasingCurve.OutCubic)   # 先快后慢，自然的收尾
         self._anim.valueChanged.connect(self._on_anim_value)
+        # 自然结束（非手动 stop）时补齐落点 + 吸附像素，见 _on_anim_finished
+        self._anim.finished.connect(self._on_anim_finished)
         self._anim.finished.connect(self._snap_if_idle)   # 自然结束（非手动 stop）后吸附像素
         self._target_s = 0.0    # 动画目标位置。动画进行中再滚滚轮时在它上面累加，
                                 # 而不是从当前位置累加（否则连滚会越来越慢）
+        self._anim_v_prev = 0.0  # 动画上一帧的插值。每帧按"增量"施加到滚动位置
+                                 # （见 _on_anim_value），这样动画途中发生尺寸修正
+                                 # 补偿时，补偿量不会被旧轨迹的绝对值抹掉
+        self._anim_pos = 0.0     # 动画"意图位置"：自己记账，不从滚动条读回再叠加。
+                                 # 滚动条会因亚像素 transform 重算 range 而夹掉个别
+                                 # 帧的值，读回叠加会累积成几像素的落点偏差
+        self._anim_blocked = False  # True = 正在重配动画，丢弃 Qt 同步发出的杂散 valueChanged
         self._to_end = False    # 动画目标是否为"内容末端"。是的话，滚过去途中
                                 # 内容变长（新图修正高度）时终点要跟着走
 
@@ -107,19 +116,29 @@ class ReadNewScroller(QObject):
         self._animate_to(view._scroll_min_s(), target)
 
     def _animate_to(self, cur: float, target: float):
-        """启动/重启缓动动画：从 cur 平滑滑到 target。"""
+        """启动/重启缓动动画：从 cur 平滑滑到 target。
+
+        重配期间必须屏蔽 valueChanged，原因见 _on_anim_value 的注释：
+        Qt 的 stop/setStartValue/setEndValue/start 会同步发出一串新旧轨迹混杂的
+        杂散值，接了就会让画面单帧跳一两百像素再倒退（连滚滚轮时尤其明显）。"""
         self._target_s = target
-        self._anim.stop()
-        dist = abs(target - cur)
-        if dist < 0.5:              # 太近就不动画，直接到位
-            self._view._set_scroll_min_s(target)
-            return
-        # 距离越远时长越久，封顶；连续滚轮叠加时从当前位置重新缓动
-        dur = int(min(self.WHEEL_DURATION, 120 + dist))
-        self._anim.setStartValue(float(cur))
-        self._anim.setEndValue(float(target))
-        self._anim.setDuration(max(60, dur))
-        self._anim.start()
+        self._anim_blocked = True
+        try:
+            self._anim.stop()
+            dist = abs(target - cur)
+            if dist < 0.5:          # 太近就不动画，直接到位
+                self._view._set_scroll_min_s(target)
+                return
+            # 距离越远时长越久，封顶；连续滚轮叠加时从当前位置重新缓动
+            dur = int(min(self.WHEEL_DURATION, 120 + dist))
+            self._anim.setStartValue(float(cur))
+            self._anim.setEndValue(float(target))
+            self._anim.setDuration(max(60, dur))
+            self._anim_v_prev = float(cur)      # 增量施加的基准（见 _on_anim_value）
+            self._anim_pos = float(cur)         # 意图位置从当前真实位置起算
+            self._anim.start()
+        finally:
+            self._anim_blocked = False
 
     # ---- 末端跟踪：动画冲向内容末端时，内容变长则终点跟随 ----
 
@@ -129,14 +148,53 @@ class ReadNewScroller(QObject):
         return self._to_end and self._anim.state() == QAbstractAnimation.Running
 
     def retarget_end(self):
-        """内容变长后重新瞄准新的末端（从当前位置重新缓动）。"""
+        """内容变长后重新瞄准新的末端（从当前位置重新缓动）。
+
+        注意必须判断"末端真的变了"才重配：滚动时每帧都会改亚像素 transform，
+        Qt 因此每帧重算滚动条并 rangeChanged 一次，若不判断就每帧重启缓动，
+        动画永远跑不完（越接近末端越慢，像卡住一样爬）。"""
         view = self._view
         hi = max(0.0, view._total - view._viewport_len())
+        if abs(hi - self._target_s) < 0.5:      # 终点没动：别重启，让它跑完
+            return
         self._animate_to(view._scroll_min_s(), hi)
 
     def _on_anim_value(self, v):
-        """动画每帧回调：v 是缓动插值出的位置，直接写入滚动位置。"""
-        self._view._set_scroll_min_s(float(v))
+        """动画每帧回调。关键：按**增量**写入（本帧插值 - 上帧插值），而不是
+        把插值当绝对位置直接写。
+
+        为什么：动画播放途中，图片尺寸探测完成会触发 _correct_len 的滚动补偿
+        （on_viewport_shifted 已把 _target_s 同步平移）。若按绝对值写，下一帧
+        会把滚动位置拽回"补偿前的旧轨迹"——画面瞬间回跳，indexChanged 出现
+        1->0->1 的反复（实测序列见 smoke_test_index_stable.py）。
+        增量写法则只负责"再往前走多少"，外部补偿自然并入动画轨迹：
+        最终落点 = 旧目标 + 补偿量，与 _target_s 的平移恰好一致。
+
+        _anim_blocked：重配动画（stop/setStartValue/setEndValue/start）期间 Qt 会
+        **同步**发一串 valueChanged，值是新旧轨迹混杂的（实测同一毫秒内连发
+        434 -> 391 -> 180，而新轨迹是 180 -> 600）。绝对值写法只是抖一下，
+        增量写法会把它们当真实位移累加 -> 单帧 +211px 再 -43px，滚动"一顿一顿"。
+        重配期间一律丢弃，连回来时动画已经在新轨迹上。"""
+        if self._anim_blocked:
+            return
+        nv = float(v)
+        self._anim_pos += nv - self._anim_v_prev    # 自己记账：不读回滚动条，避免
+        self._anim_v_prev = nv                      # 被夹掉的帧累积成落点偏差
+        self._view._set_scroll_min_s(self._anim_pos)
+
+    def _on_anim_finished(self):
+        """动画自然跑完：把"还没走完的位移"一次补齐，再吸附像素。
+
+        增量写法下落点 = 已施加位移之和；最后一两帧若没被投递（定时器抖动、
+        主线程卡顿）就会差几个像素。这里按 _target_s 补齐尾差，落点与帧投递无关。
+        _target_s 已含期间发生的尺寸修正补偿（on_viewport_shifted 同步平移过），
+        所以补齐量自动包含补偿。"""
+        rest = self._target_s - self._anim_v_prev
+        if abs(rest) >= 0.05:
+            self._anim_pos += rest
+            self._anim_v_prev = self._target_s
+            self._view._set_scroll_min_s(self._anim_pos)
+        self._snap_if_idle()
 
     # ---- 拖拽平移 + 松手惯性 ----
 
@@ -258,6 +316,7 @@ class ReadNewScroller(QObject):
             return
         self._auto_pos += d_s
         self._target_s += d_s
+        self._anim_pos += d_s      # 动画的意图位置同步平移（见 _anim_pos 的说明）
 
     def _snap_if_idle(self):
         """所有运动源都停止后，把渲染位置对齐（连续模式吸附整数像素；

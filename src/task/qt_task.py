@@ -59,7 +59,7 @@ class QtTaskBase:
     # downloadCallBack(data, laveFileSize)
     # downloadCompleteBack(data, st)
     # downloadCompleteBack(data, st, backParam)
-    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="",  cleanFlag="", isReload=False, resetCnt=config.ResetDownloadCntDefault):
+    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="",  cleanFlag="", isReload=False, resetCnt=config.ResetDownloadCntDefault, completeCallBack2=None):
         from task.task_download import TaskDownload
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
@@ -70,30 +70,30 @@ class QtTaskBase:
             #     a = hashlib.md5(path.encode("utf-8")).hexdigest() + ".jpg"
             if Setting.SavePath.value and path:
                 cachePath = os.path.join(Setting.GetCachePath(), path)
-        return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isReload, resetCnt)
+        return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isReload, resetCnt, completeCallBack2)
 
     # downloadCallBack(data, laveFileSize, backParam)
     # downloadCallBack(data, laveFileSize)
     # downloadCompleteBack(data, st)
     # downloadCompleteBack(data, st, backParam)
-    def AddDownloadBook(self, bookId, epsId, index, statusBack=None, downloadCallBack=None, completeCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isInit=False):
+    def AddDownloadBook(self, bookId, epsId, index, statusBack=None, downloadCallBack=None, completeCallBack=None, backParam=None, loadPath="", cachePath="", savePath="", cleanFlag="", isInit=False, completeCallBack2=None):
         from task.task_download import TaskDownload
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
-        return TaskDownload().DownloadBook(bookId, epsId, index, statusBack, downloadCallBack, completeCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isInit)
+        return TaskDownload().DownloadBook(bookId, epsId, index, statusBack, downloadCallBack, completeCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isInit, completeCallBack2)
 
-    def AddDownloadBookCache(self, loadPath, completeCallBack=None, backParam=0, cleanFlag=""):
+    def AddDownloadBookCache(self, loadPath, completeCallBack=None, backParam=0, cleanFlag="", completeCallBack2=None):
         from task.task_download import TaskDownload
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
-        return TaskDownload().DownloadCache(loadPath, completeCallBack, backParam, cleanFlag)
+        return TaskDownload().DownloadCache(loadPath, completeCallBack, backParam, cleanFlag, completeCallBack2)
 
     # completeCallBack(saveData, taskId, backParam, tick)
-    def AddConvertTask(self, path, imgData, model, completeCallBack, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag=""):
+    def AddConvertTask(self, path, imgData, model, completeCallBack=None, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag="", completeCallBack2=None):
         from task.task_waifu2x import TaskWaifu2x
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
-        return TaskWaifu2x().AddConvertTaskByData(path, imgData, model, completeCallBack, backParam, preDownPath, noSaveCache, cleanFlag)
+        return TaskWaifu2x().AddConvertTaskByData(path, imgData, model, completeCallBack, backParam, preDownPath, noSaveCache, cleanFlag, completeCallBack2)
 
     # completeCallBack(saveData, taskId, backParam, tick)
     def AddConvertTaskByPath(self, loadPath, savePath, completeCallBack, backParam=None, cleanFlag=""):
@@ -117,9 +117,9 @@ class QtTaskBase:
         from task.task_local import TaskLocal
         return TaskLocal().AddLoadRead(type, dir, backparam, callBack, cleanFlag=self.__taskFlagId)
 
-    def AddLocalTaskLoadPicture(self, v, index, backparam=None, callBack=None):
+    def AddLocalTaskLoadPicture(self, v, index, backparam=None, callBack=None, completeCallBack2=None):
         from task.task_local import TaskLocal
-        return TaskLocal().AddLoadReadPicture(v, index, backparam, callBack, cleanFlag=self.__taskFlagId)
+        return TaskLocal().AddLoadReadPicture(v, index, backparam, callBack, cleanFlag=self.__taskFlagId, completeCallBack2=completeCallBack2)
 
     def AddUploadTask(self, nas_id, type, srcDir, desFile, upDirPath, bookId, epsId, backParam=None, callBack=None):
         from task.task_upload import TaskUpload

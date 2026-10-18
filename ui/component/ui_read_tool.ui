@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>328</width>
+    <width>505</width>
     <height>750</height>
    </rect>
   </property>
@@ -42,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>301</width>
-        <height>897</height>
+        <width>478</width>
+        <height>895</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -598,30 +598,6 @@
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>滚动时间（毫秒）：</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="WheelSpinBox" name="scrollTime">
-             <property name="minimum">
-              <number>50</number>
-             </property>
-             <property name="maximum">
-              <number>2000</number>
-             </property>
-             <property name="value">
-              <number>500</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_13">
            <item>
             <widget class="QLabel" name="label_11">
@@ -655,6 +631,13 @@
           <widget class="Line" name="line_8">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="openGLBox">
+           <property name="text">
+            <string>打开OpenGL加速</string>
            </property>
           </widget>
          </item>
@@ -834,7 +817,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>294</x>
-     <y>738</y>
+     <y>792</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -849,8 +832,8 @@
    <slot>LastPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>779</y>
+     <x>125</x>
+     <y>833</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -866,7 +849,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>294</x>
-     <y>779</y>
+     <y>833</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -881,8 +864,8 @@
    <slot>OpenLastEps()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>89</x>
-     <y>738</y>
+     <x>95</x>
+     <y>792</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -897,8 +880,8 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>170</x>
-     <y>630</y>
+     <x>175</x>
+     <y>684</y>
     </hint>
     <hint type="destinationlabel">
      <x>105</x>
@@ -913,8 +896,8 @@
    <slot>ReturnPage()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>207</x>
-     <y>690</y>
+     <x>212</x>
+     <y>744</y>
     </hint>
     <hint type="destinationlabel">
      <x>181</x>
@@ -945,8 +928,8 @@
    <slot>FullScreen()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>118</x>
-     <y>660</y>
+     <x>123</x>
+     <y>714</y>
     </hint>
     <hint type="destinationlabel">
      <x>278</x>
@@ -961,7 +944,7 @@
    <slot>Waifu2xSave()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>117</x>
+     <x>116</x>
      <y>248</y>
     </hint>
     <hint type="destinationlabel">
@@ -977,7 +960,7 @@
    <slot>Waifu2xCancle()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>285</x>
+     <x>283</x>
      <y>248</y>
     </hint>
     <hint type="destinationlabel">
@@ -999,22 +982,6 @@
     <hint type="destinationlabel">
      <x>298</x>
      <y>433</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>comboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>ReadImg</receiver>
-   <slot>ChangeReadMode()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>294</x>
-     <y>479</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>402</x>
-     <y>361</y>
     </hint>
    </hints>
   </connection>
