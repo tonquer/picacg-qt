@@ -128,6 +128,11 @@ class ReadNewGraphics(QGraphicsView):
         self._edge_scroll_trigger = max(0, int(self.EDGE_SCROLL_TRIGGER))
         self._edge_start = 0          # 已到最前、连续往外滚的次数
         self._edge_end = 0            # 已到最后、连续往外滚的次数
+        # 滚动节流：上次跑 _load_visible 时的滚动位置。scrollContentsBy 每帧可能
+        # 被触发多次（平滑滚动/range 重夹），位移不到 0.5px 就没必要重算窗口。
+        self._last_load_s = float("nan")
+        # 连续模式相邻两张的绘制叠加量（逻辑像素）：盖住 1px 白缝，见 SEAM_OVERLAP
+        self._seam_overlap = float(ReadNewGraphicsItem.SEAM_OVERLAP)
 
         self._items : list[ReadNewGraphicsItem] = []   # ReadNewGraphicsItem 列表，按阅读顺序排列
         self._mode = mode                         # 当前阅读方向
@@ -1232,8 +1237,9 @@ class ReadNewGraphics(QGraphicsView):
         基准 = _page_base_offset：单页居中（ax=ay=0），双页朝中缝贴（±1）。
         zoom>1 时在基准上叠加 _page_pan：
         - 单页 / 封面页：钳制到 [w-w·z, 0]，保证图片始终盖满槽位（不露留白）；
-        - 双页：两张图用**同一个 pan 整体平移**，中缝始终贴合（绝不会互相
-          重叠）；代价是外侧可能露出留白——想看到被裁掉的部分就拖一下。"""
+        - 双页：两张图用**同一个 pan 整体平移**，中缝始终贴合；绘制时前一张
+          还会朝中缝多画 SEAM_OVERLAP（1px）盖住白缝，所以包围盒会有 1px
+          有意叠加；代价是外侧可能露出留白——想看到被裁掉的部分就拖一下。"""
         bx, by = self._page_base_offset(w, h, align)
         z = self._zoom
         if z <= 1.0:
@@ -1412,11 +1418,27 @@ class ReadNewGraphics(QGraphicsView):
             offset -= self._page_scroll          # 滚动偏移：内容整体沿阅读方向反移
         slots = self._page_slot_rects(page)
         aligns = self._page_slot_aligns(page)
-        for i, it in enumerate(self._page_items(page)):
+        items = self._page_items(page)
+        # 双页模式：同一页的两张图是朝中缝贴合的，中缝本身就是一条接缝，
+        # 亚像素/取整同样可能露 1px 白线。让**前一张**（阅读顺序靠前的）沿
+        # 对齐方向（= 朝中缝）多画 SEAM_OVERLAP，盖住中缝；后一张不动，避免
+        # 两边都叠、把重叠量翻倍。单页/封面页只有一张图，对齐是居中 (0,0)，
+        # 自然不加 pad。
+        ov = self._seam_overlap
+        double_seam = (self._is_double_mode() and len(items) == 2 and ov > 0)
+        for i, it in enumerate(items):
             x, y, w, h = slots[i]
             al = aligns[i]
             it._fit = True                    # 等比缩放画进槽位（信箱留白）
             it._fit_align = al                # 双页朝中缝贴，单页/封面页居中
+            if double_seam and i == 0:
+                ax, ay = al                  # 对齐方向就是朝中缝的方向
+                it.set_seam_pad((ov if ax < 0 else 0.0,    # left
+                                 ov if ay < 0 else 0.0,    # top
+                                 ov if ax > 0 else 0.0,    # right
+                                 ov if ay > 0 else 0.0))   # bottom
+            else:
+                it.set_seam_pad((0.0, 0.0, 0.0, 0.0))
             if single_w:
                 # 等宽：item 尺寸按真实宽高比；cross 轴始终居中（放大后溢出也对称），
                 # 沿滚动轴短图居中、长图顶对齐再由 offset(=-滚动量) 滚动
@@ -2013,6 +2035,25 @@ class ReadNewGraphics(QGraphicsView):
             it.setPos(it._s, 0)
         else:  # rtl：s 增大向左，item 占据 [-(s+len), -s]
             it.setPos(-(it._s + it._len), 0)
+        self._apply_seam_pad(it)
+
+    def _apply_seam_pad(self, it: ReadNewGraphicsItem):
+        """连续模式下沿阅读方向多画 SEAM_OVERLAP 像素，盖住和下一张的接缝。
+
+        方向 = 阅读前进方向：ttb 向下、ltr 向右、rtl 向左。最后一张不叠加
+        （后面没有图，多画只会伸进空白区）。页模式一律清零（页内有留白，
+        不存在接缝问题）。"""
+        ov = self._seam_overlap
+        if (ov <= 0 or not ReadMode.isScroll(self._mode)
+                or not self._items or it is self._items[-1]):
+            it.set_seam_pad((0.0, 0.0, 0.0, 0.0))
+            return
+        if ReadMode.isUpDown(self._mode):
+            it.set_seam_pad((0.0, 0.0, 0.0, ov))     # 向下多画
+        elif ReadMode.isLeftRight(self._mode):
+            it.set_seam_pad((0.0, 0.0, ov, 0.0))     # 向右多画
+        else:
+            it.set_seam_pad((ov, 0.0, 0.0, 0.0))     # rtl：向左多画
 
     def _update_scene_rect(self):
         """手动维护 sceneRect（不让 Qt 自动扩展——自动扩展会重算滚动位置导致抖动）。"""
@@ -2111,6 +2152,12 @@ class ReadNewGraphics(QGraphicsView):
         self._place(it)
         self._scene.addItem(it)
         self._items.append(it)
+        # 追加后"最后一张"变了：新图不该再叠加（后面没图），原来的最后一张
+        # 现在要叠加了（它下面接了新图）。_place 是在 append 之前调用的，
+        # 那时 it 还不是 _items[-1]，所以这里必须重算这两张的 pad。
+        if len(self._items) >= 2:
+            self._apply_seam_pad(self._items[-2])
+        self._apply_seam_pad(it)
         self._total = self._snap_px(self._total + ln + self._gap)
         self._update_scene_rect()
 
@@ -2131,6 +2178,20 @@ class ReadNewGraphics(QGraphicsView):
     #     return (self._prefetch_back, self._prefetch_ahead)
 
     # ---- 到顶/到底后"再滚 N 下"触发（接上/下一章等） ----
+
+    def set_seam_overlap(self, px: float):
+        """设置连续模式相邻两张的绘制叠加量（逻辑像素，默认 SEAM_OVERLAP=1）。
+
+        只影响绘制：每张图沿阅读方向多画 `px` 像素、盖到下一张的起始处，
+        用来消除亚像素滚动/设备像素取整偶尔露出的 1px 白缝。布局（_s/_len/
+        总长度）完全不变，所以不会累积偏移。0 = 关闭。"""
+        self._seam_overlap = max(0.0, float(px))
+        self._relayout_all()        # 重新应用每张图的 pad
+        self._load_visible()
+
+    def seam_overlap(self) -> float:
+        """当前接缝叠加量（逻辑像素，0 = 关闭）。"""
+        return self._seam_overlap
 
     def set_edge_scroll_trigger(self, count: int):
         """设置"已经在最前/最后，再往外滚几下"触发一次信号（<=0 关闭）。
@@ -2224,8 +2285,8 @@ class ReadNewGraphics(QGraphicsView):
         if n == 0:
             return
         cur = self._cur_idx if self._cur_idx >= 0 else max(0, self.current_index())
-        _prefetch_back = Setting.PicturePrefetchCount.value
-        _prefetch_ahead = Setting.PicturePrefetchFrontCount.value
+        _prefetch_back = Setting.PicturePrefetchFrontCount.value
+        _prefetch_ahead = Setting.PicturePrefetchCount.value
         lo = max(0, cur - _prefetch_back)
         hi = min(n - 1, cur + _prefetch_ahead)
         for i in range(lo, hi + 1):

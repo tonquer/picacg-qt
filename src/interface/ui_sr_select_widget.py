@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_sr_select_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -57,13 +57,13 @@ class Ui_SrSelect(object):
         self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
         self.tableWidget.horizontalHeader().setDefaultSectionSize(25)
         self.tableWidget.horizontalHeader().setHighlightSections(False)
-        self.tableWidget.horizontalHeader().setProperty("showSortIndicator", True)
+        self.tableWidget.horizontalHeader().setProperty(u"showSortIndicator", True)
         self.tableWidget.horizontalHeader().setStretchLastSection(False)
         self.tableWidget.verticalHeader().setVisible(True)
         self.tableWidget.verticalHeader().setMinimumSectionSize(23)
         self.tableWidget.verticalHeader().setDefaultSectionSize(23)
         self.tableWidget.verticalHeader().setHighlightSections(True)
-        self.tableWidget.verticalHeader().setProperty("showSortIndicator", False)
+        self.tableWidget.verticalHeader().setProperty(u"showSortIndicator", False)
         self.tableWidget.verticalHeader().setStretchLastSection(False)
 
         self.verticalLayout.addWidget(self.tableWidget)

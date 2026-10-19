@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_book_rightui.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -77,7 +77,7 @@ class Ui_Form(object):
         self.autorList.setMaximumSize(QSize(16777215, 60))
         self.autorList.setStyleSheet(u"background-color:transparent;")
         self.autorList.setFrameShape(QFrame.NoFrame)
-        self.autorList.setProperty("showDropIndicator", True)
+        self.autorList.setProperty(u"showDropIndicator", True)
         self.autorList.setFlow(QListView.LeftToRight)
         self.autorList.setSpacing(10)
 
@@ -190,7 +190,7 @@ class Ui_Form(object):
 
         self.commandLinkButton = QCommandLinkButton(Form)
         self.commandLinkButton.setObjectName(u"commandLinkButton")
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.commandLinkButton.sizePolicy().hasHeightForWidth())

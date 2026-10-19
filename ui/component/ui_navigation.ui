@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
+    <width>258</width>
     <height>772</height>
    </rect>
   </property>
@@ -35,7 +35,7 @@
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QVBoxLayout" name="verticalLayout">
-      <item alignment="Qt::AlignHCenter">
+      <item alignment="Qt::AlignmentFlag::AlignHCenter">
        <widget class="HeadLabel" name="picLabel">
         <property name="minimumSize">
          <size>
@@ -71,7 +71,7 @@
            </sizepolicy>
           </property>
           <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
+           <enum>Qt::FocusPolicy::NoFocus</enum>
           </property>
           <property name="text">
            <string>登录</string>
@@ -202,14 +202,14 @@
       <item>
        <widget class="Line" name="line_4">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
        </widget>
       </item>
       <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
-         <enum>Qt::Vertical</enum>
+         <enum>Qt::Orientation::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -222,26 +222,32 @@
       <item>
        <widget class="SmoothScrollArea" name="scrollArea">
         <property name="verticalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOn</enum>
+         <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
         </property>
         <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOff</enum>
+         <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
         </property>
         <property name="widgetResizable">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <widget class="QWidget" name="scrollAreaWidgetContents">
          <property name="geometry">
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>339</width>
-           <height>800</height>
+           <width>226</width>
+           <height>879</height>
           </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
-           <number>6</number>
+           <number>1</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
@@ -257,6 +263,12 @@
           </property>
           <item>
            <widget class="QLabel" name="label">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>40</height>
+             </size>
+            </property>
             <property name="text">
              <string>用户</string>
             </property>
@@ -272,12 +284,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>本地收藏</string>
@@ -296,7 +308,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -313,12 +325,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>我的收藏</string>
@@ -337,7 +349,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -354,12 +366,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="styleSheet">
              <string notr="true"/>
@@ -381,7 +393,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -398,12 +410,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>观看记录</string>
@@ -422,7 +434,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -432,7 +444,7 @@
           <item>
            <widget class="Line" name="line">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -453,12 +465,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>首页</string>
@@ -480,13 +492,13 @@
              <bool>true</bool>
             </property>
             <property name="popupMode">
-             <enum>QToolButton::DelayedPopup</enum>
+             <enum>QToolButton::ToolButtonPopupMode::DelayedPopup</enum>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <property name="arrowType">
-             <enum>Qt::NoArrow</enum>
+             <enum>Qt::ArrowType::NoArrow</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -503,12 +515,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>搜索</string>
@@ -527,13 +539,13 @@
              <bool>true</bool>
             </property>
             <property name="popupMode">
-             <enum>QToolButton::DelayedPopup</enum>
+             <enum>QToolButton::ToolButtonPopupMode::DelayedPopup</enum>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <property name="arrowType">
-             <enum>Qt::NoArrow</enum>
+             <enum>Qt::ArrowType::NoArrow</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -550,12 +562,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>留言板</string>
@@ -574,13 +586,13 @@
              <bool>true</bool>
             </property>
             <property name="popupMode">
-             <enum>QToolButton::DelayedPopup</enum>
+             <enum>QToolButton::ToolButtonPopupMode::DelayedPopup</enum>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <property name="arrowType">
-             <enum>Qt::NoArrow</enum>
+             <enum>Qt::ArrowType::NoArrow</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -597,12 +609,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>分类</string>
@@ -621,7 +633,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -638,12 +650,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>排行榜</string>
@@ -662,7 +674,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -679,12 +691,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>聊天室</string>
@@ -703,7 +715,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -720,12 +732,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>新聊天室</string>
@@ -744,7 +756,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -761,12 +773,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>游戏区</string>
@@ -785,7 +797,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -802,12 +814,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>锅贴</string>
@@ -826,7 +838,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -836,7 +848,7 @@
           <item>
            <widget class="Line" name="line_2">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -857,12 +869,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>下载</string>
@@ -881,7 +893,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -898,12 +910,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>网络存储</string>
@@ -922,7 +934,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -939,12 +951,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>本地漫画</string>
@@ -963,7 +975,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -980,12 +992,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>转换</string>
@@ -1004,7 +1016,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -1021,12 +1033,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>图片超分</string>
@@ -1045,7 +1057,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -1062,12 +1074,12 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
-              <height>0</height>
+              <width>0</width>
+              <height>40</height>
              </size>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::NoFocus</enum>
+             <enum>Qt::FocusPolicy::NoFocus</enum>
             </property>
             <property name="text">
              <string>批量超分</string>
@@ -1086,7 +1098,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonTextBesideIcon</enum>
+             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
             </property>
             <attribute name="buttonGroup">
              <string notr="true">buttonGroup</string>
@@ -1100,7 +1112,7 @@
       <item>
        <widget class="Line" name="line_3">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -1119,7 +1131,7 @@
          </size>
         </property>
         <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
+         <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
         <property name="text">
          <string>帮助</string>
@@ -1138,7 +1150,7 @@
          <bool>true</bool>
         </property>
         <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
+         <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroup</string>
@@ -1160,7 +1172,7 @@
          </size>
         </property>
         <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
+         <enum>Qt::FocusPolicy::NoFocus</enum>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
@@ -1182,7 +1194,7 @@
          <bool>true</bool>
         </property>
         <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
+         <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
         </property>
         <property name="autoRaise">
          <bool>false</bool>

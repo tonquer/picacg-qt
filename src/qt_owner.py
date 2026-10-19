@@ -370,10 +370,12 @@ class QtOwner(Singleton):
 
         if isAuthor:
             title = "作者: {}".format(ToolUtil.GetStrMaxLen(text))
+            self.searchView2.SetJumpShow(True)
             self.searchView2.setWindowTitle(title)
             self.searchView2.searchTab.setText("作者: {}".format(text))
         elif isTag:
             title = "TAG: {}".format(ToolUtil.GetStrMaxLen(text))
+            self.searchView2.SetJumpShow(True)
             self.searchView2.setWindowTitle(title)
             self.searchView2.searchTab.setText("TAG: {}".format(text))
         self.owner.SwitchWidget(self.searchView2, **arg)
@@ -381,6 +383,7 @@ class QtOwner(Singleton):
     def OpenRecomment(self, bookId):
         Title = "看了这边本子的人也在看"
         arg = {"recoment": 1, "bookId": bookId}
+        self.searchView2.SetJumpShow(False)
         self.searchView2.setWindowTitle(Title)
         self.searchView2.searchTab.setText(Title)
         self.owner.SwitchWidget(self.searchView2, **arg)
@@ -388,6 +391,7 @@ class QtOwner(Singleton):
     def OpenRecomment2(self, bookId):
         Title = "猜你喜欢"
         arg = {"recoment": 2, "bookId": bookId}
+        self.searchView2.SetJumpShow(False)
         self.searchView2.setWindowTitle(Title)
         self.searchView2.searchTab.setText(Title)
         self.owner.SwitchWidget(self.searchView2, **arg)
@@ -422,6 +426,7 @@ class QtOwner(Singleton):
     def OpenSearchByCategory2(self, categories):
         arg = {"categories": categories}
         title = "分类: {}".format(ToolUtil.GetStrMaxLen(categories))
+        self.searchView2.SetJumpShow(True)
         self.searchView2.setWindowTitle(title)
         self.searchView2.searchTab.setText("分类: {}".format(categories))
         self.owner.SwitchWidget(self.searchView2, **arg)
@@ -430,6 +435,7 @@ class QtOwner(Singleton):
         arg = {"text": text, "isTitle": False, "isDes": False, "isCategory": False, "isTag": False, "isAuthor": False,
                "isUpLoad": True}
         title = "上传者: {}".format(ToolUtil.GetStrMaxLen(text))
+        self.searchView2.SetJumpShow(True)
         self.searchView2.setWindowTitle(title)
         self.searchView2.searchTab.setText("上传者: {}".format(text))
         self.owner.SwitchWidget(self.searchView2, **arg)

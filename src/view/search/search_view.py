@@ -65,6 +65,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
         self.cacheRecommend = {}
         self.isSearch2 = False
+        self.isCanJump = True
 
     def ResetSearch(self):
         self.bookList.UpdatePage(1, 1)
@@ -72,6 +73,18 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.spinBox.setMaximum(1)
         self.spinBox.setValue(1)
         self.label.setText(self.bookList.GetPageStr())
+
+    def SetJumpShow(self, isShow):
+        if isShow:
+            self.label.show()
+            self.spinBox.show()
+            self.jumpPage.show()
+            self.isCanJump = True
+        else:
+            self.label.hide()
+            self.spinBox.hide()
+            self.jumpPage.hide()
+            self.isCanJump = False
 
     def SetPageLoading(self, loading):
         self.bookList.UpdateState(loading)
@@ -472,6 +485,8 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def LoadNextPage(self):
+        if not self.isCanJump:
+            return
         if self.bookList.page >= self.bookList.pages:
             self.SetPageLoading(False)
             return

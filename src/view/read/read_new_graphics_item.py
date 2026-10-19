@@ -34,6 +34,13 @@ class ReadNewGraphicsItem(QGraphicsItem):
     # 图片尺寸未知时（还没探测到文件头）的兜底宽高比 h/w = 1.2，即假设图片比
     # 正方形略"竖"。尺寸一旦探测到就立即修正（见 _correct_len）。
     DEFAULT_ASPECT = 1.2
+    # 连续模式下，每张图沿阅读方向**多画**多少逻辑像素（盖住两张图之间的接缝）。
+    # 为什么需要：长度虽然用 _snap_px 对齐了设备像素，但亚像素滚动（transform 平移）
+    # 和 dpr 取整仍可能让相邻两张的边缘落到半像素上，光栅化时露出 1px 白缝。
+    # 让前一张多画 1px 盖到后一张的起始处，缝就没了。0 = 关闭。
+    # 注意：只影响绘制（boundingRect/paint），**不改布局**——否则每张错 1px 会累积。
+    SEAM_OVERLAP = 1.0
+
     # ---- 加载进度环 ----
     PROGRESS_MIN_D = 28.0  # 进度环最小直径（小于它视觉上看不清）
     PROGRESS_MAX_D = 56.0  # 进度环最大直径（再大就喧宾夺主）
@@ -90,6 +97,10 @@ class ReadNewGraphicsItem(QGraphicsItem):
         self._s = 0.0        # 在阅读方向上的偏移：图片起点距离第一张图起点的距离
         self._len = 0.0      # 沿滚动轴占据的长度（ttb=高，横排=宽）
         self._w = self._h = 1.0   # item 的显示宽高（boundingRect 用）
+        # 接缝叠加：(left, top, right, bottom) 额外绘制/包围的像素。连续模式下
+        # 由 view 设成"沿阅读方向多画 SEAM_OVERLAP"，盖住相邻两张之间的 1px 白缝。
+        # 只影响绘制，不影响布局（_s/_len/total 都不动）。
+        self._seam_pad = (0.0, 0.0, 0.0, 0.0)
 
     def init(self):
         self.pixmap = None          # 解码完成后的图像；None = 还没加载完（画占位框）
@@ -131,6 +142,10 @@ class ReadNewGraphicsItem(QGraphicsItem):
         self._len = 0.0      # 沿滚动轴占据的长度（ttb=高，横排=宽）
         self.prepareGeometryChange()   # 改 boundingRect 前必须调用（Qt 规则）
         self._w = self._h = 1.0   # item 的显示宽高（boundingRect 用）
+        # 接缝叠加：(left, top, right, bottom) 额外绘制/包围的像素。连续模式下
+        # 由 view 设成"沿阅读方向多画 SEAM_OVERLAP"，盖住相邻两张之间的 1px 白缝。
+        # 只影响绘制，不影响布局（_s/_len/total 都不动）。
+        self._seam_pad = (0.0, 0.0, 0.0, 0.0)
 
     @property
     def _buf(self):
@@ -188,10 +203,28 @@ class ReadNewGraphicsItem(QGraphicsItem):
         self.prepareGeometryChange()   # 改 boundingRect 前必须调用（Qt 规则）
         self._w, self._h = w, h
 
+    def set_seam_pad(self, pad):
+        """设置接缝叠加量 (left, top, right, bottom)（逻辑像素）。
+
+        连续模式下沿阅读方向多画 1px，盖住相邻两张之间的白缝。只改绘制区域，
+        不改 _s/_len（布局半点不动），所以不会累积偏移。"""
+        if pad == self._seam_pad:
+            return
+        self.prepareGeometryChange()   # boundingRect 变了
+        self._seam_pad = pad
+        self.update()
+
+    def _padded_rect(self) -> QRectF:
+        """绘制区域：item 矩形 + 接缝叠加。"""
+        l, t, r, b = self._seam_pad
+        if l == 0.0 and t == 0.0 and r == 0.0 and b == 0.0:
+            return QRectF(0, 0, self._w, self._h)
+        return QRectF(-l, -t, self._w + l + r, self._h + t + b)
+
     def boundingRect(self) -> QRectF:
         """item 占据的矩形（本地坐标）。Qt 用它做裁剪/碰撞索引，
-        必须覆盖 paint 画到的全部区域。"""
-        return QRectF(0, 0, self._w, self._h)
+        必须覆盖 paint 画到的全部区域——所以接缝叠加也要算进来。"""
+        return self._padded_rect()
 
     def _aligned_rect(self, w: float, h: float) -> QRectF:
         """_fit 模式下把 w×h 的内容放进 item 矩形（_w×_h）时的目标矩形。
@@ -203,6 +236,19 @@ class ReadNewGraphicsItem(QGraphicsItem):
         x = 0.0 if ax < 0 else (self._w - w if ax > 0 else (self._w - w) / 2)
         y = 0.0 if ay < 0 else (self._h - h if ay > 0 else (self._h - h) / 2)
         return QRectF(x, y, w, h)
+
+    def _fit_draw_rect(self, w: float, h: float) -> QRectF:
+        """_fit 模式下实际绘制的矩形 = _aligned_rect + 接缝叠加。
+
+        双页模式两张图朝中缝贴，中缝处同样可能露 1px 白线；沿对齐方向
+        （就是朝中缝的方向）多画 _seam_pad，盖住中缝。单页是 (0,0,0,0)，
+        与 _aligned_rect 完全相同。"""
+        rect = self._aligned_rect(w, h)
+        l, t, r, b = self._seam_pad
+        if l == 0.0 and t == 0.0 and r == 0.0 and b == 0.0:
+            return rect
+        return QRectF(rect.x() - l, rect.y() - t,
+                      rect.width() + l + r, rect.height() + t + b)
 
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget=None):
         # _fit=True（单/双页模式）：图片等比缩放进 item 矩形，位置按 _fit_align
@@ -218,10 +264,11 @@ class ReadNewGraphicsItem(QGraphicsItem):
             if self._fit:
                 sc = min(self._w / sr.width(), self._h / sr.height())
                 painter.drawPixmap(
-                    self._aligned_rect(sr.width() * sc, sr.height() * sc), pm, sr)
+                    self._fit_draw_rect(sr.width() * sc, sr.height() * sc), pm, sr)
             else:
-                # 两者宽高比一致，实际无变形
-                painter.drawPixmap(QRectF(0, 0, self._w, self._h), pm, sr)
+                # 两者宽高比一致，实际无变形；沿阅读方向多画 1px（_seam_pad）
+                # 盖住相邻两张之间的白缝
+                painter.drawPixmap(self._padded_rect(), pm, sr)
             return
         # 未加载完/失败：画占位框（红色 = 失败，灰色 = 加载中）
         if self._fit:
@@ -234,9 +281,9 @@ class ReadNewGraphicsItem(QGraphicsItem):
             pw, ph = self._w, self._w / rw
             if ph > self._h:
                 ph, pw = self._h, self._h * rw
-            rect = self._aligned_rect(pw, ph)
+            rect = self._fit_draw_rect(pw, ph)
         else:
-            rect = QRectF(0, 0, self._w, self._h)
+            rect = self._padded_rect()
         # view 开了 DontSavePainterState（Qt 不自动保存/恢复 painter 状态），
         # 这里改过的 pen/brush/font 必须自己 save+restore，否则会污染后画的 item
         painter.save()

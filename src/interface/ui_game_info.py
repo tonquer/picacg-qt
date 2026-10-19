@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_game_info.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -100,7 +100,7 @@ class Ui_GameInfo(object):
 
         self.horizontalLayout_4.addWidget(self.icon_4)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_2)
 
@@ -166,7 +166,7 @@ class Ui_GameInfo(object):
 "  border-left: 0px;\n"
 "}")
         icon = QIcon()
-        icon.addFile(u":/png/icon/icon_comment.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/png/icon/icon_comment.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.commentButton.setIcon(icon)
         self.commentButton.setIconSize(QSize(50, 50))
 
@@ -186,7 +186,7 @@ class Ui_GameInfo(object):
 
         self.horizontalLayout_2.addWidget(self.iosButton)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 

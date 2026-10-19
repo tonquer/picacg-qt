@@ -87,7 +87,7 @@ class MainView(Main, QtTaskBase):
         self.searchView2.isSearch2 = True
         self.searchView2.searchWidget.hide()
         self.searchView2.bookList.isOpen2 = True
-        self.searchView2.bookList.LoadCallBack = None
+        # self.searchView2.bookList.LoadCallBack = None
         self.searchView2.saveButton.hide()
         self.searchView2.selectAllButton.hide()
         self.searchView2.unfoldButton.hide()

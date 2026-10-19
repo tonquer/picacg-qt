@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_help_log_widget.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -61,8 +61,8 @@ class Ui_HelpLogWidget(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.line = QFrame(HelpLogWidget)
         self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.HLine)
-        self.line.setFrameShadow(QFrame.Sunken)
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.horizontalLayout_2.addWidget(self.line)
 

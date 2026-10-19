@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_chat_new_room_msg.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -64,7 +64,7 @@ class Ui_ChatNewRoomMsg(object):
 
         self.gridLayout_2.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.horizontalSpacer, 0, 2, 1, 1)
 
@@ -96,7 +96,7 @@ class Ui_ChatNewRoomMsg(object):
 
         self.horizontalLayout.addWidget(self.titleLabel)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
@@ -190,7 +190,7 @@ class Ui_ChatNewRoomMsg(object):
         self.vipIcon = QToolButton(ChatNewRoomMsg)
         self.vipIcon.setObjectName(u"vipIcon")
         icon = QIcon()
-        icon.addFile(u":/png/icon/vip.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/png/icon/vip.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.vipIcon.setIcon(icon)
         self.vipIcon.setIconSize(QSize(32, 32))
 
@@ -199,7 +199,7 @@ class Ui_ChatNewRoomMsg(object):
         self.managerIcon = QToolButton(ChatNewRoomMsg)
         self.managerIcon.setObjectName(u"managerIcon")
         icon1 = QIcon()
-        icon1.addFile(u":/png/icon/svip.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon1.addFile(u":/png/icon/svip.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.managerIcon.setIcon(icon1)
         self.managerIcon.setIconSize(QSize(32, 32))
 
@@ -208,7 +208,7 @@ class Ui_ChatNewRoomMsg(object):
         self.nvIcon = QToolButton(ChatNewRoomMsg)
         self.nvIcon.setObjectName(u"nvIcon")
         icon2 = QIcon()
-        icon2.addFile(u":/png/icon/nv.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(u":/png/icon/nv.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.nvIcon.setIcon(icon2)
         self.nvIcon.setIconSize(QSize(32, 32))
 
@@ -217,13 +217,13 @@ class Ui_ChatNewRoomMsg(object):
         self.officialIcon = QToolButton(ChatNewRoomMsg)
         self.officialIcon.setObjectName(u"officialIcon")
         icon3 = QIcon()
-        icon3.addFile(u":/png/icon/icon_picacg.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon3.addFile(u":/png/icon/icon_picacg.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.officialIcon.setIcon(icon3)
         self.officialIcon.setIconSize(QSize(32, 32))
 
         self.horizontalLayout_4.addWidget(self.officialIcon)
 
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_3)
 

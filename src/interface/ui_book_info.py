@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_book_info.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -202,7 +202,7 @@ class Ui_BookInfo(object):
         self.autorList.setMaximumSize(QSize(16777215, 60))
         self.autorList.setStyleSheet(u"background-color:transparent;")
         self.autorList.setFrameShape(QFrame.NoFrame)
-        self.autorList.setProperty("showDropIndicator", True)
+        self.autorList.setProperty(u"showDropIndicator", True)
         self.autorList.setFlow(QListView.LeftToRight)
         self.autorList.setSpacing(10)
 
@@ -303,7 +303,7 @@ class Ui_BookInfo(object):
         self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
         self.commandLinkButton = QCommandLinkButton(self.scrollAreaWidgetContents)
         self.commandLinkButton.setObjectName(u"commandLinkButton")
-        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.commandLinkButton.sizePolicy().hasHeightForWidth())
@@ -316,7 +316,7 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_16.addWidget(self.commandLinkButton2)
 
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_16.addItem(self.horizontalSpacer_5)
 
@@ -361,19 +361,19 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer_2)
 
         self.starButton = IconToolButton(self.tab)
         self.starButton.setObjectName(u"starButton")
         self.starButton.setMinimumSize(QSize(40, 40))
-        self.starButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.starButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.starButton.setFocusPolicy(Qt.NoFocus)
         self.starButton.setStyleSheet(u"")
         icon = QIcon()
-        icon.addFile(u":/png/icon/icon_bookmark_off.png", QSize(), QIcon.Normal, QIcon.Off)
-        icon.addFile(u":/png/icon/icon_bookmark_on.png", QSize(), QIcon.Selected, QIcon.On)
+        icon.addFile(u":/png/icon/icon_bookmark_off.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u":/png/icon/icon_bookmark_on.png", QSize(), QIcon.Mode.Selected, QIcon.State.On)
         self.starButton.setIcon(icon)
         self.starButton.setIconSize(QSize(50, 50))
         self.starButton.setCheckable(False)
@@ -385,11 +385,11 @@ class Ui_BookInfo(object):
         self.favoriteButton = IconToolButton(self.tab)
         self.favoriteButton.setObjectName(u"favoriteButton")
         self.favoriteButton.setMinimumSize(QSize(40, 40))
-        self.favoriteButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.favoriteButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.favoriteButton.setStyleSheet(u"background-color:transparent;")
         icon1 = QIcon()
-        icon1.addFile(u":/png/icon/icon_like_off.png", QSize(), QIcon.Normal, QIcon.Off)
-        icon1.addFile(u":/png/icon/icon_bookmark_on.png", QSize(), QIcon.Selected, QIcon.On)
+        icon1.addFile(u":/png/icon/icon_like_off.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon1.addFile(u":/png/icon/icon_bookmark_on.png", QSize(), QIcon.Mode.Selected, QIcon.State.On)
         self.favoriteButton.setIcon(icon1)
         self.favoriteButton.setIconSize(QSize(50, 50))
         self.favoriteButton.setCheckable(False)
@@ -401,7 +401,7 @@ class Ui_BookInfo(object):
         self.localButton.setObjectName(u"localButton")
         self.localButton.setMinimumSize(QSize(40, 40))
         icon2 = QIcon()
-        icon2.addFile(u":/png/icon/icon_like_off.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon2.addFile(u":/png/icon/icon_like_off.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.localButton.setIcon(icon2)
         self.localButton.setIconSize(QSize(50, 50))
         self.localButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -411,10 +411,10 @@ class Ui_BookInfo(object):
         self.commentButton = IconToolButton(self.tab)
         self.commentButton.setObjectName(u"commentButton")
         self.commentButton.setMinimumSize(QSize(40, 40))
-        self.commentButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.commentButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.commentButton.setStyleSheet(u"background-color:transparent;")
         icon3 = QIcon()
-        icon3.addFile(u":/png/icon/icon_comment.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon3.addFile(u":/png/icon/icon_comment.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.commentButton.setIcon(icon3)
         self.commentButton.setIconSize(QSize(50, 50))
         self.commentButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -424,10 +424,10 @@ class Ui_BookInfo(object):
         self.downloadButton = IconToolButton(self.tab)
         self.downloadButton.setObjectName(u"downloadButton")
         self.downloadButton.setMinimumSize(QSize(40, 40))
-        self.downloadButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.downloadButton.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.downloadButton.setStyleSheet(u"background-color:transparent;")
         icon4 = QIcon()
-        icon4.addFile(u":/png/icon/ic_get_app_black_36dp.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon4.addFile(u":/png/icon/ic_get_app_black_36dp.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.downloadButton.setIcon(icon4)
         self.downloadButton.setIconSize(QSize(50, 50))
         self.downloadButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -438,7 +438,7 @@ class Ui_BookInfo(object):
         self.uploadButton.setObjectName(u"uploadButton")
         self.uploadButton.setMinimumSize(QSize(40, 40))
         icon5 = QIcon()
-        icon5.addFile(u":/png/icon/upload.svg", QSize(), QIcon.Normal, QIcon.Off)
+        icon5.addFile(u":/png/icon/upload.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.uploadButton.setIcon(icon5)
         self.uploadButton.setIconSize(QSize(50, 50))
         self.uploadButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -449,7 +449,7 @@ class Ui_BookInfo(object):
         self.clearButton.setObjectName(u"clearButton")
         self.clearButton.setMinimumSize(QSize(40, 40))
         icon6 = QIcon()
-        icon6.addFile(u":/png/icon/clear_off.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon6.addFile(u":/png/icon/clear_off.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.clearButton.setIcon(icon6)
         self.clearButton.setIconSize(QSize(50, 50))
         self.clearButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
@@ -463,7 +463,7 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_2.addWidget(self.startRead)
 
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_2.addItem(self.horizontalSpacer)
 
@@ -528,11 +528,11 @@ class Ui_BookInfo(object):
 
         self.horizontalLayout_12.addWidget(self.readOffline)
 
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_12.addItem(self.horizontalSpacer_3)
 
-        self.horizontalSpacer_4 = QSpacerItem(120, 20, QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(120, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_12.addItem(self.horizontalSpacer_4)
 

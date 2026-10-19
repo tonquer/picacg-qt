@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'ui_title_bar.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.5.3
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -52,7 +52,7 @@ class Ui_TitleBar(object):
 
         self.horizontalLayout_3.addWidget(self.label)
 
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_3.addItem(self.horizontalSpacer_3)
 
@@ -68,7 +68,7 @@ class Ui_TitleBar(object):
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setSpacing(0)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
@@ -93,7 +93,7 @@ class Ui_TitleBar(object):
 "QToolButton:pressed[isMax=true]{ border-image:url(:/title_bar/down_button_pressed_57_40.png);}\n"
 "border: none;\n"
 "margin: 0px")
-        self.maxBt.setProperty("isMax", False)
+        self.maxBt.setProperty(u"isMax", False)
 
         self.horizontalLayout_4.addWidget(self.maxBt)
 
