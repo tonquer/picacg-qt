@@ -17,8 +17,11 @@ from PySide6.QtWidgets import (QApplication, QGraphicsView, QGraphicsScene,
 
 from tools.str import Str
 from view.read.read_enum import ReadMode
+from view.read.read_frame import ReadFrame
+from view.read.read_new_frame import ReadNewFrame
 from view.read.read_new_graphics import ReadNewGraphics
 from view.read.read_new_graphics_item import ReadNewGraphicsItem
+from view.read.read_new_view import ReadNewView
 
 GAP = 10
 MAX_ASPECT = 4.0        # 高度上限 = 宽度 * 4
@@ -74,12 +77,13 @@ class FeedItem(QGraphicsItem):
         painter.drawText(QRectF(0, 0, self._w, self._h), Qt.AlignCenter,
                          "加载失败" if self._failed else "加载中…")
 
-
 # ---------------- 后台解码任务（下载完成后，解码放线程池） ----------------
 
 class _DecodeSignals(QObject):
-    loaded = Signal(object, QSize, QPixmap)   # item, 真实尺寸, pixmap
-
+    # 跨线程只传数据（QImage / QByteArray 都可跨线程：隐式共享 + 原子引用计数）。
+    # QPixmap 转换、QMovie 创建一律放主线程（见 StripItem.is_animated 的注释）
+    loaded = Signal(object, QSize, QImage)      # 静态图：一张位图
+    animated = Signal(object, QSize, QByteArray)  # 动图：原始字节（主线程建 QMovie）
 
 class DecodeTask(QRunnable):
     def __init__(self, item, data: QByteArray, target_w: float, dpr: float):
@@ -96,6 +100,18 @@ class DecodeTask(QRunnable):
         buf.setData(self.data)
         buf.open(QIODevice.ReadOnly)
         reader = QImageReader(buf)
+        # 动图判定必须在这里做（后台线程）：GIF/动画 WebP 需要先解出格式信息，
+        # 不能指望响应头的 Content-Type（经常是 application/octet-stream，
+        # 而且 WebP 有静态和动画两种，URL 后缀看不出来）。
+        # imageCount()!=1 而不是 supportsAnimation()：单帧 GIF 应当按静态图处理
+        # （走 decode 降采样路径，省掉 QMovie 的整套开销）。
+        if reader.supportsAnimation() and reader.imageCount() != 1:
+            # 交给主线程建 QMovie（每帧时延由 QMovie 自己管，我们只负责播放/暂停）。
+            # 传原始字节而不是 QMovie：QMovie 是 QObject + 内部定时器，必须属于主线程
+            self.signals.animated.emit(self.item, reader.size(),
+                                       QByteArray(self.data))
+            return
+
         reader.setAutoTransform(True)
         img = reader.read()
         if img.isNull():
@@ -158,166 +174,6 @@ def probe_image_size(data: bytes):
     return None
 
 
-# ---------------- 纵向流视图 ----------------
-
-class FeedView(QGraphicsView):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._scene = QGraphicsScene(self)
-        self.setScene(self._scene)
-        self.setRenderHint(QPainter.SmoothPixmapTransform)
-        self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing, True)
-        self.setOptimizationFlag(QGraphicsView.DontSavePainterState, True)
-        self.setViewportUpdateMode(QGraphicsView.MinimalViewportUpdate)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        self._nam = QNetworkAccessManager(self)
-        self._items = []
-        self._content_h = 0.0
-        self._content_w = 400.0
-        self._was_at_bottom = True
-        self._prev_vmax = 0
-
-        vbar = self.verticalScrollBar()
-        vbar.rangeChanged.connect(self._on_range_changed)
-
-    # ================ 添加图片 ================
-
-    def add_image(self, url: QUrl, est_size: QSize = None):
-        """est_size：如果服务器 API 能返回图片宽高（很多接口都有），传进来
-        即可让 item 一创建就是准确高度，连修正都不需要 —— 首选方案。"""
-        item = FeedItem(url, self._content_w, est_size)
-        item.setPos(0, self._content_h)
-        self._scene.addItem(item)
-        self._items.append(item)
-        self._content_h += item.boundingRect().height() + GAP
-        self._scene.setSceneRect(0, 0, self._content_w, self._content_h)
-
-    # ================ 惰性下载：只请求视口附近的图片 ================
-
-    def _load_visible(self):
-        v = self.verticalScrollBar().value()
-        top, bottom = v - self.height() * 1.5, v + self.height() * 2.5
-        for it in self._items:
-            if it.pixmap is not None or it._reply is not None or it._failed:
-                continue
-            if it.y() > bottom:
-                break
-            if it.y() + it.boundingRect().height() < top:
-                continue
-            self._start_download(it)
-
-    def _start_download(self, item: FeedItem):
-        req = QNetworkRequest(item.url)
-        reply = self._nam.get(req)
-        item._reply = reply
-        reply.readyRead.connect(lambda: self._on_ready_read(item))
-        reply.finished.connect(lambda: self._on_finished(item))
-
-    # ================ 渐进式尺寸探测（防跳动的关键之一） ================
-
-    def _on_ready_read(self, item: FeedItem):
-        reply = item._reply
-        if reply is None:
-            return
-        item._buf += reply.read(reply.bytesAvailable())
-        self._try_probe_size(item)
-
-    def _try_probe_size(self, item: FeedItem):
-        if item._size_known or item._buf.size() < PROBE_MIN_BYTES:
-            return
-        sz = probe_image_size(bytes(item._buf))
-        if sz is not None:
-            item._size_known = True
-            self._correct_height(item, sz)
-
-    # ================ 下载完成 ================
-
-    def _on_finished(self, item: FeedItem):
-        reply, item._reply = item._reply, None
-        err = reply.error()
-        if err == QNetworkReply.NoError:
-            item._buf += reply.readAll()
-        reply.deleteLater()
-
-        if err != QNetworkReply.NoError or item._buf.isEmpty():
-            item._failed = True
-            item.update()
-            return
-
-        self._try_probe_size(item)  # 最后再试一次（有些格式前面没探测出来）
-
-        task = DecodeTask(item, item._buf, self._content_w, self.devicePixelRatioF())
-        task.signals.loaded.connect(self._on_loaded)
-        QThreadPool.globalInstance().start(task)
-        item._buf = QByteArray()    # 字节已交给解码任务（隐式共享，不拷贝）
-
-    def _on_loaded(self, item: FeedItem, real: QSize, pixmap: QPixmap):
-        if not item._size_known:    # 探测失败（罕见），加载完兜底修正
-            item._size_known = True
-            self._correct_height(item, real)
-        item.pixmap = pixmap
-        item.update()               # 只重绘，不动几何
-
-    # ================ 高度修正：平移后续内容 + 滚动条补偿 ================
-
-    def _correct_height(self, item: FeedItem, image_size: QSize):
-        new_h = item._height_for(image_size)
-        old_h = item.boundingRect().height()
-        if abs(new_h - old_h) < 0.5:
-            return
-        delta = new_h - old_h
-        item.set_geometry(item.boundingRect().width(), new_h)
-
-        for other in self._items:   # 后续 item 整体下移/上移
-            if other.y() > item.y():
-                other.setPos(other.x(), other.y() + delta)
-        self._content_h += delta
-        self._scene.setSceneRect(0, 0, self._content_w, self._content_h)
-
-        # 补偿：被修正的 item 在视口上方时，视口内容会被推移，滚动条同步加 delta
-        vbar = self.verticalScrollBar()
-        if item.y() < vbar.value():
-            vbar.setValue(vbar.value() + delta)
-
-    # ================ 滚动条范围变化：贴底锚点 ================
-
-    def _on_range_changed(self, _min, vmax):
-        vbar = self.verticalScrollBar()
-        if self._was_at_bottom and vmax > self._prev_vmax:
-            vbar.setValue(vmax)      # 原本贴底，追加/长高后仍贴底
-        self._prev_vmax = vmax
-
-    # ================ 事件 ================
-
-    def scrollContentsBy(self, dx, dy):
-        super().scrollContentsBy(dx, dy)
-        vbar = self.verticalScrollBar()
-        self._was_at_bottom = vbar.value() >= vbar.maximum() - 2
-        self._load_visible()
-
-    def showEvent(self, ev):
-        super().showEvent(ev)
-        self._load_visible()
-
-    def resizeEvent(self, ev):
-        super().resizeEvent(ev)
-        new_w = self.viewport().width() - 4
-        if abs(new_w - self._content_w) < 1:
-            return
-        ratio = new_w / self._content_w
-        self._content_w = new_w
-        y = 0.0
-        for it in self._items:
-            w, h = it.boundingRect().width(), it.boundingRect().height()
-            it.set_geometry(w * ratio, h * ratio)
-            it.setPos(0, y)
-            y += h * ratio + GAP
-        self._content_h = y
-        self._scene.setSceneRect(0, 0, self._content_w, self._content_h)
-        self._load_visible()
-
-
 # ---------------- 生成测试图片 + 本地 HTTP 服务器（模拟图源） ----------------
 
 def make_test_images(count=40):
@@ -345,6 +201,45 @@ def make_test_images(count=40):
         paths.append(path)
     return d
 
+def make_test_animations(directory, spec=None):
+    """生成几张动图（GIF + 动画 WebP）到 directory，返回文件名列表。
+
+    用 Pillow 生成（只是**测试素材**，运行时代码完全不依赖 Pillow）。
+    没装 Pillow 就返回空列表：Demo 会安静地跳过动图，不影响其它功能。
+
+    spec：[(格式, 宽, 高, 帧数, 每帧毫秒), ...]，默认 GIF + WebP 各两张。
+    """
+    try:
+        from PIL import Image, ImageDraw
+    except ImportError:
+        return []                      # 没 Pillow：跳过动图素材
+
+    if spec is None:
+        spec = [("gif", 480, 320, 8, 120),
+                ("webp", 480, 320, 10, 100),
+                ("gif", 400, 600, 6, 200),
+                ("webp", 640, 360, 12, 80)]
+    names = []
+    for i, (fmt, w, h, frames, ms) in enumerate(spec):
+        ims = []
+        for k in range(frames):
+            im = Image.new("RGB", (w, h), (20, 24, 40))
+            dr = ImageDraw.Draw(im)
+            t = k / frames
+            dr.ellipse([int(w * 0.15 + t * w * 0.5), int(h * 0.3),
+                        int(w * 0.35 + t * w * 0.5), int(h * 0.5)],
+                       fill=(int(255 * (1 - t)), int(255 * t), 200))
+            dr.rectangle([0, h - 6, int(w * (k + 1) / frames), h], fill=(255, 120, 60))
+            dr.text((8, 8), f"{fmt.upper()} frame {k}/{frames}", fill=(255, 255, 255))
+            ims.append(im)
+        name = f"anim_{i:02d}.{fmt}"
+        kw = dict(save_all=True, append_images=ims[1:], duration=ms, loop=0)
+        if fmt == "webp":
+            kw.update(quality=80, method=4)     # method 越小越快（0=最快）
+        ims[0].save(os.path.join(directory, name), **kw)
+        names.append(name)
+    return names
+
 
 def start_local_server(directory):
     handler = functools.partial(http.server.SimpleHTTPRequestHandler,
@@ -367,16 +262,19 @@ def main():
     app.setStyle("Fusion")
 
     img_dir = make_test_images(40)              # 生成 40 张随机尺寸测试图
+    anim_names = make_test_animations(img_dir)  # 再生成几张 GIF/动画 WebP（需要 Pillow）
     port = start_local_server(img_dir).server_address[1]   # 本地图源端口
 
     win = QWidget()
     lay = QVBoxLayout(win)
     top = QHBoxLayout()
     combo = QComboBox()                         # 阅读方向选择
-    combo.addItems(["上下滚动（从上到下）", "左右滚动（从左到右）",
-                    "右左滚动（漫画模式）"])
-    page_combo = QComboBox()                    # 页面模式选择
-    page_combo.addItems(["连续滚动", "单页模式", "双页模式"])
+    combo.addItems(["上下模式", "默认", "左右双页",
+                    "右左双页", "左右滚动", "右左滚动", "右左双页(滚轮正序)", "等宽模式", "右左滚动(滚轮正序)"])
+
+
+    # page_combo = QComboBox()                    # 页面模式选择
+    # page_combo.addItems(["连续滚动", "单页模式", "双页模式"])
 
     auto_box = QCheckBox("自动滚动")             # 自动滚动开关
     speed_spin = QSpinBox()                     # 速度输入框（px/s）
@@ -390,7 +288,7 @@ def main():
     zoom_in_btn = QPushButton("+")               # 放大一步（×1.25）
     zoom_label = QLabel("100%")                  # 当前缩放比（zoomChanged 同步）
     top.addWidget(combo)
-    top.addWidget(page_combo)
+    # top.addWidget(page_combo)
     top.addWidget(auto_box)
     top.addWidget(speed_spin)
     top.addWidget(gl_box)
@@ -416,17 +314,23 @@ def main():
         return
 
     def _start_download(self, item: ReadNewGraphicsItem):
+        if not hasattr(item, "url"):
+            return
         req = QNetworkRequest(item.url)
         reply = self._nam.get(req)
         item._reply = reply
         # reply.readyRead.connect(lambda: self._on_ready_read(item.index))
         reply.finished.connect(lambda: finished(self, item))
 
+    # img = ReadNewView()
+    # view = img.frame.scrollArea
     view = ReadNewGraphics(ReadMode.UpDown)
+    img = view
     view._nam = QNetworkAccessManager(view)  # 网络下载器（所有图片共用）
     ReadNewGraphics._start_download = _start_download
     gl_box.toggled.connect(view.set_opengl)      # 运行时热切换 GPU/光栅渲染
     # 下拉框 -> 切换阅读方向（运行时切换，阅读位置按比例保持）
+    combo.currentIndexChanged.connect(view.set_mode)
     # combo.currentIndexChanged.connect(
     #     lambda i: view.set_mode([MODE_TTB, MODE_LTR, MODE_RTL][i]))
     # # 页面模式下拉框 -> 切换 连续/单页/双页（进度按"第一条可见图所在页"保持）
@@ -451,11 +355,15 @@ def main():
     view.zoomChanged.connect(lambda z: zoom_label.setText(f"{z * 100:.0f}%"))
 
     lay.addLayout(top)
-    lay.addWidget(view)
+    lay.addWidget(img)
 
     for i in range(40):
-        view.add_image(i)
-        view._items[i].url = QUrl(f"http://127.0.0.1:{port}/img_{i:03d}.png")
+        if i % 6 == 3 and anim_names:
+            view.add_image(i)
+            view._items[i].url = QUrl(f"http://127.0.0.1:{port}/{anim_names.pop(0)}")
+        else:
+            view.add_image(i)
+            view._items[i].url = QUrl(f"http://127.0.0.1:{port}/img_{i:03d}.png")
 
     win.resize(720, 820)
     win.setWindowTitle("三方向图片流 Demo（ttb / ltr / rtl）")

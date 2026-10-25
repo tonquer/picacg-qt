@@ -1,7 +1,7 @@
 from PySide6.QtCore import (Qt, QRectF, QSize, QBuffer, QByteArray, QIODevice,
                             QUrl, QObject, QRunnable, QThreadPool, Signal, QTimer,
                             QAbstractAnimation, QVariantAnimation, QEasingCurve,
-                            QElapsedTimer, QPointF)
+                            QElapsedTimer, QPointF, QSizeF)
 from PySide6.QtGui import (QImageReader, QImage, QPixmap, QPainter, QColor,
                            QTransform, QSurfaceFormat, QPen)
 from PySide6.QtWidgets import (QApplication, QGraphicsView, QGraphicsScene,
@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (QApplication, QGraphicsView, QGraphicsScene,
 
 from config.setting import Setting
 from task.task_download import FileData
+from tools.log import Log
 
 
 class ReadNewGraphicsItem(QGraphicsItem):
@@ -40,7 +41,17 @@ class ReadNewGraphicsItem(QGraphicsItem):
     # 让前一张多画 1px 盖到后一张的起始处，缝就没了。0 = 关闭。
     # 注意：只影响绘制（boundingRect/paint），**不改布局**——否则每张错 1px 会累积。
     SEAM_OVERLAP = 1.0
-
+    # 解码位图比渲染目标大多少倍就值得缩回去重解。为什么要缩：`drawPixmap` 只有
+    # 精确 1:1 走快路径，轻微缩小（0.9~0.99x）是最坏情况（实测慢 5 倍）。留 10%
+    # 余量，避免为了 1% 的差异反复重解。
+    DECODE_SHRINK_RATIO = 1.10
+    # 源图比目标小时，解码阶段最多把它放大到目标的多少倍（线性倍数）。
+    # 为什么要在解码时放大：`drawPixmap` 只有精确 1:1 走快路径，小图上采样绘制
+    # 成本按**输出面积**算（实测 1.8 倍 0.33ms、4 倍 1.4ms 每张每帧），而解码时
+    # 放大一次是后台线程，之后绘制就是 1:1（0.03ms）。
+    # 为什么要设上限：放大到目标会让位图占"目标面积"，100×100 的小图铺到 880
+    # 会膨胀 77 倍内存，而且画面并不会更清楚。2 倍线性 (=4 倍面积) 是折中。
+    DECODE_UPSCALE_MAX_SCALE = 2.0
     # ---- 加载进度环 ----
     PROGRESS_MIN_D = 28.0  # 进度环最小直径（小于它视觉上看不清）
     PROGRESS_MAX_D = 56.0  # 进度环最大直径（再大就喧宾夺主）
@@ -62,6 +73,8 @@ class ReadNewGraphicsItem(QGraphicsItem):
         self.fmt = None
         self._size: QSize = None                     # QSize：图片真实尺寸（API 预估/头探测/解码，任一来源）
         self._size_known = False              # True = _size 是精确值，之后不再修正
+        self.scale_size = QSizeF()            # 缩放
+
         self.file_data: FileData = None
         self._reply = None                    # 正在进行的网络请求（None = 没在下载）
         self._re_download_cnt = 0
@@ -250,6 +263,57 @@ class ReadNewGraphicsItem(QGraphicsItem):
         return QRectF(rect.x() - l, rect.y() - t,
                       rect.width() + l + r, rect.height() + t + b)
 
+    def _draw_padded_pixmap(self, painter, pm: QPixmap, sr, rect):
+        """按 rect 画 pixmap，再把边缘像素复制到 _seam_pad 覆盖的区域。
+
+        ⚠️ 为什么不直接把 rect 撑大：`drawPixmap` 一旦不是**精确 1:1** 就会走
+        缩放（双线性）路径——实测 1080×1620 图：精确 1:1 是 0.09ms，撑高 1px
+        （0.06% 拉伸）或 0.999 亚像素缩放都要 0.44~0.47ms，慢约 5 倍。
+        所以主图严格按原尺寸画（连续模式下正好 1:1，走快路径），只在 1px 的
+        叠加区补一行/一列边缘像素（那一小条即使走缩放也只有 ~1% 的面积）。"""
+        l, t, r, b = self._seam_pad
+        dpr = pm.devicePixelRatioF()
+        isDebug = True
+        if (isDebug and (abs(rect.width()*dpr-pm.width()) > 0.01) or abs(rect.height()*dpr-pm.height()) > 0.01):
+            Log.Warn(f"pixmap not same size, {self.index}, size:{pm.size()}, {rect.size()}")
+        painter.drawPixmap(rect, pm, sr)
+        if l == 0.0 and t == 0.0 and r == 0.0 and b == 0.0:
+            return
+        sw, sh = sr.width(), sr.height()
+        if b > 0.0:      # 下：复制最后一行
+            painter.drawPixmap(
+                QRectF(rect.x(), rect.y() + rect.height(), rect.width(), b),
+                pm, QRectF(0, sh - 1, sw, 1))
+        if t > 0.0:      # 上：复制第一行
+            painter.drawPixmap(
+                QRectF(rect.x(), rect.y() - t, rect.width(), t),
+                pm, QRectF(0, 0, sw, 1))
+        if r > 0.0:      # 右：复制最后一列
+            painter.drawPixmap(
+                QRectF(rect.x() + rect.width(), rect.y(), r, rect.height()),
+                pm, QRectF(sw - 1, 0, 1, sh))
+        if l > 0.0:      # 左：复制第一列
+            painter.drawPixmap(
+                QRectF(rect.x() - l, rect.y(), l, rect.height()),
+                pm, QRectF(0, 0, 1, sh))
+
+    def _pixmap_draw_rect(self, pm) -> QRectF:
+        """连续模式下 pixmap 的绘制矩形（逻辑像素）。
+
+        优先取**位图自己的逻辑尺寸**（物理像素 / 它的 devicePixelRatio）：
+        target 和 source 描述的是同一批物理像素，dpr 在 drawPixmap 内部换算时
+        正好抵消——`target × dpr == source` 恒成立，因此无论 dpr 是 1.0、1.25
+        还是 1.75 都会走精确 1:1 快路径，**不依赖 Qt 对小数 dpr 的取整**。
+
+        只有位图和 item 矩形明显不一致（>0.01px）时才退回槽位尺寸：
+        - 旧位图（窗口缩小/zoom 变小后还没重解）：按槽位降采样绘制；
+        - 源图分辨率不足（DecodeTask 只缩不放、或超过放大上限）：按槽位放大。"""
+        d = pm.devicePixelRatio() or 1.0
+        pw, ph = pm.width() / d, pm.height() / d
+        if abs(pw - self._w) < 0.01 and abs(ph - self._h) < 0.01:
+            return QRectF(0, 0, pw, ph)
+        return QRectF(0, 0, self._w, self._h)
+
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget=None):
         # _fit=True（单/双页模式）：图片等比缩放进 item 矩形，位置按 _fit_align
         # （单页居中、双页朝中缝贴），信箱式留白；
@@ -263,12 +327,18 @@ class ReadNewGraphicsItem(QGraphicsItem):
             sr = QRectF(pm.rect())    # 源矩形（PM 自身单位；见下面关于 dpr 的说明）
             if self._fit:
                 sc = min(self._w / sr.width(), self._h / sr.height())
-                painter.drawPixmap(
-                    self._fit_draw_rect(sr.width() * sc, sr.height() * sc), pm, sr)
+                self._draw_padded_pixmap(
+                    painter, pm, sr,
+                    self._aligned_rect(sr.width() * sc, sr.height() * sc))
             else:
-                # 两者宽高比一致，实际无变形；沿阅读方向多画 1px（_seam_pad）
-                # 盖住相邻两张之间的白缝
-                painter.drawPixmap(self._padded_rect(), pm, sr)
+                # 绘制矩形取"位图自己的逻辑尺寸"（物理/dpr），而不是 _w/_h。
+                # 两者按构造相等，但这样写让 target×dpr == source 恒成立，
+                # **不依赖 Qt 对小数 dpr 的内部取整**：target 和 source 描述的
+                # 是同一批物理像素，dpr 在换算中正好抵消，drawPixmap 一定走
+                # 精确 1:1 快路径。（实测差 0.001 逻辑像素就会掉到缩放路径，
+                # 慢 3~5 倍，所以这里不赌 Qt 的四舍五入。）
+                self._draw_padded_pixmap(painter, pm, sr,
+                                         self._pixmap_draw_rect(pm))
             return
         # 未加载完/失败：画占位框（红色 = 失败，灰色 = 加载中）
         if self._fit:

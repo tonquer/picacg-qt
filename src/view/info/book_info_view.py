@@ -18,6 +18,7 @@ from qt_owner import QtOwner
 from server import req, ToolUtil, config, Status, Log
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
+from task.task_cache import TaskCache
 from tools.book import BookMgr, Book, BookEps
 from tools.str import Str
 import time
@@ -367,10 +368,11 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             if config.IsLoadingPicture:
                 url = ToolUtil.GetRealUrl(fileServer, path)
                 self.path = ToolUtil.GetRealPath(self.bookId, "cover")
+                otherParams = {"bookId": self.bookId, "type": "cover"}
                 if QtOwner().isOfflineModel:
-                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture)
+                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture, otherParams=otherParams)
                 else:
-                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture)
+                    self.AddDownloadTask(url, self.path, completeCallBack=self.UpdatePicture, otherParams=otherParams)
             if not QtOwner().isOfflineModel:
                 self.AddHttpTask(req.GetComicsBookEpsReq(self.bookId), self.GetEpsBack)
             self.startRead.setEnabled(False)
@@ -411,7 +413,8 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
                 w, h, mat,_ = ToolUtil.GetPictureSize(self.pictureData)
                 if max(w, h) <= Setting.CoverMaxNum.value:
                     model = ToolUtil.GetModelByIndex(Setting.CoverLookModelName.value, Setting.CoverLookScale.value, mat)
-                    self.AddConvertTask(self.path, self.pictureData, model, self.Waifu2xPictureBack)
+                    otherParams = {"bookId": self.bookId, "type": "cover"}
+                    self.AddConvertTask(self.path, self.pictureData, model, self.Waifu2xPictureBack, otherParams=otherParams)
         else:
             self.picture.setText(Str.GetStr(status))
         return
@@ -597,7 +600,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
             if os.path.isdir(waifuPath):
                 shutil.rmtree(waifuPath, True)
         self.UpdateFavoriteIcon()
-
+        TaskCache().ClearMemData(self.bookId)
 
     def OpenReadImg(self, modelIndex):
         index = modelIndex.row()

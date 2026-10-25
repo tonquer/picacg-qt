@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
     from view.read.read_new_frame import ReadNewFrame
     from view.read.read_new_view import ReadNewView
+    from view.read.read_new_task import ReadNewTask
 
 import sys
 import weakref
@@ -20,7 +21,6 @@ from config import config
 from config.setting import Setting
 from interface.ui_read_tool import Ui_ReadImg
 from qt_owner import QtOwner
-from tools.book import BookMgr
 from tools.str import Str
 from tools.tool import CTime, ToolUtil
 from view.read.read_enum import ReadMode, QtFileData
@@ -141,6 +141,10 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
         return self.imgFrame.readImg
 
     @property
+    def readTask(self) -> ReadNewTask:
+        return self.scrollArea.read_task
+
+    @property
     def curIndex(self):
         return self.scrollArea._cur_idx
 
@@ -175,8 +179,6 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def _NextPage(self):
         epsId = self.readImg.epsId
-        bookId = self.readImg.bookId
-        bookInfo = BookMgr().GetBook(bookId)
 
         if self.curIndex >= self.maxPic - 1:
             if self.readImg.isLocal:
@@ -189,13 +191,10 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
                     return
                 self.OpenNextEps()
             else:
-                if not bookInfo:
-                    return
-                if epsId + 1 < bookInfo.epsCount:
+                if not self.readTask.IsMaxBookEps(epsId+1):
                     QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
                     self.OpenNextEps()
                 return
-            # self.CloseScrollAndTurn()
             QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
             return
         if ReadMode.isDouble(self.stripModel):
@@ -214,7 +213,6 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def _LastPage(self):
         epsId = self.readImg.epsId
-        bookId = self.readImg.bookId
 
         if self.curIndex <= 0:
             if self.readImg.isLocal:
@@ -341,7 +339,6 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
     def OpenLastEps(self):
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
-        bookInfo = BookMgr().GetBook(bookId)
 
         lasEps = epsId - 1
         if self.readImg.isLocal:
@@ -355,9 +352,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
                 QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
                 return
         else:
-            if not bookInfo:
-                return
-            if lasEps >= bookInfo.epsCount:
+            if self.readTask.IsMaxBookEps(lasEps):
                 return
 
         if lasEps < 0:
@@ -372,7 +367,6 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
     def OpenNextEps(self):
         epsId = self.readImg.epsId
         bookId = self.readImg.bookId
-        bookInfo = BookMgr().GetBook(bookId)
         nextEps = epsId + 1
         if self.readImg.isLocal:
             if nextEps >= len(self.readImg._cacheBook.eps):
@@ -385,9 +379,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
                 QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
                 return
         else:
-            if not bookInfo:
-                return
-            if nextEps >= bookInfo.epsCount:
+            if self.readTask.IsMaxBookEps(nextEps):
                 QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextChapter))
                 return
 
@@ -457,6 +449,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
         self.zoomSlider.setValue(value)
 
     def ScalePicture(self, value):
+        self.scaleLabel.setText(Str.GetStr(Str.Scale) + f"({value}%)")
         self.scrollArea.set_zoom(value/100, None)
 
     def eventFilter(self, obj, ev):
@@ -473,8 +466,6 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
     def ChangeReadMode2(self, index):
         Setting.LookReadMode.SetValue(index)
         self.scrollArea.set_mode(index)
-        if self.stripModel == ReadMode.UpDown:
-            self.zoomSlider.setValue(80)
         return
 
     def SwitchScrollAndTurn(self):

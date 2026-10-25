@@ -191,7 +191,7 @@ class TaskWaifu2x(TaskBase):
             self.taskObj.convertBack.emit(taskId)
             t1.Refresh("RunLoad")
 
-    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag=None, completeCallBack2=None):
+    def AddConvertTaskByData(self, path, imgData, model, callBack, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag=None, completeCallBack2=None, otherParams=None):
         info = QConvertTask()
         info.callBack = callBack
         info.callBack2 = completeCallBack2
@@ -201,6 +201,8 @@ class TaskWaifu2x(TaskBase):
         info.path = path
         info.preDownPath = preDownPath
         info.noSaveCache = noSaveCache
+        if isinstance(otherParams, dict):
+            info.bookId = otherParams.get("bookId", "")
         if not noSaveCache and path and Setting.SavePath.value:
             info.cachePath = os.path.join(Setting.GetCachePath(), os.path.join("waifu2x", path))
 

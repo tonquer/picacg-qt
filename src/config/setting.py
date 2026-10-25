@@ -150,6 +150,7 @@ class Setting:
     SelectEncodeGpu = SettingValue("Waifu2xSetting", "", True)
     Waifu2xCpuCore = SettingValue("Waifu2xSetting", 0, True)
     Waifu2xTileSize = SettingValue("Waifu2xSetting", 0, False, [0, 200, 100, 32])
+    ProcThreadNum = SettingValue("Waifu2xSetting", 0, False, [0, 1, 2, 3, 4, 5, 6, 7, 8])
 
     # 封面 Waifu2x
     CoverIsOpenWaifu = SettingValue("Waifu2xSetting", 0, False)
@@ -267,7 +268,7 @@ class Setting:
             Setting.GetStatePath(),
         ]:
             os.makedirs(path, exist_ok=True)
-
+        Setting.CheckRepair()
         if Setting.SavePath.value:
             for path in [
                 Setting.GetCachePath(),
@@ -314,3 +315,41 @@ class Setting:
         if sys.platform == "win32":
             return "logs"
         return Setting._xdgDir("XDG_STATE_HOME", ".local/state", "logs")
+
+    @staticmethod
+    def GetLegacyConfigPath():
+        return os.path.join(os.path.expanduser("~"), ".picacg")
+
+    @staticmethod
+    def CheckRepair():
+        if sys.platform == "win32":
+            return
+
+        legacyDir = Setting.GetLegacyConfigPath()
+        if not os.path.isdir(legacyDir):
+            return
+
+        # 旧目录 -> 新目录
+        moveMap = [
+            (os.path.join(legacyDir, "config.ini"), Setting.GetConfigPath()),
+            (os.path.join(legacyDir, "cache_word"), Setting.GetStatePath()),
+            (os.path.join(legacyDir, "download.db"), Setting.GetStatePath()),
+            (os.path.join(legacyDir, "favorite.db"), Setting.GetStatePath()),
+            (os.path.join(legacyDir, "history.db"), Setting.GetStatePath()),
+            (os.path.join(legacyDir, "local_read.db"), Setting.GetStatePath()),
+            (os.path.join(legacyDir, "nas.db"), Setting.GetStatePath()),
+            (os.path.join(legacyDir, "batch_sr_tool.db"), Setting.GetStatePath()),
+        ]
+
+        for src, destDir in moveMap:
+            if not os.path.isfile(src):
+                continue
+            dest = os.path.join(destDir, os.path.basename(src))
+            # 目标已存在说明用户已有新配置，不覆盖
+            if os.path.isfile(dest):
+                continue
+            try:
+                shutil.copyfile(src, dest)
+            except Exception as es:
+                from tools.log import Log
+                Log.Error(es)

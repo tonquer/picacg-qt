@@ -57,7 +57,7 @@ class Waifu2xToolView(QtWidgets.QWidget, Ui_Waifu2xTool, QtTaskBase):
         self.graphicsItem = ReadQGraphicsProxyWidget()
         self.graphicsItem.setFlags(QGraphicsPixmapItem.ItemIsFocusable |
                                    QGraphicsPixmapItem.ItemIsMovable)
-        # self.graphicsView.setDragMode(QGraphicsView.RubberBandDrag)
+        self.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.CopyPicture)
         self.graphicsScene = QGraphicsScene(self)  # 场景

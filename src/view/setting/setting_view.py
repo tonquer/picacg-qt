@@ -163,6 +163,7 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             BindIndex(Setting.NotCategoryShow, self.categoryBox),
             BindIndex(Setting.FontStyle, self.fontStyle, lambda value: self.fontStyle.setCurrentIndex(int(value))),
             BindIndex(Setting.Waifu2xTileSize, self.tileComboBox),
+            BindIndex(Setting.ProcThreadNum, self.procThreadNum),
             BindValue(Setting.SelectEncodeGpu, self.encodeSelect,
                       lambda value: self._SetTextChoice(self.encodeSelect, value, config.EncodeGpu)),
             BindValue(Setting.FontName, self.fontBox,

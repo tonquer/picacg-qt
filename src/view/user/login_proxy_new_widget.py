@@ -248,8 +248,12 @@ class LoginProxyNewWidget(object):
             self.__InitSetting()
         self.LoadSetting()
         proxy = urllib.request.getproxies()
-        if isinstance(proxy, dict) and proxy.get("http"):
-            self.owner.proxyLabel.setText(proxy.get("http", ""))
+        httpProxyStr = proxy.get("http") if isinstance(proxy, dict) else None
+        httpsProxyStr = proxy.get("https") if isinstance(proxy, dict) else None
+        socksProxyStr = proxy.get("socks") if isinstance(proxy, dict) else None
+        if httpProxyStr or httpsProxyStr or socksProxyStr:
+            text = httpProxyStr if httpProxyStr else httpsProxyStr if httpsProxyStr else socksProxyStr
+            self.owner.proxyLabel.setText(text)
             self.owner.checkLabel.setVisible(False)
         else:
             self.owner.checkLabel.setVisible(True)

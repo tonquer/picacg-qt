@@ -68,7 +68,7 @@
      <item>
       <widget class="Line" name="line_2">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
       </widget>
      </item>
@@ -101,7 +101,7 @@
      <item>
       <widget class="Line" name="line">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
       </widget>
      </item>
@@ -149,7 +149,7 @@
      <item>
       <widget class="Line" name="line_3">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
       </widget>
      </item>
@@ -166,12 +166,15 @@
      <item>
       <widget class="Line" name="line_4">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Orientation::Vertical</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
@@ -186,6 +189,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Orientation::Vertical</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
@@ -211,7 +217,7 @@
      <item>
       <widget class="Line" name="line_5">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
+        <enum>Qt::Orientation::Vertical</enum>
        </property>
       </widget>
      </item>
@@ -225,7 +231,7 @@
      <item>
       <widget class="QComboBox" name="threadNum">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <item>
         <property name="text">
@@ -250,6 +256,21 @@
        <item>
         <property name="text">
          <string>5</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>6</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>7</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>8</string>
         </property>
        </item>
       </widget>
@@ -355,11 +376,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>BaseTableWidget</class>
-   <extends>QTableWidget</extends>
-   <header location="global">component.tab.base_table_widget.h</header>
-  </customwidget>
-  <customwidget>
    <class>WheelComboBox</class>
    <extends>QComboBox</extends>
    <header location="global">component.box.wheel_combo_box.h</header>
@@ -368,6 +384,11 @@
    <class>WheelDoubleSpinBox</class>
    <extends>QDoubleSpinBox</extends>
    <header location="global">component.box.wheel_double_spin_box.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BaseTableWidget</class>
+   <extends>QTableWidget</extends>
+   <header location="global">component.tab.base_table_widget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

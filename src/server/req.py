@@ -111,8 +111,18 @@ class ServerReq(object):
                 self.proxy = {"http": proxy, "https": proxy}
         elif proxyIndex == 3:
             proxy = urllib.request.getproxies()
-            if isinstance(proxy, dict) and proxy.get("http"):
-                self.proxy = {"http": proxy.get("http"), "https": proxy.get("http")}
+            httpProxyStr = proxy.get("http") if isinstance(proxy, dict) else None
+            httpsProxyStr = proxy.get("https") if isinstance(proxy, dict) else None
+            socksProxyStr = proxy.get("socks") if isinstance(proxy, dict) else None
+            if httpProxyStr or httpsProxyStr:
+                p = httpProxyStr or httpsProxyStr
+                self.proxy = {"http": p, "https": p}
+            elif socksProxyStr:
+                if "://" not in socksProxyStr:
+                    socksProxyStr = "socks5://" + socksProxyStr
+                self.proxy = {"http": socksProxyStr, "https": socksProxyStr}
+            else:
+                self.proxy = {"http": None, "https": None}
         else:
             self.proxy = {"http": None, "https": None}
 

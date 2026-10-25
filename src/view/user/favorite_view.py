@@ -46,6 +46,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.searchText = ""
         self.isLocal = False
         self.isLocal = Setting.IsOpenLocalFavorite.value
+        self.SetLocal(self.isLocal)
 
         self.sortIdCombox.currentIndexChanged.connect(self.RefreshDataFocus)
         self.sortKeyCombox.currentIndexChanged.connect(self.RefreshDataFocus)
@@ -88,10 +89,10 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         return
 
     def UpdatePageNum(self):
-        # maxFovorite = len(self.allFavoriteIds)
+        maxFovorite = len(self.allFavoriteIds)
         # self.bookList.pages = max(0, (maxFovorite-1)) // 20 + 1
         self.pages.setText("{}/{}".format(self.bookList.page, self.bookList.pages) + Str.GetStr(Str.Page))
-        # self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(maxFovorite))
+        self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(maxFovorite))
         self.spinBox.setMaximum(self.bookList.pages)
         self.spinBox.setValue(self.bookList.page)
         self.bookList.UpdateState()
@@ -105,6 +106,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
             self.SetLocal(False)
             return
 
+        self.SetLocal(True)
         self.AddSqlTask("book", "", SqlServer.TaskTypeSelectFavorite, self.LoadAllFavoriteBack)
         return
 
@@ -193,7 +195,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         if self.isLocal :
             query = self.BuildBookQuery()
             self.AddSqlTask("book", (query, PageRequest(page)), SqlServer.TaskTypeSelectBookPage,
-                            self.ReceiveLocalPage, (page, self.searchText))
+                            self.ReceiveLocalPage, (page, self.searchText, replace))
         else:
             sort = self.sortList[self.sortCombox.currentIndex()]
             self.AddHttpTask(req.FavoritesReq(self.bookList.page, sort), self.SearchBack, (self.bookList.page, replace))
@@ -209,7 +211,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
                          descending=self.sortIdCombox.currentIndex() == 0, link_favorite_user=Setting.UserId.value)
 
     def ReceiveLocalPage(self, result, v):
-        requestedPage, bakKey = v
+        requestedPage, bakKey, isClear = v
         if bakKey == self.searchText:
             if result is None:
                 self.SetPageLoading(False)
@@ -217,6 +219,8 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
                 QtOwner().ShowError(Str.GetStr(Str.Error))
                 return
             if result.page != requestedPage:
+                self.bookList.clear()
+            if isClear:
                 self.bookList.clear()
             self.ApplyPageResult(result)
 
@@ -227,6 +231,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.spinBox.setMaximum(result.pages)
         self.spinBox.setValue(result.page)
         self.pages.setText(self.bookList.GetPageStr())
+        self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(len(self.allFavoriteIds)))
         try:
             for item in result.items:
                 self.bookList.AddBookItemByDbBook(item, isShowHistory=True)

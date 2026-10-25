@@ -185,10 +185,12 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
             Log.Error("Not found book.db !!!!!!!!!!!!!!!")
             QtOwner().SetDbError()
             QtOwner().ShowErrOne("无法加载本地数据库db/book.db")
+            QtOwner().favorityView.InitFavorite()
             return
         self.isHaveDb = True
         QtOwner().canUseDb = True
         self.UpdateDbInfo()
+        QtOwner().favorityView.InitFavorite()
         return
 
     def SwitchCurrent(self, **kwargs):

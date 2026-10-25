@@ -227,7 +227,9 @@ class MainView(Main, QtTaskBase):
         if config.CanWaifu2x:
             from sr_vulkan import sr_vulkan as sr
             stat = sr.init()
-            sr.setDebug(True)
+            import os
+            if os.environ.get("PYCHARM_HOSTED") == "1":
+                sr.setDebug(True)
             if stat < 0:
                 pass
                 # QtOwner().ShowMsg(self.tr("未发现支持VULKAN的GPU, Waiuf2x当前为CPU模式, " + ", code:{}".format(str(stat))))
@@ -241,6 +243,12 @@ class MainView(Main, QtTaskBase):
             cpuNum = sr.getCpuCoreNum()
             gpuNum = sr.getGpuCoreNum()
             self.settingView.SetGpuInfos(gpuInfo, cpuNum)
+            if Setting.ProcThreadNum.GetIndexV()> 0:
+                procNum = max(1, Setting.ProcThreadNum.GetIndexV())
+                encodeThread = max(1, Setting.ProcThreadNum.GetIndexV())
+                decodeThread = max(1, Setting.ProcThreadNum.GetIndexV())
+                sr.setThreadNum(decodeThread, encodeThread, procNum)
+
             # if not gpuInfo or (gpuInfo and config.Encode < 0) or (gpuInfo and config.Encode >= len(gpuInfo)):
             #     config.Encode = 0
 

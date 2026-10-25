@@ -7,8 +7,6 @@ from view.read.read_new_task import ReadNewTask
 from view.read.read_new_tool import ReadNewTool
 from view.setting.setting_binding import BindSpin
 
-if TYPE_CHECKING:
-    from view.read.read_graphics import ReadGraphicsView
 
 import os
 import time
@@ -140,9 +138,9 @@ class ReadNewView(QtWidgets.QWidget):
         item = self.scrollArea.get_cur_item()
         if item:
             if item.is_need_waifu2x:
-                action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x) + "(F2)")
-            else:
                 action = popMenu.addAction(Str.GetStr(Str.OpenCurWaifu2x) + "(F2)")
+            else:
+                action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x) + "(F2)")
             action.triggered.connect(self.qtTool.curWaifu2x.click)
 
         menu2 = popMenu.addMenu(Str.GetStr(Str.ReadMode))

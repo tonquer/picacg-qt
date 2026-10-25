@@ -237,13 +237,14 @@ class DownloadBookHandler(object):
         task = backData
         if backData.status != Status.Ok:
             if backData.backParam:
-                TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, b"")
+                TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, 0, b"")
         else:
             # r = backData.res
             # if r.status_code != 200:
             #     if backData.backParam:
             #         TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, b"")
             #     return
+            fileSize = 0
             request = backData.req
             index = backData.index
             cfHit = False
@@ -255,6 +256,8 @@ class DownloadBookHandler(object):
                     with task.session.stream("GET", request.url, headers=request.headers,
                                              timeout=backData.timeout, proxies=request.proxy) as r:
                         fileSize = int(r.headers.get('Content-Length', 0))
+                        if not fileSize:
+                            fileSize = 1024 * 512
                         cfHit = r.headers.get("cf-cache-status", False)
                         now = time.time()
                         isAlreadySend = False
@@ -268,14 +271,15 @@ class DownloadBookHandler(object):
                                 return
                             else:
                                 if backData.backParam:
-                                    TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, b"")
+                                    TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, fileSize, b"")
                                 return
                         elif r.status_code != 200:
                             if backData.backParam:
-                                TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, b"")
+                                TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, fileSize, b"")
                             return
 
                         for chunk in r.iter_content():
+                            isAlreadySend = False
                             cur = time.time()
                             tick = cur - now
                             getSize += len(chunk)
@@ -283,13 +287,15 @@ class DownloadBookHandler(object):
                             if tick >= 0.1:
                                 isAlreadySend = True
                                 if backData.backParam and fileSize - getSize > 0:
-                                    TaskBase.taskObj.downloadBack.emit(backData.backParam, fileSize - getSize, b"")
+                                    TaskBase.taskObj.downloadBack.emit(backData.backParam, getSize, fileSize, b"")
+                                    getSize = 0
                                 now = cur
                         isSpacePic = len(data) == 0
 
                         if not isAlreadySend:
                             if backData.backParam:
-                                TaskBase.taskObj.downloadBack.emit(backData.backParam, getSize, b"")
+                                TaskBase.taskObj.downloadBack.emit(backData.backParam, getSize, fileSize, b"")
+                                getSize = 0
 
                 except exceptions.DNSError as es:
                     task.status = Status.DnsError
@@ -345,7 +351,7 @@ class DownloadBookHandler(object):
                         return
                     else:
                         if backData.bakParam:
-                            TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, b"")
+                            TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, fileSize, b"")
                         return
 
                 # Log.Info("size:{}, url:{}".format(ToolUtil.GetDownloadSize(fileSize), backData.req.url))
@@ -365,13 +371,13 @@ class DownloadBookHandler(object):
                         Log.Error(es)
                         # 保存失败了
                         if backData.backParam:
-                            TaskBase.taskObj.downloadBack.emit(backData.backParam, -2, b"")
+                            TaskBase.taskObj.downloadBack.emit(backData.backParam, -2, fileSize, b"")
 
                 if backData.backParam:
                     if isSpacePic:
-                        TaskBase.taskObj.downloadBack.emit(backData.backParam, 0, SpacePic)
+                        TaskBase.taskObj.downloadBack.emit(backData.backParam, 0, fileSize, SpacePic)
                     else:
-                        TaskBase.taskObj.downloadBack.emit(backData.backParam, 0, data)
+                        TaskBase.taskObj.downloadBack.emit(backData.backParam, 0, fileSize, data)
                 Log.Info("response{}-> backId:{}, {}, st:{}, space:{}, hit:{}".format(
                     index, backData.backParam, backData.req.__class__.__name__,
                     backData.status, isSpacePic, cfHit))
@@ -380,7 +386,7 @@ class DownloadBookHandler(object):
                 backData.status = Status.DownloadFail
                 Log.Error(es)
                 if backData.backParam:
-                    TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, b"")
+                    TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, fileSize, b"")
 
 
 @handler(req.DownloadDatabaseReq)

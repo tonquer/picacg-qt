@@ -15,7 +15,7 @@ from tools.tool import time_me
 
 class QtTaskQObject(QObject):
     taskBack = Signal(int, bytes)
-    downloadBack = Signal(int, int, bytes)
+    downloadBack = Signal(int, int, int, bytes)
     downloadStBack = Signal(int, dict)
     convertBack = Signal(int)
     imageBack = Signal(int, QImage)
@@ -60,7 +60,7 @@ class QtTaskBase:
     # downloadCallBack(data, laveFileSize)
     # downloadCompleteBack(data, st)
     # downloadCompleteBack(data, st, backParam)
-    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="",  cleanFlag="", isReload=False, resetCnt=config.ResetDownloadCntDefault, completeCallBack2=None):
+    def AddDownloadTask(self, url, path, downloadCallBack=None, completeCallBack=None, downloadStCallBack=None, backParam=None, loadPath="", cachePath="", savePath="",  cleanFlag="", isReload=False, resetCnt=config.ResetDownloadCntDefault, completeCallBack2=None, otherParams=None):
         from task.task_download import TaskDownload
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
@@ -71,7 +71,7 @@ class QtTaskBase:
             #     a = hashlib.md5(path.encode("utf-8")).hexdigest() + ".jpg"
             if Setting.SavePath.value and path:
                 cachePath = os.path.join(Setting.GetCachePath(), path)
-        return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isReload, resetCnt, completeCallBack2)
+        return TaskDownload().DownloadTask(url, path, downloadCallBack, completeCallBack, downloadStCallBack, backParam, loadPath, cachePath, savePath, cleanFlag, isReload, resetCnt, completeCallBack2, otherParams)
 
     # downloadCallBack(data, laveFileSize, backParam)
     # downloadCallBack(data, laveFileSize)
@@ -90,11 +90,11 @@ class QtTaskBase:
         return TaskDownload().DownloadCache(loadPath, completeCallBack, backParam, cleanFlag, completeCallBack2)
 
     # completeCallBack(saveData, taskId, backParam, tick)
-    def AddConvertTask(self, path, imgData, model, completeCallBack=None, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag="", completeCallBack2=None):
+    def AddConvertTask(self, path, imgData, model, completeCallBack=None, backParam=None, preDownPath=None, noSaveCache=False, cleanFlag="", completeCallBack2=None, otherParams=None):
         from task.task_waifu2x import TaskWaifu2x
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
-        return TaskWaifu2x().AddConvertTaskByData(path, imgData, model, completeCallBack, backParam, preDownPath, noSaveCache, cleanFlag, completeCallBack2)
+        return TaskWaifu2x().AddConvertTaskByData(path, imgData, model, completeCallBack, backParam, preDownPath, noSaveCache, cleanFlag, completeCallBack2, otherParams)
 
     # completeCallBack(saveData, taskId, backParam, tick)
     def AddConvertTaskByPath(self, loadPath, savePath, completeCallBack, backParam=None, cleanFlag=""):

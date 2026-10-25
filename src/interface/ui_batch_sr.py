@@ -145,7 +145,7 @@ class Ui_BatchSrTool(object):
 
         self.horizontalLayout_5.addWidget(self.line_4)
 
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.horizontalLayout_5.addItem(self.horizontalSpacer_3)
 
@@ -154,7 +154,7 @@ class Ui_BatchSrTool(object):
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
 
@@ -181,6 +181,9 @@ class Ui_BatchSrTool(object):
         self.horizontalLayout_4.addWidget(self.label_6)
 
         self.threadNum = QComboBox(BatchSrTool)
+        self.threadNum.addItem("")
+        self.threadNum.addItem("")
+        self.threadNum.addItem("")
         self.threadNum.addItem("")
         self.threadNum.addItem("")
         self.threadNum.addItem("")
@@ -245,7 +248,7 @@ class Ui_BatchSrTool(object):
 
         self.retranslateUi(BatchSrTool)
 
-        self.threadNum.setCurrentIndex(1)
+        self.threadNum.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(BatchSrTool)
@@ -270,6 +273,9 @@ class Ui_BatchSrTool(object):
         self.threadNum.setItemText(2, QCoreApplication.translate("BatchSrTool", u"3", None))
         self.threadNum.setItemText(3, QCoreApplication.translate("BatchSrTool", u"4", None))
         self.threadNum.setItemText(4, QCoreApplication.translate("BatchSrTool", u"5", None))
+        self.threadNum.setItemText(5, QCoreApplication.translate("BatchSrTool", u"6", None))
+        self.threadNum.setItemText(6, QCoreApplication.translate("BatchSrTool", u"7", None))
+        self.threadNum.setItemText(7, QCoreApplication.translate("BatchSrTool", u"8", None))
 
         self.startImportButton.setText(QCoreApplication.translate("BatchSrTool", u"\u5f00\u59cb\u5bfc\u5165", None))
 #if QT_CONFIG(shortcut)

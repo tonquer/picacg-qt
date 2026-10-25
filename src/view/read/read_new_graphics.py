@@ -19,7 +19,7 @@ from view.read.read_new_pool import ReadNewPoolManager
 from PySide6.QtCore import (Qt, QRectF, QSize, QBuffer, QByteArray, QIODevice,
                             QUrl, QObject, QRunnable, QThreadPool, Signal, QTimer,
                             QAbstractAnimation, QVariantAnimation, QEasingCurve,
-                            QElapsedTimer, QPointF, QEvent, QPoint)
+                            QElapsedTimer, QPointF, QEvent, QPoint, QSizeF)
 from PySide6.QtGui import (QImageReader, QImage, QPixmap, QPainter, QColor,
                            QTransform, QSurfaceFormat, QPen, QPalette, QMovie)
 # 注意：PySide6 里 QOpenGLWidget 在独立的 QtOpenGLWidgets 模块（不在 QtWidgets）
@@ -133,6 +133,12 @@ class ReadNewGraphics(QGraphicsView):
         self._last_load_s = float("nan")
         # 连续模式相邻两张的绘制叠加量（逻辑像素）：盖住 1px 白缝，见 SEAM_OVERLAP
         self._seam_overlap = float(ReadNewGraphicsItem.SEAM_OVERLAP)
+        # 窗口 resize 会连发很多次：等它停下来再统一重解一次。放大要重下、
+        # 缩小要从保留的压缩字节缩回去（否则绘制一直走缩放慢路径）。
+        self._resize_refresh = QTimer(self)
+        self._resize_refresh.setSingleShot(True)
+        self._resize_refresh.setInterval(180)
+        self._resize_refresh.timeout.connect(self._refresh_decodes)
 
         self._items : list[ReadNewGraphicsItem] = []   # ReadNewGraphicsItem 列表，按阅读顺序排列
         self._mode = mode                         # 当前阅读方向
@@ -385,9 +391,13 @@ class ReadNewGraphics(QGraphicsView):
         """缩小一步（÷ZOOM_STEP）。"""
         self._zoom_step(-1, anchor)
 
+    def default_zoom_for(self) -> float:
+        """某个阅读方向的默认缩放。"""
+        return 0.8 if self._mode == ReadMode.UpDown else 1.0
+
     def reset_zoom(self):
-        """重置为 100%（适配视口）。"""
-        self.set_zoom(1.0)
+        """重置为当前阅读方向的默认缩放（上下=80%，左右=100%）。"""
+        self.set_zoom(self.default_zoom_for())
 
     def _zoom_step(self, direction: int, anchor):
         """direction：+1 放大一步 / -1 缩小一步。"""
@@ -503,20 +513,32 @@ class ReadNewGraphics(QGraphicsView):
             self._page_pan = QPointF(dx - bx, dy - by)
 
     def _refresh_decodes(self):
-        """缩放变化后，对"可见且源分辨率明显高于已解码位图"的图重新下载解码。
-        解码位图是按当时的 cross×dpr 生成的，放大后不够用会发糊；重新解码
-        期间旧 pixmap 保留（_start_download 不清 pixmap），新图就绪才替换。"""
-        dpr = self.devicePixelRatioF()
+        """缩放/窗口变化后，把解码位图重新对齐到当前渲染尺寸。
+
+        两个方向都要管：
+        - **太小**（放大 / 窗口变大）：位图不够清晰，重新下载解码（保留旧 pixmap
+          直到新图就绪）；
+        - **太大**（缩小 / 窗口变小）：`drawPixmap` 会从 1:1 快路径掉到缩放路径
+          （实测 0.9× 缩放比 1:1 慢 5 倍），而且白占内存。压缩字节还在 `_buf`
+          里的直接后台重解（不走网络）；已被 LRU 回收的就不值得为"缩小"重新
+          下载了，先留着大图（降采样绘制）。"""
         if not ReadMode.isScroll(self._mode):
             its = []
             for pg in (self._page - 1, self._page, self._page + 1):
                 if 0 <= pg <= self._max_page():
                     its.extend(self._page_items(pg))
         else:
-            L = self._viewport_len()
-            s0 = self._scroll_min_s()
-            its = [it for it in self._items
-                   if it._s + it._len >= s0 - L and it._s <= s0 + L * 2.5]
+            front = Setting.PictureShowFrontCount.value
+            after = Setting.PictureShowCount.value
+            # L = self._viewport_len()
+            # s0 = self._scroll_min_s()
+            # top, bottom = s0 - L * 1.5, s0 + L * 2.5
+            curIdx = self._cur_idx
+            # L = self._viewport_len()
+            # s0 = self._scroll_min_s()
+            its = self._items[max(0,curIdx - front):curIdx + after + 1]
+            # its = [it for it in self._items
+            #        if it._s + it._len >= s0 - L and it._s <= s0 + L * 2.5]
 
         # max_px = self._decode_max_px()        # 与 DecodeTask / QMovie 同一套口径
         for it in its:
@@ -530,10 +552,24 @@ class ReadNewGraphics(QGraphicsView):
                 continue
             dpr = self.devicePixelRatioF()
             have = it.pixmap.width()     # 已解码位图的宽（物理像素）
+            if have > round(target.width()*dpr) * it.DECODE_SHRINK_RATIO:
+                # 位图明显偏大：从保留的压缩字节后台重解（无网络）。
+                # 阈值留一点余量，避免为了 1% 的差异反复重解。
+                if it._buf:
+                    it._pending_decode = True
+                    self._start_decode_if_ready(it)
+                else:
+                    self._start_download(it)
+                continue
+
             src = it._size.width() if (it._size and it._size.isValid()) else 0
             # 位图不够 + 原图确实有更高分辨率，才值得重新下载
             if have < (target.width()*dpr) * 0.99 and src > have * 1.25:
-                self._start_download(it)
+                if it._buf:
+                    it._pending_decode = True
+                    self._start_decode_if_ready(it)
+                else:
+                    self._start_download(it)
 
     @property
     def is_auto(self):
@@ -588,7 +624,7 @@ class ReadNewGraphics(QGraphicsView):
         self._anims_enabled = on
         self._refresh_playing()
 
-    def _decode_target_size(self, it: ReadNewGraphicsItem) -> QSize:
+    def _decode_target_size(self, it: ReadNewGraphicsItem) -> QSizeF:
         """这张图"解码后应该多大"（**物理像素**）——按它实际会被渲染的尺寸算。
 
         ⚠️ 为什么不能用"视口最大边"当宽度上限：竖屏（高>宽）时最大边是"高"，
@@ -599,7 +635,11 @@ class ReadNewGraphics(QGraphicsView):
         - 连续 ttb：宽 = cross，高 = cross×(h/w)
         - 连续 横排：高 = cross，宽 = cross×(w/h)
         - 单页/双页/封面：按 contain-fit 放进槽位
-        - 单页等宽：cross 轴铺满，滚动轴按比例"""
+        - 单页等宽：cross 轴铺满，滚动轴按比例
+
+        ⚠️ 连续模式的比例要和 _dims_for 用**同一个钳制**（[0.4, MAX_ASPECT]）。
+        否则超长/超扁图解码尺寸和 item 矩形对不上，paint 里就成了"缩放绘制"，
+        从 1:1 快路径掉到慢路径（实测慢 4~5 倍），还白占内存。"""
         # dpr = self.devicePixelRatioF()
         sz = it._size
         aspect = (sz.height() / sz.width()) if (
@@ -610,9 +650,11 @@ class ReadNewGraphics(QGraphicsView):
         if ReadMode.isScroll(self._mode):
             cross = self._cross                     # 已经含了 zoom
             if ReadMode.isUpDown(self._mode):
-                w, h = cross, cross * aspect
+                r = min(max(aspect, 0.4), self.MAX_ASPECT)      # 同 _dims_for
+                w, h = cross, cross * r
             else:
-                w, h = cross / aspect, cross
+                r = min(max(1.0 / aspect, 0.4), self.MAX_ASPECT)  # 同 _dims_for
+                w, h = cross * r, cross
         elif self._mode == ReadMode.Samewight:
             vw = float(self.viewport().width())
             vh = float(self.viewport().height())
@@ -633,18 +675,32 @@ class ReadNewGraphics(QGraphicsView):
             pg = self._page_of_index(idx)
             slots = self._page_slot_rects(pg)
             if not slots:
-                return QSize()
+                return QSizeF()
             i = min(max(idx - self._page_first_index(pg), 0), len(slots) - 1)
             x, y, sw, sh = slots[i]
             if sw <= 0 or sh <= 0:
-                return QSize()
+                return QSizeF()
             if aspect > sh / sw:                    # 比槽位更"竖" -> 高度受限
                 w, h = sh / aspect, sh
             else:                                   # 宽度受限
                 w, h = sw, sw * aspect
             w *= z
             h *= z
-        return QSize(max(1, int(round(w))), max(1, int(round(h))))
+        return QSizeF(max(1, w), max(1, h))
+
+    def _get_decode_to_size(self, size, file_data:FileData):
+        dpr = self.devicePixelRatioF()
+        scale = min(size.width()*dpr / max(1, file_data.w), size.height() * dpr / max(1, file_data.h))
+        # 按目标框等比缩/放（KeepAspectRatio 保证不变形）：
+        # - 大图（scale<1）：缩到目标，省内存，绘制 1:1；
+        # - 小图（1<scale<=上限）：**放大**到目标，绘制也变成 1:1
+        #   （上采样成本按输出面积算，放后台线程付一次远好过每帧付）；
+        # - 太小的图（scale>上限）：放弃放大——位图会占"目标面积"，
+        #   100×100 铺到 880 要膨胀 77 倍内存，画面并不会更清楚。
+        if scale < 1.0 or (scale <= ReadNewGraphicsItem.DECODE_UPSCALE_MAX_SCALE
+                           and abs(scale - 1.0) > 1e-6):
+            return size.width(), size.height()
+        return 0, 0
 
     def _movie_scaled_size(self, it: ReadNewGraphicsItem) -> QSize:
         """动图的帧解码尺寸（物理像素）：按渲染目标等比缩，只缩不放。
@@ -1703,6 +1759,15 @@ class ReadNewGraphics(QGraphicsView):
         if mode == self._mode and not isForce:
             return
         self._reset_edge_counts()        # 切方向后重新算"到顶/到底"的连续次数
+        # 切方向时把缩放重置为该方向的默认值（ttb=0.8，左右=1.0）。
+        # 必须在 _update_cross / _show_page 之前改：cross 和页模式的 scale
+        # 都直接吃 self._zoom。
+        z0 = self.default_zoom_for()
+        if abs(z0 - self._zoom) > 1e-9:
+            self._zoom = z0
+            self._sub_applied = float("nan")   # 缩放变了，亚像素 transform 要重设
+            self.zoomChanged.emit(self._zoom)
+
         if not ReadMode.isScroll(mode):
             # 页模式切方向：不经过滚动条机制，重摆当前页即可
             # （双页的槽位方向跟着变：横排左右并排 <-> ttb 上下叠放）
@@ -2110,8 +2175,10 @@ class ReadNewGraphics(QGraphicsView):
             self.add_image(i)
         self._first_show = False
         # self.set_mode(self._mode.value, isForce=True)
-        if curIndex < maxNum and curIndex >= 0:
+        if maxNum > curIndex >= 0:
             self.set_initial_index(curIndex)
+        elif curIndex >= maxNum:
+            self.set_initial_index(maxNum)
         else:
             self.set_initial_index(0)
 
@@ -2306,7 +2373,7 @@ class ReadNewGraphics(QGraphicsView):
         # s0 = self._scroll_min_s()
         # top, bottom = s0 - L * 1.5, s0 + L * 2.5
         curIdx = self._cur_idx
-        for it in self._items[curIdx - front:curIdx + after+1]:
+        for it in self._items[max(0,curIdx - front):curIdx + after+1]:
             # if it._s > bottom:
             #     break                        # 后面的都更远，不用看了
             # if it._s + it._len < top:
@@ -2353,17 +2420,13 @@ class ReadNewGraphics(QGraphicsView):
             self._on_animated(it, it._size, it._buf)
         elif it.is_need_waifu2x:
             size = self._decode_target_size(it)
-            if it.waifu_file_data.w > size.width() or it.waifu_file_data.h > size.height():
-                toW = size.width()
-                toH = size.height()
-            self.read_task.AddQImageTask(it._waifu_buf, self.devicePixelRatioF(), toW, toH, self._mode,
+            toW, toH = self._get_decode_to_size(size, it.waifu_file_data)
+            self.read_task.AddQImageTask(it._waifu_buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio,
                                          callBack=self._on_loaded, backParam=(it.index, True))
         else:
             size = self._decode_target_size(it)
-            if it.file_data.w > size.width() or it.file_data.h > size.height():
-                toW = size.width()
-                toH = size.height()
-            self.read_task.AddQImageTask(it._buf, self.devicePixelRatioF(), toW, toH, self._mode, callBack=self._on_loaded, backParam=(it.index, False))
+            toW, toH = self._get_decode_to_size(size, it.file_data)
+            self.read_task.AddQImageTask(it._buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio, callBack=self._on_loaded, backParam=(it.index, False))
 
     def _maybe_decode(self, it: ReadNewGraphicsItem):
         """下载刚完成时调用：只有落进"预解码窗口"才立刻解，否则留着字节等滚到附近。"""
@@ -2778,6 +2841,7 @@ class ReadNewGraphics(QGraphicsView):
             if not self._page_dragging:
                 n = int(round(-d / 120.0))     # 滚轮向下 = 下一页
                 self._flip_page(max(-3, min(3, n)))
+                self._note_edge_scroll(forward, at_start, at_end)
             ev.accept()
             return
         else:
@@ -3028,6 +3092,7 @@ class ReadNewGraphics(QGraphicsView):
             # 页模式：槽位随视口变化，重摆当前页（终止进行中的拖拽/动画）
             self._cancel_page_gestures()
             self._show_page(self._page, 0)
+            self._resize_refresh.start()
             return
         if abs(old_cross - self._cross) >= 1:
             # cross 变了：所有图按新尺寸重排。用锚点保持阅读位置——沿用旧的
@@ -3039,6 +3104,8 @@ class ReadNewGraphics(QGraphicsView):
                 self._relayout_keep_anchor()
         else:
             self._load_visible()
+        # 尺寸稳定后重解：放大 -> 重下更清晰的；缩小 -> 缩回 1:1（省内存 + 快路径）
+        self._resize_refresh.start()
 
     def after_index_change(self, index):
         if self._first_show:

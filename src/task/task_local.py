@@ -555,7 +555,7 @@ class TaskLocal(TaskBase, QtTaskBase):
                 f.close()
 
             ## 添加cache缓存
-            TaskCache().LoadDataSuc(fullPath, data)
+            TaskCache().LoadDataSuc(fullPath, data, v.bookId)
 
         except RuntimeError as es:
             if 'encrypted' in str(es):

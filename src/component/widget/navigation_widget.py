@@ -121,7 +121,6 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.UpdateProxyName()
         if not User().isLogin:
             self.loginButton.setText(Str.GetStr(Str.Login))
-            QtOwner().favorityView.InitFavorite()
             return
         QtOwner().owner.LoginSucBack()
         self.loginButton.setText(Str.GetStr(Str.LoginOut))

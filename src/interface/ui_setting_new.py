@@ -38,7 +38,7 @@ class Ui_SettingNew(object):
         self.msgLabel.setEnabled(True)
         self.msgLabel.setStyleSheet(u"color: rgb(255, 0, 0);")
 
-        self.verticalLayout_2.addWidget(self.msgLabel, 0, Qt.AlignLeft)
+        self.verticalLayout_2.addWidget(self.msgLabel, 0, Qt.AlignmentFlag.AlignLeft)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -88,7 +88,7 @@ class Ui_SettingNew(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -2432, 727, 3209))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -1756, 732, 3295))
         self.scrollAreaWidgetContents.setStyleSheet(u"")
         self.verticalLayout_4 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -125,8 +125,8 @@ class Ui_SettingNew(object):
 
         self.frame_16 = QFrame(self.scrollAreaWidgetContents)
         self.frame_16.setObjectName(u"frame_16")
-        self.frame_16.setFrameShape(QFrame.StyledPanel)
-        self.frame_16.setFrameShadow(QFrame.Raised)
+        self.frame_16.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_16.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_20 = QVBoxLayout(self.frame_16)
         self.verticalLayout_20.setObjectName(u"verticalLayout_20")
         self.label_37 = QLabel(self.frame_16)
@@ -225,8 +225,8 @@ class Ui_SettingNew(object):
 
         self.frame_7 = QFrame(self.scrollAreaWidgetContents)
         self.frame_7.setObjectName(u"frame_7")
-        self.frame_7.setFrameShape(QFrame.StyledPanel)
-        self.frame_7.setFrameShadow(QFrame.Raised)
+        self.frame_7.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_7.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_18 = QVBoxLayout(self.frame_7)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
         self.label_8 = QLabel(self.frame_7)
@@ -362,8 +362,8 @@ class Ui_SettingNew(object):
 
         self.frame_17 = QFrame(self.scrollAreaWidgetContents)
         self.frame_17.setObjectName(u"frame_17")
-        self.frame_17.setFrameShape(QFrame.StyledPanel)
-        self.frame_17.setFrameShadow(QFrame.Raised)
+        self.frame_17.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_17.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_21 = QVBoxLayout(self.frame_17)
         self.verticalLayout_21.setObjectName(u"verticalLayout_21")
         self.label_38 = QLabel(self.frame_17)
@@ -632,7 +632,7 @@ class Ui_SettingNew(object):
         self.prefetchCountHelp.setObjectName(u"prefetchCountHelp")
         self.prefetchCountHelp.setMaximumSize(QSize(24, 24))
         self.prefetchCountHelp.setStyleSheet(u"color: rgb(110, 110, 110); font-size: 16px;")
-        self.prefetchCountHelp.setAlignment(Qt.AlignCenter)
+        self.prefetchCountHelp.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.prefetchCountLayout.addWidget(self.prefetchCountHelp)
 
@@ -704,7 +704,7 @@ class Ui_SettingNew(object):
         self.crossChapterPrefetchHelp.setObjectName(u"crossChapterPrefetchHelp")
         self.crossChapterPrefetchHelp.setMaximumSize(QSize(24, 24))
         self.crossChapterPrefetchHelp.setStyleSheet(u"color: rgb(110, 110, 110); font-size: 16px;")
-        self.crossChapterPrefetchHelp.setAlignment(Qt.AlignCenter)
+        self.crossChapterPrefetchHelp.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.crossChapterPrefetchLayout.addWidget(self.crossChapterPrefetchHelp)
 
@@ -726,7 +726,7 @@ class Ui_SettingNew(object):
         self.prefetchWholeChapterHelp.setObjectName(u"prefetchWholeChapterHelp")
         self.prefetchWholeChapterHelp.setMaximumSize(QSize(24, 24))
         self.prefetchWholeChapterHelp.setStyleSheet(u"color: rgb(110, 110, 110); font-size: 16px;")
-        self.prefetchWholeChapterHelp.setAlignment(Qt.AlignCenter)
+        self.prefetchWholeChapterHelp.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.prefetchWholeChapterLayout.addWidget(self.prefetchWholeChapterHelp)
 
@@ -796,7 +796,7 @@ class Ui_SettingNew(object):
 
         self.label_31 = QLabel(self.frame_5)
         self.label_31.setObjectName(u"label_31")
-        self.label_31.setAlignment(Qt.AlignCenter)
+        self.label_31.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout_23.addWidget(self.label_31)
 
@@ -960,7 +960,7 @@ class Ui_SettingNew(object):
         self.threadSelect.addItem("")
         self.threadSelect.setObjectName(u"threadSelect")
         self.threadSelect.setMinimumSize(QSize(150, 0))
-        self.threadSelect.setFocusPolicy(Qt.StrongFocus)
+        self.threadSelect.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         self.horizontalLayout_16.addWidget(self.threadSelect)
 
@@ -994,6 +994,35 @@ class Ui_SettingNew(object):
 
 
         self.verticalLayout_12.addLayout(self.horizontalLayout_29)
+
+        self.label_53 = QLabel(self.frame_10)
+        self.label_53.setObjectName(u"label_53")
+        self.label_53.setFont(font1)
+
+        self.verticalLayout_12.addWidget(self.label_53)
+
+        self.horizontalLayout_37 = QHBoxLayout()
+        self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
+        self.procThreadNum = WheelComboBox(self.frame_10)
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.addItem("")
+        self.procThreadNum.setObjectName(u"procThreadNum")
+
+        self.horizontalLayout_37.addWidget(self.procThreadNum)
+
+        self.horizontalSpacer_34 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_37.addItem(self.horizontalSpacer_34)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_37)
 
 
         self.verticalLayout_4.addWidget(self.frame_10)
@@ -1273,8 +1302,8 @@ class Ui_SettingNew(object):
 
         self.frame_15 = QFrame(self.scrollAreaWidgetContents)
         self.frame_15.setObjectName(u"frame_15")
-        self.frame_15.setFrameShape(QFrame.StyledPanel)
-        self.frame_15.setFrameShadow(QFrame.Raised)
+        self.frame_15.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_15.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_19 = QVBoxLayout(self.frame_15)
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
         self.label_36 = QLabel(self.frame_15)
@@ -1730,6 +1759,17 @@ class Ui_SettingNew(object):
         self.tileComboBox.setItemText(1, QCoreApplication.translate("SettingNew", u"200", None))
         self.tileComboBox.setItemText(2, QCoreApplication.translate("SettingNew", u"100", None))
         self.tileComboBox.setItemText(3, QCoreApplication.translate("SettingNew", u"32", None))
+
+        self.label_53.setText(QCoreApplication.translate("SettingNew", u"\u7ebf\u7a0b\u6570\uff0c\u8fc7\u5927\u53ef\u80fd\u8d85\u663e\u5b58\uff0c\u914d\u5408\u8c03\u4f4etile\u8bbe\u7f6e\uff08\u9700\u91cd\u542f\u751f\u6548\uff09", None))
+        self.procThreadNum.setItemText(0, QCoreApplication.translate("SettingNew", u"Auto", None))
+        self.procThreadNum.setItemText(1, QCoreApplication.translate("SettingNew", u"1", None))
+        self.procThreadNum.setItemText(2, QCoreApplication.translate("SettingNew", u"2", None))
+        self.procThreadNum.setItemText(3, QCoreApplication.translate("SettingNew", u"3", None))
+        self.procThreadNum.setItemText(4, QCoreApplication.translate("SettingNew", u"4", None))
+        self.procThreadNum.setItemText(5, QCoreApplication.translate("SettingNew", u"5", None))
+        self.procThreadNum.setItemText(6, QCoreApplication.translate("SettingNew", u"6", None))
+        self.procThreadNum.setItemText(7, QCoreApplication.translate("SettingNew", u"7", None))
+        self.procThreadNum.setItemText(8, QCoreApplication.translate("SettingNew", u"8", None))
 
         self.label_12.setText(QCoreApplication.translate("SettingNew", u"Waifu2x\u770b\u56fe\u6a21\u5f0f", None))
         self.readCheckBox.setText(QCoreApplication.translate("SettingNew", u"\u662f\u5426\u542f\u7528", None))

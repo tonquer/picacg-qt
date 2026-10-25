@@ -35,6 +35,7 @@ class FilePicCache(object):
         self.size = 0
         self.tick = 0
         self.ttl = 0
+        self.bookId = ""
 
     @staticmethod
     def GetSize(self):
@@ -259,6 +260,14 @@ class TaskCache(TaskBase, QtTaskBase):
         return None
 
     def ClearMemData(self, bookId):
+        with self._taskLock:
+            delKey = []
+            for k, file in self.memeryCache.items():
+                if file.bookId == bookId:
+                    delKey.append(k)
+            for k in delKey:
+                if k in self.memeryCache:
+                    self.memeryCache.pop(k)
         return
 
     def AddDownloadFromCache(self, data, resetCnt):
@@ -274,8 +283,8 @@ class TaskCache(TaskBase, QtTaskBase):
             if file:
                 data.isCacheFetch = True
                 from task.task_async import TaskAsync
-                TaskAsync().AddAsyncCall("downloadBack", (data.downloadId, file.size, b""))
-                TaskAsync().AddAsyncCall("downloadBack", (data.downloadId, 0, file.data))
+                TaskAsync().AddAsyncCall("downloadBack", (data.downloadId, file.size, file.size, b""))
+                TaskAsync().AddAsyncCall("downloadBack", (data.downloadId, 0, file.size, file.data))
                 Log.Debug("fetch cache info, taskId:{}, key:{}, path:{}, size:{}".format(taskId, key, data.path, len(file.data)))
                 return
 
@@ -316,15 +325,16 @@ class TaskCache(TaskBase, QtTaskBase):
         file.path = self.GetModelCahcehPath(task.path, task.model)
         file.key = self.GetPathCacheKey(file.path)
         file.size = len(file.data)
+        file.bookId = task.bookId
         Log.Debug("add cache waifu2x info, taskId:{}, key:{}, path:{}, size:{}".format(taskId, file.key, file.path, len(file.data)))
         with self._taskLock:
             self.memeryCache[file.key] = file
         return
 
-    def DownloadSuc(self, downloadId, size, data):
+    def DownloadSuc(self, downloadId, addSize, fileSize, data):
         if not self.isOpenMem:
             return
-        if size < 0 or not data:
+        if addSize < 0 or not data:
             return
         from task.task_download import TaskDownload
         task = TaskDownload()._GetTask(downloadId)
@@ -332,17 +342,17 @@ class TaskCache(TaskBase, QtTaskBase):
             return
         if task.isCacheFetch:
             return
-
         file = FilePicCache()
         file.data = data
         file.key = task.memCacheKey
         file.path = task.path
         file.size = len(data)
+        file.bookId = task.bookId
         Log.Debug("add cache info, taskId:{}, key:{}, path:{}, size:{}".format(downloadId, file.key, file.path, len(data)))
         with self._taskLock:
             self.memeryCache[file.key] = file
 
-    def LoadDataSuc(self, path, data):
+    def LoadDataSuc(self, path, data, bookId):
         if not path or not data:
             return
         if not self.isOpenMem:
@@ -352,6 +362,7 @@ class TaskCache(TaskBase, QtTaskBase):
         file.path = path
         file.key = self.GetPathCacheKey(file.path)
         file.size = len(file.data)
+        file.bookId = bookId
         Log.Debug("add cache data info, key:{}, path:{}, size:{}".format(file.key, file.path, len(file.data)))
         with self._taskLock:
             self.memeryCache[file.key] = file

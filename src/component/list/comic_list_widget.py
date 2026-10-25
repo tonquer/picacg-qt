@@ -407,7 +407,8 @@ class ComicListWidget(BaseListWidget):
         item = self.item(index)
         widget = self.itemWidget(item)
         assert isinstance(widget, ComicItemWidget)
-        self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=index)
+        otherParams = {"bookId": widget.id, "type": "cover"}
+        self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=index, otherParams=otherParams)
 
     def LoadingPictureComplete(self, data, status, index):
         if status == Status.Ok:
@@ -500,7 +501,8 @@ class ComicListWidget(BaseListWidget):
                 item = self.itemFromIndex(index)
                 count = self.row(item)
                 widget.picLabel.setText(Str.GetStr(Str.LoadingPicture))
-                self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=count, isReload=True)
+                otherParams = {"bookId": widget.id, "type": "cover"}
+                self.AddDownloadTask(widget.url, widget.path, completeCallBack=self.LoadingPictureComplete, backParam=count, isReload=True, otherParams=otherParams)
                 pass
 
     def Waifu2xPicture(self, index, isIfSize=False):
@@ -511,10 +513,12 @@ class ComicListWidget(BaseListWidget):
             if max(w, h) <= Setting.CoverMaxNum.value or not isIfSize:
                 model = ToolUtil.GetModelByIndex(Setting.CoverLookModelName.value, Setting.CoverLookScale.value, mat)
                 widget.isWaifu2xLoading = True
+
+                otherParams = {"bookId": widget.id, "type": "cover"}
                 if self.isLocal:
-                    self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index, noSaveCache=True)
+                    self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index, noSaveCache=True, otherParams=otherParams)
                 else:
-                    self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index)
+                    self.AddConvertTask(widget.path, widget.picData, model, self.Waifu2xPictureBack, index, otherParams=otherParams)
 
     def CancleWaifu2xPicture(self, indexModel):
         widget = self.indexWidget(indexModel)

@@ -1,6 +1,6 @@
 PySide6==6.9.3
 websocket-client==0.59.0
-#sr-vulkan
+#sr-vulkan>=2.1.0
 #sr-vulkan-model-waifu2x
 #sr-vulkan-model-realcugan
 #sr-vulkan-model-realesrgan
@@ -13,7 +13,7 @@ tqdm
 pysmb
 # pywin32==302
 lxml
-curl_cffi>=0.13.0,<=0.16.3
+curl_cffi>=0.13.0,<=0.16.4
 cryptography==44.0.3
 smbprotocol
 cachetools
