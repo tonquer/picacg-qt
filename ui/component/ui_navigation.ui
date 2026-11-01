@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>258</width>
-    <height>770</height>
+    <height>965</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -207,19 +207,6 @@
        </widget>
       </item>
       <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="SmoothScrollArea" name="scrollArea">
         <property name="verticalScrollBarPolicy">
          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
@@ -234,9 +221,9 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-542</y>
+           <y>-358</y>
            <width>226</width>
-           <height>879</height>
+           <height>838</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -960,47 +947,6 @@
             </property>
             <property name="text">
              <string>本地漫画</string>
-            </property>
-            <property name="icon">
-             <iconset>
-              <normaloff>:/images/menu/Contact.png</normaloff>:/images/menu/Contact.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup</string>
-            </attribute>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="convertButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>40</height>
-             </size>
-            </property>
-            <property name="focusPolicy">
-             <enum>Qt::FocusPolicy::NoFocus</enum>
-            </property>
-            <property name="text">
-             <string>转换</string>
             </property>
             <property name="icon">
              <iconset>

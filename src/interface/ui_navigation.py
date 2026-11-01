@@ -17,7 +17,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCommandLinkButton, QFrame,
     QHBoxLayout, QLabel, QPushButton, QSizePolicy,
-    QSpacerItem, QToolButton, QVBoxLayout, QWidget)
+    QToolButton, QVBoxLayout, QWidget)
 
 from component.button.switch_button import SwitchButton
 from component.label.head_label import HeadLabel
@@ -28,7 +28,7 @@ class Ui_Navigation(object):
     def setupUi(self, Navigation):
         if not Navigation.objectName():
             Navigation.setObjectName(u"Navigation")
-        Navigation.resize(258, 772)
+        Navigation.resize(258, 965)
         Navigation.setStyleSheet(u"")
         self.verticalLayout_2 = QVBoxLayout(Navigation)
         self.verticalLayout_2.setSpacing(6)
@@ -163,10 +163,6 @@ class Ui_Navigation(object):
 
         self.verticalLayout.addWidget(self.line_4)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer)
-
         self.scrollArea = SmoothScrollArea(self.widget)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
@@ -174,7 +170,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -557, 226, 838))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -358, 226, 838))
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)

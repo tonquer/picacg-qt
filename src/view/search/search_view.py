@@ -82,7 +82,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             if self.isLocal:
                 self.sortId.show()
                 self.sortKey.show()
+                self.comboBox.hide()
             else:
+                self.sortId.hide()
+                self.sortKey.hide()
                 self.comboBox.show()
             self.isCanJump = True
         else:
@@ -224,8 +227,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.lineEdit.AddCacheWord(text)
             return
 
-        if not QtOwner().isUseDb:
+        if not QtOwner().IsCanUseDb():
             self.isLocal = False
+            self.SetEnable(self.isLocal)
 
         isRecomend =  kwargs.get("recoment")
         if isRecomend == 1:
@@ -274,7 +278,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
             if isLocal is not None:
                 self.isLocal = isLocal
-            if not QtOwner().canUseDb:
+            if not QtOwner().IsCanUseDb():
                 self.isLocal = False
             self.SetEnable(self.isLocal)
             self.isTitle = kwargs.get("isTitle")
@@ -318,7 +322,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             allBookIds = []
             for v in commentsData.get("recommendations", []):
                 allBookIds.append(v)
-            if QtOwner().canUseDb:
+            if QtOwner().IsCanUseDb():
                 sql = SqlServer.GetBookByIds(allBookIds)
                 self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.OpenLocalRecommendationBack, backParam=1)
             else:
@@ -356,7 +360,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         sort = ["dd", "da", "ld", "vd"]
         self.SetPageLoading(True)
         QtOwner().ShowLoading()
-        if QtOwner().canUseDb and self.categories in CateGoryMgr().allCategorise:
+        if QtOwner().IsCanUseDb() and self.categories in CateGoryMgr().allCategorise:
             categorys = self.GetSelectCategory()
             if len(categorys) > 0:
                 self.categoryNum.setText("已选择{}个分类".format(len(categorys)))

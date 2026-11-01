@@ -97,6 +97,9 @@ class QtOwner(Singleton):
         self.convertFmtRule = {}
         self.allSupportFmt = set()
 
+    def IsCanUseDb(self):
+        return self.isUseDb and self.canUseDb
+
     def UpdateDownFmtRule(self):
         from config.setting import Setting
         if not Setting.DownloadConvertFmt.value:

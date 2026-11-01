@@ -41,13 +41,13 @@ class Ui_ReadImg(object):
         self.scrollArea22.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 478, 895))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 483, 906))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
+        self.verticalLayout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.line_6 = QFrame(self.scrollAreaWidgetContents)
         self.line_6.setObjectName(u"line_6")
@@ -59,7 +59,7 @@ class Ui_ReadImg(object):
         self.label_4 = QLabel(self.scrollAreaWidgetContents)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setStyleSheet(u"color: #ee2a24")
-        self.label_4.setAlignment(Qt.AlignCenter)
+        self.label_4.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.label_4)
 
@@ -126,7 +126,7 @@ class Ui_ReadImg(object):
         self.label = QLabel(self.scrollAreaWidgetContents)
         self.label.setObjectName(u"label")
         self.label.setStyleSheet(u"color: #ee2a24")
-        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.label)
 
@@ -273,7 +273,7 @@ class Ui_ReadImg(object):
         self.label_6 = QLabel(self.scrollAreaWidgetContents)
         self.label_6.setObjectName(u"label_6")
         self.label_6.setStyleSheet(u"color: #ee2a24")
-        self.label_6.setAlignment(Qt.AlignCenter)
+        self.label_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.label_6)
 
@@ -283,13 +283,11 @@ class Ui_ReadImg(object):
         self.label_5.setObjectName(u"label_5")
         self.label_5.setMaximumSize(QSize(90, 16777215))
         self.label_5.setStyleSheet(u"")
-        self.label_5.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.label_5.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_11.addWidget(self.label_5)
 
         self.comboBox = WheelComboBox(self.scrollAreaWidgetContents)
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
@@ -318,7 +316,7 @@ class Ui_ReadImg(object):
         self.zoomSlider.setMaximum(200)
         self.zoomSlider.setSingleStep(10)
         self.zoomSlider.setValue(120)
-        self.zoomSlider.setOrientation(Qt.Horizontal)
+        self.zoomSlider.setOrientation(Qt.Orientation.Horizontal)
 
         self.horizontalLayout_10.addWidget(self.zoomSlider)
 
@@ -335,7 +333,7 @@ class Ui_ReadImg(object):
         self.label_7 = QLabel(self.scrollAreaWidgetContents)
         self.label_7.setObjectName(u"label_7")
         self.label_7.setStyleSheet(u"color: #ee2a24")
-        self.label_7.setAlignment(Qt.AlignCenter)
+        self.label_7.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.label_7)
 
@@ -551,9 +549,7 @@ class Ui_ReadImg(object):
         self.comboBox.setItemText(3, QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u53cc\u9875", None))
         self.comboBox.setItemText(4, QCoreApplication.translate("ReadImg", u"\u5de6\u53f3\u6eda\u52a8", None))
         self.comboBox.setItemText(5, QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u6eda\u52a8", None))
-        self.comboBox.setItemText(6, QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u53cc\u9875(\u6eda\u8f6e\u6b63\u5e8f)", None))
-        self.comboBox.setItemText(7, QCoreApplication.translate("ReadImg", u"\u7b49\u5bbd\u6a21\u5f0f", None))
-        self.comboBox.setItemText(8, QCoreApplication.translate("ReadImg", u"\u53f3\u5de6\u6eda\u52a8(\u6eda\u8f6e\u6b63\u5e8f)", None))
+        self.comboBox.setItemText(6, QCoreApplication.translate("ReadImg", u"\u7b49\u5bbd\u6a21\u5f0f", None))
 
         self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08120%\uff09", None))
         self.label_7.setText(QCoreApplication.translate("ReadImg", u"\u81ea\u52a8\u6eda\u52a8/\u7ffb\u9875", None))

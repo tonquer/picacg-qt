@@ -28,7 +28,7 @@ QScrollArea {background-color:transparent;}</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>736</width>
+        <width>741</width>
         <height>815</height>
        </rect>
       </property>
@@ -38,7 +38,7 @@ QScrollArea {background-color:transparent;}</string>
          <item>
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -54,7 +54,7 @@ QScrollArea {background-color:transparent;}</string>
             <item>
              <spacer name="verticalSpacer_2">
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Orientation::Vertical</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -64,7 +64,7 @@ QScrollArea {background-color:transparent;}</string>
               </property>
              </spacer>
             </item>
-            <item alignment="Qt::AlignHCenter">
+            <item alignment="Qt::AlignmentFlag::AlignHCenter">
              <widget class="QLabel" name="label">
               <property name="text">
                <string/>
@@ -74,7 +74,7 @@ QScrollArea {background-color:transparent;}</string>
               </property>
              </widget>
             </item>
-            <item alignment="Qt::AlignHCenter">
+            <item alignment="Qt::AlignmentFlag::AlignHCenter">
              <widget class="QLabel" name="label_2">
               <property name="font">
                <font>
@@ -86,7 +86,7 @@ QScrollArea {background-color:transparent;}</string>
               </property>
              </widget>
             </item>
-            <item alignment="Qt::AlignHCenter">
+            <item alignment="Qt::AlignmentFlag::AlignHCenter">
              <widget class="QLabel" name="label_3">
               <property name="font">
                <font>
@@ -98,14 +98,14 @@ QScrollArea {background-color:transparent;}</string>
               </property>
              </widget>
             </item>
-            <item alignment="Qt::AlignHCenter">
+            <item alignment="Qt::AlignmentFlag::AlignHCenter">
              <widget class="QPushButton" name="pushButton">
               <property name="text">
                <string>前往Github Issue</string>
               </property>
              </widget>
             </item>
-            <item alignment="Qt::AlignHCenter">
+            <item alignment="Qt::AlignmentFlag::AlignHCenter">
              <widget class="QLabel" name="label_13">
               <property name="font">
                <font>
@@ -117,7 +117,7 @@ QScrollArea {background-color:transparent;}</string>
               </property>
              </widget>
             </item>
-            <item alignment="Qt::AlignHCenter">
+            <item alignment="Qt::AlignmentFlag::AlignHCenter">
              <widget class="QLabel" name="label_14">
               <property name="font">
                <font>
@@ -377,6 +377,13 @@ QScrollArea {background-color:transparent;}</string>
                  </property>
                 </widget>
                </item>
+               <item row="6" column="2">
+                <widget class="QCheckBox" name="useLocal">
+                 <property name="text">
+                  <string>是否使用本地库</string>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -419,7 +426,7 @@ QScrollArea {background-color:transparent;}</string>
             <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Orientation::Vertical</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -435,7 +442,7 @@ QScrollArea {background-color:transparent;}</string>
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>

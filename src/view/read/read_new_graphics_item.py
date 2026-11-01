@@ -274,7 +274,7 @@ class ReadNewGraphicsItem(QGraphicsItem):
         l, t, r, b = self._seam_pad
         dpr = pm.devicePixelRatioF()
         isDebug = True
-        if (isDebug and (abs(rect.width()*dpr-pm.width()) > 0.01) or abs(rect.height()*dpr-pm.height()) > 0.01):
+        if (isDebug and not self.isAnima  and (abs(rect.width()*dpr-pm.width()) > 0.01) or abs(rect.height()*dpr-pm.height()) > 0.01):
             Log.Warn(f"pixmap not same size, {self.index}, size:{pm.size()}, {rect.size()}")
         painter.drawPixmap(rect, pm, sr)
         if l == 0.0 and t == 0.0 and r == 0.0 and b == 0.0:

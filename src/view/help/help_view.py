@@ -78,6 +78,16 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.allDbBookIds = set()
         self.curFetchLaterPage = 0
         self.maxFetchLaterPage = 20
+        self.useLocal.setChecked(bool(Setting.IsOpenLocal.value))
+        self.useLocal.clicked.connect(self.SwitchUseLocal)
+
+    def SwitchUseLocal(self):
+        Setting.IsOpenLocal.SetValue(int(self.useLocal.isChecked()))
+        if not Setting.IsOpenLocal.value:
+            QtOwner().isUseDb = False
+        else:
+            QtOwner().isUseDb = True
+            self.Init()
 
     def retranslateUi(self, Help):
         Ui_Help.retranslateUi(self, Help)
@@ -94,7 +104,8 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
 
     def Init(self):
         # self.InitUpdateConfig()
-        self.CheckDb()
+        if Setting.IsOpenLocal.value:
+            self.CheckDb()
         # self.UpdateDbInfo()
 
     def InitUpdate(self):

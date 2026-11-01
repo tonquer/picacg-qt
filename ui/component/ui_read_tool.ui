@@ -42,8 +42,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>478</width>
-        <height>895</height>
+        <width>483</width>
+        <height>906</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -53,7 +53,7 @@
           <number>6</number>
          </property>
          <property name="sizeConstraint">
-          <enum>QLayout::SetDefaultConstraint</enum>
+          <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
          </property>
          <property name="leftMargin">
           <number>0</number>
@@ -70,7 +70,7 @@
          <item>
           <widget class="Line" name="line_6">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -83,7 +83,7 @@
             <string>图片信息</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -183,7 +183,7 @@
          <item>
           <widget class="Line" name="line">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -196,7 +196,7 @@
             <string>Waifu2x参数</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -401,7 +401,7 @@
          <item>
           <widget class="Line" name="line_2">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -414,7 +414,7 @@
             <string>翻页设置</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -435,7 +435,7 @@
               <string>翻页模式：</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
             </widget>
            </item>
@@ -473,17 +473,7 @@
              </item>
              <item>
               <property name="text">
-               <string>右左双页(滚轮正序)</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
                <string>等宽模式</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>右左滚动(滚轮正序)</string>
               </property>
              </item>
             </widget>
@@ -517,7 +507,7 @@
               <number>120</number>
              </property>
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -526,7 +516,7 @@
          <item>
           <widget class="Line" name="line_3">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -539,7 +529,7 @@
             <string>自动滚动/翻页</string>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -630,7 +620,7 @@
          <item>
           <widget class="Line" name="line_8">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -677,7 +667,7 @@
          <item>
           <widget class="Line" name="line_5">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -705,7 +695,7 @@
          <item>
           <widget class="Line" name="line_7">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -754,7 +744,7 @@
          <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
-            <enum>Qt::Vertical</enum>
+            <enum>Qt::Orientation::Vertical</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -767,7 +757,7 @@
          <item>
           <widget class="Line" name="line_4">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
           </widget>
          </item>

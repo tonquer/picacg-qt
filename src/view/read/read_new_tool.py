@@ -462,6 +462,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
     def ChangeReadMode(self, index):
         self.comboBox.setCurrentIndex(index)
         self.imgFrame.InitHelp()
+        self.imgFrame.ShowHelp()
 
     def ChangeReadMode2(self, index):
         Setting.LookReadMode.SetValue(index)

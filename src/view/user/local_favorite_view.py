@@ -155,7 +155,7 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
         self.RefreshDataFocus()
 
     def UpdateSortAvailability(self):
-        canUseDb = QtOwner().canUseDb
+        canUseDb = QtOwner().IsCanUseDb()
         for index in (3, 4):
             self.sortKeyCombox.model().item(index).setEnabled(canUseDb)
         if not canUseDb and self.sortKeyCombox.currentIndex() in (3, 4):
@@ -178,13 +178,13 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
         fid = self.GetFidByName(name)
         criteria = FavoriteQuery(text=self.searchText, folder_id=fid,
                                  sort_field=LOCAL_FAVORITE_SORT_FIELDS[sortKey], descending=sortId == 0)
-        key = (criteria, QtOwner().canUseDb)
+        key = (criteria, QtOwner().IsCanUseDb())
         if self._snapshot is not None and key == self._snapshotKey:
             self.LoadSnapshotPage(page, replace)
             return
         books = self.db.QueryFavorites(criteria)
         # sortKey==0为收藏时间，其他只有book里才有最新的数据
-        if sortKey > 0 and books and QtOwner().canUseDb:
+        if sortKey > 0 and books and QtOwner().IsCanUseDb():
             sql = SqlServer.GetBookMetrics([book.id for book in books])
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.ReceiveSortMetrics,
                             (books, key, page, replace))
@@ -216,7 +216,7 @@ class LocalFavoriteView(QtWidgets.QWidget, Ui_LocalFavorite, QtTaskBase):
         books = self._snapshot[request.offset:request.offset + request.page_size]
         result = PageResult.from_total(books, request, len(self._snapshot))
         pending = (result, replace)
-        if QtOwner().canUseDb and books:
+        if QtOwner().IsCanUseDb() and books:
             sql = SqlServer.GetBookByIds([book.id for book in books])
             self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, self.SearchLocalBack, pending)
         else:

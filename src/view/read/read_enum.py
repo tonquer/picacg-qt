@@ -17,9 +17,7 @@ class ReadMode(Enum):
     RightLeftDouble = 3  # 右左双页
     LeftRightScroll = 4  # 左右滚动
     RightLeftScroll = 5  # 右左滚动
-    RightLeftDouble2 = 6  # 右左双页(滚轮正序)
-    Samewight = 7  # 等宽模式
-    RightLeftScroll2 = 8  # 右左滚动(滚轮正序)
+    Samewight = 6  # 等宽模式
 
     @staticmethod
     def isUpDown(model):
@@ -27,7 +25,7 @@ class ReadMode(Enum):
 
     @staticmethod
     def isDouble(model):
-        return model in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2]
+        return model in [ReadMode.LeftRightDouble, ReadMode.RightLeftDouble]
 
     @staticmethod
     def isLeftRight(model):
@@ -39,7 +37,7 @@ class ReadMode(Enum):
 
     @staticmethod
     def isRightLeft(model):
-        return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftDouble2, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
+        return model in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]
 
     # @staticmethod
     # def isUpDown(model):
@@ -47,11 +45,11 @@ class ReadMode(Enum):
 
     @staticmethod
     def isScroll(model):
-        return model in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
+        return model in [ReadMode.UpDown, ReadMode.LeftRightScroll, ReadMode.RightLeftScroll]
 
     @staticmethod
     def isRightScroll(model):
-        return model in [ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]
+        return model in [ReadMode.RightLeftScroll]
 
 
 class ReadShowState(object):

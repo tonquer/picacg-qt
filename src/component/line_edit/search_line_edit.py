@@ -90,6 +90,11 @@ class SearchLineEdit(QLineEdit):
         return
 
     def SetEnable(self, isLocal):
+        from tools.str import Str
+        from config.setting import Setting
+        if isLocal and not Setting.IsOpenLocal.value:
+            QtOwner().ShowError(Str.GetStr(Str.NotOpenLocal))
+
         self.help.titleLabel.setVisible(isLocal)
         self.help.titleWidget.setVisible(isLocal)
         self.help.tagLabel.setVisible(isLocal)

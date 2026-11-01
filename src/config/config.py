@@ -39,9 +39,9 @@ UpdateUrlBack = "https://github.com/tonquer/picacg-qt"
 
 Issues1 = "https://github.com/tonquer/picacg-qt/issues"
 
-UpdateVersion = "v1.5.5"
-RealVersion = "v1.5.5.1"
-TimeVersion = "2026-9-14"
+UpdateVersion = "v1.5.7"
+RealVersion = "v1.5.7"
+TimeVersion = "2026-11-01"
 DbVersion = ""
 
 Waifu2xVersion = "1.2.0"

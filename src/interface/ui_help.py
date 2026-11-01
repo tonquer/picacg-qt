@@ -36,7 +36,7 @@ class Ui_Help(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 736, 815))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 741, 815))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout = QHBoxLayout()
@@ -57,7 +57,7 @@ class Ui_Help(object):
         self.label.setObjectName(u"label")
         self.label.setPixmap(QPixmap(u":/png/icon/icon_comment.png"))
 
-        self.verticalLayout_2.addWidget(self.label, 0, Qt.AlignHCenter)
+        self.verticalLayout_2.addWidget(self.label, 0, Qt.AlignmentFlag.AlignHCenter)
 
         self.label_2 = QLabel(self.widget)
         self.label_2.setObjectName(u"label_2")
@@ -65,18 +65,18 @@ class Ui_Help(object):
         font.setPointSize(12)
         self.label_2.setFont(font)
 
-        self.verticalLayout_2.addWidget(self.label_2, 0, Qt.AlignHCenter)
+        self.verticalLayout_2.addWidget(self.label_2, 0, Qt.AlignmentFlag.AlignHCenter)
 
         self.label_3 = QLabel(self.widget)
         self.label_3.setObjectName(u"label_3")
         self.label_3.setFont(font)
 
-        self.verticalLayout_2.addWidget(self.label_3, 0, Qt.AlignHCenter)
+        self.verticalLayout_2.addWidget(self.label_3, 0, Qt.AlignmentFlag.AlignHCenter)
 
         self.pushButton = QPushButton(self.widget)
         self.pushButton.setObjectName(u"pushButton")
 
-        self.verticalLayout_2.addWidget(self.pushButton, 0, Qt.AlignHCenter)
+        self.verticalLayout_2.addWidget(self.pushButton, 0, Qt.AlignmentFlag.AlignHCenter)
 
         self.label_13 = QLabel(self.widget)
         self.label_13.setObjectName(u"label_13")
@@ -84,13 +84,13 @@ class Ui_Help(object):
         font1.setItalic(True)
         self.label_13.setFont(font1)
 
-        self.verticalLayout_2.addWidget(self.label_13, 0, Qt.AlignHCenter)
+        self.verticalLayout_2.addWidget(self.label_13, 0, Qt.AlignmentFlag.AlignHCenter)
 
         self.label_14 = QLabel(self.widget)
         self.label_14.setObjectName(u"label_14")
         self.label_14.setFont(font1)
 
-        self.verticalLayout_2.addWidget(self.label_14, 0, Qt.AlignHCenter)
+        self.verticalLayout_2.addWidget(self.label_14, 0, Qt.AlignmentFlag.AlignHCenter)
 
         self.widget_2 = QWidget(self.widget)
         self.widget_2.setObjectName(u"widget_2")
@@ -216,6 +216,11 @@ class Ui_Help(object):
 
         self.gridLayout.addWidget(self.configVer, 3, 1, 1, 1)
 
+        self.useLocal = QCheckBox(self.widget_2)
+        self.useLocal.setObjectName(u"useLocal")
+
+        self.gridLayout.addWidget(self.useLocal, 6, 2, 1, 1)
+
 
         self.verticalLayout_2.addWidget(self.widget_2)
 
@@ -299,6 +304,7 @@ class Ui_Help(object):
         self.localTime.setText("")
         self.label_12.setText(QCoreApplication.translate("Help", u"\u914d\u7f6e\u7248\u672c", None))
         self.configVer.setText("")
+        self.useLocal.setText(QCoreApplication.translate("Help", u"\u662f\u5426\u4f7f\u7528\u672c\u5730\u5e93", None))
         self.label_8.setText(QCoreApplication.translate("Help", u"\u65b0\u7248\u672c\uff1a", None))
         self.updateLabel.setText("")
         self.updateButton.setText(QCoreApplication.translate("Help", u"\u524d\u5f80\u66f4\u65b0", None))

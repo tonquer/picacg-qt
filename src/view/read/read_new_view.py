@@ -69,7 +69,7 @@ class ReadNewView(QtWidgets.QWidget):
         # self.frame.scrollArea.initReadMode = self.stripModel
 
         # self.ChangeReadMode(Setting.LookReadMode.value)
-        self.qtTool.ChangeReadMode(Setting.LookReadMode.value)
+        self.qtTool.ChangeReadMode(self.scrollArea._mode.value)
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
         self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
         self.qtTool.scrollInitSpeed.setValue(Setting.ScrollInitSpeed.value)
@@ -258,6 +258,7 @@ class ReadNewView(QtWidgets.QWidget):
     def OpenPage(self, bookId, epsId, pageIndex=-1, isOffline=False):
         if not bookId:
             return
+        self.scrollArea.update_backgroud()
         self.isOffline = isOffline
         self.isLocal = False
         self._cacheBook = None
@@ -295,6 +296,8 @@ class ReadNewView(QtWidgets.QWidget):
         if not v:
             return
         self.Clear()
+        self.scrollArea.update_backgroud()
+
         assert isinstance(v, LocalData)
         self.epsId = epsId
         self._cacheBook = v

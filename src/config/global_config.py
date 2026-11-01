@@ -40,7 +40,7 @@ class GlobalConfig:
     ProxyImgDomain = GlobalItem("bika-img.jpacg.cc")
 
     ProxyApiDomain2 = GlobalItem("bika2-api.jpacg.cc")
-    ProxyImgDomain2 = GlobalItem("bika21-img.jpacg.cc")
+    ProxyImgDomain2 = GlobalItem("bika2-img.jpacg.cc")
 
     AllApiDomain = GlobalItem([
         "picaapi.picacomic.com",

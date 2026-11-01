@@ -56,6 +56,11 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
 
     def SwitchCurrent(self, **kwargs):
         refresh = kwargs.get("refresh")
+        if not QtOwner().IsCanUseDb():
+            self.isLocal = False
+            self.SetLocal(False)
+            self.localWidget.SetState(False)
+
         if refresh or self.bookList.count() <= 0:
             self.RefreshDataFocus()
 
@@ -75,6 +80,8 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
     #         return
 
     def SwitchLocalButton(self, isLocal):
+        if isLocal and not Setting.IsOpenLocal.value:
+            QtOwner().ShowError(Str.GetStr(Str.NotOpenLocal))
         Setting.IsOpenLocalFavorite.SetValue(isLocal)
         self.SetLocal(Setting.IsOpenLocalFavorite.value)
         if isLocal:
@@ -98,7 +105,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.bookList.UpdateState()
 
     def InitFavorite(self):
-        if not QtOwner().canUseDb:
+        if not QtOwner().IsCanUseDb():
             self.SetLocal(False)
             # self.localWidget.setVisible(False)
             return
@@ -111,7 +118,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         return
 
     def LoadAllFavoriteBack(self, data):
-        if not data and not QtOwner().canUseDb:
+        if not data and not QtOwner().IsCanUseDb():
             return
         for _id, sordId in data:
             self.allFavoriteIds[_id] = sordId

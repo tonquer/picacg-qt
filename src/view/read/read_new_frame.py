@@ -18,7 +18,11 @@ class ReadNewFrame(QFrame):
         QFrame.__init__(self, readImg)
         self._readImg = weakref.ref(readImg)
         self.resize(readImg.width(), readImg.height())
-        self.scrollArea = ReadNewGraphics(ReadMode(Setting.LookReadMode.value), self)
+        if Setting.LookReadMode.value > ReadMode.Samewight.value or Setting.LookReadMode.value < 0:
+            mode = ReadMode.LeftRight.value
+        else:
+            mode = Setting.LookReadMode.value
+        self.scrollArea = ReadNewGraphics(ReadMode(mode), self)
         self.qtTool = ReadNewTool(self)
         self.qtTool.hide()
         self.helpLabel = QLabel(self)
@@ -85,7 +89,7 @@ class ReadNewFrame(QFrame):
         painter.drawRect(QRect(0, 0, self.width()//3*4, self.height() // 2))
 
         painter.setFont(font)
-        if self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll, ReadMode.RightLeftScroll2]:
+        if self.qtTool.stripModel in [ReadMode.RightLeftDouble, ReadMode.RightLeftScroll]:
             nextPage = Str.GetStr(Str.LastPage)
             lastPage = Str.GetStr(Str.NextPage)
         else:
@@ -155,11 +159,19 @@ class ReadNewFrame(QFrame):
             self.downloadMaxSize = 1
             self.process2.setValue(0)
 
+    def HideHelp(self):
+        if not self.helpLabel.isHidden():
+            self.helpLabel.hide()
+
+    def ShowHelp(self):
+        if self.helpLabel.isHidden():
+            self.helpLabel.show()
+
     def eventFilter(self, obj, ev) -> bool:
         # print(obj, ev.type())
         if obj == self.helpLabel:
             if ev.type() == QEvent.MouseButtonPress:
                 if not self.helpLabel.isHidden():
-                    self.helpLabel.hide()
+                    self.HideHelp()
                     return True
         return False

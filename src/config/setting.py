@@ -225,6 +225,7 @@ class Setting:
     IsSkipSpace = SettingValue("Other", 0, False)
     IsSkipPic = SettingValue("Other", 0, False)
     IsOpenLocalFavorite = SettingValue("Other", False, False)
+    IsOpenLocal = SettingValue("Other", True, False)
 
     @staticmethod
     def InitLoadSetting():

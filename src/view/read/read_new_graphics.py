@@ -330,13 +330,13 @@ class ReadNewGraphics(QGraphicsView):
     # ================ 背景 ================
 
     def _default_bg(self) -> QColor:
-        """默认背景色：跟随视口调色板（通常是白，跟随系统/应用主题）。"""
-        vp = self.viewport()
-        role = vp.backgroundRole()
-        c = vp.palette().color(role) if role != QPalette.NoRole else QColor()
-        if not c.isValid():
-            c = self.palette().color(QPalette.Base)
-        return c if c.isValid() else QColor(Qt.white)
+        if Setting.ThemeIndex.autoValue == 1:
+            return QColor("#31363B")
+        else:
+            return QColor("#F3F3F3")
+
+    def update_backgroud(self):
+        self.set_background(self._default_bg())
 
     def set_background(self, color):
         """设置图片之外的空白区颜色（看漫画常用黑，看图片流常用白）。
@@ -392,13 +392,13 @@ class ReadNewGraphics(QGraphicsView):
         """缩小一步（÷ZOOM_STEP）。"""
         self._zoom_step(-1, anchor)
 
-    def default_zoom_for(self) -> float:
+    def default_zoom_for(self, mode) -> float:
         """某个阅读方向的默认缩放。"""
-        return 0.8 if self._mode == ReadMode.UpDown else 1.0
+        return 0.8 if mode == ReadMode.UpDown else 1.0
 
     def reset_zoom(self):
         """重置为当前阅读方向的默认缩放（上下=80%，左右=100%）。"""
-        self.set_zoom(self.default_zoom_for())
+        self.set_zoom(self.default_zoom_for(self._mode))
 
     def _zoom_step(self, direction: int, anchor):
         """direction：+1 放大一步 / -1 缩小一步。"""
@@ -1773,7 +1773,7 @@ class ReadNewGraphics(QGraphicsView):
         # 切方向时把缩放重置为该方向的默认值（ttb=0.8，左右=1.0）。
         # 必须在 _update_cross / _show_page 之前改：cross 和页模式的 scale
         # 都直接吃 self._zoom。
-        z0 = self.default_zoom_for()
+        z0 = self.default_zoom_for(mode)
         if abs(z0 - self._zoom) > 1e-9:
             self._zoom = z0
             self._sub_applied = float("nan")   # 缩放变了，亚像素 transform 要重设
@@ -3194,7 +3194,7 @@ class ReadNewGraphics(QGraphicsView):
                 return True
             elif ev.type() == QEvent.KeyRelease:
                 if not self.frame.helpLabel.isHidden():
-                    self.frame.helpLabel.hide()
+                    self.frame.HideHelp()
                     return True
                 # if ev.key() == Qt.Key_Down:
                 #     self.ScrollValue(self.height() / 2)
@@ -3240,12 +3240,12 @@ class ReadNewGraphics(QGraphicsView):
                     self._start_press_pos = ev.screenPos()
             elif ev.type() == QEvent.GraphicsSceneMouseRelease:
                 if not self.frame.helpLabel.isHidden():
-                    self.frame.helpLabel.hide()
+                    self.frame.HideHelp()
                     return True
 
                 if ev.button() == Qt.MouseButton.LeftButton:
                     if not self.frame.helpLabel.isHidden():
-                        self.frame.helpLabel.hide()
+                        self.frame.HideHelp()
                         return True
                     endPos = ev.screenPos()
                     subPos = (endPos - self._start_press_pos)
