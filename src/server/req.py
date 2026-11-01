@@ -189,6 +189,10 @@ class ServerReq(object):
     def __str__(self):
         return self.GetPri()
 
+    def GetPlatform(self):
+        if sys.platform == "win32":
+            return sys.platform
+        return platform.platform()
 
 # 获得分流Ip
 class InitReq(ServerReq):
@@ -542,7 +546,7 @@ class CheckUpdateReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
-        data["platform"] = sys.platform
+        data["platform"] = self.GetPlatform()
         if not isPre:
             url = url2 + "/version.txt?"
         else:
@@ -559,7 +563,7 @@ class CheckUpdateInfoReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
-        data["platform"] = sys.platform
+        data["platform"] = self.GetPlatform()
         url = url2 + "/{}.txt?".format(newVersion)
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
@@ -573,7 +577,7 @@ class CheckUpdateConfigReq(ServerReq):
         method = "GET"
         data = dict()
         data["version"] = config.RealVersion
-        data["platform"] = sys.platform
+        data["platform"] = self.GetPlatform()
         url = url2 + "/config.txt?"
         url += ToolUtil.DictToUrl(data)
         super(self.__class__, self).__init__(url, {}, {}, method)
@@ -1128,7 +1132,7 @@ class GetIpInfoReq(ServerReq):
             "version": config.RealVersion
         }
         self.isParseRes = False
-        self.resetUrl = [f"https://parse2.jpacg.cc/ipinfo?ip={ip}"]
+        self.resetUrl = [f"https://parse2.jpacg.cc/ipinfo?ip={ip}", f"https://parse3.jpacg.cc/ipinfo?ip={ip}"]
         self.resetCnt = len(self.resetUrl)
 
 
@@ -1146,7 +1150,7 @@ class GetProxyIpInfoReq(ServerReq):
         }
         self.isParseRes = False
         realUrl = ToolUtil.GetUrlHost(url)
-        self.resetUrl = [url.replace(realUrl, "check2.jpacg.cc")]
+        self.resetUrl = [url.replace(realUrl, "check2.jpacg.cc"), url.replace(realUrl, "check3.jpacg.cc")]
         self.resetCnt = len(self.resetUrl)
 
 
@@ -1161,5 +1165,5 @@ class GetBestCfIpReq(ServerReq):
         }
         self.isParseRes = False
         realUrl = ToolUtil.GetUrlHost(url)
-        self.resetUrl = [url.replace(realUrl, "parse2.jpacg.cc")]
+        self.resetUrl = [url.replace(realUrl, "parse2.jpacg.cc"), url.replace(realUrl, "parse3.jpacg.cc")]
         self.resetCnt = len(self.resetUrl)

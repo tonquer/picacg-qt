@@ -170,6 +170,11 @@ jobs:
           python -m pip install --upgrade pip        
           pip install pyinstaller
           pip install -r src\requirements_nosr.txt
+    
+          $imageformatsPath = python -c "import os, PySide6; print(os.path.join(os.path.dirname(PySide6.__file__), 'plugins', 'imageformats'))"
+          cp lib\qjpegxl6.dll $imageformatsPath"\"
+          cp lib\qavif6.dll $imageformatsPath"\"
+          
           Invoke-WebRequest -Uri "https://github.com/upx/upx/releases/download/v5.0.1/upx-5.0.1-win64.zip" -OutFile "upx.zip"
           Expand-Archive -Path "upx.zip" -DestinationPath "D:\"
           Remove-Item "upx.zip"

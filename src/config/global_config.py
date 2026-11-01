@@ -73,6 +73,7 @@ class GlobalConfig:
     DohUrlList = GlobalItem(["https://parse.jpacg.cc/parse",
                              "https://doh.pub/dns-query",
                              "https://parse2.jpacg.cc/parse",
+                             "https://parse3.jpacg.cc/parse",
                              "https://dot.pub/dns-query"])
 
     EchDomain = GlobalItem("cloudflare-ech.com")
@@ -85,7 +86,6 @@ class GlobalConfig:
         "parse2.jpacg.cc"
         "macapi1.com"])
 
-    # 其他cloudflare域名，启用ech和ip分流
     DBUpdateUrl = GlobalItem([
         "raw.jpacg.cc",
         "raw2.jpacg.cc",
