@@ -174,7 +174,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 226, 879))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -557, 226, 838))
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
@@ -455,20 +455,6 @@ class Ui_Navigation(object):
 
         self.verticalLayout_3.addWidget(self.localReadButton)
 
-        self.convertButton = QToolButton(self.scrollAreaWidgetContents)
-        self.buttonGroup.addButton(self.convertButton)
-        self.convertButton.setObjectName(u"convertButton")
-        sizePolicy2.setHeightForWidth(self.convertButton.sizePolicy().hasHeightForWidth())
-        self.convertButton.setSizePolicy(sizePolicy2)
-        self.convertButton.setMinimumSize(QSize(0, 40))
-        self.convertButton.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.convertButton.setIcon(icon)
-        self.convertButton.setIconSize(QSize(32, 32))
-        self.convertButton.setCheckable(True)
-        self.convertButton.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-
-        self.verticalLayout_3.addWidget(self.convertButton)
-
         self.waifu2xButton = QToolButton(self.scrollAreaWidgetContents)
         self.buttonGroup.addButton(self.waifu2xButton)
         self.waifu2xButton.setObjectName(u"waifu2xButton")
@@ -582,7 +568,6 @@ class Ui_Navigation(object):
         self.downloadButton.setText(QCoreApplication.translate("Navigation", u"\u4e0b\u8f7d", None))
         self.nasButton.setText(QCoreApplication.translate("Navigation", u"\u7f51\u7edc\u5b58\u50a8", None))
         self.localReadButton.setText(QCoreApplication.translate("Navigation", u"\u672c\u5730\u6f2b\u753b", None))
-        self.convertButton.setText(QCoreApplication.translate("Navigation", u"\u8f6c\u6362", None))
         self.waifu2xButton.setText(QCoreApplication.translate("Navigation", u"\u56fe\u7247\u8d85\u5206", None))
         self.batchSrButton.setText(QCoreApplication.translate("Navigation", u"\u6279\u91cf\u8d85\u5206", None))
         self.helpButton.setText(QCoreApplication.translate("Navigation", u"\u5e2e\u52a9", None))

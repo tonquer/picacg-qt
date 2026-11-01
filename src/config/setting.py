@@ -145,6 +145,7 @@ class Setting:
     IsOpenDiskCache = SettingValue("DownloadSetting", 0, False)
     DiskCacheSize = SettingValue("DownloadSetting", 10240, False)
     DiskCacheDay = SettingValue("DownloadSetting", 30, False)
+    DownloadConvertFmt = SettingValue("DownloadSetting", "", False)
 
     # Waifu2x设置
     SelectEncodeGpu = SettingValue("Waifu2xSetting", "", True)

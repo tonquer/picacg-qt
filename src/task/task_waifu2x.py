@@ -23,6 +23,7 @@ class QConvertTask(object):
         self.cleanFlag = ""
         self.status = Status.Ok
         self.bookId = ""
+        self.convertType = ""
         self.path = ""
         self.tick = 0
         self.loadPath = ""  #
@@ -109,7 +110,13 @@ class TaskWaifu2x(TaskBase):
 
                 w, h, mat, _ = ToolUtil.GetPictureSize(task.imgData)
                 if mat.lower() in ToolUtil.NeedConvertFormat:
-                    task.imgData = ToolUtil.GetCanUseData(task.imgData)
+                    task.imgData = ToolUtil.GetCanConvertUseData(task.imgData)
+
+                if task.convertType ==  "download":
+                    from qt_owner import QtOwner
+                    newFormat = QtOwner().GetConvertFmtRule(mat)
+                    if newFormat != mat and newFormat not in ToolUtil.NeedConvertFormat:
+                        task.model['format'] = newFormat
 
                 if isFind:
                     continue
@@ -166,9 +173,11 @@ class TaskWaifu2x(TaskBase):
                 lenData = len(data)
             if lenData <= 0:
                 info.status = Status.FileFormatError
-                Log.Warn("convert error, taskId: {}, dataLen:{}, sts:{} tick:{}, skip:{}".format(str(taskId), lenData,
+                from sr_vulkan import sr_vulkan as sr
+                err = sr.getLastError()
+                Log.Warn("convert error, taskId: {}, dataLen:{}, sts:{} tick:{}, skip:{}, err:{}".format(str(taskId), lenData,
                                                                                           str(format),
-                                                                                          str(tick), str(Setting.IsSkipPic.value)))
+                                                                                          str(tick), str(Setting.IsSkipPic.value), err))
                 if info.savePath and Setting.IsSkipPic.value:
                     info.status = Status.Ok
                     data = info.imgData
@@ -183,7 +192,7 @@ class TaskWaifu2x(TaskBase):
                         TaskCache().AddCacheDiskPath(ToolUtil.GetPictureName(info.cachePath, format), data)
 
                     for path in [info.savePath]:
-                        ToolUtil.SavePicture(data, path, format)
+                        ToolUtil.SaveConvertPicture(data, path, format)
             except Exception as es:
                 info.status = Status.SaveError
                 Log.Error(es)
@@ -216,13 +225,16 @@ class TaskWaifu2x(TaskBase):
             return taskId
         return 0
 
-    def AddConvertTaskByPath(self, loadPath, savePath, callBack, backParam=None, cleanFlag=None):
+    def AddConvertTaskByPath(self, loadPath, savePath, callBack, backParam=None, cleanFlag=None, otherParams = None):
         info = QConvertTask()
         info.loadPath = loadPath
         info.savePath = savePath
         info.callBack = callBack
         info.backParam = backParam
         taskId = self._RegisterTask(info, cleanFlag)
+        if isinstance(otherParams, dict):
+            info.bookId = otherParams.get("bookId", "")
+            info.convertType = otherParams.get("type", "")
         Log.Debug("add convert info, loadPath:{}, savePath:{}".format(info.loadPath, info.savePath))
         self._inQueue.put(taskId)
         return taskId

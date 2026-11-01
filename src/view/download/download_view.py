@@ -21,6 +21,7 @@ from tools.status import Status
 from tools.str import Str
 from tools.tool import ToolUtil
 from view.download.download_db import DownloadDb
+from view.download.download_format_widget import DownloadFormatWidget
 from view.download.download_item import DownloadItem
 from view.download.download_status import DownloadStatus
 
@@ -90,6 +91,11 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         self.comboBox.currentIndexChanged.connect(self.CheckHideItem)
         self.lineEdit.textChanged.connect(self.SearchTextChange)
         self.searchText = ""
+        self.formatButton.clicked.connect(self.OpenFormatWidget)
+
+    def OpenFormatWidget(self):
+        widget = DownloadFormatWidget(QtOwner().owner)
+        widget.exec()
 
     # 修复下数据
     def RepairData(self, task):

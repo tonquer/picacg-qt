@@ -1,11 +1,12 @@
 import threading
 
-from PySide6.QtGui import QImage
-from PySide6.QtCore import Qt
+from PySide6.QtGui import QImage, QImageReader
+from PySide6.QtCore import Qt, QBuffer, QIODevice
 
 from task.qt_task import TaskBase
 from tools.log import Log
 from tools.tool import ToolUtil
+from view.read.read_perf_probe import Timer
 
 
 class QtQImageTask(object):
@@ -60,9 +61,18 @@ class TaskQImage(TaskBase):
             newQ = QImage()
             try:
                 newData = ToolUtil.GetCanUseData(info.data)
-                q = QImage()
-                q.loadFromData(newData)
+                buf = QBuffer()
+                buf.setData(newData)
+                buf.open(QIODevice.ReadOnly)
+                reader = QImageReader(buf)
+                reader.setAutoTransform(True)
+
+                # 该函数会释放GIL锁, 如果使用loadFromData, 会占用GIL依然卡顿
+                q = reader.read()
                 q.setDevicePixelRatio(info.radio)
+
+                # q.loadFromData(newData)
+                # q.setDevicePixelRatio(info.radio)
                 if info.model:
                     model = info.model
                 else:
@@ -73,7 +83,6 @@ class TaskQImage(TaskBase):
                     newQ = q.scaled(round(info.toW * info.radio), round(info.toH * info.radio), model, Qt.SmoothTransformation)
                 else:
                     newQ = q
-
             except Exception as es:
                 Log.Error(es)
             finally:

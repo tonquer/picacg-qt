@@ -5,6 +5,7 @@ import weakref
 
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from view.category.category_view import CategoryView
     from view.category.rank_view import RankView
@@ -91,6 +92,62 @@ class QtOwner(Singleton):
         self.closeType = 1  # 1普通， 2关闭弹窗触发， 3任务栏触发
         self.isMaxSize = 0
         self.echConfig = ""
+
+        self.downFmtRule = {}
+        self.convertFmtRule = {}
+        self.allSupportFmt = set()
+
+    def UpdateDownFmtRule(self):
+        from config.setting import Setting
+        if not Setting.DownloadConvertFmt.value:
+            self.downFmtRule = {}
+            return
+        for v in Setting.DownloadConvertFmt.value.split(":"):
+            v2 = v.split(",")
+            if len(v2) < 3:
+                continue
+            indexType = int(v2[0])  # 0=all , 1=down, 2=convert
+            if indexType == 2:
+                continue
+            format1 = v2[1]
+            toFormat = v2[2]
+            self.downFmtRule[format1] = toFormat
+
+    def GetDownFmtRule(self, oldFmt):
+        if not self.downFmtRule:
+            self.UpdateDownFmtRule()
+
+        if oldFmt in self.downFmtRule:
+            return self.downFmtRule.get(oldFmt)
+        if "*" in self.downFmtRule:
+            return self.downFmtRule.get("*")
+        return oldFmt
+
+    def UpdateConvertFmtRule(self):
+        from config.setting import Setting
+        if not Setting.DownloadConvertFmt.value:
+            self.convertFmtRule = {}
+            return
+        for v in Setting.DownloadConvertFmt.value.split(":"):
+            v2 = v.split(",")
+            if len(v2) < 3:
+                continue
+            indexType = int(v2[0])  # 0=all , 1=down, 2=convert
+            if indexType == 1:
+                continue
+            format1 = v2[1]
+            toFormat = v2[2]
+            self.convertFmtRule[format1] = toFormat
+
+    def GetConvertFmtRule(self, oldFmt):
+        from config.setting import Setting
+        if not self.convertFmtRule:
+            self.UpdateConvertFmtRule()
+        if oldFmt in self.convertFmtRule:
+            return self.convertFmtRule.get(oldFmt)
+        if "*" in self.convertFmtRule:
+            return self.convertFmtRule.get("*")
+        return oldFmt
 
     # db不可使用
     def SetDbError(self):

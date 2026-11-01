@@ -29,7 +29,6 @@ from view.comment.comment_view import CommentView
 from view.comment.game_comment_view import GameCommentView
 from view.comment.my_comment_view import MyCommentView
 from view.comment.sub_comment_view import SubCommentView
-from view.convert.convert_view import ConvertView
 from view.download.download_all_view import DownloadAllView
 from view.download.download_view import DownloadView
 from view.fried.fried_view import FriedView
@@ -119,9 +118,6 @@ class Ui_Main(object):
         self.localReadAllView = LocalReadAllView()
         self.localReadAllView.setObjectName(u"localReadAllView")
         self.subStackWidget.addWidget(self.localReadAllView)
-        self.convertView = ConvertView()
-        self.convertView.setObjectName(u"convertView")
-        self.subStackWidget.addWidget(self.convertView)
         self.localReadEpsView = LocalReadEpsView()
         self.localReadEpsView.setObjectName(u"localReadEpsView")
         self.subStackWidget.addWidget(self.localReadEpsView)

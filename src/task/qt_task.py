@@ -11,6 +11,7 @@ from config.setting import Setting
 from tools.log import Log
 from tools.singleton import Singleton
 from tools.tool import time_me
+from view.read.read_perf_probe import timed
 
 
 class QtTaskQObject(QObject):
@@ -97,11 +98,11 @@ class QtTaskBase:
         return TaskWaifu2x().AddConvertTaskByData(path, imgData, model, completeCallBack, backParam, preDownPath, noSaveCache, cleanFlag, completeCallBack2, otherParams)
 
     # completeCallBack(saveData, taskId, backParam, tick)
-    def AddConvertTaskByPath(self, loadPath, savePath, completeCallBack, backParam=None, cleanFlag=""):
+    def AddConvertTaskByPath(self, loadPath, savePath, completeCallBack, backParam=None, cleanFlag="", otherParams=None):
         from task.task_waifu2x import TaskWaifu2x
         if not cleanFlag:
             cleanFlag = self.__taskFlagId
-        return TaskWaifu2x().AddConvertTaskByPath(loadPath, savePath, completeCallBack, backParam, cleanFlag)
+        return TaskWaifu2x().AddConvertTaskByPath(loadPath, savePath, completeCallBack, backParam, cleanFlag, otherParams)
 
     # completeCallBack(saveData, taskId, backParam, tick)
     def AddConvertTaskByPathSetModel(self, loadPath, savePath, completeCallBack, backParam=None, model=None, cleanFlag=""):
@@ -185,6 +186,7 @@ class TaskBase(Singleton):
     def Cancel(self, cleanFlag):
         self._RemoveTasksByFlag(cleanFlag)
 
+    @timed
     def _RegisterTask(self, info, cleanFlag=None, id_attr="taskId"):
         with self._taskLock:
             self.taskId += 1

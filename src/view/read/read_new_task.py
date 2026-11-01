@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from tools.book import BookMgr
+from view.read.read_perf_probe import timed
 
 if TYPE_CHECKING:
     from view.read.read_new_view import ReadNewView
@@ -73,6 +74,10 @@ class ReadNewTask(QtTaskBase):
             return self.AddConvertTask(path, data, model, completeCallBack2=callBack, backParam=i, noSaveCache=True, otherParams=otherParams)
         else:
             return self.AddConvertTask(path, data, model, completeCallBack2=callBack, backParam=i, preDownPath=filePath, otherParams=otherParams)
+
+    @timed
+    def AddQImageTask(self, *args, **kwargs):
+        QtTaskBase.AddQImageTask(self, *args, **kwargs)
 
     def IsMaxBookEps(self, epsId):
         bookId = self.readView.bookId

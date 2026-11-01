@@ -116,6 +116,11 @@ class Ui_Download(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.formatButton = QPushButton(Download)
+        self.formatButton.setObjectName(u"formatButton")
+
+        self.horizontalLayout.addWidget(self.formatButton)
+
         self.updateNew = QPushButton(Download)
         self.updateNew.setObjectName(u"updateNew")
 
@@ -187,6 +192,7 @@ class Ui_Download(object):
         ___qtablewidgetitem9.setText(QCoreApplication.translate("Download", u"\u8f6c\u6362\u8017\u65f6", None));
         ___qtablewidgetitem10 = self.tableWidget.horizontalHeaderItem(10)
         ___qtablewidgetitem10.setText(QCoreApplication.translate("Download", u"\u8f6c\u6362\u72b6\u6001", None));
+        self.formatButton.setText(QCoreApplication.translate("Download", u"\u683c\u5f0f\u8f6c\u6362", None))
         self.updateNew.setText(QCoreApplication.translate("Download", u"\u66f4\u65b0New\u7ae0\u8282", None))
         self.pushButton.setText(QCoreApplication.translate("Download", u"\u5f00\u59cb\u4e0b\u8f7d", None))
         self.pushButton_3.setText(QCoreApplication.translate("Download", u"\u6682\u505c\u4e0b\u8f7d", None))

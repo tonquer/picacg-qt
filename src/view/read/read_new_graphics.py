@@ -35,6 +35,7 @@ from view.read.read_enum import ReadMode, QtFileData
 from view.read.read_new_graphics_item import ReadNewGraphicsItem
 from view.read.read_new_scroller import ReadNewScroller
 from tools.str import Str
+from view.read.read_perf_probe import timed, time_block, Timer
 
 
 class ReadNewGraphics(QGraphicsView):
@@ -68,7 +69,7 @@ class ReadNewGraphics(QGraphicsView):
     # PREFETCH_BACK = 3  # 已读方向（往回）预取几张
     # PREFETCH_AHEAD = 12  # 未读方向（往后）预取几张
 
-    PIXMAP_BUDGET_MB = 2048    # 已解码位图的总预算（MB）
+    # PIXMAP_BUDGET_MB = 2048    # 已解码位图的总预算（MB）
     # RAW_BUDGET_MB = 64        # 保留的原始压缩字节总预算（MB），用于位图回收后重解
 
     # ---- 到顶/到底后的"继续滚"触发 ----
@@ -512,6 +513,7 @@ class ReadNewGraphics(QGraphicsView):
             dx, dy = self._page_slot_offset(w, h, al, self._page)
             self._page_pan = QPointF(dx - bx, dy - by)
 
+    @timed
     def _refresh_decodes(self):
         """缩放/窗口变化后，把解码位图重新对齐到当前渲染尺寸。
 
@@ -624,6 +626,7 @@ class ReadNewGraphics(QGraphicsView):
         self._anims_enabled = on
         self._refresh_playing()
 
+    @timed
     def _decode_target_size(self, it: ReadNewGraphicsItem) -> QSizeF:
         """这张图"解码后应该多大"（**物理像素**）——按它实际会被渲染的尺寸算。
 
@@ -688,6 +691,7 @@ class ReadNewGraphics(QGraphicsView):
             h *= z
         return QSizeF(max(1, w), max(1, h))
 
+    @timed
     def _get_decode_to_size(self, size, file_data:FileData):
         dpr = self.devicePixelRatioF()
         scale = min(size.width()*dpr / max(1, file_data.w), size.height() * dpr / max(1, file_data.h))
@@ -791,6 +795,7 @@ class ReadNewGraphics(QGraphicsView):
             total -= x._raw.size()
             x._raw = QByteArray()
 
+    @timed
     def _refresh_playing(self, vis=None):
         """让"该播的播、不该播的停"。
 
@@ -855,6 +860,7 @@ class ReadNewGraphics(QGraphicsView):
     # 连续模式一屏能看到多张且会滚动，没有固定的"左半屏/右半屏"，所以针对这类
     # 查询返回 None，别硬套。
 
+    @timed
     def visible_indices(self) -> list:
         """当前屏幕上可见的图片序号（0 起），**按阅读顺序**排列。
 
@@ -1138,6 +1144,7 @@ class ReadNewGraphics(QGraphicsView):
             vis = self.visible_indices()
         return vis[0] if vis else -1
 
+    @timed
     def _refresh_index(self, vis=None):
         """重算"当前第几张"，跨到新的一张时才发 indexChanged。
 
@@ -1461,6 +1468,7 @@ class ReadNewGraphics(QGraphicsView):
         self._page_scroll = nxt
         self._place_page(self._page, 0.0)
 
+    @timed
     def _place_page(self, page: int, offset: float):
         """把第 page 页的 items 摆到"槽位位置 + 缩放平移 + offset×阅读方向向量"
         并显示。缩放用 item 的 scale 变换实现（几何仍是槽位大小，绘制时放大）；
@@ -1518,11 +1526,13 @@ class ReadNewGraphics(QGraphicsView):
             it.setPos(x + rdx * offset + dx, y + rdy * offset + dy)
             it.setVisible(True)
 
+    @timed
     def _hide_page(self, page: int):
         """隐藏某一页的 items（翻页结束/拖拽换方向时收起）。"""
         for it in self._page_items(page):
             it.setVisible(False)
 
+    @timed
     def _show_page(self, page: int, anim_from: int = 0):
         """页模式核心：只显示第 page 页的 1~2 张图，其余 item 全部隐藏。
         sceneRect 恒等于视口 -> 滚动条 range 恒为 0，彻底没有滚动。
@@ -1551,6 +1561,7 @@ class ReadNewGraphics(QGraphicsView):
                                    page - anim_from, -anim_from * L)
         self._load_visible()
 
+    @timed
     def _flip_page(self, n: int):
         """翻 n 页（正=沿阅读方向前进）。带滑动动画；越界不动。"""
         if ReadMode.isScroll(self._mode) or n == 0 or not self._items:
@@ -1862,6 +1873,7 @@ class ReadNewGraphics(QGraphicsView):
         return self.viewport().height() if ReadMode.isUpDown(self._mode) \
             else self.viewport().width()
 
+    @timed
     def _scroll_min_s(self) -> float:
         """当前视口可见区间的起始 s（阅读方向），含亚像素偏移。
 
@@ -2323,6 +2335,7 @@ class ReadNewGraphics(QGraphicsView):
             else:
                 self._reset_edge_counts()
 
+    @timed
     def _load_visible(self):
         """刷新当前序号/动图，然后做两件互不影响的事：
 
@@ -2346,6 +2359,7 @@ class ReadNewGraphics(QGraphicsView):
         self._download_around_current()       # 预下载：按序号
         self._decode_visible()                # 预解码：按视窗
 
+    @timed
     def _download_around_current(self):
         """预下载：[_cur_idx - back, _cur_idx + ahead] 之内、还没下过的图。"""
         n = len(self._items)
@@ -2359,6 +2373,7 @@ class ReadNewGraphics(QGraphicsView):
         for i in range(lo, hi + 1):
             self._maybe_download(self._items[i])
 
+    @timed
     def _decode_visible(self):
         """预解码：视窗窗口内"已下完但还没解码"的图 -> 丢给线程池。"""
         if not ReadMode.isScroll(self._mode):
@@ -2389,6 +2404,7 @@ class ReadNewGraphics(QGraphicsView):
             return                           # 已经下完，等预解码窗口触发，别重复下
         self._start_download(it)
 
+    @timed
     def _start_decode_if_ready(self, it: ReadNewGraphicsItem):
         """条件满足就丢给线程池解码：已下完（_buf 非空）、没在解码、没失败。"""
         isForce = False
@@ -2428,6 +2444,7 @@ class ReadNewGraphics(QGraphicsView):
             toW, toH = self._get_decode_to_size(size, it.file_data)
             self.read_task.AddQImageTask(it._buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio, callBack=self._on_loaded, backParam=(it.index, False))
 
+    @timed
     def _maybe_decode(self, it: ReadNewGraphicsItem):
         """下载刚完成时调用：只有落进"预解码窗口"才立刻解，否则留着字节等滚到附近。"""
         curIdx = self._cur_idx
@@ -2451,42 +2468,45 @@ class ReadNewGraphics(QGraphicsView):
 
     # ---- 解码位图 / 压缩字节的 LRU 回收（200 张大图也不会把内存吃光）----
 
+    @timed
     def _trim_caches(self):
         """按预算回收位图/压缩字节：离当前页最远的先丢，当前可见的永远不动。"""
-        self._trim_pixmaps()
+        # self._trim_pixmaps()
         self._trim_pixmaps_max_len()
         # self._trim_buffers()
 
-    def _trim_pixmaps(self):
-        """已解码位图超预算 -> 从离当前页最远的开始回收 pixmap（压缩字节留着）。
+    # @timed
+    # def _trim_pixmaps(self):
+    #     """已解码位图超预算 -> 从离当前页最远的开始回收 pixmap（压缩字节留着）。
+    #
+    #     回收后置 `_pending_decode=True`：等它再次滚进预解码窗口时用 `_buf` 重新
+    #     解码，不需要重新下载。当前屏幕上可见的、以及动图（`_raw` 有自己的预算）
+    #     都不动。"""
+    #     budget = self.PIXMAP_BUDGET_MB * 1024 * 1024
+    #     keep = set(self.visible_indices())     # 当前屏幕上真正可见的：绝不回收
+    #     total = 0
+    #     cands = []
+    #     for i, it in enumerate(self._items):
+    #         if it.pixmap is None:
+    #             continue
+    #         total += it.pixmap.width() * it.pixmap.height() * 4   # RGBA 每像素 4 字节
+    #         if i not in keep and not it.is_animated:
+    #             cands.append((i, it))
+    #     if total <= budget:
+    #         return
+    #     cur = self._cur_idx if self._cur_idx >= 0 else 0
+    #     cands.sort(key=lambda t: -abs(t[0] - cur))   # 离得越远越先丢
+    #     for i, it in cands:
+    #         if total <= budget:
+    #             break
+    #         total -= it.pixmap.width() * it.pixmap.height() * 4
+    #         it.pixmap = None
+    #         if it._buf:
+    #             it._pending_decode = True         # 有字节：滚回来能直接重解
+    #         it.update()
+    #         Log.Info(f"free over budget pixmap, {it.index}")
 
-        回收后置 `_pending_decode=True`：等它再次滚进预解码窗口时用 `_buf` 重新
-        解码，不需要重新下载。当前屏幕上可见的、以及动图（`_raw` 有自己的预算）
-        都不动。"""
-        budget = self.PIXMAP_BUDGET_MB * 1024 * 1024
-        keep = set(self.visible_indices())     # 当前屏幕上真正可见的：绝不回收
-        total = 0
-        cands = []
-        for i, it in enumerate(self._items):
-            if it.pixmap is None:
-                continue
-            total += it.pixmap.width() * it.pixmap.height() * 4   # RGBA 每像素 4 字节
-            if i not in keep and not it.is_animated:
-                cands.append((i, it))
-        if total <= budget:
-            return
-        cur = self._cur_idx if self._cur_idx >= 0 else 0
-        cands.sort(key=lambda t: -abs(t[0] - cur))   # 离得越远越先丢
-        for i, it in cands:
-            if total <= budget:
-                break
-            total -= it.pixmap.width() * it.pixmap.height() * 4
-            it.pixmap = None
-            if it._buf:
-                it._pending_decode = True         # 有字节：滚回来能直接重解
-            it.update()
-            Log.Info(f"free over budget pixmap, {it.index}")
-
+    @timed
     def _trim_pixmaps_max_len(self):
         """已解码位图超预算 数量限制"""
         # min_budget = 5
@@ -2513,6 +2533,7 @@ class ReadNewGraphics(QGraphicsView):
             it.pixmap = None
             if it._buf:
                 it._pending_decode = True         # 有字节：滚回来能直接重解
+
             it.update()
             Log.Info(f"free over index pixmap, {it.index}")
 
@@ -2540,6 +2561,7 @@ class ReadNewGraphics(QGraphicsView):
     #         it._pending_decode = False
     #         it.update()                           # 没位图的话会显示"等待加载…"
 
+    @timed
     def _start_download(self, item: ReadNewGraphicsItem):
         """发起 HTTP GET，挂接回调：有新数据（探测尺寸）/进度/下载完成（不立刻解码）。"""
         if self._first_show:
@@ -2559,6 +2581,7 @@ class ReadNewGraphics(QGraphicsView):
             self.update_tool_label(item.index)
             item.update()
 
+    @timed
     def _on_download_progress(self, got: int, total: int, index: int):
         """下载进度回调。total > 0（响应带 Content-Length）时换算成 0~1 的确定
         进度；total < 0（chunked，没有总大小）保持 None，进度环转圈表示"在动"。
@@ -2576,6 +2599,7 @@ class ReadNewGraphics(QGraphicsView):
                 self._spin_timer.start()
         item.update()
 
+    @timed
     def _on_spin(self):
         """推进不确定态进度环的相位并请求重绘；没有"未知进度且仍在下载"的
         item 时自动停掉定时器（_on_download_progress 会在需要时重新拉起）。"""
@@ -2597,6 +2621,7 @@ class ReadNewGraphics(QGraphicsView):
     #     item._buf += reply.read(reply.bytesAvailable())
     #     self._try_probe_size(item)
 
+    @timed
     def _try_probe_size(self, item: ReadNewGraphicsItem, fileData: FileData):
         """数据够多时解析文件头拿宽高（PNG/JPEG 的宽高都在文件头最前面）。
         拿到就立即修正布局——用户看到占位框变成正确高度通常只滞后几毫秒。"""
@@ -2608,6 +2633,7 @@ class ReadNewGraphics(QGraphicsView):
         if sz is not None:
             self._correct_len(item, sz)
 
+    @timed
     def _on_finished(self, fileData: FileData, st: int, index: int):
         """下载结束：成功 -> 丢给线程池后台解码；失败 -> 标记失败。"""
         if index >= len(self._items):
@@ -2659,6 +2685,7 @@ class ReadNewGraphics(QGraphicsView):
     #     item.pixmap = QPixmap.fromImage(img)
     #     item.update()
 
+    @timed
     def _start_waifu2x(self, item: ReadNewGraphicsItem):
         """发起 HTTP GET，挂接回调：有新数据（探测尺寸）/进度/下载完成（不立刻解码）。"""
         if self._first_show:
@@ -2682,6 +2709,7 @@ class ReadNewGraphics(QGraphicsView):
             self.update_tool_label(item.index)
             item.update()
 
+    @timed
     def _on_waifu_finished(self, fileData: FileData, waifuId, index, tick):
         if index >= len(self._items):
             return
@@ -2706,7 +2734,7 @@ class ReadNewGraphics(QGraphicsView):
         else:
             self._maybe_decode(item)
 
-    @time_me
+    @timed
     def _on_loaded(self, img: QImage, v):
         """后台解码完成（主线程槽）：修正布局 + 像素填进固定矩形。"""
         (index, isWaifu2x) = v
@@ -2744,6 +2772,7 @@ class ReadNewGraphics(QGraphicsView):
 
     # ================ 长度修正：平移后续内容 + 滚动补偿（s 空间，模式无关） ================
 
+    @timed
     def _correct_len(self, item: ReadNewGraphicsItem, image_size: QSize):
         """拿到图片真实尺寸后，把它的占位长度修正为准确值。
 

@@ -72,7 +72,7 @@
             <item>
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -91,7 +91,6 @@
             <widget class="BatchSrToolView" name="batchSrView"/>
             <widget class="NasView" name="nasView"/>
             <widget class="LocalReadAllView" name="localReadAllView"/>
-            <widget class="ConvertView" name="convertView"/>
             <widget class="LocalReadEpsView" name="localReadEpsView"/>
             <widget class="ChatNewView" name="chatNewView"/>
             <widget class="HelpView" name="helpView"/>
@@ -279,12 +278,6 @@
    <class>ChatNewView</class>
    <extends>QWidget</extends>
    <header location="global">view.chat_new.chat_new_view.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ConvertView</class>
-   <extends>QWidget</extends>
-   <header location="global">view.convert.convert_view.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

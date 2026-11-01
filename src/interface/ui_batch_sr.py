@@ -17,8 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
     QHeaderView, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QTableWidgetItem, QToolButton,
-    QVBoxLayout, QWidget)
+    QSizePolicy, QTableWidgetItem, QToolButton, QVBoxLayout,
+    QWidget)
 
 from component.box.wheel_combo_box import WheelComboBox
 from component.box.wheel_double_spin_box import WheelDoubleSpinBox
@@ -28,7 +28,7 @@ class Ui_BatchSrTool(object):
     def setupUi(self, BatchSrTool):
         if not BatchSrTool.objectName():
             BatchSrTool.setObjectName(u"BatchSrTool")
-        BatchSrTool.resize(800, 508)
+        BatchSrTool.resize(800, 673)
         self.verticalLayout = QVBoxLayout(BatchSrTool)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout_6 = QHBoxLayout()
@@ -145,19 +145,11 @@ class Ui_BatchSrTool(object):
 
         self.horizontalLayout_5.addWidget(self.line_4)
 
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.horizontalLayout_5.addItem(self.horizontalSpacer_3)
-
 
         self.verticalLayout.addLayout(self.horizontalLayout_5)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
-
         self.label_4 = QLabel(BatchSrTool)
         self.label_4.setObjectName(u"label_4")
 
@@ -232,6 +224,11 @@ class Ui_BatchSrTool(object):
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         self.tableWidget.setObjectName(u"tableWidget")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tableWidget.sizePolicy().hasHeightForWidth())
+        self.tableWidget.setSizePolicy(sizePolicy)
 
         self.verticalLayout.addWidget(self.tableWidget)
 

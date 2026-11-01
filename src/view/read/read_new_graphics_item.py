@@ -51,7 +51,7 @@ class ReadNewGraphicsItem(QGraphicsItem):
     # 放大一次是后台线程，之后绘制就是 1:1（0.03ms）。
     # 为什么要设上限：放大到目标会让位图占"目标面积"，100×100 的小图铺到 880
     # 会膨胀 77 倍内存，而且画面并不会更清楚。2 倍线性 (=4 倍面积) 是折中。
-    DECODE_UPSCALE_MAX_SCALE = 2.0
+    DECODE_UPSCALE_MAX_SCALE = 4.0
     # ---- 加载进度环 ----
     PROGRESS_MIN_D = 28.0  # 进度环最小直径（小于它视觉上看不清）
     PROGRESS_MAX_D = 56.0  # 进度环最大直径（再大就喧宾夺主）
@@ -305,14 +305,38 @@ class ReadNewGraphicsItem(QGraphicsItem):
         正好抵消——`target × dpr == source` 恒成立，因此无论 dpr 是 1.0、1.25
         还是 1.75 都会走精确 1:1 快路径，**不依赖 Qt 对小数 dpr 的取整**。
 
-        只有位图和 item 矩形明显不一致（>0.01px）时才退回槽位尺寸：
+        容差放宽到 **1 个设备像素**（1/dpr 逻辑像素）：布局矩形和解码尺寸各自
+        round 一次，最多差半个设备像素；这点差异由接缝叠加（SEAM_OVERLAP=1px）
+        吸收，肉眼不可见。容差再大（>1 设备像素）说明位图和矩形真的不匹配
+        （旧位图 / 源图分辨率不足），这时必须按槽位画，否则会露出可见的空隙：
         - 旧位图（窗口缩小/zoom 变小后还没重解）：按槽位降采样绘制；
         - 源图分辨率不足（DecodeTask 只缩不放、或超过放大上限）：按槽位放大。"""
         d = pm.devicePixelRatio() or 1.0
         pw, ph = pm.width() / d, pm.height() / d
-        if abs(pw - self._w) < 0.01 and abs(ph - self._h) < 0.01:
+        tol = 1.0 / d + 1e-6          # 1 个设备像素折成逻辑像素
+        if abs(pw - self._w) <= tol and abs(ph - self._h) <= tol:
             return QRectF(0, 0, pw, ph)
         return QRectF(0, 0, self._w, self._h)
+
+    def _fit_content_size(self, pm):
+        """页模式（单页/双页）：内容在 item 局部坐标里的逻辑尺寸 (w, h)。
+
+        优先取 **位图逻辑尺寸 / item 缩放**：`(pm.width()/dpr)/z`。
+        绘制时 painter 还会乘上 item 的 scale z，所以
+        `target × z × dpr == pm.width()` 恒成立 —— 精确 1:1，不依赖取整。
+
+        这个尺寸和"contain-fit 进槽位"最多差 0.5 个设备像素（两边各自 round
+        一次）；超出 1 个设备像素说明位图和槽位真的不匹配（旧位图 / 源图分辨率
+        不足），这时必须退回 contain-fit，否则会露出可见空隙。"""
+        sc = min(self._w / pm.width(), self._h / pm.height())   # contain-fit（逻辑）
+        cw, ch = pm.width() * sc, pm.height() * sc
+        z = self.transform().m11() or 1.0
+        d = pm.devicePixelRatio() or 1.0
+        pw, ph = pm.width() / (d * z), pm.height() / (d * z)
+        tol = 1.0 / (d * z) + 1e-6
+        if abs(pw - cw) <= tol and abs(ph - ch) <= tol:
+            return pw, ph
+        return cw, ch
 
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem, widget=None):
         # _fit=True（单/双页模式）：图片等比缩放进 item 矩形，位置按 _fit_align
@@ -326,10 +350,9 @@ class ReadNewGraphicsItem(QGraphicsItem):
         if pm is not None and not pm.isNull():
             sr = QRectF(pm.rect())    # 源矩形（PM 自身单位；见下面关于 dpr 的说明）
             if self._fit:
-                sc = min(self._w / sr.width(), self._h / sr.height())
-                self._draw_padded_pixmap(
-                    painter, pm, sr,
-                    self._aligned_rect(sr.width() * sc, sr.height() * sc))
+                cw, ch = self._fit_content_size(pm)
+                self._draw_padded_pixmap(painter, pm, sr,
+                                         self._aligned_rect(cw, ch))
             else:
                 # 绘制矩形取"位图自己的逻辑尺寸"（物理/dpr），而不是 _w/_h。
                 # 两者按构造相等，但这样写让 target×dpr == source 恒成立，

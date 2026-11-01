@@ -79,11 +79,19 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.label.show()
             self.spinBox.show()
             self.jumpPage.show()
+            if self.isLocal:
+                self.sortId.show()
+                self.sortKey.show()
+            else:
+                self.comboBox.show()
             self.isCanJump = True
         else:
             self.label.hide()
             self.spinBox.hide()
             self.jumpPage.hide()
+            self.sortId.hide()
+            self.sortKey.hide()
+            self.comboBox.hide()
             self.isCanJump = False
 
     def SetPageLoading(self, loading):

@@ -365,7 +365,7 @@ class DownloadBookHandler(object):
                             filePath = path
                             if not path:
                                 continue
-                            ToolUtil.SavePicture(data, filePath, mat)
+                            ToolUtil.SaveDownloadPicture(data, filePath, mat)
                             Log.Debug("add download cache, cachePath:{}".format(filePath))
                     except Exception as es:
                         Log.Error(es)

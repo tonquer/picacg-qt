@@ -275,7 +275,8 @@ class DownloadStatus(QtTaskBase):
         if newStatus != task.Converting:
             return
         loadPath, savePath = task.GetConvertPath()
-        self.AddConvertTaskByPath(loadPath, savePath, self.AddItemConvertBack, task.bookId, cleanFlag=task.cleanFlag)
+        otherParams = {"bookId": task.bookId, "type": "download"}
+        self.AddConvertTaskByPath(loadPath, savePath, self.AddItemConvertBack, task.bookId, cleanFlag=task.cleanFlag, otherParams=otherParams)
         self.UpdateTaskDB(task)
         return
 
@@ -292,7 +293,8 @@ class DownloadStatus(QtTaskBase):
             self.SetNewCovertStatus(task, newState)
             if newState == task.Converting:
                 loadPath, savePath = task.GetConvertPath()
-                self.AddConvertTaskByPath(loadPath, savePath, self.AddItemConvertBack, task.bookId, cleanFlag=task.cleanFlag)
+                otherParams = {"bookId": task.bookId, "type": "download"}
+                self.AddConvertTaskByPath(loadPath, savePath, self.AddItemConvertBack, task.bookId, cleanFlag=task.cleanFlag, otherParams=otherParams)
             self.UpdateTableItem(task)
             self.UpdateTaskDB(task)
         else:

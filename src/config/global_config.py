@@ -79,8 +79,10 @@ class GlobalConfig:
 
     # 其他cloudflare域名，启用ech和ip分流
     OtherCloudflareDomain = GlobalItem([
-        "raw2.jpacg.cc", 
+        "raw2.jpacg.cc",
+        "app2.jpacg.cc",
         "check.jpacg.cc",
+        "parse2.jpacg.cc"
         "macapi1.com"])
 
     # 其他cloudflare域名，启用ech和ip分流

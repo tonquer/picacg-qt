@@ -1,9 +1,13 @@
 import logging
 import os
+import queue
 import time
 
 from config import config
 from config.setting import Setting
+from view.read.read_perf_probe import Timer
+from logging.handlers import QueueHandler, QueueListener
+import atexit
 
 
 class Log(object):
@@ -31,13 +35,10 @@ class Log(object):
     @staticmethod
     def Init():
         formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
-
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
-
         ch.setFormatter(formatter)
         Log.ch = ch
-        Log.logger.addHandler(ch)
 
         logPath = Setting.GetLogPath()
         if not os.path.isdir(logPath):
@@ -49,7 +50,30 @@ class Log(object):
         fh.setLevel(logging.INFO)
         formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
         fh.setFormatter(formatter)
-        Log.logger.addHandler(fh)
+
+        log_queue = queue.Queue(maxsize=10000)
+
+        if os.environ.get("PYCHARM_HOSTED") == "1":
+            listener = QueueListener(
+                log_queue,
+                ch,
+                fh,
+                respect_handler_level=True,  # 尊重各个 Handler 自身设置的 level
+            )
+        else:
+            listener = QueueListener(
+                log_queue,
+                fh,
+                respect_handler_level=True,  # 尊重各个 Handler 自身设置的 level
+            )
+        listener.start()
+        atexit.register(listener.stop)
+
+        logger = logging.getLogger("fast_logger")
+        logger.setLevel(logging.INFO)
+        logger.addHandler(QueueHandler(log_queue))
+        Log.logger = logger
+
         Log.Debug = Log.logger.debug
         Log.Info = Log.logger.info
         Log.Warn = Log.logger.warning

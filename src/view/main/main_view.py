@@ -1,8 +1,9 @@
 import sys
 from functools import partial
 
+from PySide6 import QtCore
 from PySide6.QtCore import Qt, QEvent, QPoint, Signal, QTimer, QSize
-from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QFont
+from PySide6.QtGui import QIcon, QMouseEvent, QGuiApplication, QFont, QImageReader
 from PySide6.QtWidgets import QButtonGroup, QToolButton, QLabel
 
 from component.dialog.loading_dialog import LoadingDialog
@@ -183,9 +184,9 @@ class MainView(Main, QtTaskBase):
         self.navigationWidget.localReadButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.localReadView)))
         self.navigationWidget.friedButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.friedView)))
         self.navigationWidget.chatNewButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.chatNewView)))
-        self.navigationWidget.convertButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.convertView)))
+        # self.navigationWidget.convertButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.convertView)))
         self.navigationWidget.friedButton.hide()
-        self.navigationWidget.convertButton.hide()
+        # self.navigationWidget.convertButton.hide()
         self.navigationWidget.chatNewButton.hide()
         self.navigationWidget.chatButton.hide()
         self.navigationWidget.nasButton.clicked.connect(partial(self.SwitchWidgetAndClear, self.subStackWidget.indexOf(self.nasView)))
@@ -219,7 +220,12 @@ class MainView(Main, QtTaskBase):
     def Init(self):
         print(self.size())
         IsCanUse = False
+        import os
         self.SwitchWidgetAndClear(self.subStackWidget.indexOf(self.helpView))
+        formats = QImageReader.supportedImageFormats()
+        # "Lib\site-packages\PySide6\plugins\imageformats"
+        QtOwner().allSupportFmt.update([f.data().decode() for f in formats])
+
         self.downloadView.Init()
         self.nasView.Init()
         self.InitApiProxy()
@@ -227,7 +233,6 @@ class MainView(Main, QtTaskBase):
         if config.CanWaifu2x:
             from sr_vulkan import sr_vulkan as sr
             stat = sr.init()
-            import os
             if os.environ.get("PYCHARM_HOSTED") == "1":
                 sr.setDebug(True)
             if stat < 0:
@@ -252,6 +257,7 @@ class MainView(Main, QtTaskBase):
             # if not gpuInfo or (gpuInfo and config.Encode < 0) or (gpuInfo and config.Encode >= len(gpuInfo)):
             #     config.Encode = 0
 
+            sr.setWebpQuality(80)
             sts = sr.initSet(config.Encode, config.UseCpuNum)
             TaskWaifu2x().Start()
             version = sr.getVersion()

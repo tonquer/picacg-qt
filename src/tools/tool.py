@@ -14,6 +14,7 @@ from urllib.parse import quote
 from config import config
 from config.setting import Setting
 from tools.log import Log
+from view.read.read_perf_probe import timed
 
 
 class CTime(object):
@@ -339,6 +340,7 @@ class ToolUtil(object):
             Log.Error(es)
         return ""
 
+    @timed
     @staticmethod
     def GetPictureSize(data):
         if not data:
@@ -377,6 +379,35 @@ class ToolUtil(object):
 
     @staticmethod
     def GetCanUseData(data):
+        from qt_owner import QtOwner
+        try:
+            import pillow_jxl
+            import pillow_avif
+        except Exception as es:
+            Log.Error(es)
+
+        try:
+            from PIL import Image
+            from io import BytesIO
+            with (
+                BytesIO(data) as buffer,
+                Image.open(buffer) as img,
+            ):
+                if img.format.lower() in ToolUtil.NeedConvertFormat and img.format.lower() not in QtOwner().allSupportFmt:
+                    toMat = "PNG"
+                    newBuffer = BytesIO()
+                    img.save(newBuffer, format=toMat)
+                    newData = newBuffer.getvalue()
+                    newBuffer.close()
+                    return newData
+                else:
+                    return data
+        except Exception as es:
+            Log.Error(es)
+        return data
+
+    @staticmethod
+    def GetCanConvertUseData(data):
         try:
             import pillow_jxl
             import pillow_avif
@@ -506,6 +537,74 @@ class ToolUtil(object):
             path = ToolUtil.GetPictureName(path, format)
             with open(path, "wb+") as f:
                 f.write(data)
+
+    @staticmethod
+    def SaveConvertPicture(data, path, format):
+        if path and not os.path.isdir(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
+
+        from qt_owner import QtOwner
+        if path and data:
+            newFormat = QtOwner().GetConvertFmtRule(format)
+            if newFormat != format and newFormat in ToolUtil.AllFormatStr:
+                newData = ToolUtil.ConvertPicture(data, newFormat)
+                if path[-4:] in ToolUtil.AllUseFormat:
+                    path = path[:-4]
+                elif path[-5:] in ToolUtil.AllUseFormat:
+                    path = path[:-5]
+                path = ToolUtil.GetPictureName(path, format)
+            else:
+                newData = data
+                path = ToolUtil.GetPictureName(path, format)
+            with open(path, "wb+") as f:
+                f.write(newData)
+
+    @staticmethod
+    def SaveDownloadPicture(data, path, format):
+        if path and not os.path.isdir(os.path.dirname(path)):
+            os.makedirs(os.path.dirname(path))
+
+        from qt_owner import QtOwner
+        if path and data:
+            newFormat = QtOwner().GetDownFmtRule(format)
+            if newFormat != format and newFormat in ToolUtil.AllFormatStr:
+                newData = ToolUtil.ConvertPicture(data, newFormat)
+                if path[-4:] in ToolUtil.AllUseFormat:
+                    path = path[:-4]
+                elif path[-5:] in ToolUtil.AllUseFormat:
+                    path = path[:-5]
+                path = ToolUtil.GetPictureName(path, newFormat)
+            else:
+                newData = data
+                path = ToolUtil.GetPictureName(path, format)
+            with open(path, "wb+") as f:
+                f.write(newData)
+
+    @staticmethod
+    def ConvertPicture(data, fmt):
+        try:
+            import pillow_jxl
+            import pillow_avif
+        except Exception as es:
+            Log.Error(es)
+        try:
+            from PIL import Image
+            from io import BytesIO
+            with (
+                BytesIO(data) as buffer,
+                BytesIO() as output_io,
+                Image.open(buffer) as img,
+            ):
+                imgFmt = fmt
+                if fmt == "jpg" and img.mode in ("RGBA", "P"):
+                    img = img.convert("RGB")
+                    imgFmt = "JPEG"
+                img.save(output_io, format=imgFmt)
+                jpeg_bytes = output_io.getvalue()
+                return jpeg_bytes
+        except Exception as es:
+            Log.Error(es)
+        return data
 
     @staticmethod
     def GetPictureName(path, format):
