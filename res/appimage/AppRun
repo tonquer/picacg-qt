@@ -22,9 +22,9 @@ if [ ! -f ${path}/version ];then
 	echo "mkdir version"
 fi
 
-if [ ! -f ${path}/book.db ] || [ "`cat ${path}/version`" != "v1.5.5" ] ; then
+if [ ! -f ${path}/book.db ] || [ "`cat ${path}/version`" != "v1.5.7" ] ; then
 	cp ${HERE}/db/book.db ${path}/
-	echo "v1.5.5" > ${path}/version
+	echo "v1.5.7" > ${path}/version
 	echo "copy db"
 fi
 
