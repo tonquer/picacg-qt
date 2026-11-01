@@ -247,6 +247,8 @@ class MainView(Main, QtTaskBase):
             gpuInfo = sr.getGpuInfo()
             cpuNum = sr.getCpuCoreNum()
             gpuNum = sr.getGpuCoreNum()
+            if not gpuInfo:
+                gpuInfo = []
             self.settingView.SetGpuInfos(gpuInfo, cpuNum)
             if Setting.ProcThreadNum.GetIndexV()> 0:
                 procNum = max(1, Setting.ProcThreadNum.GetIndexV())
