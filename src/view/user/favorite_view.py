@@ -27,7 +27,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
 
         # self.bookList.InitBook(self.LoadNextPage)
 
-        self.sortList = ["dd", "da"]
+        self.sortList = ["dd", "da", "ld", "vd"]
         # self.bookList.InstallDel()
 
         self.sortId = 1
@@ -95,8 +95,11 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
         self.widget.setVisible(isLocal)
         return
 
-    def UpdatePageNum(self):
-        maxFovorite = len(self.allFavoriteIds)
+    def UpdatePageNum(self, maxNum=0):
+        if not self.isLocal:
+            maxFovorite = maxNum
+        else:
+            maxFovorite = len(self.allFavoriteIds)
         # self.bookList.pages = max(0, (maxFovorite-1)) // 20 + 1
         self.pages.setText("{}/{}".format(self.bookList.page, self.bookList.pages) + Str.GetStr(Str.Page))
         self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(maxFovorite))
@@ -205,7 +208,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
                             self.ReceiveLocalPage, (page, self.searchText, replace))
         else:
             sort = self.sortList[self.sortCombox.currentIndex()]
-            self.AddHttpTask(req.FavoritesReq(self.bookList.page, sort), self.SearchBack, (self.bookList.page, replace))
+            self.AddHttpTask(req.FavoritesReq(page, sort), self.SearchBack, (page, replace))
 
     def BuildBookQuery(self):
         text = self.lineEdit.text()
@@ -273,7 +276,7 @@ class FavoriteView(QtWidgets.QWidget, Ui_Favorite, QtTaskBase):
                 self.nums.setText(Str.GetStr(Str.FavoriteNum) + ": {}".format(result.total))
                 for bookInfo in result.items:
                     self.bookList.AddBookByDict(bookInfo)
-                self.UpdatePageNum()
+                self.UpdatePageNum(result.total)
             else:
                 QtOwner().ShowError(Str.GetStr(st))
         except Exception as es:
