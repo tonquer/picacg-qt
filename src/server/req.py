@@ -167,8 +167,21 @@ class ServerReq(object):
             host = ToolUtil.GetUrlHost(url)
             url = url.replace(host, self.proxyUrl + "/" + host)
 
+
         Log.Info("request switch url:{}->{}".format(self.url, url))
         self.url = url
+
+        host = ToolUtil.GetUrlHost(url)
+        oldCloudFlare = self.isOtherCloudFlare
+        self.isOtherCloudFlare = host in GlobalConfig.OtherCloudflareDomain.value
+        if oldCloudFlare != self.isOtherCloudFlare:
+            if self.isOtherCloudFlare:
+                self.ipList = GlobalConfig.GetAddress(Setting.ProxySelectIndex.value)
+                self.SetCurlOpt(Setting.EnableEch.value, QtOwner().echConfig, self.ipList)
+            else:
+                self.ipList = []
+                self.SetCurlOpt(Setting.EnableEch.value, QtOwner().echConfig, self.ipList)
+                
         return True
 
     def GetPri(self):

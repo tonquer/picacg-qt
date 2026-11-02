@@ -85,9 +85,10 @@ class ThreadLocalParam:
         if self.IsNeedSwitch(request):
             self.Close()
             self.session = self.Create()
+            self.oldIpList = copy.deepcopy(request.ipList)
+            Log.Info(f"create new session, index:{self.index}, ip:{self.oldIpList}")
         # 复制curl_opts
         self.session.curl_options = copy.deepcopy(request.curl_opt)
-        self.oldIpList = copy.deepcopy(request.ipList)
 
     def Close(self):
         if self.session:
