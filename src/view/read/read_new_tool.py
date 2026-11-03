@@ -189,13 +189,14 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
                 if not QtOwner().downloadView.IsDownloadEpsId(self.readImg.bookId, self.readImg.epsId + 1):
                     QtOwner().ShowMsg(Str.GetStr(Str.NotDownload))
                     return
+                QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
                 self.OpenNextEps()
             else:
                 if not self.readTask.IsMaxBookEps(epsId+1):
                     QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
                     self.OpenNextEps()
                 return
-            QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
+            # QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
             return
         if ReadMode.isDouble(self.stripModel):
             index = self.scrollArea._cur_idx + 2
@@ -253,7 +254,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
         if self.readImg.epsName:
             QtOwner().SetSubTitle(self.readImg.epsName + "（{}/{}）".format(self.slider.value(), self.slider.maximum()))
 
-        self.epsLabel2.setText("{}/{}({})".format(self.slider.value(), self.slider.maximum(), self.readImg.epsName))
+        self.epsLabel2.setText("{}/{}({}_{})".format(self.slider.value(), self.slider.maximum(), self.readImg.epsId+1, self.readImg.epsName))
         if pSize or isInit:
             if not pSize:
                 pSize = QSize(0, 0)

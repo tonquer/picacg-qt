@@ -2332,7 +2332,7 @@ class ReadNewGraphics(QGraphicsView):
         hi = max(0.0, self._total - self._viewport_len())
         return self._scroll_min_s() >= hi - 0.5
 
-    def _note_edge_scroll(self, forward: bool, at_start: bool, at_end: bool):
+    def _note_edge_scroll(self, forward: bool, at_start: bool, at_end: bool, isNoCheckCnt=False):
         """记一次滚轮/键盘"滚动"。已经在边界还继续往外滚就累加，到阈值发信号。
 
         at_start/at_end 是**滚之前**的边界状态：这样"刚好翻到最后一页"的那一下
@@ -2343,7 +2343,7 @@ class ReadNewGraphics(QGraphicsView):
             if at_end:
                 self._edge_end += 1
                 self._edge_start = 0
-                if self._edge_end >= self._edge_scroll_trigger:
+                if isNoCheckCnt or self._edge_end >= self._edge_scroll_trigger:
                     self._edge_end = 0
                     self.scrolledPastEnd.emit()
             else:
@@ -2352,7 +2352,7 @@ class ReadNewGraphics(QGraphicsView):
             if at_start:
                 self._edge_start += 1
                 self._edge_end = 0
-                if self._edge_start >= self._edge_scroll_trigger:
+                if isNoCheckCnt or self._edge_start >= self._edge_scroll_trigger:
                     self._edge_start = 0
                     self.scrolledPastStart.emit()
             else:
@@ -3349,7 +3349,12 @@ class ReadNewGraphics(QGraphicsView):
             step = max(60.0, self._page_axis_len())
             self._sw_scroll_by(-d / 120.0 * step)   # 滚轮向下 = 前进
         else:
+            at_start, at_end = self._at_content_start(), self._at_content_end()
+
+            forward = -d > 0  # 滚轮向下 = 往阅读方向（最后面）前进
             self._scroller.scroll_by(-d / 120.0 * step)   # 滚轮向下 = 往阅读方向前进
+            if not self._page_dragging:      # 页模式拖拽中滚轮被忽略，不参与计数
+                self._note_edge_scroll(forward, at_start, at_end, True)
 
     def switch_cur_waifu2x_state(self):
         if self._cur_idx < 0:

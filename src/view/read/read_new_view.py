@@ -160,9 +160,9 @@ class ReadNewView(QtWidgets.QWidget):
         AddReadMode(Str.GetStr(Str.RightLeftDouble), 3)
         AddReadMode(Str.GetStr(Str.LeftRightScroll), 4)
         AddReadMode(Str.GetStr(Str.RightLeftScroll), 5)
-        AddReadMode(Str.GetStr(Str.RightLeftDouble2), 6)
-        AddReadMode(Str.GetStr(Str.SameWight), 7)
-        AddReadMode(Str.GetStr(Str.RightLeftScroll2), 8)
+        # AddReadMode(Str.GetStr(Str.RightLeftDouble2), 6)
+        AddReadMode(Str.GetStr(Str.SameWight), 6)
+        # AddReadMode(Str.GetStr(Str.RightLeftScroll2), 8)
 
         menu3 = popMenu.addMenu(Str.GetStr(Str.Scale) + "(- +)")
 
