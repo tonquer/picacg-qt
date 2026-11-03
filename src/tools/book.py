@@ -64,6 +64,10 @@ class Book(object):
     def id(self):
         return self._id
 
+    @id.setter
+    def id(self, value):
+        self._id = value
+
     def GetEpsTitle(self, epsId):
         if epsId in self.epsDict:
             return self.epsDict[epsId].title

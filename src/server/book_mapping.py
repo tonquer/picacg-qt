@@ -38,6 +38,10 @@ class DbBook:
     def pagesCount(self):
         return self.pages
 
+    @pagesCount.setter
+    def pagesCount(self, value):
+        self.pages = value
+
     def CopyFromJson(self, data):
         for key, value in data.items():
             setattr(self, key, value)

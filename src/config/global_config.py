@@ -65,6 +65,7 @@ class GlobalConfig:
         "wikawika.xyz",
         "tipatipa.xyz",
         "picacomic.com",
+        "bidobido.xyz"
     ])
 
     CdnApiUrl = GlobalItem("https://picaapi.picacomic.com")
@@ -80,10 +81,10 @@ class GlobalConfig:
 
     # 其他cloudflare域名，启用ech和ip分流
     OtherCloudflareDomain = GlobalItem([
-        "raw2.jpacg.cc",
-        "app2.jpacg.cc",
+        "raw3.jpacg.cc",
+        "app3.jpacg.cc",
         "check.jpacg.cc",
-        "parse2.jpacg.cc"
+        "parse3.jpacg.cc"
         "macapi1.com"])
 
     DBUpdateUrl = GlobalItem([

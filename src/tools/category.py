@@ -16,6 +16,9 @@ class CateGoryBase(object):
     def id(self):
         return self._id
 
+    @id.setter
+    def id(self, value):
+        self._id = value
 
 class CateGoryMgr(Singleton):
     def __init__(self):
