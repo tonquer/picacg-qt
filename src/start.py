@@ -96,6 +96,7 @@ if __name__ == "__main__":
         QtOwner().SetApp(app)
         QtOwner().SetLocalServer(localServer)
         QtOwner().SetFont()
+        QtOwner().InitIcons()
         from view.main.main_view import MainView
 
         main = MainView()

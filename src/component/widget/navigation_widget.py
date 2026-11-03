@@ -259,9 +259,7 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
             return super(self.__class__, self).eventFilter(obj, event)
 
     def SetNewUpdate(self):
-        icon2 = QIcon()
-        icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.helpButton.setIcon(icon2)
+        self.helpButton.setIcon(QtOwner().globalNewIcon)
         return
 
     def OpenForbidWords(self, bookId=""):

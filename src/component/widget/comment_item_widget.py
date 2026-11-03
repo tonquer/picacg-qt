@@ -29,12 +29,12 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         self.picIcon.setCursor(Qt.PointingHandCursor)
         self.picIcon.setScaledContents(True)
         self.picIcon.setWordWrap(True)
-        self.picIcon.setPixmap(QPixmap(":/png/icon/placeholder_avatar"))
-        self.starButton.setIcon(QIcon(":/png/icon/icon_comment_like"))
+        self.picIcon.setPixmap(QPixmap(QtOwner().globalPlaceholderImage))
+        self.starButton.setIcon(QtOwner().globalCommentLikeIcon)
         self.starButton.setIconSize(QSize(30, 30))
 
         self.starButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
-        self.commentButton.setIcon(QIcon(":/png/icon/icon_comment_reply"))
+        self.commentButton.setIcon(QtOwner().globalReplyIcon)
         self.commentButton.setIconSize(QSize(30, 30))
         self.commentButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.pictureData = None
@@ -61,11 +61,10 @@ class CommentItemWidget(QtWidgets.QWidget, Ui_CommentItem):
         self.isLoadPicture = False
 
     def SetLike(self, isLike=True):
-        p = QPixmap()
         if isLike:
-            p.load(":/png/icon/icon_comment_liked.png")
+            p = QPixmap(QtOwner().globalCommentLikedImage)
         else:
-            p.load(":/png/icon/icon_comment_like.png")
+            p = QPixmap(QtOwner().globalCommentLikeImage)
         nums = re.findall("\d+", self.starButton.text())
         if nums:
             num = int(nums[0]) + 1 if isLike else int(nums[0]) - 1

@@ -291,9 +291,7 @@ class DownloadView(QtWidgets.QWidget, Ui_Download, DownloadStatus):
         item2 = QTableWidgetItem("{}/{}".format(str(info.curDownloadEps), str(info.epsCount)))
         if isinstance(bookInfo, Book):
             if len(info.epsIds) < bookInfo.epsCount:
-                icon2 = QIcon()
-                icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
-                item2.setIcon(icon2)
+                item2.setIcon(QtOwner().globalNewIcon)
                 self.allNewBookIds.add(info.bookId)
         self.tableWidget.setItem(info.tableRow, 4, item2)
         self.tableWidget.setItem(info.tableRow, 5, QTableWidgetItem(info.speedStr))

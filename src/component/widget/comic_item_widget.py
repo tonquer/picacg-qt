@@ -24,7 +24,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         self.tags = ""
         self.rawBook = None
         self.cacheImageTaskId = 0
-
+        from qt_owner import QtOwner
         self.index = 0
         self.url = ""
         self.path = ""
@@ -41,19 +41,18 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         width = baseW * rate / 100
         height = baseH * rate / 100
 
-        icon2 = QIcon()
-        icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
+        # icon2 = QIcon()
+        # icon2.addFile(u":/png/icon/new.svg", QSize(), QIcon.Normal, QIcon.Off)
 
         self.toolButton.setMinimumSize(QSize(0, 40))
         self.toolButton.setFocusPolicy(Qt.NoFocus)
-        self.toolButton.setIcon(icon2)
+        self.toolButton.setIcon(QtOwner().globalNewIcon)
         self.toolButton.setIconSize(QSize(32, 32))
 
         self.picLabel.setFixedSize(width, height)
         if self.isShiled:
-            pic = QImage(":/png/icon/shiled.svg")
-            radio = self.devicePixelRatio()
-            pic.setDevicePixelRatio(radio)
+            pic = QtOwner().globalShieldImage
+            radio = self.devicePixelRatioF()
             newPic = pic.scaled(self.picLabel.width() * radio, self.picLabel.height() * radio, Qt.KeepAspectRatio,
                                 Qt.SmoothTransformation)
             newPic2 = QPixmap(newPic)
@@ -65,7 +64,7 @@ class ComicItemWidget(QWidget, Ui_ComicItem):
         # self.categoryLabel.setMinimumSize(210, 25)
         # self.categoryLabel.setMaximumSize(210, 150)
 
-        self.starButton.setIcon(QIcon(":/png/icon/icon_bookmark_on.png"))
+        self.starButton.setIcon(QtOwner().globalStarIcon)
         self.starButton.setIconSize(QSize(20, 20))
         self.starButton.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.starButton.setMinimumHeight(24)

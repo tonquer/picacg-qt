@@ -76,6 +76,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.recommendBooks = None
         self.recommendSortKey.hide()
         self.recommendSortKey.currentIndexChanged.connect(self.ChangeRecommendSort)
+        self.comboBox.setVisible(False)
 
     def ResetSearch(self):
         self.recommendSource = None

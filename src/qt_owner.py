@@ -97,6 +97,32 @@ class QtOwner(Singleton):
         self.convertFmtRule = {}
         self.allSupportFmt = set()
 
+        self.globalNewIcon = None
+        self.globalStarIcon = None
+        self.globalShieldImage = None
+        self.globalPlaceholderImage = None
+        self.globalCommentLikeIcon = None
+        self.globalReplyIcon = None
+        self.globalCommentLikedImage = None
+        self.globalCommentLikeImage = None
+
+    def InitIcons(self):
+        from PySide6.QtGui import QIcon, QImage
+        self.globalStarIcon = QIcon(":/png/icon/icon_bookmark_on.png")
+        self.globalNewIcon = QIcon(":/png/icon/new.svg")
+        self.globalShieldImage = QImage(":/png/icon/shiled.svg")
+        self.globalShieldImage.setDevicePixelRatio(self.app.devicePixelRatio())
+        self.globalPlaceholderImage = QImage(":/png/icon/placeholder_avatar.png")
+        self.globalPlaceholderImage.setDevicePixelRatio(self.app.devicePixelRatio())
+        self.globalCommentLikeIcon = QIcon(":/png/icon/icon_comment_like.png")
+        self.globalReplyIcon = QIcon(":/png/icon/icon_comment_reply")
+        self.globalCommentLikedImage = QImage(":/png/icon/icon_comment_liked.png")
+        self.globalCommentLikedImage.setDevicePixelRatio(self.app.devicePixelRatio())
+        self.globalCommentLikeImage = QImage(":/png/icon/icon_comment_like.png")
+        self.globalCommentLikeImage.setDevicePixelRatio(self.app.devicePixelRatio())
+        return
+
+
     def IsCanUseDb(self):
         return self.isUseDb and self.canUseDb
 
