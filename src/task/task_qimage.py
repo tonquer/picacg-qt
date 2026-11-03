@@ -1,4 +1,5 @@
 import threading
+import time
 
 from PySide6.QtGui import QImage, QImageReader
 from PySide6.QtCore import Qt, QBuffer, QIODevice

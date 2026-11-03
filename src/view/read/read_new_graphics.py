@@ -134,12 +134,13 @@ class ReadNewGraphics(QGraphicsView):
         self._last_load_s = float("nan")
         # 连续模式相邻两张的绘制叠加量（逻辑像素）：盖住 1px 白缝，见 SEAM_OVERLAP
         self._seam_overlap = float(ReadNewGraphicsItem.SEAM_OVERLAP)
-        # 窗口 resize 会连发很多次：等它停下来再统一重解一次。放大要重下、
-        # 缩小要从保留的压缩字节缩回去（否则绘制一直走缩放慢路径）。
-        self._resize_refresh = QTimer(self)
-        self._resize_refresh.setSingleShot(True)
-        self._resize_refresh.setInterval(180)
-        self._resize_refresh.timeout.connect(self._refresh_decodes)
+        # 窗口 resize / 连续缩放（Ctrl+滚轮连发）都会连续触发很多次：
+        # 等操作停下来再统一重解一次。放大要重下/重解更大，缩小要从保留的
+        # 压缩字节缩回去（否则绘制一直走缩放慢路径）。
+        self._decode_refresh = QTimer(self)
+        self._decode_refresh.setSingleShot(True)
+        self._decode_refresh.setInterval(180)
+        self._decode_refresh.timeout.connect(self._refresh_decodes)
 
         self._items : list[ReadNewGraphicsItem] = []   # ReadNewGraphicsItem 列表，按阅读顺序排列
         self._mode = mode                         # 当前阅读方向
@@ -435,7 +436,9 @@ class ReadNewGraphics(QGraphicsView):
         if self._cross > self._cross_view_len():
             cbar.setValue(round(frac_c * self._cross - pc))
         self._load_visible()
-        self._refresh_decodes()
+        # 缩放可能连着来很多步（Ctrl+滚轮）：用防抖定时器，等停下来再统一重解，
+        # 避免每一步都触发一次解码/下载（中间尺寸的解码纯属浪费）。
+        self._decode_refresh.start()
 
     def _zoom_page(self, z: float, anchor):
         """页模式缩放：item 的 scale 变换。
@@ -457,7 +460,8 @@ class ReadNewGraphics(QGraphicsView):
         self._page_pan = QPointF(0.0, 0.0)   # 以中心为锚点：平移复位
         self._show_page(self._page, 0)              # 重新摆放
         self._load_visible()
-        self._refresh_decodes()
+        # 同连续模式：缩放连发时用防抖定时器，停下来再统一重解
+        self._decode_refresh.start()
 
     def _zoom_single_width_to(self, z_new: float):
         """单页等宽模式缩放：保持"视口中心那一行内容"不动（以中心为锚点）。
@@ -552,26 +556,45 @@ class ReadNewGraphics(QGraphicsView):
             target = self._decode_target_size(it)  # 与 DecodeTask 同一套口径
             if not target.isValid():
                 continue
-            dpr = self.devicePixelRatioF()
-            have = it.pixmap.width()     # 已解码位图的宽（物理像素）
-            if have > round(target.width()*dpr) * it.DECODE_SHRINK_RATIO:
-                # 位图明显偏大：从保留的压缩字节后台重解（无网络）。
-                # 阈值留一点余量，避免为了 1% 的差异反复重解。
-                if it._buf:
-                    it._pending_decode = True
-                    self._start_decode_if_ready(it)
-                else:
+            if it.is_need_waifu2x:
+                if not it.waifu_file_data:
+                    continue
+                toW, toH = self._get_decode_to_size(target, it.waifu_file_data)
+            else:
+                if not it._buf:
                     self._start_download(it)
-                continue
+                    continue
+                toW, toH = self._get_decode_to_size(target, it.file_data)
 
-            src = it._size.width() if (it._size and it._size.isValid()) else 0
-            # 位图不够 + 原图确实有更高分辨率，才值得重新下载
-            if have < (target.width()*dpr) * 0.99 and src > have * 1.25:
-                if it._buf:
-                    it._pending_decode = True
-                    self._start_decode_if_ready(it)
-                else:
-                    self._start_download(it)
+            if it.decoding_param == QSizeF(toW, toH):
+                continue
+            # 把之前的任务取消
+            if it._decoding:
+                self.read_task.ClearQImageTaskById(it._decoding)
+                it._decoding = None
+            it._pending_decode = True
+            self._start_decode_if_ready(it)
+
+            # dpr = self.devicePixelRatioF()
+            # have = it.pixmap.width()     # 已解码位图的宽（物理像素）
+            # if have > round(target.width()*dpr) * it.DECODE_SHRINK_RATIO:
+            #     # 位图明显偏大：从保留的压缩字节后台重解（无网络）。
+            #     # 阈值留一点余量，避免为了 1% 的差异反复重解。
+            #     if it._buf:
+            #         it._pending_decode = True
+            #         self._start_decode_if_ready(it)
+            #     else:
+            #         self._start_download(it)
+            #     continue
+            #
+            # src = it._size.width() if (it._size and it._size.isValid()) else 0
+            # # 位图不够 + 原图确实有更高分辨率，才值得重新下载
+            # if have < (target.width()*dpr) * 0.99 and src > have * 1.25:
+            #     if it._buf:
+            #         it._pending_decode = True
+            #         self._start_decode_if_ready(it)
+            #     else:
+            #         self._start_download(it)
 
     @property
     def is_auto(self):
@@ -839,7 +862,7 @@ class ReadNewGraphics(QGraphicsView):
 
         布局和静态图完全一样处理（尺寸用 QImageReader 报告的画布尺寸），所以
         滚动        不跳动、可见性判定等既有机制全部复用——区别只有"内容会自己变"。"""
-        item._decoding = False
+        item._decoding = None
         item._pending_decode = False
         if item not in self._anims:
             self._anims.append(item)
@@ -2412,6 +2435,8 @@ class ReadNewGraphics(QGraphicsView):
             isForce = True
         if not it.is_need_waifu2x and it._cur_is_waifu2x_px:
             isForce = True
+        if it._pending_decode:
+            isForce = True
 
         if it._failed:
             return
@@ -2425,11 +2450,8 @@ class ReadNewGraphics(QGraphicsView):
             return
         if not it._buf:
             return
-        if not isForce and not it._pending_decode:
-            return                           # 没有新字节（已解过 / 还没下完）
 
-        Log.Info(f"Start decode, index{it.index}, is_force:{isForce}, is_waifu:{it.is_need_waifu2x}")
-        it._decoding = True
+        True
         toW, toH = 0, 0
         it.update()                          # 立刻显示"解码中…"
         if it.isAnima:
@@ -2437,12 +2459,16 @@ class ReadNewGraphics(QGraphicsView):
         elif it.is_need_waifu2x:
             size = self._decode_target_size(it)
             toW, toH = self._get_decode_to_size(size, it.waifu_file_data)
-            self.read_task.AddQImageTask(it._waifu_buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio,
+            it.decoding_param = QSizeF(toW, toH)
+            it._decoding = self.read_task.AddQImageTask(it._waifu_buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio,
                                          callBack=self._on_loaded, backParam=(it.index, True))
         else:
             size = self._decode_target_size(it)
             toW, toH = self._get_decode_to_size(size, it.file_data)
-            self.read_task.AddQImageTask(it._buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio, callBack=self._on_loaded, backParam=(it.index, False))
+            it.decoding_param = QSizeF(toW, toH)
+            it._decoding = self.read_task.AddQImageTask(it._buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio, callBack=self._on_loaded, backParam=(it.index, False))
+
+        Log.Info(f"Start decode, index{it.index}, is_force:{isForce}, is_waifu:{it.is_need_waifu2x}, task:{it._decoding}")
 
     @timed
     def _maybe_decode(self, it: ReadNewGraphicsItem):
@@ -2747,7 +2773,7 @@ class ReadNewGraphics(QGraphicsView):
 
         Log.Info(f"finish decode, index{index}, size:{img.size()}, is_waifu:{isWaifu2x}")
         item._progress = None
-        item._decoding = False
+        item._decoding = None
         item._pending_decode = False
         item._cur_is_waifu2x_px = isWaifu2x
         # 注意：压缩字节 _buf **不释放**。位图会被 _trim_pixmaps 按预算回收，
@@ -2765,7 +2791,7 @@ class ReadNewGraphics(QGraphicsView):
 
     def _on_decode_failed(self, item: ReadNewGraphicsItem):
         """解码失败：清状态并标记失败，避免卡在"解码中"或被反复重试。"""
-        item._decoding = False
+        item._decoding = None
         item._failed = True
         item._pending_decode = False
         item.update()
@@ -3121,7 +3147,7 @@ class ReadNewGraphics(QGraphicsView):
             # 页模式：槽位随视口变化，重摆当前页（终止进行中的拖拽/动画）
             self._cancel_page_gestures()
             self._show_page(self._page, 0)
-            self._resize_refresh.start()
+            self._decode_refresh.start()
             return
         if abs(old_cross - self._cross) >= 1:
             # cross 变了：所有图按新尺寸重排。用锚点保持阅读位置——沿用旧的
@@ -3134,7 +3160,7 @@ class ReadNewGraphics(QGraphicsView):
         else:
             self._load_visible()
         # 尺寸稳定后重解：放大 -> 重下更清晰的；缩小 -> 缩回 1:1（省内存 + 快路径）
-        self._resize_refresh.start()
+        self._decode_refresh.start()
 
     def after_index_change(self, index):
         if self._first_show:
@@ -3186,6 +3212,19 @@ class ReadNewGraphics(QGraphicsView):
             waifuState = QtFileData.WaifuStateStart
 
         self.qtTool.SetData(size, dataLen, status, waifuSize, waifuDataLen, waifuState, item._waifu_tick)
+        self.update_cur_waifu2x_state()
+
+    def update_cur_waifu2x_state(self):
+        item = self.get_cur_item()
+        if not item:
+            return
+        self.qtTool.curWaifu2x.blockSignals(True)
+        if item.is_need_waifu2x:
+            self.qtTool.curWaifu2x.setChecked(True)
+        else:
+            self.qtTool.curWaifu2x.setChecked(False)
+        self.qtTool.curWaifu2x.blockSignals(False)
+        return
 
     def eventFilter(self, obj, ev) -> bool:
         # print(obj, ev.type())
@@ -3313,15 +3352,22 @@ class ReadNewGraphics(QGraphicsView):
             self._scroller.scroll_by(-d / 120.0 * step)   # 滚轮向下 = 往阅读方向前进
 
     def switch_cur_waifu2x_state(self):
-        item = self.get_cur_item()
-        if not item:
+        if self._cur_idx < 0:
             return
-        if item._waifu2x_state == 0:
-            item._waifu2x_state = 1
-        elif item._waifu2x_state == 1:
-            item._waifu2x_state = -1
-        elif item._waifu2x_state == -1:
-            item._waifu2x_state = 1
+        idx = self._cur_idx
+        if ReadMode.isDouble(self._mode):
+            idx = self._cur_idx
+            items = self._items[idx:idx+2]
+        else:
+            items = self._items[idx:idx+1]
+
+        for item in items:
+            if item._waifu2x_state == 0:
+                item._waifu2x_state = 1
+            elif item._waifu2x_state == 1:
+                item._waifu2x_state = -1
+            elif item._waifu2x_state == -1:
+                item._waifu2x_state = 1
         self._load_visible()
 
     def check_waifu2x_state(self):

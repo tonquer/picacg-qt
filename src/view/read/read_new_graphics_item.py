@@ -1,3 +1,5 @@
+import os
+
 from PySide6.QtCore import (Qt, QRectF, QSize, QBuffer, QByteArray, QIODevice,
                             QUrl, QObject, QRunnable, QThreadPool, Signal, QTimer,
                             QAbstractAnimation, QVariantAnimation, QEasingCurve,
@@ -78,8 +80,10 @@ class ReadNewGraphicsItem(QGraphicsItem):
         self.file_data: FileData = None
         self._reply = None                    # 正在进行的网络请求（None = 没在下载）
         self._re_download_cnt = 0
-        self._decoding = False                # 后台解码中（下载完成 -> 等预解码窗口触发）
+        self._decoding = None                # 后台解码中（下载完成 -> 等预解码窗口触发）
         self._pending_decode = False           # 有新字节等着解码（下载完 / 位图被 LRU 回收后）
+        self.decoding_param = None
+
         self._failed = False                  # 下载/解码失败（占位框变红显示"加载失败"）
         self._waifu_failed = False                  # 下载/解码失败（占位框变红显示"加载失败"）
         self._progress = None                 # 下载进度 0.0~1.0（由 QNetworkReply 的
@@ -114,6 +118,7 @@ class ReadNewGraphicsItem(QGraphicsItem):
         # 由 view 设成"沿阅读方向多画 SEAM_OVERLAP"，盖住相邻两张之间的 1px 白缝。
         # 只影响绘制，不影响布局（_s/_len/total 都不动）。
         self._seam_pad = (0.0, 0.0, 0.0, 0.0)
+        self._is_debug = os.environ.get("PYCHARM_HOSTED") == "1"
 
     def init(self):
         self.pixmap = None          # 解码完成后的图像；None = 还没加载完（画占位框）
@@ -124,8 +129,9 @@ class ReadNewGraphicsItem(QGraphicsItem):
         self.file_data: FileData = None
         self._reply = None                    # 正在进行的网络请求（None = 没在下载）
         self._re_download_cnt = 0
-        self._decoding = False                # 后台解码中（下载完成 -> 等预解码窗口触发）
-        self._pending_decode = False           # 有新字节等着解码（下载完 / 位图被 LRU 回收后）
+        self._decoding = None                # 后台解码中（下载完成 -> 等预解码窗口触发）
+        self._pending_decode = False           # 有新字节等着解码（下载完 / 位图被 LRU 回收后）强制重新解码
+        self.decoding_param = None
         self._failed = False                  # 下载/解码失败（占位框变红显示"加载失败"）
         self._waifu_failed = False                  # 下载/解码失败（占位框变红显示"加载失败"）
         self._progress = None                 # 下载进度 0.0~1.0（由 QNetworkReply 的
@@ -273,8 +279,7 @@ class ReadNewGraphicsItem(QGraphicsItem):
         叠加区补一行/一列边缘像素（那一小条即使走缩放也只有 ~1% 的面积）。"""
         l, t, r, b = self._seam_pad
         dpr = pm.devicePixelRatioF()
-        isDebug = True
-        if (isDebug and not self.isAnima  and (abs(rect.width()*dpr-pm.width()) > 0.01) or abs(rect.height()*dpr-pm.height()) > 0.01):
+        if (self._is_debug and not self.isAnima  and (abs(rect.width()*dpr-pm.width()) > 0.01) or abs(rect.height()*dpr-pm.height()) > 0.01):
             Log.Warn(f"pixmap not same size, {self.index}, size:{pm.size()}, {rect.size()}")
         painter.drawPixmap(rect, pm, sr)
         if l == 0.0 and t == 0.0 and r == 0.0 and b == 0.0:

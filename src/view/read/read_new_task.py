@@ -77,7 +77,7 @@ class ReadNewTask(QtTaskBase):
 
     @timed
     def AddQImageTask(self, *args, **kwargs):
-        QtTaskBase.AddQImageTask(self, *args, **kwargs)
+        return QtTaskBase.AddQImageTask(self, *args, **kwargs)
 
     def IsMaxBookEps(self, epsId):
         bookId = self.readView.bookId
