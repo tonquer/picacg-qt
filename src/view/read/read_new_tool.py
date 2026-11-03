@@ -361,7 +361,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
 
         self.readImg.AddHistory()
         QtOwner().ReloadBookInfoHistory()
-        self.readImg.OpenPage(bookId, lasEps, 9999)
+        self.readImg.OpenPage(bookId, lasEps, 9999, self.readImg.isOffline)
         return
 
     def OpenNextEps(self):
@@ -386,7 +386,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
         # title = bookInfo.GetEpsTitle(epsId)
         self.readImg.AddHistory()
         QtOwner().ReloadBookInfoHistory()
-        self.readImg.OpenPage(bookId, nextEps)
+        self.readImg.OpenPage(bookId, nextEps, isOffline=self.readImg.isOffline)
         return
 
     def SkipPicture(self, index=0):
