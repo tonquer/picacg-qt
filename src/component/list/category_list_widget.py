@@ -78,6 +78,7 @@ class CategoryListWidget(BaseListWidget):
         widget.url = ToolUtil.GetRealUrl(url, path)
         widget.path = ToolUtil.GetRealPath(path, "category")
         widget.index = index
+        widget.toolButton.setVisible(False)
         # widget.categoryLabel.setText(categories)
         widget.categoryLabel.hide()
         widget.starButton.hide()

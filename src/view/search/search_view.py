@@ -104,7 +104,7 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
             self.label.show()
             self.spinBox.show()
             self.jumpPage.show()
-            if self.isLocal:
+            if QtOwner().IsCanUseDb():
                 self.sortId.show()
                 self.sortKey.show()
                 self.comboBox.hide()
