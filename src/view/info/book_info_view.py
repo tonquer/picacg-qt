@@ -163,9 +163,17 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
         pass
 
+    def ResetBookInfo(self):
+        # 详情加载失败时不能残留上一本书的书名和封面
+        self.bookName = ""
+        self.fileServer = ""
+        self.filePath = ""
+        self.path = ""
+
     def OpenBookByShare(self, shareId):
         self.shareId = shareId
         self.bookId = ""
+        self.ResetBookInfo()
         if QtOwner().isOfflineModel:
             self.tabWidget.setCurrentIndex(1)
         else:
@@ -178,6 +186,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
 
     def OpenBook(self, bookId):
         self.bookId = bookId
+        self.ResetBookInfo()
         if QtOwner().isOfflineModel:
             self.tabWidget.setCurrentIndex(1)
         else:

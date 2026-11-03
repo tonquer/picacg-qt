@@ -253,9 +253,11 @@ class PaginationTests(unittest.TestCase):
         listed = []
         book_list = BaseListWidget(None)
         self.addCleanup(book_list.close)
-        book_list.AddBookItemByHistory = lambda book: listed.append(book.bookId)
-        history = SimpleNamespace(history={str(i): SimpleNamespace(bookId=str(i), tick=i) for i in range(40)},
-                                  pageNums=20, bookList=book_list, spinBox=QSpinBox(), UpdatePageLabel=lambda: None)
+        book_list.AddBookItemByHistory = lambda book, info=None, title=None: listed.append(book.bookId)
+        history = SimpleNamespace(history={str(i): SimpleNamespace(bookId=str(i), name=str(i), tick=i) for i in range(40)},
+                                  pageNums=20, bookList=book_list, spinBox=QSpinBox(), nums=QLabel(), bookInfos={},
+                                  UpdatePageLabel=lambda: None)
+        history.GetShowList = lambda: list(history.history.values())
         HistoryView.RefreshData(history, 2)
         self.assertEqual((book_list.page, book_list.pages, history.spinBox.maximum(), len(listed)), (2, 2, 2, 20))
         history.history = {}

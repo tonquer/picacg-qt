@@ -207,6 +207,51 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
+      <widget class="QComboBox" name="recommendSortKey">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <item>
+        <property name="text">
+         <string>推荐顺序</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>更新时间</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>创建时间</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>爱心数</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>观看数</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>章节数</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>图片数</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
       <widget class="QComboBox" name="sortKey">
        <property name="enabled">
         <bool>true</bool>

@@ -82,3 +82,31 @@ def book_from_row(columns, row, factory=DbBook):
 def books_from_cursor(cursor):
     columns = [column[0] for column in cursor.description]
     return [book_from_row(columns, row) for row in cursor.fetchall()]
+
+
+def book_from_comic(data):
+    """服务端漫画 json 转成 DbBook，和本地书库的结果统一显示、排序。"""
+    def joined(value):
+        return ",".join(value) if isinstance(value, list) else (value or "")
+
+    book = DbBook()
+    thumb = data.get("thumb") or {}
+    book.id = data.get("_id") or data.get("id", "")
+    book.title = data.get("title", "")
+    book.author = data.get("author", "")
+    book.chineseTeam = data.get("chineseTeam", "")
+    book.description = data.get("description", "")
+    book.epsCount = data.get("epsCount") or 0
+    book.pages = data.get("pagesCount") or 0
+    book.finished = bool(data.get("finished"))
+    book.categories = joined(data.get("categories"))
+    book.tags = joined(data.get("tags"))
+    book.totalLikes = data.get("totalLikes") or data.get("likesCount") or 0
+    book.likesCount = book.totalLikes
+    book.totalViews = data.get("totalViews") or 0
+    book.created_at = data.get("created_at") or 0
+    book.updated_at = data.get("updated_at") or 0
+    book.path = thumb.get("path", "")
+    book.fileServer = thumb.get("fileServer", "")
+    book.originalName = thumb.get("originalName", "")
+    return book

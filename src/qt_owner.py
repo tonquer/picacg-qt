@@ -443,7 +443,7 @@ class QtOwner(Singleton):
     def OpenRecomment(self, bookId):
         Title = "看了这边本子的人也在看"
         arg = {"recoment": 1, "bookId": bookId}
-        self.searchView2.SetJumpShow(False)
+        self.searchView2.SetRecommendShow()
         self.searchView2.setWindowTitle(Title)
         self.searchView2.searchTab.setText(Title)
         self.owner.SwitchWidget(self.searchView2, **arg)
@@ -451,7 +451,7 @@ class QtOwner(Singleton):
     def OpenRecomment2(self, bookId):
         Title = "猜你喜欢"
         arg = {"recoment": 2, "bookId": bookId}
-        self.searchView2.SetJumpShow(False)
+        self.searchView2.SetRecommendShow()
         self.searchView2.setWindowTitle(Title)
         self.searchView2.searchTab.setText(Title)
         self.owner.SwitchWidget(self.searchView2, **arg)
@@ -477,7 +477,12 @@ class QtOwner(Singleton):
     def CloseReadView(self):
         self.owner.totalStackWidget.setCurrentIndex(0)
         self.SetSubTitle("")
+        self.ReloadBookInfoHistory()
+
+    def ReloadBookInfoHistory(self):
+        # 阅读器可能从任意一个详情页打开，两个详情页都要刷新“上次看到”
         self.bookInfoView.ReloadHistory.emit()
+        self.bookInfoView2.ReloadHistory.emit()
 
     def OpenSearchByCategory(self, categories):
         arg = {"categories": categories}

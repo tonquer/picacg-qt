@@ -367,11 +367,21 @@ class ReadNewView(QtWidgets.QWidget):
             else:
                 QtOwner().localReadView.AddDataToDB(self.cacheBook.id)
         else:
-            bookName = QtOwner().bookInfoView.bookName
-            url = QtOwner().bookInfoView.GetBookUrl()
-            path = QtOwner().bookInfoView.GetBookUrlPath()
+            bookName, url, path = self.GetHistoryBookInfo()
             QtOwner().historyView.AddHistory(self.bookId, bookName, self.epsId, self.curIndex, url, path)
         return
+
+    def GetHistoryBookInfo(self):
+        # 按正在阅读的 bookId 取书名和封面，不能读 bookInfoView：
+        # 从“漫画详情2”打开时，bookInfoView 还停留在另一本书上
+        info = BookMgr().GetBook(self.bookId)
+        if info:
+            thumb = info.thumb or {}
+            return info.title, thumb.get("fileServer", ""), thumb.get("path", "")
+        old = QtOwner().historyView.GetHistory(self.bookId)
+        if old:
+            return old.name, old.url, old.path
+        return "", "", ""
 
     def ShowAndCloseTool(self):
         if self.qtTool.isHidden():

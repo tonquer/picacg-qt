@@ -1,0 +1,1357 @@
+全部修改（01~06 合并），基于上游 main 7774b0a
+
+- 修复历史记录标题和封面写成另一本书
+- 修复从漫画详情2阅读后“上次看到”进度不刷新
+- 历史记录新增排序、“只看有更新”和标题搜索
+- 修复“猜你喜欢”推荐顺序被打乱、本地缺书被丢弃
+- “猜你喜欢”一次最多取 100 个，支持本地分页和排序
+- “看了这边本子的人也在看”复用推荐列表的本地排序
+
+---
+diff --git a/src/component/list/comic_list_widget.py b/src/component/list/comic_list_widget.py
+index ba45397..20240c1 100644
+--- a/src/component/list/comic_list_widget.py
++++ b/src/component/list/comic_list_widget.py
+@@ -333,13 +333,27 @@ class ComicListWidget(BaseListWidget):
+         isShiled = QtOwner().IsInFilter(categories, tags, title)
+         self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished, isShowToolButton=isShowToolButton, isShiled=isShiled, tags=tags, rawBook=v)
+ 
+-    def AddBookItemByHistory(self, v):
++    def AddBookItemByHistory(self, v, info=None, title=None):
+         _id = v.bookId
+-        title = v.name
++        title = title or v.name
+         path = v.path
+         url = v.url
+         categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.tick), Str.GetStr(Str.Looked))
+-        self.AddBookItem(_id, title, categories, url, path)
++        if not info:
++            self.AddBookItem(_id, title, categories, url, path)
++            return
++        # info 为本地书库中的这本书：封面以书库为准，并显示阅读进度和是否有新章节
++        # 这一行与“NEW”标记共用，宽度只有封面宽，进度用短格式，完整内容放到提示里
++        progress = ""
++        if info.epsCount and info.epsCount > 1:
++            categories += " {}/{}{}".format(v.epsId + 1, info.epsCount, Str.GetStr(Str.Chapter))
++            progress = Str.GetStr(Str.LastLook) + str(v.epsId + 1) + Str.GetStr(Str.Chapter) + "/" + str(info.epsCount) + Str.GetStr(Str.Chapter)
++        likesCount = str(info.totalLikes or info.likesCount or "")
++        self.AddBookItem(_id, title, categories, info.fileServer or url, info.path or path, likesCount,
++                         info.updated_at, info.pages, info.finished,
++                         isShowToolButton=bool(info.epsCount) and info.epsCount - 1 > v.epsId, rawBook=info)
++        if progress:
++            self.itemWidget(self.item(self.count() - 1)).categoryLabel.setToolTip(progress)
+ 
+     def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished="", isShowToolButton=False, isShiled=False, tags="", rawBook=None):
+         index = self.count()
+diff --git a/src/interface/ui_history.py b/src/interface/ui_history.py
+index f8c39ab..8855e6b 100644
+--- a/src/interface/ui_history.py
++++ b/src/interface/ui_history.py
+@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+     QFont, QFontDatabase, QGradient, QIcon,
+     QImage, QKeySequence, QLinearGradient, QPainter,
+     QPalette, QPixmap, QRadialGradient, QTransform)
+-from PySide6.QtWidgets import (QApplication, QFrame, QGridLayout, QHBoxLayout,
+-    QLabel, QListWidgetItem, QPushButton, QSizePolicy,
+-    QSpacerItem, QSpinBox, QWidget)
++from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
++    QGridLayout, QHBoxLayout, QLabel, QLineEdit,
++    QListWidgetItem, QPushButton, QSizePolicy, QSpacerItem,
++    QSpinBox, QWidget)
+ 
+ from component.list.comic_list_widget import ComicListWidget
+ 
+@@ -32,6 +33,39 @@ class Ui_History(object):
+         self.gridLayout_4.setObjectName(u"gridLayout_4")
+         self.horizontalLayout = QHBoxLayout()
+         self.horizontalLayout.setObjectName(u"horizontalLayout")
++        self.searchEdit = QLineEdit(History)
++        self.searchEdit.setObjectName(u"searchEdit")
++        self.searchEdit.setMinimumSize(QSize(150, 30))
++        self.searchEdit.setClearButtonEnabled(True)
++
++        self.horizontalLayout.addWidget(self.searchEdit)
++
++        self.updateCheck = QCheckBox(History)
++        self.updateCheck.setObjectName(u"updateCheck")
++
++        self.horizontalLayout.addWidget(self.updateCheck)
++
++        self.sortKey = QComboBox(History)
++        self.sortKey.addItem("")
++        self.sortKey.addItem("")
++        self.sortKey.addItem("")
++        self.sortKey.addItem("")
++        self.sortKey.addItem("")
++        self.sortKey.addItem("")
++        self.sortKey.addItem("")
++        self.sortKey.setObjectName(u"sortKey")
++        self.sortKey.setMinimumSize(QSize(100, 30))
++
++        self.horizontalLayout.addWidget(self.sortKey)
++
++        self.sortId = QComboBox(History)
++        self.sortId.addItem("")
++        self.sortId.addItem("")
++        self.sortId.setObjectName(u"sortId")
++        self.sortId.setMinimumSize(QSize(0, 30))
++
++        self.horizontalLayout.addWidget(self.sortId)
++
+         self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+ 
+         self.horizontalLayout.addItem(self.horizontalSpacer)
+@@ -107,7 +141,20 @@ class Ui_History(object):
+ 
+     def retranslateUi(self, History):
+         History.setWindowTitle(QCoreApplication.translate("History", u"\u5386\u53f2\u8bb0\u5f55", None))
+-        self.nums.setText(QCoreApplication.translate("History", u"\u6536\u85cf\u6570\uff1a", None))
++        self.searchEdit.setPlaceholderText(QCoreApplication.translate("History", u"\u641c\u7d22\u6807\u9898", None))
++        self.updateCheck.setText(QCoreApplication.translate("History", u"\u53ea\u770b\u6709\u66f4\u65b0", None))
++        self.sortKey.setItemText(0, QCoreApplication.translate("History", u"\u6700\u8fd1\u9605\u8bfb", None))
++        self.sortKey.setItemText(1, QCoreApplication.translate("History", u"\u66f4\u65b0\u65f6\u95f4", None))
++        self.sortKey.setItemText(2, QCoreApplication.translate("History", u"\u521b\u5efa\u65f6\u95f4", None))
++        self.sortKey.setItemText(3, QCoreApplication.translate("History", u"\u7231\u5fc3\u6570", None))
++        self.sortKey.setItemText(4, QCoreApplication.translate("History", u"\u89c2\u770b\u6570", None))
++        self.sortKey.setItemText(5, QCoreApplication.translate("History", u"\u7ae0\u8282\u6570", None))
++        self.sortKey.setItemText(6, QCoreApplication.translate("History", u"\u56fe\u7247\u6570", None))
++
++        self.sortId.setItemText(0, QCoreApplication.translate("History", u"\u964d\u5e8f", None))
++        self.sortId.setItemText(1, QCoreApplication.translate("History", u"\u5347\u5e8f", None))
++
++        self.nums.setText(QCoreApplication.translate("History", u"\u8bb0\u5f55\u6570\uff1a", None))
+         self.pages.setText(QCoreApplication.translate("History", u"\u9875", None))
+         self.jumpButton.setText(QCoreApplication.translate("History", u"\u8df3\u8f6c", None))
+ #if QT_CONFIG(shortcut)
+diff --git a/src/interface/ui_search.py b/src/interface/ui_search.py
+index b0f9192..97ead10 100644
+--- a/src/interface/ui_search.py
++++ b/src/interface/ui_search.py
+@@ -140,6 +140,19 @@ class Ui_Search(object):
+ 
+         self.horizontalLayout = QHBoxLayout()
+         self.horizontalLayout.setObjectName(u"horizontalLayout")
++        self.recommendSortKey = QComboBox(Search)
++        self.recommendSortKey.addItem("")
++        self.recommendSortKey.addItem("")
++        self.recommendSortKey.addItem("")
++        self.recommendSortKey.addItem("")
++        self.recommendSortKey.addItem("")
++        self.recommendSortKey.addItem("")
++        self.recommendSortKey.addItem("")
++        self.recommendSortKey.setObjectName(u"recommendSortKey")
++        self.recommendSortKey.setMinimumSize(QSize(100, 0))
++
++        self.horizontalLayout.addWidget(self.recommendSortKey)
++
+         self.sortKey = QComboBox(Search)
+         self.sortKey.addItem("")
+         self.sortKey.addItem("")
+@@ -245,6 +258,14 @@ class Ui_Search(object):
+         self.saveButton.setText(QCoreApplication.translate("Search", u"\u786e\u5b9a", None))
+         self.categoryNum.setText("")
+         self.hideLabel.setText("")
++        self.recommendSortKey.setItemText(0, QCoreApplication.translate("Search", u"\u63a8\u8350\u987a\u5e8f", None))
++        self.recommendSortKey.setItemText(1, QCoreApplication.translate("Search", u"\u66f4\u65b0\u65f6\u95f4", None))
++        self.recommendSortKey.setItemText(2, QCoreApplication.translate("Search", u"\u521b\u5efa\u65f6\u95f4", None))
++        self.recommendSortKey.setItemText(3, QCoreApplication.translate("Search", u"\u7231\u5fc3\u6570", None))
++        self.recommendSortKey.setItemText(4, QCoreApplication.translate("Search", u"\u89c2\u770b\u6570", None))
++        self.recommendSortKey.setItemText(5, QCoreApplication.translate("Search", u"\u7ae0\u8282\u6570", None))
++        self.recommendSortKey.setItemText(6, QCoreApplication.translate("Search", u"\u56fe\u7247\u6570", None))
++
+         self.sortKey.setItemText(0, QCoreApplication.translate("Search", u"\u66f4\u65b0\u65f6\u95f4", None))
+         self.sortKey.setItemText(1, QCoreApplication.translate("Search", u"\u521b\u5efa\u65f6\u95f4", None))
+         self.sortKey.setItemText(2, QCoreApplication.translate("Search", u"\u7231\u5fc3\u6570", None))
+diff --git a/src/qt_owner.py b/src/qt_owner.py
+index 0d8cd63..0523ecb 100644
+--- a/src/qt_owner.py
++++ b/src/qt_owner.py
+@@ -443,7 +443,7 @@ class QtOwner(Singleton):
+     def OpenRecomment(self, bookId):
+         Title = "看了这边本子的人也在看"
+         arg = {"recoment": 1, "bookId": bookId}
+-        self.searchView2.SetJumpShow(False)
++        self.searchView2.SetRecommendShow()
+         self.searchView2.setWindowTitle(Title)
+         self.searchView2.searchTab.setText(Title)
+         self.owner.SwitchWidget(self.searchView2, **arg)
+@@ -451,7 +451,7 @@ class QtOwner(Singleton):
+     def OpenRecomment2(self, bookId):
+         Title = "猜你喜欢"
+         arg = {"recoment": 2, "bookId": bookId}
+-        self.searchView2.SetJumpShow(False)
++        self.searchView2.SetRecommendShow()
+         self.searchView2.setWindowTitle(Title)
+         self.searchView2.searchTab.setText(Title)
+         self.owner.SwitchWidget(self.searchView2, **arg)
+@@ -477,7 +477,12 @@ class QtOwner(Singleton):
+     def CloseReadView(self):
+         self.owner.totalStackWidget.setCurrentIndex(0)
+         self.SetSubTitle("")
++        self.ReloadBookInfoHistory()
++
++    def ReloadBookInfoHistory(self):
++        # 阅读器可能从任意一个详情页打开，两个详情页都要刷新“上次看到”
+         self.bookInfoView.ReloadHistory.emit()
++        self.bookInfoView2.ReloadHistory.emit()
+ 
+     def OpenSearchByCategory(self, categories):
+         arg = {"categories": categories}
+diff --git a/src/server/book_mapping.py b/src/server/book_mapping.py
+index 05c5adc..93ebd9b 100644
+--- a/src/server/book_mapping.py
++++ b/src/server/book_mapping.py
+@@ -82,3 +82,31 @@ def book_from_row(columns, row, factory=DbBook):
+ def books_from_cursor(cursor):
+     columns = [column[0] for column in cursor.description]
+     return [book_from_row(columns, row) for row in cursor.fetchall()]
++
++
++def book_from_comic(data):
++    """服务端漫画 json 转成 DbBook，和本地书库的结果统一显示、排序。"""
++    def joined(value):
++        return ",".join(value) if isinstance(value, list) else (value or "")
++
++    book = DbBook()
++    thumb = data.get("thumb") or {}
++    book.id = data.get("_id") or data.get("id", "")
++    book.title = data.get("title", "")
++    book.author = data.get("author", "")
++    book.chineseTeam = data.get("chineseTeam", "")
++    book.description = data.get("description", "")
++    book.epsCount = data.get("epsCount") or 0
++    book.pages = data.get("pagesCount") or 0
++    book.finished = bool(data.get("finished"))
++    book.categories = joined(data.get("categories"))
++    book.tags = joined(data.get("tags"))
++    book.totalLikes = data.get("totalLikes") or data.get("likesCount") or 0
++    book.likesCount = book.totalLikes
++    book.totalViews = data.get("totalViews") or 0
++    book.created_at = data.get("created_at") or 0
++    book.updated_at = data.get("updated_at") or 0
++    book.path = thumb.get("path", "")
++    book.fileServer = thumb.get("fileServer", "")
++    book.originalName = thumb.get("originalName", "")
++    return book
+diff --git a/src/server/book_query.py b/src/server/book_query.py
+index 2c73114..08d3aa5 100644
+--- a/src/server/book_query.py
++++ b/src/server/book_query.py
+@@ -147,6 +147,37 @@ def books_by_ids_statement(book_ids, has_share_id=True, metrics_only=False):
+         projection, ",".join("?" for _ in ids)), ids)
+ 
+ 
++def order_books_by_ids(books, book_ids):
++    """IN 查询不保证顺序，按 book_ids 原顺序排列，并返回本地书库缺少的 id。"""
++    found = {book.id: book for book in books}
++    ids = list(dict.fromkeys(book_ids))
++    return [found[i] for i in ids if i in found], [i for i in ids if i not in found]
++
++
++# 推荐列表的本地排序，空字段表示保持推荐顺序
++RECOMMEND_SORT_FIELDS = ("",) + SORT_FIELDS[:6]
++DATE_SORT_FIELDS = ("updated_at", "created_at")
++
++
++def sort_books(books, field, descending=True):
++    """对已取到的书本地排序；缺少该字段的书排在最后，同值保持原顺序。"""
++    if not field:
++        return list(books)
++
++    def value(book):
++        v = getattr(book, field, None)
++        if field in DATE_SORT_FIELDS:
++            return str(v)[:19] if v else None
++        try:
++            return int(v)
++        except (TypeError, ValueError):
++            return None
++
++    present = [book for book in books if value(book) is not None]
++    absent = [book for book in books if value(book) is None]
++    return sorted(present, key=value, reverse=descending) + absent
++
++
+ LOCAL_FAVORITE_SORT_FIELDS = ("tick", "updated_at", "created_at", "totalLikes", "totalViews", "epsCount", "pages")
+ LOCAL_FAVORITE_COLUMNS = ("bookId AS id", "title", "author", "chineseTeam", "description",
+                     "epsCount", "pages", "finished", "categories", "tags", "created_at",
+diff --git a/src/server/req.py b/src/server/req.py
+index a8b8b28..8de056f 100644
+--- a/src/server/req.py
++++ b/src/server/req.py
+@@ -994,8 +994,9 @@ class GetIdByShareIdReq(ServerReq):
+ 
+ 
+ class GetRecommendByIdReq(ServerReq):
+-    def __init__(self, bookId):
+-        url = "https://macapi1.com/picacomic/rec/{}?limit=10".format(bookId)
++    def __init__(self, bookId, limit=10):
++        # 推荐服务不支持翻页（offset/page 无效），limit 上限 100（超过返回 422）
++        url = "https://macapi1.com/picacomic/rec/{}?limit={}".format(bookId, limit)
+         method = "Get"
+         self.bookId = bookId
+         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),
+diff --git a/src/tools/str.py b/src/tools/str.py
+index fe20490..f054a0d 100644
+--- a/src/tools/str.py
++++ b/src/tools/str.py
+@@ -316,6 +316,7 @@ class Str:
+     Remote = 203            # 远程
+     RepeatRule = 204            # 重复规则
+     NotOpenLocal = 205            # 重复规则
++    HistoryNum = 206            # 记录数
+ 
+     @classmethod
+     def Reload(cls):
+@@ -618,6 +619,7 @@ class Str:
+         cls.strDict[cls.Remote] = QCoreApplication.translate("cls.obj", "远程", None)
+         cls.strDict[cls.RepeatRule] = QCoreApplication.translate("cls.obj", "重复规则", None)
+         cls.strDict[cls.NotOpenLocal] = QCoreApplication.translate("cls.obj", "帮助界面未启用本地库", None)
++        cls.strDict[cls.HistoryNum] = QCoreApplication.translate("cls.obj", "记录数", None)
+ 
+ 
+     @classmethod
+diff --git a/src/view/info/book_info_view.py b/src/view/info/book_info_view.py
+index 784e1e1..9e27c37 100644
+--- a/src/view/info/book_info_view.py
++++ b/src/view/info/book_info_view.py
+@@ -163,9 +163,17 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
+ 
+         pass
+ 
++    def ResetBookInfo(self):
++        # 详情加载失败时不能残留上一本书的书名和封面
++        self.bookName = ""
++        self.fileServer = ""
++        self.filePath = ""
++        self.path = ""
++
+     def OpenBookByShare(self, shareId):
+         self.shareId = shareId
+         self.bookId = ""
++        self.ResetBookInfo()
+         if QtOwner().isOfflineModel:
+             self.tabWidget.setCurrentIndex(1)
+         else:
+@@ -178,6 +186,7 @@ class BookInfoView(QtWidgets.QWidget, Ui_BookInfo, QtTaskBase):
+ 
+     def OpenBook(self, bookId):
+         self.bookId = bookId
++        self.ResetBookInfo()
+         if QtOwner().isOfflineModel:
+             self.tabWidget.setCurrentIndex(1)
+         else:
+diff --git a/src/view/read/read_new_tool.py b/src/view/read/read_new_tool.py
+index 2886d43..eae880f 100644
+--- a/src/view/read/read_new_tool.py
++++ b/src/view/read/read_new_tool.py
+@@ -360,7 +360,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
+             return
+ 
+         self.readImg.AddHistory()
+-        QtOwner().bookInfoView.LoadHistory()
++        QtOwner().ReloadBookInfoHistory()
+         self.readImg.OpenPage(bookId, lasEps, 9999)
+         return
+ 
+@@ -385,7 +385,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
+ 
+         # title = bookInfo.GetEpsTitle(epsId)
+         self.readImg.AddHistory()
+-        QtOwner().bookInfoView.LoadHistory()
++        QtOwner().ReloadBookInfoHistory()
+         self.readImg.OpenPage(bookId, nextEps)
+         return
+ 
+diff --git a/src/view/read/read_new_view.py b/src/view/read/read_new_view.py
+index 611158e..990cb8c 100644
+--- a/src/view/read/read_new_view.py
++++ b/src/view/read/read_new_view.py
+@@ -367,12 +367,22 @@ class ReadNewView(QtWidgets.QWidget):
+             else:
+                 QtOwner().localReadView.AddDataToDB(self.cacheBook.id)
+         else:
+-            bookName = QtOwner().bookInfoView.bookName
+-            url = QtOwner().bookInfoView.GetBookUrl()
+-            path = QtOwner().bookInfoView.GetBookUrlPath()
++            bookName, url, path = self.GetHistoryBookInfo()
+             QtOwner().historyView.AddHistory(self.bookId, bookName, self.epsId, self.curIndex, url, path)
+         return
+ 
++    def GetHistoryBookInfo(self):
++        # 按正在阅读的 bookId 取书名和封面，不能读 bookInfoView：
++        # 从“漫画详情2”打开时，bookInfoView 还停留在另一本书上
++        info = BookMgr().GetBook(self.bookId)
++        if info:
++            thumb = info.thumb or {}
++            return info.title, thumb.get("fileServer", ""), thumb.get("path", "")
++        old = QtOwner().historyView.GetHistory(self.bookId)
++        if old:
++            return old.name, old.url, old.path
++        return "", "", ""
++
+     def ShowAndCloseTool(self):
+         if self.qtTool.isHidden():
+             self.qtTool.show()
+diff --git a/src/view/search/search_view.py b/src/view/search/search_view.py
+index b853479..49495d3 100644
+--- a/src/view/search/search_view.py
++++ b/src/view/search/search_view.py
+@@ -12,12 +12,13 @@ from qt_owner import QtOwner
+ from server import req, Log, Status
+ from server.sql_server import SqlServer
+ from task.qt_task import QtTaskBase
+-from tools.book import BookMgr
+ from tools.category import CateGoryMgr
+ from tools.langconv import Converter
+ from tools.str import Str
+-from server.book_query import BookQuery, SORT_FIELDS
++from server.book_mapping import book_from_comic
++from server.book_query import BookQuery, SORT_FIELDS, RECOMMEND_SORT_FIELDS, order_books_by_ids, sort_books
+ from tools.page_result import PageRequest, PageResult
++from tools.pagination import SEARCH_PAGE_SIZE
+ 
+ 
+ class SearchView(QWidget, Ui_Search, QtTaskBase):
+@@ -66,15 +67,38 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
+         self.cacheRecommend = {}
+         self.isSearch2 = False
+         self.isCanJump = True
++        # 当前显示的推荐列表 (类型, bookId)，切换列表后丢弃旧请求的回包
++        self.recommendSource = None
++        # 推荐列表一次取完，按推荐顺序保存，本地分页和排序
++        self.recommendIds = []
++        self.recommendFound = {}
++        self.recommendPending = 0
++        self.recommendBooks = None
++        self.recommendSortKey.hide()
++        self.recommendSortKey.currentIndexChanged.connect(self.ChangeRecommendSort)
+ 
+     def ResetSearch(self):
++        self.recommendSource = None
++        self.recommendBooks = None
+         self.bookList.UpdatePage(1, 1)
+         self.bookList.clear()
+         self.spinBox.setMaximum(1)
+         self.spinBox.setValue(1)
+         self.label.setText(self.bookList.GetPageStr())
+ 
++    def SetRecommendShow(self):
++        # 推荐列表不走搜索接口，只显示本地分页和推荐排序
++        self.label.show()
++        self.spinBox.show()
++        self.jumpPage.show()
++        self.recommendSortKey.show()
++        self.sortId.show()
++        self.sortKey.hide()
++        self.comboBox.hide()
++        self.isCanJump = True
++
+     def SetJumpShow(self, isShow):
++        self.recommendSortKey.hide()
+         if isShow:
+             self.label.show()
+             self.spinBox.show()
+@@ -233,27 +257,19 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
+ 
+         isRecomend =  kwargs.get("recoment")
+         if isRecomend == 1:
+-            self.bookList.clear()
+             bookId = kwargs.get("bookId")
+-            self.bookList.UpdatePage(1, 1)
+-            self.spinBox.setValue(1)
+-            self.spinBox.setMaximum(1)
+-            self.label.setText(self.bookList.GetPageStr())
+-            QtOwner().ShowLoading()
+-            self.AddHttpTask(req.GetComicsRecommendation(bookId), self.OpenRecommendationBack)
++            self.StartRecommend((1, bookId))
++            self.AddHttpTask(req.GetComicsRecommendation(bookId), self.OpenRecommendationBack, bookId)
+             return
+         if isRecomend == 2:
+-            self.bookList.clear()
+             bookId = kwargs.get("bookId")
+-            self.bookList.UpdatePage(1, 1)
+-            self.spinBox.setValue(1)
+-            self.spinBox.setMaximum(1)
+-            self.label.setText(self.bookList.GetPageStr())
++            self.StartRecommend((2, bookId))
+             if bookId in self.cacheRecommend:
+                 self.OpenRecommendationBack2({"data": self.cacheRecommend[bookId]}, bookId)
+                 return
+-            QtOwner().ShowLoading()
+-            self.AddHttpTask(req.GetRecommendByIdReq(bookId), self.OpenRecommendationBack2, bookId)
++            # 有本地书库时一次取服务上限 100 个，本地分页；没有书库时每本都要单独请求，只取一页
++            limit = 100 if QtOwner().IsCanUseDb() else SEARCH_PAGE_SIZE
++            self.AddHttpTask(req.GetRecommendByIdReq(bookId, limit), self.OpenRecommendationBack2, bookId)
+             return
+ 
+         if categories is not None:
+@@ -304,57 +320,114 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
+         self.sortKey.setVisible(isLocal)
+         self.comboBox.setVisible(not isLocal)
+ 
+-    def OpenRecommendationBack(self, raw):
+-        QtOwner().CloseLoading()
+-        data = raw.get("data")
++    def OpenRecommendationBack(self, raw, bookId):
++        source = (1, bookId)
++        if self.recommendSource != source:
++            return
++        fallback = {}
+         try:
+-            commentsData = json.loads(data)
++            commentsData = json.loads(raw.get("data"))
+             for v in commentsData.get("data").get("comics"):
+-                self.bookList.AddBookByDict(v)
++                book = book_from_comic(v)
++                fallback[book.id] = book
+         except Exception as es:
+             Log.Error(es)
++        # 官方接口固定返回约 10 个；优先用本地书库的完整字段排序，没收录的直接用接口数据
++        self.LoadRecommendBooks(source, list(fallback), fallback)
+ 
+     def OpenRecommendationBack2(self, raw, bookId):
+-        QtOwner().CloseLoading()
+-        data = raw.get("data")
++        source = (2, bookId)
++        if self.recommendSource != source:
++            return
++        allBookIds = []
+         try:
+-            commentsData = json.loads(data)
+-            allBookIds = []
+-            for v in commentsData.get("recommendations", []):
+-                allBookIds.append(v)
+-            if QtOwner().IsCanUseDb():
+-                sql = SqlServer.GetBookByIds(allBookIds)
+-                self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.OpenLocalRecommendationBack, backParam=1)
+-            else:
+-                for bookId in allBookIds:
+-                    self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenRecommendationBack3, bookId)
+-                    # if v.get('pic'):
+-                    #     v['thumb'] = {}
+-                    #     host = ToolUtil.GetUrlHost(v.get('pic'))
+-                    #     v['thumb']['fileServer'] = "https://" + host
+-                    #     v['thumb']['path'] = v.get('pic').replace("http://", "").replace("https://", "").replace(host, "").replace("/static", "")
+-                    #     self.bookList.AddBookByDict(v)
++            commentsData = json.loads(raw.get("data"))
++            allBookIds = list(commentsData.get("recommendations", []))
+             # self.cacheRecommend[bookId] = data
+         except Exception as es:
+             Log.Error(es)
++        self.LoadRecommendBooks(source, allBookIds, {})
++
++    def StartRecommend(self, source):
++        self.bookList.clear()
++        self.recommendSource = source
++        self.recommendIds = []
++        self.recommendFound = {}
++        self.recommendPending = 0
++        self.recommendBooks = None
++        self.recommendSortKey.blockSignals(True)
++        self.recommendSortKey.setCurrentIndex(0)
++        self.recommendSortKey.blockSignals(False)
++        self.bookList.UpdatePage(1, 1)
++        self.spinBox.setValue(1)
++        self.spinBox.setMaximum(1)
++        self.label.setText(self.bookList.GetPageStr())
++        QtOwner().ShowLoading()
++
++    def LoadRecommendBooks(self, source, bookIds, fallback):
++        """bookIds 为推荐顺序；先查本地书库，缺的用 fallback 或网络补上，全部到齐后再显示。"""
++        self.recommendIds = list(dict.fromkeys(bookIds))
++        if self.recommendIds and QtOwner().IsCanUseDb():
++            sql = SqlServer.GetBookByIds(self.recommendIds)
++            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.OpenLocalRecommendationBack, backParam=(source, fallback))
++        else:
++            self.FillRecommendBooks(source, self.recommendIds, fallback)
+ 
+-    def OpenRecommendationBack3(self, raw, bookId):
+-        book = BookMgr().GetBook(bookId)
+-        if not book:
++    def OpenLocalRecommendationBack(self, books, backParam):
++        source, fallback = backParam
++        if self.recommendSource != source:
+             return
+-        if raw.get("st") == Str.Ok:
+-            data = json.loads(raw.get("data"))
+-            self.bookList.AddBookByDict(data.get('data').get("comic"))
+-        return
++        # IN 查询不保证顺序；本地书库还没收录的新书单独补上，查询失败时全部补
++        found, missing = order_books_by_ids(books or [], self.recommendIds)
++        self.recommendFound = {book.id: book for book in found}
++        self.FillRecommendBooks(source, missing, fallback)
++
++    def FillRecommendBooks(self, source, bookIds, fallback):
++        netIds = []
++        for bookId in bookIds:
++            if bookId in fallback:
++                self.recommendFound[bookId] = fallback[bookId]
++            else:
++                netIds.append(bookId)
++        self.recommendPending = len(netIds)
++        for bookId in netIds:
++            self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenRecommendationBack3, (source, bookId))
++        if not netIds:
++            self.FinishRecommendBooks()
++
++    def OpenRecommendationBack3(self, raw, backParam):
++        source, bookId = backParam
++        if self.recommendSource != source:
++            return
++        try:
++            if raw.get("st") == Str.Ok:
++                data = json.loads(raw.get("data"))
++                self.recommendFound[bookId] = book_from_comic(data.get('data').get("comic"))
++        except Exception as es:
++            Log.Error(es)
++        self.recommendPending -= 1
++        if self.recommendPending <= 0:
++            self.FinishRecommendBooks()
+ 
+-    def OpenLocalRecommendationBack(self, books, page):
+-        self.SendLocalBack(books, page)
+-        if books is None:
++    def FinishRecommendBooks(self):
++        self.recommendBooks = [self.recommendFound[i] for i in self.recommendIds if i in self.recommendFound]
++        self.bookList.clear()
++        self.ShowRecommendPage(1)
++
++    def ShowRecommendPage(self, page):
++        if self.recommendBooks is None:
+             return
+-        self.bookList.pages = 1
+-        self.spinBox.setMaximum(1)
+-        self.spinBox.setValue(1)
+-        self.bookList.UpdatePage(1, self.bookList.pages)
++        field = RECOMMEND_SORT_FIELDS[self.recommendSortKey.currentIndex()]
++        books = sort_books(self.recommendBooks, field, self.sortId.currentIndex() == 0)
++        request = PageRequest(page, SEARCH_PAGE_SIZE).clamp(len(books))
++        items = books[request.offset:request.offset + request.page_size]
++        self.ApplyPageResult(PageResult.from_total(items, request, len(books)), self.bookList.AddBookItemByDbBook)
++
++    def ChangeRecommendSort(self, pos):
++        if self.recommendBooks is None:
++            return
++        self.bookList.clear()
++        self.ShowRecommendPage(1)
+ 
+     def SendSearchCategories(self, page):
+         sort = ["dd", "da", "ld", "vd"]
+@@ -490,6 +563,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
+         if self.bookList.isLoadingPage or not 1 <= page <= self.bookList.pages:
+             return
+         self.bookList.clear()
++        if self.recommendBooks is not None:
++            self.ShowRecommendPage(page)
++            return
+         if not self.categories:
+             self.SendSearch(page)
+         else:
+@@ -502,6 +578,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
+         if self.bookList.page >= self.bookList.pages:
+             self.SetPageLoading(False)
+             return
++        if self.recommendBooks is not None:
++            self.ShowRecommendPage(self.bookList.page + 1)
++            return
+         if not self.categories:
+             self.SendSearch(self.bookList.page + 1)
+         else:
+@@ -509,6 +588,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
+         return
+ 
+     def ChangeSort(self, pos):
++        if self.recommendSource is not None:
++            # 推荐列表只在本地重排，不能触发搜索
++            self.ChangeRecommendSort(pos)
++            return
+         self.ResetSearch()
+         if not self.categories:
+             self.SendSearch(1)
+diff --git a/src/view/user/history_view.py b/src/view/user/history_view.py
+index b620561..5cff901 100644
+--- a/src/view/user/history_view.py
++++ b/src/view/user/history_view.py
+@@ -1,11 +1,17 @@
+ import os
+ import time
++from datetime import datetime
+ 
+ from PySide6 import QtWidgets
+ from PySide6.QtSql import QSqlDatabase, QSqlQuery
+ 
+ from config.setting import Setting
+ from interface.ui_history import Ui_History
++from qt_owner import QtOwner
++from server.book_query import SORT_FIELDS
++from server.sql_server import SqlServer
++from task.qt_task import QtTaskBase
++from tools.langconv import Converter
+ from tools.log import Log
+ from tools.str import Str
+ from tools.pagination import HISTORY_PAGE_SIZE, page_count
+@@ -23,10 +29,82 @@ class QtHistoryData(object):
+         self.tick = 0
+ 
+ 
+-class HistoryView(QtWidgets.QWidget, Ui_History):
++# 最近阅读 + 与本地搜索相同的书库字段
++HISTORY_SORT_FIELDS = ("tick",) + SORT_FIELDS[:6]
++DATE_SORT_FIELDS = ("updated_at", "created_at")
++_toSimple = None
++
++
++def iso_to_tick(text):
++    """书库时间形如 2026-11-01T16:15:06.796Z。"""
++    if not text or not isinstance(text, str):
++        return None
++    for fmt in ("%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%dT%H:%M:%S%z"):
++        try:
++            return int(datetime.strptime(text, fmt).timestamp())
++        except ValueError:
++            continue
++    return None
++
++
++def history_has_update(history, info):
++    """上次阅读之后，书库中这本书又更新过。"""
++    tick = iso_to_tick(info.updated_at) if info else None
++    return tick is not None and tick > (history.tick or 0)
++
++
++def normalize_title(text):
++    global _toSimple
++    if _toSimple is None:
++        _toSimple = Converter('zh-hans')
++    return _toSimple.convert(text or "").replace(" ", "").lower()
++
++
++def history_show_title(history, info):
++    """书库标题经过简体化（日文汉字也被转换），与历史标题是同一本书时保留原标题；
++    不一致（历史写错了标题，或已改名）时以书库为准。"""
++    if not info or not info.title or normalize_title(history.name) == normalize_title(info.title):
++        return history.name
++    return info.title
++
++
++def filter_and_sort_history(histories, infos, field="tick", descending=True, text="", onlyUpdate=False):
++    """infos 为 bookId -> 本地书库中的书；书库中缺少排序字段的书排在最后。"""
++    items = sorted(histories, key=lambda h: h.bookId)
++    items.sort(key=lambda h: h.tick or 0, reverse=True)
++    if text:
++        key = normalize_title(text)
++
++        def match(h):
++            info = infos.get(h.bookId)
++            titles = [h.name] + ([info.title, info.title2] if info else [])
++            return any(key in normalize_title(title) for title in titles)
++
++        items = [h for h in items if match(h)]
++    if onlyUpdate:
++        items = [h for h in items if history_has_update(h, infos.get(h.bookId))]
++    if field == "tick":
++        return items if descending else items[::-1]
++
++    def value(h):
++        v = getattr(infos.get(h.bookId), field, None)
++        if field in DATE_SORT_FIELDS:
++            return str(v)[:19] if v else None
++        try:
++            return int(v)
++        except (TypeError, ValueError):
++            return None
++
++    present = [h for h in items if value(h) is not None]
++    absent = [h for h in items if value(h) is None]
++    return sorted(present, key=value, reverse=descending) + absent
++
++
++class HistoryView(QtWidgets.QWidget, Ui_History, QtTaskBase):
+     def __init__(self):
+         super(self.__class__, self).__init__()
+         Ui_History.__init__(self)
++        QtTaskBase.__init__(self)
+         self.setupUi(self)
+ 
+         # self.bookList.InitBook(self.LoadNextPage)
+@@ -63,6 +141,14 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
+         self.bookList.isDelMenu = True
+         self.bookList.DelCallBack = self.DelCallBack
+ 
++        # bookId -> 本地书库中的书，用于排序、筛选，并以书库为准显示标题和封面
++        self.bookInfos = {}
++        self.updateCheckText = self.updateCheck.text()
++        self.sortKey.currentIndexChanged.connect(self.ChangeFilter)
++        self.sortId.currentIndexChanged.connect(self.ChangeFilter)
++        self.updateCheck.toggled.connect(self.ChangeFilter)
++        self.searchEdit.textChanged.connect(self.ChangeFilter)
++
+     def SwitchCurrent(self, **kwargs):
+         refresh = kwargs.get("refresh")
+         if refresh:
+@@ -73,8 +159,29 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
+             self.spinBox.setValue(1)
+             self.bookList.UpdateState()
+             self.UpdatePageLabel()
++            if self.history and QtOwner().IsCanUseDb():
++                sql = SqlServer.GetBookByIds(list(self.history))
++                self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.LoadBookInfosBack)
++                return
+             self.RefreshData(self.bookList.page)
+ 
++    def LoadBookInfosBack(self, books):
++        self.bookInfos = {book.id: book for book in books or []}
++        num = sum(1 for h in self.history.values() if history_has_update(h, self.bookInfos.get(h.bookId)))
++        self.updateCheck.setText("{}({})".format(self.updateCheckText, num))
++        self.bookList.clear()
++        self.RefreshData(1)
++
++    def ChangeFilter(self, *args):
++        self.bookList.clear()
++        self.RefreshData(1)
++
++    def GetShowList(self):
++        return filter_and_sort_history(self.history.values(), self.bookInfos,
++                                       HISTORY_SORT_FIELDS[self.sortKey.currentIndex()],
++                                       self.sortId.currentIndex() == 0,
++                                       self.searchEdit.text().strip(), self.updateCheck.isChecked())
++
+     def GetHistory(self, bookId):
+         return self.history.get(bookId)
+ 
+@@ -148,9 +255,7 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
+         self.UpdatePageLabel()
+ 
+     def RefreshData(self, page):
+-        sortedList = list(self.history.values())
+-        sortedList.sort(key=lambda a: a.bookId)
+-        sortedList.sort(key=lambda a: a.tick, reverse=True)
++        sortedList = self.GetShowList()
+         request = PageRequest(page, self.pageNums).clamp(len(sortedList))
+         items = sortedList[request.offset:request.offset + request.page_size]
+         result = PageResult.from_total(items, request, len(sortedList))
+@@ -158,8 +263,10 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
+         self.bookList.UpdateState(True)
+         self.spinBox.setMaximum(result.pages)
+         self.spinBox.setValue(result.page)
++        self.nums.setText("{}：{} ".format(Str.GetStr(Str.HistoryNum), result.total))
+         for info in result.items:
+-            self.bookList.AddBookItemByHistory(info)
++            book = self.bookInfos.get(info.bookId)
++            self.bookList.AddBookItemByHistory(info, book, history_show_title(info, book))
+         self.bookList.UpdateState()
+         self.UpdatePageLabel()
+ 
+diff --git a/tests/test_detail_history_refresh.py b/tests/test_detail_history_refresh.py
+new file mode 100644
+index 0000000..c0f83f5
+--- /dev/null
++++ b/tests/test_detail_history_refresh.py
+@@ -0,0 +1,31 @@
++import os
++from pathlib import Path
++import sys
++import types
++import unittest
++from types import SimpleNamespace
++from unittest.mock import Mock, PropertyMock, patch
++
++os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
++# 测试源代码时无需编译图片资源，业务模块保持真实导入。
++sys.modules.setdefault("images_rc", types.ModuleType("images_rc"))
++
++from qt_owner import QtOwner
++
++
++class DetailHistoryRefreshTests(unittest.TestCase):
++    def test_both_detail_pages_reload_reading_progress(self):
++        views = {}
++        for name in ("bookInfoView", "bookInfoView2"):
++            views[name] = SimpleNamespace(ReloadHistory=SimpleNamespace(emit=Mock()))
++            item = patch.object(QtOwner, name, new_callable=PropertyMock, return_value=views[name])
++            item.start()
++            self.addCleanup(item.stop)
++        QtOwner().ReloadBookInfoHistory()
++        for view in views.values():
++            view.ReloadHistory.emit.assert_called_once_with()
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/test_history_record.py b/tests/test_history_record.py
+new file mode 100644
+index 0000000..36ba752
+--- /dev/null
++++ b/tests/test_history_record.py
+@@ -0,0 +1,63 @@
++import os
++from pathlib import Path
++import sys
++import types
++import unittest
++from types import SimpleNamespace
++from unittest.mock import PropertyMock, patch
++
++os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
++# 测试源代码时无需编译图片资源，业务模块保持真实导入。
++sys.modules.setdefault("images_rc", types.ModuleType("images_rc"))
++
++from PySide6.QtWidgets import QApplication
++
++from qt_owner import QtOwner
++from tools.book import Book, BookMgr
++from view.read.read_new_view import ReadNewView
++
++
++class HistoryRecordTests(unittest.TestCase):
++    """历史记录必须写入正在阅读的那本书，不能取详情页残留的书名。"""
++
++    @classmethod
++    def setUpClass(cls):
++        cls.app = QApplication.instance() or QApplication([])
++
++    def setUp(self):
++        self.history = {}
++        historyView = SimpleNamespace(GetHistory=self.history.get)
++        # 详情页1 停留在另一本书上，模拟从“漫画详情2”进入阅读
++        bookInfoView = SimpleNamespace(bookName="别的书", GetBookUrl=lambda: "https://other",
++                                       GetBookUrlPath=lambda: "other.jpg")
++        for name, value in (("historyView", historyView), ("bookInfoView", bookInfoView)):
++            item = patch.object(QtOwner, name, new_callable=PropertyMock, return_value=value)
++            item.start()
++            self.addCleanup(item.stop)
++
++    def addBook(self, bookId, title, fileServer, path):
++        book = Book()
++        book._id = bookId
++        book.title = title
++        book.thumb = {"fileServer": fileServer, "path": path}
++        BookMgr().books[bookId] = book
++        self.addCleanup(BookMgr().books.pop, bookId, None)
++
++    def test_uses_reading_book_instead_of_detail_page(self):
++        self.addBook("b2", "正在读的书", "https://s", "b2.jpg")
++        reader = SimpleNamespace(bookId="b2")
++        self.assertEqual(ReadNewView.GetHistoryBookInfo(reader), ("正在读的书", "https://s", "b2.jpg"))
++
++    def test_falls_back_to_existing_history_without_book_info(self):
++        self.history["b3"] = SimpleNamespace(name="旧标题", url="https://old", path="b3.jpg")
++        reader = SimpleNamespace(bookId="b3")
++        self.assertEqual(ReadNewView.GetHistoryBookInfo(reader), ("旧标题", "https://old", "b3.jpg"))
++
++    def test_unknown_book_never_borrows_detail_page_title(self):
++        reader = SimpleNamespace(bookId="b4")
++        self.assertEqual(ReadNewView.GetHistoryBookInfo(reader), ("", "", ""))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/test_history_sort_filter.py b/tests/test_history_sort_filter.py
+new file mode 100644
+index 0000000..278eabf
+--- /dev/null
++++ b/tests/test_history_sort_filter.py
+@@ -0,0 +1,100 @@
++import os
++from pathlib import Path
++import sys
++import types
++import unittest
++from datetime import datetime, timezone
++from types import SimpleNamespace
++
++os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
++# 测试源代码时无需编译图片资源，业务模块保持真实导入。
++sys.modules.setdefault("images_rc", types.ModuleType("images_rc"))
++
++from PySide6.QtWidgets import QApplication
++
++from component.list.comic_list_widget import ComicListWidget
++from tools.str import Str
++from view.user.history_view import filter_and_sort_history, history_has_update, history_show_title, iso_to_tick
++
++
++def tick(text):
++    return int(datetime.strptime(text, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
++
++
++def history(bookId, name, readDay):
++    return SimpleNamespace(bookId=bookId, name=name, tick=tick(readDay), epsId=0)
++
++
++def info(bookId, title, updated, totalLikes=None, title2=""):
++    return SimpleNamespace(id=bookId, title=title, title2=title2, totalLikes=totalLikes,
++                           updated_at="{}T00:00:00.000Z".format(updated) if updated else 0)
++
++
++class HistorySortFilterTests(unittest.TestCase):
++    def setUp(self):
++        self.histories = [history("a", "旧标题", "2026-01-03"), history("b", "漫畫乙", "2026-01-02"),
++                          history("c", "丙", "2026-01-01"), history("d", "不在书库", "2026-01-04")]
++        self.infos = {"a": info("a", "正确标题甲", "2026-02-01", 5),
++                      "b": info("b", "漫畫乙", "2025-12-01", 9),
++                      "c": info("c", "丙", "2026-01-05", None)}
++
++    def ids(self, **kwargs):
++        return [h.bookId for h in filter_and_sort_history(self.histories, self.infos, **kwargs)]
++
++    def test_default_is_recent_reading_first(self):
++        self.assertEqual(self.ids(), ["d", "a", "b", "c"])
++        self.assertEqual(self.ids(descending=False), ["c", "b", "a", "d"])
++
++    def test_sort_by_catalog_field_puts_missing_last(self):
++        # 缺少字段的 d（不在书库）和 c（无爱心数）排最后，彼此仍按最近阅读
++        self.assertEqual(self.ids(field="totalLikes"), ["b", "a", "d", "c"])
++        self.assertEqual(self.ids(field="totalLikes", descending=False), ["a", "b", "d", "c"])
++        self.assertEqual(self.ids(field="updated_at"), ["a", "c", "b", "d"])
++
++    def test_search_matches_catalog_title_and_ignores_script(self):
++        # 历史里存的是错误的“旧标题”，按书库的正确标题也能搜到；简繁体都能匹配
++        self.assertEqual(self.ids(text="正确"), ["a"])
++        self.assertEqual(self.ids(text="漫画"), ["b"])
++        self.assertEqual(self.ids(text="不在"), ["d"])
++
++    def test_only_update_keeps_books_updated_after_last_read(self):
++        self.assertEqual(self.ids(onlyUpdate=True), ["a", "c"])
++        self.assertTrue(history_has_update(self.histories[0], self.infos["a"]))
++        self.assertFalse(history_has_update(self.histories[3], None))
++
++    def test_show_title_keeps_original_script_and_fixes_wrong_title(self):
++        # 书库标题是简体化的（日文汉字也被转换），同一本书时保留历史里的原标题
++        same = history("e", "王女&女騎士 恥辱の見世物", "2026-01-01")
++        self.assertEqual(history_show_title(same, info("e", "王女&女骑士 耻辱の见世物", None)), "王女&女騎士 恥辱の見世物")
++        # 历史里写成了别的书的标题时，以书库为准
++        self.assertEqual(history_show_title(self.histories[0], self.infos["a"]), "正确标题甲")
++        self.assertEqual(history_show_title(self.histories[3], None), "不在书库")
++
++    def test_iso_to_tick_accepts_catalog_formats(self):
++        self.assertEqual(iso_to_tick("2026-01-02T00:00:00.000Z"), tick("2026-01-02"))
++        self.assertEqual(iso_to_tick("2026-01-02T00:00:00Z"), tick("2026-01-02"))
++        self.assertIsNone(iso_to_tick(0))
++
++
++class HistoryItemTextTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.app = QApplication.instance() or QApplication([])
++        Str.Reload()
++
++    def test_progress_is_short_and_full_text_in_tooltip(self):
++        # 进度与“NEW”标记共用一行，只有封面宽，必须用短格式
++        books = ComicListWidget(None)
++        self.addCleanup(books.close)
++        record = SimpleNamespace(bookId="a", name="A", url="", path="", tick=tick("2026-01-01"), epsId=19)
++        book = SimpleNamespace(epsCount=35, totalLikes=1, likesCount=0, fileServer="", path="",
++                               updated_at="", pages=10, finished=False)
++        books.AddBookItemByHistory(record, book, "A")
++        label = books.itemWidget(books.item(0)).categoryLabel
++        self.assertTrue(label.text().endswith(" 20/35章"), label.text())
++        self.assertEqual(label.toolTip(), "上次看到第20章/35章")
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/test_pagination.py b/tests/test_pagination.py
+index 053047f..534b8d3 100644
+--- a/tests/test_pagination.py
++++ b/tests/test_pagination.py
+@@ -253,9 +253,11 @@ class PaginationTests(unittest.TestCase):
+         listed = []
+         book_list = BaseListWidget(None)
+         self.addCleanup(book_list.close)
+-        book_list.AddBookItemByHistory = lambda book: listed.append(book.bookId)
+-        history = SimpleNamespace(history={str(i): SimpleNamespace(bookId=str(i), tick=i) for i in range(40)},
+-                                  pageNums=20, bookList=book_list, spinBox=QSpinBox(), UpdatePageLabel=lambda: None)
++        book_list.AddBookItemByHistory = lambda book, info=None, title=None: listed.append(book.bookId)
++        history = SimpleNamespace(history={str(i): SimpleNamespace(bookId=str(i), name=str(i), tick=i) for i in range(40)},
++                                  pageNums=20, bookList=book_list, spinBox=QSpinBox(), nums=QLabel(), bookInfos={},
++                                  UpdatePageLabel=lambda: None)
++        history.GetShowList = lambda: list(history.history.values())
+         HistoryView.RefreshData(history, 2)
+         self.assertEqual((book_list.page, book_list.pages, history.spinBox.maximum(), len(listed)), (2, 2, 2, 20))
+         history.history = {}
+diff --git a/tests/test_recommend_order.py b/tests/test_recommend_order.py
+new file mode 100644
+index 0000000..7911d69
+--- /dev/null
++++ b/tests/test_recommend_order.py
+@@ -0,0 +1,111 @@
++import json
++import os
++from pathlib import Path
++import sys
++import types
++import unittest
++from types import SimpleNamespace
++from unittest.mock import Mock
++
++os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
++# 测试源代码时无需编译图片资源，业务模块保持真实导入。
++sys.modules.setdefault("images_rc", types.ModuleType("images_rc"))
++
++from PySide6.QtWidgets import QApplication
++
++from server.book_mapping import book_from_comic
++from server.book_query import RECOMMEND_SORT_FIELDS, order_books_by_ids, sort_books
++from tools.str import Str
++from view.search.search_view import SearchView
++
++
++def books(*ids, **fields):
++    return [SimpleNamespace(id=i, **{k: v[n] for k, v in fields.items()}) for n, i in enumerate(ids)]
++
++
++class RecommendOrderTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.app = QApplication.instance() or QApplication([])
++
++    def test_keeps_recommend_order_and_reports_missing(self):
++        # IN 查询按主键顺序返回，推荐顺序是 c, a, d, b
++        ordered, missing = order_books_by_ids(books("a", "b", "c"), ["c", "a", "d", "b", "a"])
++        self.assertEqual([v.id for v in ordered], ["c", "a", "b"])
++        self.assertEqual(missing, ["d"])
++
++    def test_sort_books_by_field_keeps_rank_and_puts_missing_last(self):
++        items = books("a", "b", "c", "d", totalLikes=[5, None, 9, 5],
++                      updated_at=["2024-01-01T00:00:00.000Z", 0, "2026-01-01T00:00:00.000Z", "2025-01-01T00:00:00.000Z"])
++        self.assertEqual([v.id for v in sort_books(items, "")], ["a", "b", "c", "d"])
++        self.assertEqual([v.id for v in sort_books(items, "totalLikes")], ["c", "a", "d", "b"])
++        self.assertEqual([v.id for v in sort_books(items, "totalLikes", False)], ["a", "d", "c", "b"])
++        self.assertEqual([v.id for v in sort_books(items, "updated_at")], ["c", "d", "a", "b"])
++
++    def test_book_from_comic_maps_server_fields(self):
++        book = book_from_comic({"_id": "x", "title": "标题", "pagesCount": 30, "epsCount": 2, "totalLikes": 7,
++                                "categories": ["全彩", "长篇"], "updated_at": "2026-01-01T00:00:00.000Z",
++                                "thumb": {"fileServer": "https://s", "path": "x.jpg"}})
++        self.assertEqual((book.id, book.title, book.pages, book.epsCount, book.totalLikes, book.likesCount),
++                         ("x", "标题", 30, 2, 7, 7))
++        self.assertEqual((book.categories, book.fileServer, book.path), ("全彩,长篇", "https://s", "x.jpg"))
++
++    def view(self, source=(2, "src"), ids=()):
++        view = SimpleNamespace(recommendSource=source, recommendIds=list(ids), recommendFound={},
++                               recommendPending=0, AddHttpTask=Mock(), FinishRecommendBooks=Mock(),
++                               OpenRecommendationBack3=Mock())
++        view.FillRecommendBooks = lambda source, ids, fallback: SearchView.FillRecommendBooks(view, source, ids, fallback)
++        return view
++
++    def test_local_result_is_reordered_and_missing_books_fetched(self):
++        view = self.view(ids=["b", "new", "a"])
++        SearchView.OpenLocalRecommendationBack(view, books("a", "b"), ((2, "src"), {}))
++        self.assertEqual(list(view.recommendFound), ["b", "a"])
++        self.assertEqual(view.recommendPending, 1)
++        self.assertEqual(view.AddHttpTask.call_args[0][2], ((2, "src"), "new"))
++        view.FinishRecommendBooks.assert_not_called()
++
++    def test_fallback_and_network_results_finish_once(self):
++        view = self.view(ids=["x", "y"])
++        fallbackBook = SimpleNamespace(id="x")
++        SearchView.FillRecommendBooks(view, (2, "src"), ["x", "y"], {"x": fallbackBook})
++        self.assertIs(view.recommendFound["x"], fallbackBook)
++        raw = {"st": Str.Ok, "data": json.dumps({"data": {"comic": {"_id": "y", "title": "Y"}}})}
++        SearchView.OpenRecommendationBack3(view, raw, ((2, "src"), "y"))
++        self.assertEqual(view.recommendFound["y"].title, "Y")
++        view.FinishRecommendBooks.assert_called_once_with()
++
++    def test_stale_result_from_previous_list_is_ignored(self):
++        view = self.view(source=(2, "other"), ids=["a", "new"])
++        SearchView.OpenLocalRecommendationBack(view, books("a"), ((2, "src"), {}))
++        SearchView.OpenRecommendationBack3(view, {"st": Str.Ok, "data": "{}"}, ((2, "src"), "new"))
++        self.assertEqual((view.recommendFound, view.AddHttpTask.called), ({}, False))
++        view.FinishRecommendBooks.assert_not_called()
++
++    def test_also_viewed_uses_api_books_as_fallback_in_order(self):
++        calls = []
++        view = SimpleNamespace(recommendSource=(1, "src"), LoadRecommendBooks=lambda *args: calls.append(args))
++        raw = {"data": json.dumps({"data": {"comics": [{"_id": "b", "title": "B"}, {"_id": "a", "title": "A"}]}})}
++        SearchView.OpenRecommendationBack(view, raw, "src")
++        source, ids, fallback = calls[0]
++        self.assertEqual((source, ids, fallback["a"].title), ((1, "src"), ["b", "a"], "A"))
++        SearchView.OpenRecommendationBack(view, raw, "other")
++        self.assertEqual(len(calls), 1)
++
++    def test_recommend_page_is_sorted_and_paged_locally(self):
++        pages = []
++        items = books(*["b{}".format(i) for i in range(25)], totalLikes=list(range(25)))
++        view = SimpleNamespace(recommendBooks=items,
++                               recommendSortKey=SimpleNamespace(currentIndex=lambda: RECOMMEND_SORT_FIELDS.index("totalLikes")),
++                               sortId=SimpleNamespace(currentIndex=lambda: 0),
++                               bookList=SimpleNamespace(AddBookItemByDbBook=Mock()),
++                               ApplyPageResult=lambda result, add: pages.append(result))
++        SearchView.ShowRecommendPage(view, 1)
++        SearchView.ShowRecommendPage(view, 2)
++        self.assertEqual([(r.page, r.pages, len(r.items)) for r in pages], [(1, 2, 20), (2, 2, 5)])
++        self.assertEqual((pages[0].items[0].id, pages[1].items[-1].id), ("b24", "b0"))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/ui/ui_history.ui b/ui/ui_history.ui
+index 362c78e..75543c5 100644
+--- a/ui/ui_history.ui
++++ b/ui/ui_history.ui
+@@ -19,6 +19,94 @@
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout">
++       <item>
++        <widget class="QLineEdit" name="searchEdit">
++         <property name="minimumSize">
++          <size>
++           <width>150</width>
++           <height>30</height>
++          </size>
++         </property>
++         <property name="placeholderText">
++          <string>搜索标题</string>
++         </property>
++         <property name="clearButtonEnabled">
++          <bool>true</bool>
++         </property>
++        </widget>
++       </item>
++       <item>
++        <widget class="QCheckBox" name="updateCheck">
++         <property name="text">
++          <string>只看有更新</string>
++         </property>
++        </widget>
++       </item>
++       <item>
++        <widget class="QComboBox" name="sortKey">
++         <property name="minimumSize">
++          <size>
++           <width>100</width>
++           <height>30</height>
++          </size>
++         </property>
++         <item>
++          <property name="text">
++           <string>最近阅读</string>
++          </property>
++         </item>
++         <item>
++          <property name="text">
++           <string>更新时间</string>
++          </property>
++         </item>
++         <item>
++          <property name="text">
++           <string>创建时间</string>
++          </property>
++         </item>
++         <item>
++          <property name="text">
++           <string>爱心数</string>
++          </property>
++         </item>
++         <item>
++          <property name="text">
++           <string>观看数</string>
++          </property>
++         </item>
++         <item>
++          <property name="text">
++           <string>章节数</string>
++          </property>
++         </item>
++         <item>
++          <property name="text">
++           <string>图片数</string>
++          </property>
++         </item>
++        </widget>
++       </item>
++       <item>
++        <widget class="QComboBox" name="sortId">
++         <property name="minimumSize">
++          <size>
++           <width>0</width>
++           <height>30</height>
++          </size>
++         </property>
++         <item>
++          <property name="text">
++           <string>降序</string>
++          </property>
++         </item>
++         <item>
++          <property name="text">
++           <string>升序</string>
++          </property>
++         </item>
++        </widget>
++       </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+@@ -48,7 +136,7 @@
+           </size>
+          </property>
+          <property name="text">
+-          <string>收藏数：</string>
++          <string>记录数：</string>
+          </property>
+         </widget>
+        </item>
+diff --git a/ui/ui_search.ui b/ui/ui_search.ui
+index 9a7f2f3..d59c8bd 100644
+--- a/ui/ui_search.ui
++++ b/ui/ui_search.ui
+@@ -206,6 +206,51 @@
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
++     <item>
++      <widget class="QComboBox" name="recommendSortKey">
++       <property name="minimumSize">
++        <size>
++         <width>100</width>
++         <height>0</height>
++        </size>
++       </property>
++       <item>
++        <property name="text">
++         <string>推荐顺序</string>
++        </property>
++       </item>
++       <item>
++        <property name="text">
++         <string>更新时间</string>
++        </property>
++       </item>
++       <item>
++        <property name="text">
++         <string>创建时间</string>
++        </property>
++       </item>
++       <item>
++        <property name="text">
++         <string>爱心数</string>
++        </property>
++       </item>
++       <item>
++        <property name="text">
++         <string>观看数</string>
++        </property>
++       </item>
++       <item>
++        <property name="text">
++         <string>章节数</string>
++        </property>
++       </item>
++       <item>
++        <property name="text">
++         <string>图片数</string>
++        </property>
++       </item>
++      </widget>
++     </item>
+      <item>
+       <widget class="QComboBox" name="sortKey">
+        <property name="enabled">

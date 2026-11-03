@@ -12,12 +12,13 @@ from qt_owner import QtOwner
 from server import req, Log, Status
 from server.sql_server import SqlServer
 from task.qt_task import QtTaskBase
-from tools.book import BookMgr
 from tools.category import CateGoryMgr
 from tools.langconv import Converter
 from tools.str import Str
-from server.book_query import BookQuery, SORT_FIELDS
+from server.book_mapping import book_from_comic
+from server.book_query import BookQuery, SORT_FIELDS, RECOMMEND_SORT_FIELDS, order_books_by_ids, sort_books
 from tools.page_result import PageRequest, PageResult
+from tools.pagination import SEARCH_PAGE_SIZE
 
 
 class SearchView(QWidget, Ui_Search, QtTaskBase):
@@ -66,15 +67,38 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.cacheRecommend = {}
         self.isSearch2 = False
         self.isCanJump = True
+        # 当前显示的推荐列表 (类型, bookId)，切换列表后丢弃旧请求的回包
+        self.recommendSource = None
+        # 推荐列表一次取完，按推荐顺序保存，本地分页和排序
+        self.recommendIds = []
+        self.recommendFound = {}
+        self.recommendPending = 0
+        self.recommendBooks = None
+        self.recommendSortKey.hide()
+        self.recommendSortKey.currentIndexChanged.connect(self.ChangeRecommendSort)
 
     def ResetSearch(self):
+        self.recommendSource = None
+        self.recommendBooks = None
         self.bookList.UpdatePage(1, 1)
         self.bookList.clear()
         self.spinBox.setMaximum(1)
         self.spinBox.setValue(1)
         self.label.setText(self.bookList.GetPageStr())
 
+    def SetRecommendShow(self):
+        # 推荐列表不走搜索接口，只显示本地分页和推荐排序
+        self.label.show()
+        self.spinBox.show()
+        self.jumpPage.show()
+        self.recommendSortKey.show()
+        self.sortId.show()
+        self.sortKey.hide()
+        self.comboBox.hide()
+        self.isCanJump = True
+
     def SetJumpShow(self, isShow):
+        self.recommendSortKey.hide()
         if isShow:
             self.label.show()
             self.spinBox.show()
@@ -233,27 +257,19 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
 
         isRecomend =  kwargs.get("recoment")
         if isRecomend == 1:
-            self.bookList.clear()
             bookId = kwargs.get("bookId")
-            self.bookList.UpdatePage(1, 1)
-            self.spinBox.setValue(1)
-            self.spinBox.setMaximum(1)
-            self.label.setText(self.bookList.GetPageStr())
-            QtOwner().ShowLoading()
-            self.AddHttpTask(req.GetComicsRecommendation(bookId), self.OpenRecommendationBack)
+            self.StartRecommend((1, bookId))
+            self.AddHttpTask(req.GetComicsRecommendation(bookId), self.OpenRecommendationBack, bookId)
             return
         if isRecomend == 2:
-            self.bookList.clear()
             bookId = kwargs.get("bookId")
-            self.bookList.UpdatePage(1, 1)
-            self.spinBox.setValue(1)
-            self.spinBox.setMaximum(1)
-            self.label.setText(self.bookList.GetPageStr())
+            self.StartRecommend((2, bookId))
             if bookId in self.cacheRecommend:
                 self.OpenRecommendationBack2({"data": self.cacheRecommend[bookId]}, bookId)
                 return
-            QtOwner().ShowLoading()
-            self.AddHttpTask(req.GetRecommendByIdReq(bookId), self.OpenRecommendationBack2, bookId)
+            # 有本地书库时一次取服务上限 100 个，本地分页；没有书库时每本都要单独请求，只取一页
+            limit = 100 if QtOwner().IsCanUseDb() else SEARCH_PAGE_SIZE
+            self.AddHttpTask(req.GetRecommendByIdReq(bookId, limit), self.OpenRecommendationBack2, bookId)
             return
 
         if categories is not None:
@@ -304,57 +320,114 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         self.sortKey.setVisible(isLocal)
         self.comboBox.setVisible(not isLocal)
 
-    def OpenRecommendationBack(self, raw):
-        QtOwner().CloseLoading()
-        data = raw.get("data")
+    def OpenRecommendationBack(self, raw, bookId):
+        source = (1, bookId)
+        if self.recommendSource != source:
+            return
+        fallback = {}
         try:
-            commentsData = json.loads(data)
+            commentsData = json.loads(raw.get("data"))
             for v in commentsData.get("data").get("comics"):
-                self.bookList.AddBookByDict(v)
+                book = book_from_comic(v)
+                fallback[book.id] = book
         except Exception as es:
             Log.Error(es)
+        # 官方接口固定返回约 10 个；优先用本地书库的完整字段排序，没收录的直接用接口数据
+        self.LoadRecommendBooks(source, list(fallback), fallback)
 
     def OpenRecommendationBack2(self, raw, bookId):
-        QtOwner().CloseLoading()
-        data = raw.get("data")
+        source = (2, bookId)
+        if self.recommendSource != source:
+            return
+        allBookIds = []
         try:
-            commentsData = json.loads(data)
-            allBookIds = []
-            for v in commentsData.get("recommendations", []):
-                allBookIds.append(v)
-            if QtOwner().IsCanUseDb():
-                sql = SqlServer.GetBookByIds(allBookIds)
-                self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.OpenLocalRecommendationBack, backParam=1)
-            else:
-                for bookId in allBookIds:
-                    self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenRecommendationBack3, bookId)
-                    # if v.get('pic'):
-                    #     v['thumb'] = {}
-                    #     host = ToolUtil.GetUrlHost(v.get('pic'))
-                    #     v['thumb']['fileServer'] = "https://" + host
-                    #     v['thumb']['path'] = v.get('pic').replace("http://", "").replace("https://", "").replace(host, "").replace("/static", "")
-                    #     self.bookList.AddBookByDict(v)
+            commentsData = json.loads(raw.get("data"))
+            allBookIds = list(commentsData.get("recommendations", []))
             # self.cacheRecommend[bookId] = data
         except Exception as es:
             Log.Error(es)
+        self.LoadRecommendBooks(source, allBookIds, {})
 
-    def OpenRecommendationBack3(self, raw, bookId):
-        book = BookMgr().GetBook(bookId)
-        if not book:
-            return
-        if raw.get("st") == Str.Ok:
-            data = json.loads(raw.get("data"))
-            self.bookList.AddBookByDict(data.get('data').get("comic"))
-        return
-
-    def OpenLocalRecommendationBack(self, books, page):
-        self.SendLocalBack(books, page)
-        if books is None:
-            return
-        self.bookList.pages = 1
-        self.spinBox.setMaximum(1)
+    def StartRecommend(self, source):
+        self.bookList.clear()
+        self.recommendSource = source
+        self.recommendIds = []
+        self.recommendFound = {}
+        self.recommendPending = 0
+        self.recommendBooks = None
+        self.recommendSortKey.blockSignals(True)
+        self.recommendSortKey.setCurrentIndex(0)
+        self.recommendSortKey.blockSignals(False)
+        self.bookList.UpdatePage(1, 1)
         self.spinBox.setValue(1)
-        self.bookList.UpdatePage(1, self.bookList.pages)
+        self.spinBox.setMaximum(1)
+        self.label.setText(self.bookList.GetPageStr())
+        QtOwner().ShowLoading()
+
+    def LoadRecommendBooks(self, source, bookIds, fallback):
+        """bookIds 为推荐顺序；先查本地书库，缺的用 fallback 或网络补上，全部到齐后再显示。"""
+        self.recommendIds = list(dict.fromkeys(bookIds))
+        if self.recommendIds and QtOwner().IsCanUseDb():
+            sql = SqlServer.GetBookByIds(self.recommendIds)
+            self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.OpenLocalRecommendationBack, backParam=(source, fallback))
+        else:
+            self.FillRecommendBooks(source, self.recommendIds, fallback)
+
+    def OpenLocalRecommendationBack(self, books, backParam):
+        source, fallback = backParam
+        if self.recommendSource != source:
+            return
+        # IN 查询不保证顺序；本地书库还没收录的新书单独补上，查询失败时全部补
+        found, missing = order_books_by_ids(books or [], self.recommendIds)
+        self.recommendFound = {book.id: book for book in found}
+        self.FillRecommendBooks(source, missing, fallback)
+
+    def FillRecommendBooks(self, source, bookIds, fallback):
+        netIds = []
+        for bookId in bookIds:
+            if bookId in fallback:
+                self.recommendFound[bookId] = fallback[bookId]
+            else:
+                netIds.append(bookId)
+        self.recommendPending = len(netIds)
+        for bookId in netIds:
+            self.AddHttpTask(req.GetComicsBookReq(bookId), self.OpenRecommendationBack3, (source, bookId))
+        if not netIds:
+            self.FinishRecommendBooks()
+
+    def OpenRecommendationBack3(self, raw, backParam):
+        source, bookId = backParam
+        if self.recommendSource != source:
+            return
+        try:
+            if raw.get("st") == Str.Ok:
+                data = json.loads(raw.get("data"))
+                self.recommendFound[bookId] = book_from_comic(data.get('data').get("comic"))
+        except Exception as es:
+            Log.Error(es)
+        self.recommendPending -= 1
+        if self.recommendPending <= 0:
+            self.FinishRecommendBooks()
+
+    def FinishRecommendBooks(self):
+        self.recommendBooks = [self.recommendFound[i] for i in self.recommendIds if i in self.recommendFound]
+        self.bookList.clear()
+        self.ShowRecommendPage(1)
+
+    def ShowRecommendPage(self, page):
+        if self.recommendBooks is None:
+            return
+        field = RECOMMEND_SORT_FIELDS[self.recommendSortKey.currentIndex()]
+        books = sort_books(self.recommendBooks, field, self.sortId.currentIndex() == 0)
+        request = PageRequest(page, SEARCH_PAGE_SIZE).clamp(len(books))
+        items = books[request.offset:request.offset + request.page_size]
+        self.ApplyPageResult(PageResult.from_total(items, request, len(books)), self.bookList.AddBookItemByDbBook)
+
+    def ChangeRecommendSort(self, pos):
+        if self.recommendBooks is None:
+            return
+        self.bookList.clear()
+        self.ShowRecommendPage(1)
 
     def SendSearchCategories(self, page):
         sort = ["dd", "da", "ld", "vd"]
@@ -490,6 +563,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         if self.bookList.isLoadingPage or not 1 <= page <= self.bookList.pages:
             return
         self.bookList.clear()
+        if self.recommendBooks is not None:
+            self.ShowRecommendPage(page)
+            return
         if not self.categories:
             self.SendSearch(page)
         else:
@@ -502,6 +578,9 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         if self.bookList.page >= self.bookList.pages:
             self.SetPageLoading(False)
             return
+        if self.recommendBooks is not None:
+            self.ShowRecommendPage(self.bookList.page + 1)
+            return
         if not self.categories:
             self.SendSearch(self.bookList.page + 1)
         else:
@@ -509,6 +588,10 @@ class SearchView(QWidget, Ui_Search, QtTaskBase):
         return
 
     def ChangeSort(self, pos):
+        if self.recommendSource is not None:
+            # 推荐列表只在本地重排，不能触发搜索
+            self.ChangeRecommendSort(pos)
+            return
         self.ResetSearch()
         if not self.categories:
             self.SendSearch(1)

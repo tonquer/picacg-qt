@@ -333,13 +333,27 @@ class ComicListWidget(BaseListWidget):
         isShiled = QtOwner().IsInFilter(categories, tags, title)
         self.AddBookItem(_id, title, categories, url, path, likesCount, updated_at, pagesCount, finished, isShowToolButton=isShowToolButton, isShiled=isShiled, tags=tags, rawBook=v)
 
-    def AddBookItemByHistory(self, v):
+    def AddBookItemByHistory(self, v, info=None, title=None):
         _id = v.bookId
-        title = v.name
+        title = title or v.name
         path = v.path
         url = v.url
         categories = "{} {}".format(ToolUtil.GetUpdateStrByTick(v.tick), Str.GetStr(Str.Looked))
-        self.AddBookItem(_id, title, categories, url, path)
+        if not info:
+            self.AddBookItem(_id, title, categories, url, path)
+            return
+        # info 为本地书库中的这本书：封面以书库为准，并显示阅读进度和是否有新章节
+        # 这一行与“NEW”标记共用，宽度只有封面宽，进度用短格式，完整内容放到提示里
+        progress = ""
+        if info.epsCount and info.epsCount > 1:
+            categories += " {}/{}{}".format(v.epsId + 1, info.epsCount, Str.GetStr(Str.Chapter))
+            progress = Str.GetStr(Str.LastLook) + str(v.epsId + 1) + Str.GetStr(Str.Chapter) + "/" + str(info.epsCount) + Str.GetStr(Str.Chapter)
+        likesCount = str(info.totalLikes or info.likesCount or "")
+        self.AddBookItem(_id, title, categories, info.fileServer or url, info.path or path, likesCount,
+                         info.updated_at, info.pages, info.finished,
+                         isShowToolButton=bool(info.epsCount) and info.epsCount - 1 > v.epsId, rawBook=info)
+        if progress:
+            self.itemWidget(self.item(self.count() - 1)).categoryLabel.setToolTip(progress)
 
     def AddBookItem(self, _id, title, categoryStr="", url="", path="", likesCount="", updated_at="", pagesCount="", finished="", isShowToolButton=False, isShiled=False, tags="", rawBook=None):
         index = self.count()

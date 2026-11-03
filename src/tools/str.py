@@ -316,6 +316,7 @@ class Str:
     Remote = 203            # 远程
     RepeatRule = 204            # 重复规则
     NotOpenLocal = 205            # 重复规则
+    HistoryNum = 206            # 记录数
 
     @classmethod
     def Reload(cls):
@@ -618,6 +619,7 @@ class Str:
         cls.strDict[cls.Remote] = QCoreApplication.translate("cls.obj", "远程", None)
         cls.strDict[cls.RepeatRule] = QCoreApplication.translate("cls.obj", "重复规则", None)
         cls.strDict[cls.NotOpenLocal] = QCoreApplication.translate("cls.obj", "帮助界面未启用本地库", None)
+        cls.strDict[cls.HistoryNum] = QCoreApplication.translate("cls.obj", "记录数", None)
 
 
     @classmethod

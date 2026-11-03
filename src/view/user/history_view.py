@@ -1,11 +1,17 @@
 import os
 import time
+from datetime import datetime
 
 from PySide6 import QtWidgets
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 from config.setting import Setting
 from interface.ui_history import Ui_History
+from qt_owner import QtOwner
+from server.book_query import SORT_FIELDS
+from server.sql_server import SqlServer
+from task.qt_task import QtTaskBase
+from tools.langconv import Converter
 from tools.log import Log
 from tools.str import Str
 from tools.pagination import HISTORY_PAGE_SIZE, page_count
@@ -23,10 +29,82 @@ class QtHistoryData(object):
         self.tick = 0
 
 
-class HistoryView(QtWidgets.QWidget, Ui_History):
+# 最近阅读 + 与本地搜索相同的书库字段
+HISTORY_SORT_FIELDS = ("tick",) + SORT_FIELDS[:6]
+DATE_SORT_FIELDS = ("updated_at", "created_at")
+_toSimple = None
+
+
+def iso_to_tick(text):
+    """书库时间形如 2026-11-01T16:15:06.796Z。"""
+    if not text or not isinstance(text, str):
+        return None
+    for fmt in ("%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%dT%H:%M:%S%z"):
+        try:
+            return int(datetime.strptime(text, fmt).timestamp())
+        except ValueError:
+            continue
+    return None
+
+
+def history_has_update(history, info):
+    """上次阅读之后，书库中这本书又更新过。"""
+    tick = iso_to_tick(info.updated_at) if info else None
+    return tick is not None and tick > (history.tick or 0)
+
+
+def normalize_title(text):
+    global _toSimple
+    if _toSimple is None:
+        _toSimple = Converter('zh-hans')
+    return _toSimple.convert(text or "").replace(" ", "").lower()
+
+
+def history_show_title(history, info):
+    """书库标题经过简体化（日文汉字也被转换），与历史标题是同一本书时保留原标题；
+    不一致（历史写错了标题，或已改名）时以书库为准。"""
+    if not info or not info.title or normalize_title(history.name) == normalize_title(info.title):
+        return history.name
+    return info.title
+
+
+def filter_and_sort_history(histories, infos, field="tick", descending=True, text="", onlyUpdate=False):
+    """infos 为 bookId -> 本地书库中的书；书库中缺少排序字段的书排在最后。"""
+    items = sorted(histories, key=lambda h: h.bookId)
+    items.sort(key=lambda h: h.tick or 0, reverse=True)
+    if text:
+        key = normalize_title(text)
+
+        def match(h):
+            info = infos.get(h.bookId)
+            titles = [h.name] + ([info.title, info.title2] if info else [])
+            return any(key in normalize_title(title) for title in titles)
+
+        items = [h for h in items if match(h)]
+    if onlyUpdate:
+        items = [h for h in items if history_has_update(h, infos.get(h.bookId))]
+    if field == "tick":
+        return items if descending else items[::-1]
+
+    def value(h):
+        v = getattr(infos.get(h.bookId), field, None)
+        if field in DATE_SORT_FIELDS:
+            return str(v)[:19] if v else None
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return None
+
+    present = [h for h in items if value(h) is not None]
+    absent = [h for h in items if value(h) is None]
+    return sorted(present, key=value, reverse=descending) + absent
+
+
+class HistoryView(QtWidgets.QWidget, Ui_History, QtTaskBase):
     def __init__(self):
         super(self.__class__, self).__init__()
         Ui_History.__init__(self)
+        QtTaskBase.__init__(self)
         self.setupUi(self)
 
         # self.bookList.InitBook(self.LoadNextPage)
@@ -63,6 +141,14 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         self.bookList.isDelMenu = True
         self.bookList.DelCallBack = self.DelCallBack
 
+        # bookId -> 本地书库中的书，用于排序、筛选，并以书库为准显示标题和封面
+        self.bookInfos = {}
+        self.updateCheckText = self.updateCheck.text()
+        self.sortKey.currentIndexChanged.connect(self.ChangeFilter)
+        self.sortId.currentIndexChanged.connect(self.ChangeFilter)
+        self.updateCheck.toggled.connect(self.ChangeFilter)
+        self.searchEdit.textChanged.connect(self.ChangeFilter)
+
     def SwitchCurrent(self, **kwargs):
         refresh = kwargs.get("refresh")
         if refresh:
@@ -73,7 +159,28 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
             self.spinBox.setValue(1)
             self.bookList.UpdateState()
             self.UpdatePageLabel()
+            if self.history and QtOwner().IsCanUseDb():
+                sql = SqlServer.GetBookByIds(list(self.history))
+                self.AddSqlTask("book", sql, SqlServer.TaskTypeSelectBook, callBack=self.LoadBookInfosBack)
+                return
             self.RefreshData(self.bookList.page)
+
+    def LoadBookInfosBack(self, books):
+        self.bookInfos = {book.id: book for book in books or []}
+        num = sum(1 for h in self.history.values() if history_has_update(h, self.bookInfos.get(h.bookId)))
+        self.updateCheck.setText("{}({})".format(self.updateCheckText, num))
+        self.bookList.clear()
+        self.RefreshData(1)
+
+    def ChangeFilter(self, *args):
+        self.bookList.clear()
+        self.RefreshData(1)
+
+    def GetShowList(self):
+        return filter_and_sort_history(self.history.values(), self.bookInfos,
+                                       HISTORY_SORT_FIELDS[self.sortKey.currentIndex()],
+                                       self.sortId.currentIndex() == 0,
+                                       self.searchEdit.text().strip(), self.updateCheck.isChecked())
 
     def GetHistory(self, bookId):
         return self.history.get(bookId)
@@ -148,9 +255,7 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         self.UpdatePageLabel()
 
     def RefreshData(self, page):
-        sortedList = list(self.history.values())
-        sortedList.sort(key=lambda a: a.bookId)
-        sortedList.sort(key=lambda a: a.tick, reverse=True)
+        sortedList = self.GetShowList()
         request = PageRequest(page, self.pageNums).clamp(len(sortedList))
         items = sortedList[request.offset:request.offset + request.page_size]
         result = PageResult.from_total(items, request, len(sortedList))
@@ -158,8 +263,10 @@ class HistoryView(QtWidgets.QWidget, Ui_History):
         self.bookList.UpdateState(True)
         self.spinBox.setMaximum(result.pages)
         self.spinBox.setValue(result.page)
+        self.nums.setText("{}：{} ".format(Str.GetStr(Str.HistoryNum), result.total))
         for info in result.items:
-            self.bookList.AddBookItemByHistory(info)
+            book = self.bookInfos.get(info.bookId)
+            self.bookList.AddBookItemByHistory(info, book, history_show_title(info, book))
         self.bookList.UpdateState()
         self.UpdatePageLabel()
 

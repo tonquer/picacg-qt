@@ -994,8 +994,9 @@ class GetIdByShareIdReq(ServerReq):
 
 
 class GetRecommendByIdReq(ServerReq):
-    def __init__(self, bookId):
-        url = "https://macapi1.com/picacomic/rec/{}?limit=10".format(bookId)
+    def __init__(self, bookId, limit=10):
+        # 推荐服务不支持翻页（offset/page 无效），limit 上限 100（超过返回 422）
+        url = "https://macapi1.com/picacomic/rec/{}?limit={}".format(bookId, limit)
         method = "Get"
         self.bookId = bookId
         super(self.__class__, self).__init__(url, ToolUtil.GetHeader(url, method),

@@ -360,7 +360,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
             return
 
         self.readImg.AddHistory()
-        QtOwner().bookInfoView.LoadHistory()
+        QtOwner().ReloadBookInfoHistory()
         self.readImg.OpenPage(bookId, lasEps, 9999)
         return
 
@@ -385,7 +385,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
 
         # title = bookInfo.GetEpsTitle(epsId)
         self.readImg.AddHistory()
-        QtOwner().bookInfoView.LoadHistory()
+        QtOwner().ReloadBookInfoHistory()
         self.readImg.OpenPage(bookId, nextEps)
         return
 

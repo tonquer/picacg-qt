@@ -147,6 +147,37 @@ def books_by_ids_statement(book_ids, has_share_id=True, metrics_only=False):
         projection, ",".join("?" for _ in ids)), ids)
 
 
+def order_books_by_ids(books, book_ids):
+    """IN 查询不保证顺序，按 book_ids 原顺序排列，并返回本地书库缺少的 id。"""
+    found = {book.id: book for book in books}
+    ids = list(dict.fromkeys(book_ids))
+    return [found[i] for i in ids if i in found], [i for i in ids if i not in found]
+
+
+# 推荐列表的本地排序，空字段表示保持推荐顺序
+RECOMMEND_SORT_FIELDS = ("",) + SORT_FIELDS[:6]
+DATE_SORT_FIELDS = ("updated_at", "created_at")
+
+
+def sort_books(books, field, descending=True):
+    """对已取到的书本地排序；缺少该字段的书排在最后，同值保持原顺序。"""
+    if not field:
+        return list(books)
+
+    def value(book):
+        v = getattr(book, field, None)
+        if field in DATE_SORT_FIELDS:
+            return str(v)[:19] if v else None
+        try:
+            return int(v)
+        except (TypeError, ValueError):
+            return None
+
+    present = [book for book in books if value(book) is not None]
+    absent = [book for book in books if value(book) is None]
+    return sorted(present, key=value, reverse=descending) + absent
+
+
 LOCAL_FAVORITE_SORT_FIELDS = ("tick", "updated_at", "created_at", "totalLikes", "totalViews", "epsCount", "pages")
 LOCAL_FAVORITE_COLUMNS = ("bookId AS id", "title", "author", "chineseTeam", "description",
                     "epsCount", "pages", "finished", "categories", "tags", "created_at",
