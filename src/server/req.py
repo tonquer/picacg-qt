@@ -64,7 +64,7 @@ class ServerReq(object):
         self.SetProxy(Setting.IsHttpProxy.value, Setting.HttpProxy.value, Setting.Sock5Proxy.value)
         from qt_owner import QtOwner
         if (self.isApi or self.isImg) and self.proxyUrl:
-            self.headers['version'] = config.UpdateVersion
+            self.headers['version'] = config.RealVersion
 
         if self.isApi and not self.proxyUrl:
             self.ipList = GlobalConfig.GetAddress(Setting.ProxySelectIndex.value)
