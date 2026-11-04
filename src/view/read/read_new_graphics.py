@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import bisect
+from functools import partial
 from typing import TYPE_CHECKING
 
+from config import config
 from qt_owner import QtOwner
 from task.task_download import FileData
 
@@ -69,6 +71,12 @@ class ReadNewGraphics(QGraphicsView):
     # PREFETCH_BACK = 3  # 已读方向（往回）预取几张
     # PREFETCH_AHEAD = 12  # 未读方向（往后）预取几张
 
+    # 同时在飞的下载请求上限（预取和放大后重下共用这一个名额池）。
+    # 为什么必须限：默认预取窗口是 3+12=16 张，一次性全发会把连接池占满，
+    # 真正马上要看的最近几张反而排在 16 个请求后面；而且慢请求会一直占着连接。
+    # 限成 5 个后，滚到新位置时先把最近的 5 张发出去，完成一个再按距离补下一个。
+    MAX_CONCURRENT_DOWNLOADS = config.DownloadThreadNum
+
     # PIXMAP_BUDGET_MB = 2048    # 已解码位图的总预算（MB）
     # RAW_BUDGET_MB = 64        # 保留的原始压缩字节总预算（MB），用于位图回收后重解
 
@@ -125,6 +133,11 @@ class ReadNewGraphics(QGraphicsView):
         # 预下载范围：以当前页 _cur_idx 为基准，往前/往后各几张（与视窗大小无关）
         # self._prefetch_back = self.PREFETCH_BACK
         # self._prefetch_ahead = self.PREFETCH_AHEAD
+        # 并发下载控制：_active_downloads 是当前真正在飞的请求数（<= 上限）；
+        # 由 _download_around_current 统一按距离 + 并发上限调度（不能直接发）。
+        self._active_downloads = 0
+        self._active_waifu2x = 0
+
         # 到顶/到底后"再滚 N 下"触发 scrolledPastStart / scrolledPastEnd
         self._edge_scroll_trigger = max(0, int(self.EDGE_SCROLL_TRIGGER))
         self._edge_start = 0          # 已到最前、连续往外滚的次数
@@ -260,6 +273,10 @@ class ReadNewGraphics(QGraphicsView):
         self.scrolledPastStart.connect(self.after_switch_last_eps)
         self.scrolledPastEnd.connect(self.after_switch_next_eps)
         self._scene.installEventFilter(self)
+
+    @property
+    def MAX_CONCURRENT_WAIFU2X(self):
+        return min(self.MAX_CONCURRENT_DOWNLOADS, max(2, Setting.ProcThreadNum.value))
 
     @staticmethod
     def _movie_is_paused(mv: QMovie) -> bool:
@@ -532,7 +549,9 @@ class ReadNewGraphics(QGraphicsView):
             its = []
             for pg in (self._page - 1, self._page, self._page + 1):
                 if 0 <= pg <= self._max_page():
-                    its.extend(self._page_items(pg))
+                    i0 = self._page_first_index(pg)
+                    its.extend((i0 + k, it)
+                               for k, it in enumerate(self._page_items(pg)))
         else:
             front = Setting.PictureShowFrontCount.value
             after = Setting.PictureShowCount.value
@@ -542,12 +561,14 @@ class ReadNewGraphics(QGraphicsView):
             curIdx = self._cur_idx
             # L = self._viewport_len()
             # s0 = self._scroll_min_s()
-            its = self._items[max(0,curIdx - front):curIdx + after + 1]
+            its = [(i, it) for i, it in enumerate(self._items[max(0,curIdx - front):curIdx + after + 1])]
             # its = [it for it in self._items
             #        if it._s + it._len >= s0 - L and it._s <= s0 + L * 2.5]
 
         # max_px = self._decode_max_px()        # 与 DecodeTask / QMovie 同一套口径
-        for it in its:
+        # 重新评估：上一轮排队但还没发出去的重下需求全部作废（可能又缩回去了、
+        # 也可能已经被别的路径下完了），避免用过期队列反复重下。
+        for idx, it in its:
             # 动图不重新下载：它的原图字节还在 _raw 里，只需要把每帧解码得更
             # 大一点——_refresh_playing 会发现 setScaledSize 需要更新并改掉
             if it.pixmap is None or it._reply is not None or it._failed:
@@ -562,7 +583,6 @@ class ReadNewGraphics(QGraphicsView):
                 toW, toH = self._get_decode_to_size(target, it.waifu_file_data)
             else:
                 if not it._buf:
-                    self._start_download(it)
                     continue
                 toW, toH = self._get_decode_to_size(target, it.file_data)
 
@@ -574,27 +594,8 @@ class ReadNewGraphics(QGraphicsView):
                 it._decoding = None
             it._pending_decode = True
             self._start_decode_if_ready(it)
-
-            # dpr = self.devicePixelRatioF()
-            # have = it.pixmap.width()     # 已解码位图的宽（物理像素）
-            # if have > round(target.width()*dpr) * it.DECODE_SHRINK_RATIO:
-            #     # 位图明显偏大：从保留的压缩字节后台重解（无网络）。
-            #     # 阈值留一点余量，避免为了 1% 的差异反复重解。
-            #     if it._buf:
-            #         it._pending_decode = True
-            #         self._start_decode_if_ready(it)
-            #     else:
-            #         self._start_download(it)
-            #     continue
-            #
-            # src = it._size.width() if (it._size and it._size.isValid()) else 0
-            # # 位图不够 + 原图确实有更高分辨率，才值得重新下载
-            # if have < (target.width()*dpr) * 0.99 and src > have * 1.25:
-            #     if it._buf:
-            #         it._pending_decode = True
-            #         self._start_decode_if_ready(it)
-            #     else:
-            #         self._start_download(it)
+        # 正好有余量就立刻按距离发；名额满了就等 _on_finished 腾出名额再补。
+        self._download_around_current()
 
     @property
     def is_auto(self):
@@ -1848,6 +1849,7 @@ class ReadNewGraphics(QGraphicsView):
         restore()
         QTimer.singleShot(0, restore)                # policy 改变 viewport 后再来一次
         QTimer.singleShot(150, self._finish_mode_switch)   # 150ms 后认为切换稳定
+        self._decode_refresh.start()
 
     def _apply_pending_scroll(self):
         """把位置按到待定值（模式切换期间，range 每变一次就按一次）。"""
@@ -2203,7 +2205,12 @@ class ReadNewGraphics(QGraphicsView):
         for item in self._items:
             self._scene.removeItem(item)
             ReadNewPoolManager().AddProxyItem(item)
+        self.read_task.ClearQImageTask()
+        self.read_task.ClearDownload()
+        self.read_task.ClearConvert()
         self._items = []
+        self._active_downloads = 0
+        self._active_waifu2x = 0
         self._total = 0.0
         self._first_show = True
         for i in range(maxNum):
@@ -2380,21 +2387,71 @@ class ReadNewGraphics(QGraphicsView):
         self._refresh_index(vis)
         self._refresh_playing(vis)            # 可见集合变了：该播的播、该停的停
         self._download_around_current()       # 预下载：按序号
+        self._waifu2x_around_current()        # 超分
         self._decode_visible()                # 预解码：按视窗
 
     @timed
     def _download_around_current(self):
-        """预下载：[_cur_idx - back, _cur_idx + ahead] 之内、还没下过的图。"""
+        """预下载：[_cur_idx - back, _cur_idx + ahead] 之内、还没下过的图。
+
+        排序 + 限流都在这里做（滚动时 _load_visible 每帧都会调）：
+        - 优先级：按到当前显示位置 _cur_idx 的距离从近到远发；距离相同时优先
+          **往后**（阅读方向）那张——往回的大多已经下过，往后才是马上要看的；
+        - 并发上限：同时在飞的请求不超过 MAX_CONCURRENT_DOWNLOADS 个。名额
+          满了就直接返回，_on_finished 每完成一个会再进来补下一个，所以任意
+          时刻在飞的都是"还没下完的里面离当前最近的 5 张"。
+        _refresh_decodes 排队的"放大后重下"也并进同一份候选一起排序（它们通常
+        就在可见范围里，距离更近，会先发）。"""
         n = len(self._items)
-        if n == 0:
+        if n == 0 or self._active_downloads >= self.MAX_CONCURRENT_DOWNLOADS:
             return
         cur = self._cur_idx if self._cur_idx >= 0 else max(0, self.current_index())
         _prefetch_back = Setting.PicturePrefetchFrontCount.value
         _prefetch_ahead = Setting.PicturePrefetchCount.value
+
+        # 下载全本
+        if Setting.PrefetchWholeChapter.value:
+            _prefetch_back = cur
+            _prefetch_ahead = n
+
         lo = max(0, cur - _prefetch_back)
         hi = min(n - 1, cur + _prefetch_ahead)
-        for i in range(lo, hi + 1):
-            self._maybe_download(self._items[i])
+
+        # (距离, 是否往回, 序号)：距离相同优先往后（False 排在 True 前面）
+        cands = [(abs(i - cur), i < cur, i) for i in range(lo, hi + 1)]
+        cands.sort()
+        for _, _, i in cands:
+            if self._active_downloads >= self.MAX_CONCURRENT_DOWNLOADS:
+                break
+            it = self._items[i]
+            self._maybe_download(it)
+
+    @timed
+    def _waifu2x_around_current(self):
+        """预超分：[_cur_idx - back, _cur_idx + ahead] 之内、还没超分的图。"""
+        n = len(self._items)
+        if n == 0 or self._active_waifu2x >= self.MAX_CONCURRENT_WAIFU2X:
+            return
+        cur = self._cur_idx if self._cur_idx >= 0 else max(0, self.current_index())
+        _prefetch_back = Setting.PicturePrefetchFrontCount.value
+        _prefetch_ahead = Setting.PicturePrefetchCount.value
+
+        # 下载全本
+        if Setting.PrefetchWholeChapter.value:
+            _prefetch_back = cur
+            _prefetch_ahead = n
+
+        lo = max(0, cur - _prefetch_back)
+        hi = min(n - 1, cur + _prefetch_ahead)
+
+        # (距离, 是否往回, 序号)：距离相同优先往后（False 排在 True 前面）
+        cands = [(abs(i - cur), i < cur, i) for i in range(lo, hi + 1)]
+        cands.sort()
+        for _, _, i in cands:
+            if self._active_waifu2x >= self.MAX_CONCURRENT_WAIFU2X:
+                break
+            it = self._items[i]
+            self._maybe_start_waifu2x(it)
 
     @timed
     def _decode_visible(self):
@@ -2418,14 +2475,15 @@ class ReadNewGraphics(QGraphicsView):
             #     continue                     # 在窗口上方（已滚过）
             self._start_decode_if_ready(it)
 
-    def _maybe_download(self, it: ReadNewGraphicsItem):
-        """需要的话发起下载（没下过/没在下载/没在解码/没失败过）。"""
+    def _maybe_download(self, it: ReadNewGraphicsItem) -> bool:
+        """需要的话发起下载（没下过/没在下载/没在解码/没失败过）。
+        返回是否真的发出了请求：不需要下载或并发名额已满时为 False。"""
         if it.pixmap is not None or it._reply is not None \
                 or it._decoding or it._failed:
-            return
+            return False
         if it._buf:
-            return                           # 已经下完，等预解码窗口触发，别重复下
-        self._start_download(it)
+            return False                           # 已经下完，等预解码窗口触发，别重复下
+        return self._start_download(it)
 
     @timed
     def _start_decode_if_ready(self, it: ReadNewGraphicsItem):
@@ -2444,9 +2502,9 @@ class ReadNewGraphics(QGraphicsView):
             return
         if not isForce and (it.pixmap is not None and not it.pixmap.isNull()):
             return
-        if it.is_need_waifu2x and not it._waifu_buf:
+        if it.is_need_waifu2x and not it.waifu_file_data:
             if it._waifu_reply is None and it._buf:
-                self._start_waifu2x(it)
+                self._waifu2x_around_current()
             return
         if not it._buf:
             return
@@ -2455,12 +2513,12 @@ class ReadNewGraphics(QGraphicsView):
         toW, toH = 0, 0
         it.update()                          # 立刻显示"解码中…"
         if it.isAnima:
-            self._on_animated(it, it._size, it._buf)
+            QTimer.singleShot(0, partial(self._on_animated, it, it._size, it._buf))
         elif it.is_need_waifu2x:
             size = self._decode_target_size(it)
             toW, toH = self._get_decode_to_size(size, it.waifu_file_data)
             it.decoding_param = QSizeF(toW, toH)
-            it._decoding = self.read_task.AddQImageTask(it._waifu_buf, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio,
+            it._decoding = self.read_task.AddQImageTask(it.waifu_file_data.data, self.devicePixelRatioF(), toW, toH, Qt.IgnoreAspectRatio,
                                          callBack=self._on_loaded, backParam=(it.index, True))
         else:
             size = self._decode_target_size(it)
@@ -2499,6 +2557,7 @@ class ReadNewGraphics(QGraphicsView):
         """按预算回收位图/压缩字节：离当前页最远的先丢，当前可见的永远不动。"""
         # self._trim_pixmaps()
         self._trim_pixmaps_max_len()
+        self._try_download_more()
         # self._trim_buffers()
 
     # @timed
@@ -2563,6 +2622,24 @@ class ReadNewGraphics(QGraphicsView):
             it.update()
             Log.Info(f"free over index pixmap, {it.index}")
 
+    @timed
+    def _try_download_more(self):
+        if not Setting.PrefetchWholeChapter.value:
+            return
+        downloaded = 0
+        downloading = 0
+
+        noDownloadList = []
+        for it in self._items:
+            if it.file_data:
+                downloaded += 1
+                continue
+            if it._reply:
+                downloading += 1
+                continue
+            noDownloadList.append(it)
+        return
+
     # def _trim_buffers(self):
     #     """压缩字节超预算 -> 从离当前页最远的开始丢（丢了之后要用会重新下载）。"""
     #     budget = RAW_BUDGET_MB * 1024 * 1024
@@ -2588,24 +2665,32 @@ class ReadNewGraphics(QGraphicsView):
     #         it.update()                           # 没位图的话会显示"等待加载…"
 
     @timed
-    def _start_download(self, item: ReadNewGraphicsItem):
-        """发起 HTTP GET，挂接回调：有新数据（探测尺寸）/进度/下载完成（不立刻解码）。"""
+    def _start_download(self, item: ReadNewGraphicsItem) -> bool:
+        """发起 HTTP GET，挂接回调：有新数据（探测尺寸）/进度/下载完成（不立刻解码）。
+        返回是否真的发出：这张图已在下载、或并发名额已满时返回 False，调用方
+        负责把它留在待下载队列里，等 _on_finished 腾出名额再补。"""
         if self._first_show:
-            return
-        Log.Info(f"Start download, index{item.index}")
+            return False
+        if item._reply is not None:
+            return False
+        if self._active_downloads >= self.MAX_CONCURRENT_DOWNLOADS:
+            return False
+        Log.Info(f"Start download, index{item.index}, downloading:{self._active_downloads}")
+        self._active_downloads += 1
         if item._buf:
             item._reply = 0
-            self._on_finished(item.file_data, Str.Ok, item.index)
+            QTimer.singleShot(0, partial(self._on_finished, item.file_data, Str.Ok, item.index))
+            return False
         else:
             taskId = self.read_task.AddDownload(item.index,
                                            downloadCallBack=self._on_download_progress,
                                            completeCallBack2=self._on_finished)
-
             item._reply = taskId
             item._progress = None            # 请求刚发出、还不知道总大小：先转圈
             self._spin_timer.start()         # 有下载在跑就保持转圈动画可用
             self.update_tool_label(item.index)
             item.update()
+            return True
 
     @timed
     def _on_download_progress(self, got: int, total: int, index: int):
@@ -2661,13 +2746,23 @@ class ReadNewGraphics(QGraphicsView):
 
     @timed
     def _on_finished(self, fileData: FileData, st: int, index: int):
-        """下载结束：成功 -> 丢给线程池后台解码；失败 -> 标记失败。"""
+        """下载结束：成功 -> 字节留在 _buf，等"按视窗预解码"触发；失败 -> 标记失败。
+
+        注意这里**不再立刻解码**：解码出来的位图很占内存，只解视窗附近的图。
+        如果这张图正好在预解码窗口里（比如就是当前在看的），才马上解；
+        否则压缩字节先留着，滚到附近时由 _decode_visible 再解。
+
+        这里也是**并发名额的释放点**：完成一个就按距离补下一个，保证任意时刻
+        在飞的正好是"还没下完的里面离当前最近的 MAX_CONCURRENT_DOWNLOADS 张"。"""
         if index >= len(self._items):
             return
         item = self._items[index]
+        self._active_downloads = max(0, self._active_downloads - 1)
 
+        Log.Info(f"finish download, index{item.index} active_download:{self._active_downloads}")
         reply = item._reply
         if reply is None:
+            self._download_around_current()      # 腾出名额：按优先级补下一个
             return
         if st != Str.Ok:
             # 重新下载
@@ -2675,7 +2770,8 @@ class ReadNewGraphics(QGraphicsView):
             item._re_download_cnt += 1
             item._progress = None
             item.update()                    # 触发重画（占位框变红显示"加载失败"）
-            self._start_download(item)
+
+            self._download_around_current()  # 腾出名额：按优先级补下一个
             return
 
         reply, item._reply = item._reply, None
@@ -2689,10 +2785,13 @@ class ReadNewGraphics(QGraphicsView):
             if not model or item.isAnima:
                 item._waifu2x_state = -1
             else:
-                self._start_waifu2x(item)
+                self._download_around_current()      # 腾出名额：按优先级补下一个
+                self._waifu2x_around_current()
                 return
         self._maybe_decode(item)             # 在视窗窗口里就立刻解，否则等滚到附近
         self.update_tool_label(item.index)
+        self._download_around_current()      # 腾出名额：按优先级补下一个
+        self._waifu2x_around_current()
 
             # from view.read.read_new_task import DecodeTask
             # task = DecodeTask(item.index, item._buf, max_px, dpr)
@@ -2712,28 +2811,50 @@ class ReadNewGraphics(QGraphicsView):
     #     item.update()
 
     @timed
-    def _start_waifu2x(self, item: ReadNewGraphicsItem):
+    def _maybe_start_waifu2x(self, it: ReadNewGraphicsItem) -> bool:
+        """下载刚完成时调用：只有落进"预解码窗口"才立刻解，否则留着字节等滚到附近。"""
+        if it._waifu_failed:
+            return False
+        if not it._buf:
+            return False
+        if it.waifu_file_data:
+            return False
+        if not it.is_need_waifu2x:
+            return False
+        if it._waifu_reply:
+            return False
+        return self._start_waifu2x(it)
+
+    @timed
+    def _start_waifu2x(self, item: ReadNewGraphicsItem) -> bool:
         """发起 HTTP GET，挂接回调：有新数据（探测尺寸）/进度/下载完成（不立刻解码）。"""
         if self._first_show:
-            return
+            return False
         if not item._buf:
-            return
+            return  False
 
-        Log.Info(f"Start waifu2x, index{item.index}")
+        if self._active_waifu2x >= self.MAX_CONCURRENT_WAIFU2X:
+            return False
+
+        Log.Info(f"Start waifu2x, index{item.index} active_waifu2x:{self._active_waifu2x}")
+        self._active_waifu2x += 1
         if item.waifu_file_data:
             item._waifu_reply = 0
-            self._on_waifu_finished(item.waifu_file_data, 0, item.index, item._waifu_tick)
+            QTimer.singleShot(0, partial(self._on_waifu_finished, item.waifu_file_data, 0, item.index, item._waifu_tick))
+            return True
         else:
             item._progress = None  # 请求刚发出、还不知道总大小：先转圈
             model = ToolUtil.GetLookScaleModel(self.read_view.category, item._size.width(), item._size.height(), item.fmt)
             if not model or item.isAnima:
                 item._waifu2x_state = -1
-                self._maybe_decode(item)
+                self._active_waifu2x = max(0, self._active_waifu2x - 1)
+                QTimer.singleShot(0, partial(self._maybe_decode, item))
             else:
                 item._waifu_reply = self.read_task.AddCovertData(item.index, item._buf, model, self._on_waifu_finished)
 
             self.update_tool_label(item.index)
             item.update()
+            return True
 
     @timed
     def _on_waifu_finished(self, fileData: FileData, waifuId, index, tick):
@@ -2741,7 +2862,9 @@ class ReadNewGraphics(QGraphicsView):
             return
         item = self._items[index]
 
+        self._active_waifu2x = max(0, self._active_waifu2x - 1)
         reply = item._waifu_reply
+        Log.Info(f"finish waifu2x, index{item.index} active_waifu2x:{self._active_waifu2x}, reply:{reply}")
         if reply is None:
             return
         if not fileData or not fileData.data:
@@ -2756,7 +2879,7 @@ class ReadNewGraphics(QGraphicsView):
         self._try_probe_size(item, fileData)           # 兜底：万一中途一直没探测到
 
         if item.isAnima:
-            self._on_animated(item, item._size, QByteArray(fileData.data))
+            QTimer.singleShot(0, partial(self._on_animated, item, item._size, fileData.data))
         else:
             self._maybe_decode(item)
 
