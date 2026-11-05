@@ -192,6 +192,7 @@ class Setting:
     PictureShowCount = SettingValue("ReadSetting", 4, False)
 
     IsOpenOpenGL = SettingValue("ReadSetting", 0, True)
+    IsOpenReadAnime = SettingValue("ReadSetting", 1, False)
 
     # 批量超分
     BatchSrImportDir = SettingValue("BatchSrTool", "", False)

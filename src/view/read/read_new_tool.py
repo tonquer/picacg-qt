@@ -115,6 +115,12 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
         self.modelNameButton.setEnabled(False)
         self.openGLBox.setChecked(bool(Setting.IsOpenOpenGL.value))
         self.openGLBox.clicked.connect(self.SwitchOpenGL)
+        self.animeBox.setChecked(bool(Setting.IsOpenReadAnime.value))
+        self.animeBox.clicked.connect(self.SwitchAnime)
+
+    def SwitchAnime(self):
+        Setting.IsOpenReadAnime.SetValue(int(self.animeBox.isChecked()))
+        self.scrollArea.set_page_animation_enabled(self.animeBox.isChecked())
 
     def SwitchOpenGL(self, value):
         Setting.IsOpenOpenGL.SetValue(int(value))
@@ -179,8 +185,12 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
 
     def _NextPage(self):
         epsId = self.readImg.epsId
+        if ReadMode.isDouble(self.stripModel):
+            index = self.scrollArea._cur_idx + 2
+        else:
+            index = self.scrollArea._cur_idx + 1
 
-        if self.curIndex >= self.maxPic - 1:
+        if index >= self.maxPic:
             if self.readImg.isLocal:
                 self.OpenNextEps()
                 QtOwner().ShowMsg(Str.GetStr(Str.AutoSkipNext))
@@ -198,10 +208,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
                 return
             # QtOwner().ShowMsg(Str.GetStr(Str.AlreadyNextPage))
             return
-        if ReadMode.isDouble(self.stripModel):
-            index = self.scrollArea._cur_idx + 2
-        else:
-            index = self.scrollArea._cur_idx + 1
+
         self.scrollArea.jump_to_index(index)
         return
 
@@ -450,7 +457,7 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
         self.zoomSlider.setValue(value)
 
     def ScalePicture(self, value):
-        self.scaleLabel.setText(Str.GetStr(Str.Scale) + f"({value}%)")
+        self.zoomLabel.setText(Str.GetStr(Str.Scale) + f"({value}%)")
         self.scrollArea.set_zoom(value/100, None)
 
     def eventFilter(self, obj, ev):

@@ -43,7 +43,7 @@
         <x>0</x>
         <y>0</y>
         <width>483</width>
-        <height>906</height>
+        <height>932</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -512,6 +512,16 @@
             </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="animeBox">
+           <property name="text">
+            <string>启用翻页动画</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="Line" name="line_3">

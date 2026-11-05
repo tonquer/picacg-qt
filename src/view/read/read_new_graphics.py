@@ -225,6 +225,8 @@ class ReadNewGraphics(QGraphicsView):
         self._page_anim_shift = 0               # 动画结束后 self._page 的平移量
         self._page_anim_nb = None               # 动画期间同屏滑动的邻页页码
         self._page_anim_nb_delta = 0.0          # 邻页相对当前页偏移的附加量（±L）
+        # 切页动画开关（set_page_animation_enabled）：关掉就直接跳到目标页
+        self._page_anim_enabled = bool(Setting.IsOpenReadAnime.value)
         # 拖拽翻页：把邻页拖出来，松手按"位移/速度"判定翻页或弹回
         self._page_dragging = False
         self._page_drag_start = None            # 拖拽起点 QPointF
@@ -634,6 +636,25 @@ class ReadNewGraphics(QGraphicsView):
             self._start_page_auto(speed)
         else:
             self._scroller.start_auto(speed)
+
+    # ================ 切页动画开关 ================
+    @property
+    def page_animation_enabled(self) -> bool:
+        """单/双页模式切页是否播放滑动动画。"""
+        return self._page_anim_enabled
+
+    def set_page_animation_enabled(self, on: bool):
+        """开/关单/双页模式的切页滑动动画。
+
+        关掉后翻页（滚轮/键盘/自动翻页/拖拽松手）会**直接跳到目标页**，不播
+        220ms 的滑动；拖拽过程本身仍然实时跟手（那是手势，不是动画）。
+        关的一瞬间如果正好有动画在跑，会立刻摆到终点收尾。"""
+        on = bool(on)
+        if on == self._page_anim_enabled:
+            return
+        self._page_anim_enabled = on
+        if not on:
+            self._stop_page_anim()      # 进行中的滑动立刻收尾
 
     # ================ 动图（GIF / 动画 WebP）===============
 
@@ -1594,6 +1615,10 @@ class ReadNewGraphics(QGraphicsView):
         if tgt < 0 or tgt > self._max_page():
             return
         self._stop_page_anim()                # 上一场滑动先就地结束
+        if not self._page_anim_enabled:
+            # 切页动画关掉：直接切到目标页（_show_page 会复位平移/页内滚动）
+            self._show_page(tgt, 0)
+            return
         self._page = tgt                      # 页码先指向新页（动画摆的是新页）
         self._page_pan = QPointF(0.0, 0.0)    # 换页：平移复位（新页从居中开始）
         self._page_scroll = 0.0               # 单页等宽：新页从顶部开始
@@ -1730,6 +1755,13 @@ class ReadNewGraphics(QGraphicsView):
             commit = 0
         if commit == 1 and self._page >= self._max_page():
             commit = 0
+        if not self._page_anim_enabled:
+            # 切页动画关掉：松手后直接落位（拖拽过程本身已经跟手了）
+            self._page_drag_neighbor = None
+            self._show_page(max(0, min(self._page + commit,
+                                       self._max_page())), 0)
+            self._refresh_index()
+            return
         if commit == -1:
             self._start_page_slide(o, L, -1, self._page - 1, -L)
         elif commit == 1:

@@ -41,7 +41,7 @@ class Ui_ReadImg(object):
         self.scrollArea22.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 483, 906))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 483, 932))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout = QVBoxLayout()
@@ -323,6 +323,12 @@ class Ui_ReadImg(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout_10)
 
+        self.animeBox = QCheckBox(self.scrollAreaWidgetContents)
+        self.animeBox.setObjectName(u"animeBox")
+        self.animeBox.setChecked(True)
+
+        self.verticalLayout.addWidget(self.animeBox)
+
         self.line_3 = QFrame(self.scrollAreaWidgetContents)
         self.line_3.setObjectName(u"line_3")
         self.line_3.setFrameShape(QFrame.Shape.HLine)
@@ -552,6 +558,7 @@ class Ui_ReadImg(object):
         self.comboBox.setItemText(6, QCoreApplication.translate("ReadImg", u"\u7b49\u5bbd\u6a21\u5f0f", None))
 
         self.zoomLabel.setText(QCoreApplication.translate("ReadImg", u"\u7f29\u653e\uff08120%\uff09", None))
+        self.animeBox.setText(QCoreApplication.translate("ReadImg", u"\u542f\u7528\u7ffb\u9875\u52a8\u753b", None))
         self.label_7.setText(QCoreApplication.translate("ReadImg", u"\u81ea\u52a8\u6eda\u52a8/\u7ffb\u9875", None))
         self.label_12.setText(QCoreApplication.translate("ReadImg", u"\u624b\u52a8\u6eda\u52a8\uff08\u50cf\u7d20\uff09\uff1a", None))
         self.label_10.setText(QCoreApplication.translate("ReadImg", u"\u6eda\u52a8\u901f\u5ea6\uff08\u50cf\u7d20\uff09\uff1a", None))
