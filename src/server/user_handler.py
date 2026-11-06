@@ -235,6 +235,36 @@ class SpeedTestPingHandler(object):
 
 @handler(req.DownloadBookReq)
 class DownloadBookHandler(object):
+
+    @staticmethod
+    def create_handlers(result_data):
+        result_data["fileSize"] = 1024 * 512
+        result_data["total"] = 0
+        result_data["send"] = 0
+        result_data["now"] = int(time.time())
+        result_data["data"] = b""
+
+        # 1. 处理响应头：按行到达
+        def on_header(header_line: bytes):
+            line = header_line.decode("utf-8", errors="ignore").strip()
+            if line.lower().startswith("content-length:"):
+                length_val = line.split(":", 1)[1].strip()
+                result_data["fileSize"] = int(length_val)
+
+        def on_content(chunk: bytes):
+            cur = time.time()
+            tick = cur - result_data["now"]
+            result_data["data"] += chunk
+            result_data["total"] += len(chunk)
+            result_data["send"] +=  len(chunk)
+            if tick >= 0.1:
+                if result_data["backParam"]:
+                    TaskBase.taskObj.downloadBack.emit(result_data["backParam"] , result_data["send"], result_data["fileSize"], b"")
+                    result_data["send"] = 0
+                    result_data["now"] = cur
+
+        return on_header, on_content
+
     def __call__(self, backData):
         task = backData
         ttfb_time = 0
@@ -257,51 +287,59 @@ class DownloadBookHandler(object):
             data = b""
             try:
                 try:
-                    with task.session.stream("GET", request.url, headers=request.headers,
-                                             timeout=backData.timeout, proxies=request.proxy) as r:
-                        fileSize = int(r.headers.get('Content-Length', 0))
-                        ttfb_time = r.infos.get(CurlInfo.STARTTRANSFER_TIME)
-                        status_code = r.status_code
-                        if not fileSize:
-                            fileSize = 1024 * 512
-                        cfHit = r.headers.get("cf-cache-status", False)
-                        now = time.time()
-                        isAlreadySend = False
-                        isSpacePic = False
-                        if r.status_code == 404 or r.status_code == 403:
-                            ## 404 尝试切换图片地址
-                            isReset = backData.req.ResetToSwitchNextUrl()
-                            if isReset and backData.req.resetCnt >= 0:
-                                backData.req.isReset = True
-                                Server().ReDownload(backData)
-                                return
-                            else:
-                                if backData.backParam:
-                                    TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, fileSize, b"")
-                                return
-                        elif r.status_code != 200:
+                    ## curl_cffi stream无法复用http2连接，改用get请求
+
+                    # with task.session.get("GET", request.url, headers=request.headers,
+                    #                          timeout=backData.timeout, proxies=request.proxy) as r:
+
+                    result = {"backParam": backData.backParam}
+                    header_cb, content_cb = DownloadBookHandler.create_handlers(result)
+                    r = task.session.get(request.url, headers=request.headers, timeout=backData.timeout,
+                                         proxies=request.proxy, content_callback=content_cb)
+
+                    ttfb_time = r.infos.get(CurlInfo.STARTTRANSFER_TIME)
+                    # print(f"DNS 解析 (namelookup):   {r.infos.get(CurlInfo.NAMELOOKUP_TIME):.4f} s")
+                    # print(f"TCP 握手 (connect):      {r.infos.get(CurlInfo.CONNECT_TIME):.4f} s")
+                    # print(f"SSL 握手 (appconnect):   {r.infos.get(CurlInfo.APPCONNECT_TIME):.4f} s")
+                    # print(f"准备传输 (pretransfer):  {r.infos.get(CurlInfo.PRETRANSFER_TIME):.4f} s")
+                    # print(f"首字节响应 (starttransfer): {r.infos.get(CurlInfo.STARTTRANSFER_TIME):.4f} s")
+
+                    status_code = r.status_code
+                    cfHit = r.headers.get("cf-cache-status", False)
+                    isSpacePic = False
+                    if r.status_code == 404 or r.status_code == 403:
+                        ## 404 尝试切换图片地址
+                        isReset = backData.req.ResetToSwitchNextUrl()
+                        if isReset and backData.req.resetCnt >= 0:
+                            backData.req.isReset = True
+                            Server().ReDownload(backData)
+                            return
+                        else:
                             if backData.backParam:
                                 TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, fileSize, b"")
                             return
+                    elif r.status_code != 200:
+                        if backData.backParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.backParam, -Status.Error, fileSize, b"")
+                        return
 
-                        for chunk in r.iter_content():
-                            isAlreadySend = False
-                            cur = time.time()
-                            tick = cur - now
-                            getSize += len(chunk)
-                            data += chunk
-                            if tick >= 0.1:
-                                isAlreadySend = True
-                                if backData.backParam and fileSize - getSize > 0:
-                                    TaskBase.taskObj.downloadBack.emit(backData.backParam, getSize, fileSize, b"")
-                                    getSize = 0
-                                now = cur
-                        isSpacePic = len(data) == 0
-
-                        if not isAlreadySend:
-                            if backData.backParam:
-                                TaskBase.taskObj.downloadBack.emit(backData.backParam, getSize, fileSize, b"")
-                                getSize = 0
+                    # for chunk in r.iter_content():
+                    #     isAlreadySend = False
+                    #     cur = time.time()
+                    #     tick = cur - now
+                    #     getSize += len(chunk)
+                    #     data += chunk
+                    #     if tick >= 0.1:
+                    #         isAlreadySend = True
+                    #         if backData.backParam and fileSize - getSize > 0:
+                    #             TaskBase.taskObj.downloadBack.emit(backData.backParam, getSize, fileSize, b"")
+                    #             getSize = 0
+                    #         now = cur
+                    data = result["data"]
+                    isSpacePic = len(data) == 0
+                    if result["send"] > 0:
+                        if backData.backParam:
+                            TaskBase.taskObj.downloadBack.emit(backData.backParam, result['send'], result["fileSize"], b"")
 
                 except exceptions.DNSError as es:
                     task.status = Status.DnsError

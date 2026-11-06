@@ -40,10 +40,14 @@ class BookEpsView(QtWidgets.QWidget, Ui_BookEps, QtTaskBase):
         QtOwner().ShowLoading()
         self.bookId = bookId
         self.listWidget.clear()
-        if BookMgr().GetBook(bookId):
+        if QtOwner().IsCanUseDb():
             self.OpenLocalBack()
         else:
-            self.LoadEpsData()
+            info = BookMgr().GetBook(self.bookId)
+            if not info:
+                self.SendLocalBack([])
+            else:
+                self.LoadEpsData()
 
     def OpenLocalBack(self):
         self.AddSqlTask("book", self.bookId, SqlServer.TaskTypeCacheBook, callBack=self.SendLocalBack)

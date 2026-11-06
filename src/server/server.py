@@ -71,10 +71,19 @@ class ThreadLocalParam:
         self.Close()
 
     def Create(self):
+        curlInfos = [
+            CurlInfo.NAMELOOKUP_TIME,
+            CurlInfo.CONNECT_TIME,
+            CurlInfo.APPCONNECT_TIME,
+            CurlInfo.PRETRANSFER_TIME,
+            CurlInfo.STARTTRANSFER_TIME,
+            CurlInfo.TOTAL_TIME
+        ]
         if self.impersonate:
-            return requests2.Session(impersonate=self.impersonate, curl_infos=[CurlInfo.STARTTRANSFER_TIME, CurlInfo.TOTAL_TIME])
+            # return requests2.Session(impersonate=self.impersonate, curl_infos=curlInfos,debug=True)
+            return requests2.Session(impersonate=self.impersonate, curl_infos=curlInfos)
         else:
-            return requests2.Session(curl_infos=[CurlInfo.STARTTRANSFER_TIME, CurlInfo.TOTAL_TIME])
+            return requests2.Session(curl_infos=curlInfos)
 
     def IsNeedSwitch(self, request: req.ServerReq):
         if not self.session:
@@ -295,6 +304,11 @@ class Server(Singleton):
             else:
                 return
             ttfb_time = task.res.raw.infos.get(CurlInfo.STARTTRANSFER_TIME)
+            # print(f"DNS 解析 (namelookup):   {task.res.raw.infos.get(CurlInfo.NAMELOOKUP_TIME):.4f} s")
+            # print(f"TCP 握手 (connect):      {task.res.raw.infos.get(CurlInfo.CONNECT_TIME):.4f} s")
+            # print(f"SSL 握手 (appconnect):   {task.res.raw.infos.get(CurlInfo.APPCONNECT_TIME):.4f} s")
+            # print(f"准备传输 (pretransfer):  {task.res.raw.infos.get(CurlInfo.PRETRANSFER_TIME):.4f} s")
+            # print(f"首字节响应 (starttransfer): {task.res.raw.infos.get(CurlInfo.STARTTRANSFER_TIME):.4f} s")
 
         except exceptions.DNSError as es:
             task.status = Status.DnsError
@@ -335,10 +349,8 @@ class Server(Singleton):
         finally:
             if task.req.isApi and not isinstance(task.req, (req.SpeedTestReq, req.SpeedTestPingReq, req.SpeedTestPing2Req)) :
                 if task.res.raw:
-                    ttfb_time = task.res.raw.infos.get(CurlInfo.STARTTRANSFER_TIME)
                     status_code = task.res.raw.status_code
                 else:
-                    ttfb_time = 0
                     status_code = 0
                 if isinstance(ttfb_time, (int, float)):
                     TaskBase.taskObj.statuApiBack.emit(ttfb_time, task.status, status_code)
