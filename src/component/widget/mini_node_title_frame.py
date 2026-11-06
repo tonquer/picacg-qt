@@ -22,7 +22,7 @@ THEMES = {
         "tile_border": "#282c37",
         "tile_hover_bg": "#222631",
         "tile_hover_border": "#3b82f6",
-        "name_color": "#e2e8f0",
+        "name_color": "#F3F3F3",
         "loss_normal": "#64748b",
         "ping_default": "#94a3b8",
         # 状态颜色
@@ -41,7 +41,7 @@ THEMES = {
         "tile_border": "#e2e8f0",
         "tile_hover_bg": "#f1f5f9",
         "tile_hover_border": "#3b82f6",
-        "name_color": "#1e293b",
+        "name_color": "#31363B",
         "loss_normal": "#94a3b8",
         "ping_default": "#64748b",
         # 状态颜色

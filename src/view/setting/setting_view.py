@@ -387,11 +387,12 @@ class SettingView(QtWidgets.QWidget, Ui_SettingNew):
             f = QFile(":/file/theme/light_pink.qss")
         f.open(QFile.ReadOnly)
         data = str(f.readAll(), encoding='utf-8')
+        f.close()
         if Setting.FontName.value:
             data = data.replace("/*replace*/", "font-family: {};".format(Setting.FontName.value))
         QtOwner().app.setStyleSheet(data)
         self.SetSettingTheme(themeId)
-        f.close()
+        QtOwner().navigationWidget.RefrshTheme()
 
     def SetSettingTheme(self, themId):
         if themId != 1:

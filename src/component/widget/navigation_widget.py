@@ -105,9 +105,11 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
 
     def retranslateUi(self, View):
         Ui_Navigation.retranslateUi(self, self)
+        self.UpdateFilterStr()
+
+    def RefrshTheme(self):
         self.proxyName.update_theme()
         self.proxyImgName.update_theme()
-        self.UpdateFilterStr()
 
     def UpdateFilterStr(self):
         self.allFilterStr.clear()
