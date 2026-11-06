@@ -15,20 +15,21 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QCommandLinkButton, QFrame,
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QFrame, QGridLayout,
     QHBoxLayout, QLabel, QPushButton, QSizePolicy,
     QToolButton, QVBoxLayout, QWidget)
 
 from component.button.switch_button import SwitchButton
 from component.label.head_label import HeadLabel
 from component.scroll_area.smooth_scroll_area import SmoothScrollArea
+from component.widget.mini_node_title_frame import MiniNodeTileFrame
 import images_rc
 
 class Ui_Navigation(object):
     def setupUi(self, Navigation):
         if not Navigation.objectName():
             Navigation.setObjectName(u"Navigation")
-        Navigation.resize(258, 965)
+        Navigation.resize(370, 965)
         Navigation.setStyleSheet(u"")
         self.verticalLayout_2 = QVBoxLayout(Navigation)
         self.verticalLayout_2.setSpacing(6)
@@ -96,65 +97,63 @@ class Ui_Navigation(object):
 
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.label_4 = QLabel(self.widget)
-        self.label_4.setObjectName(u"label_4")
-
-        self.horizontalLayout_3.addWidget(self.label_4)
-
-        self.proxyName = QCommandLinkButton(self.widget)
-        self.proxyName.setObjectName(u"proxyName")
-
-        self.horizontalLayout_3.addWidget(self.proxyName)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
-
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_6 = QLabel(self.widget)
-        self.label_6.setObjectName(u"label_6")
-
-        self.horizontalLayout_5.addWidget(self.label_6)
-
-        self.proxyImgName = QCommandLinkButton(self.widget)
-        self.proxyImgName.setObjectName(u"proxyImgName")
-
-        self.horizontalLayout_5.addWidget(self.proxyImgName)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_5)
-
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.gridLayout_2 = QGridLayout()
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.label_5 = QLabel(self.widget)
         self.label_5.setObjectName(u"label_5")
 
-        self.horizontalLayout_4.addWidget(self.label_5)
+        self.gridLayout_2.addWidget(self.label_5, 2, 0, 1, 1)
 
         self.offlineButton = SwitchButton(self.widget)
         self.offlineButton.setObjectName(u"offlineButton")
 
-        self.horizontalLayout_4.addWidget(self.offlineButton)
+        self.gridLayout_2.addWidget(self.offlineButton, 2, 1, 1, 1)
 
+        self.label_6 = QLabel(self.widget)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setMinimumSize(QSize(60, 0))
 
-        self.verticalLayout.addLayout(self.horizontalLayout_4)
+        self.gridLayout_2.addWidget(self.label_6, 1, 0, 1, 1)
 
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.label_7 = QLabel(self.widget)
-        self.label_7.setObjectName(u"label_7")
+        self.label_4 = QLabel(self.widget)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setMinimumSize(QSize(60, 0))
 
-        self.horizontalLayout_6.addWidget(self.label_7)
+        self.gridLayout_2.addWidget(self.label_4, 0, 0, 1, 1)
 
         self.hideButton = QPushButton(self.widget)
         self.hideButton.setObjectName(u"hideButton")
 
-        self.horizontalLayout_6.addWidget(self.hideButton)
+        self.gridLayout_2.addWidget(self.hideButton, 3, 1, 1, 1)
+
+        self.label_7 = QLabel(self.widget)
+        self.label_7.setObjectName(u"label_7")
+
+        self.gridLayout_2.addWidget(self.label_7, 3, 0, 1, 1)
+
+        self.proxyImgName = MiniNodeTileFrame(self.widget)
+        self.proxyImgName.setObjectName(u"proxyImgName")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.proxyImgName.sizePolicy().hasHeightForWidth())
+        self.proxyImgName.setSizePolicy(sizePolicy1)
+        self.proxyImgName.setFrameShape(QFrame.Shape.StyledPanel)
+        self.proxyImgName.setFrameShadow(QFrame.Shadow.Raised)
+
+        self.gridLayout_2.addWidget(self.proxyImgName, 1, 1, 1, 1)
+
+        self.proxyName = MiniNodeTileFrame(self.widget)
+        self.proxyName.setObjectName(u"proxyName")
+        sizePolicy1.setHeightForWidth(self.proxyName.sizePolicy().hasHeightForWidth())
+        self.proxyName.setSizePolicy(sizePolicy1)
+        self.proxyName.setFrameShape(QFrame.Shape.StyledPanel)
+        self.proxyName.setFrameShadow(QFrame.Shadow.Raised)
+
+        self.gridLayout_2.addWidget(self.proxyName, 0, 1, 1, 1)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_6)
+        self.verticalLayout.addLayout(self.gridLayout_2)
 
         self.line_4 = QFrame(self.widget)
         self.line_4.setObjectName(u"line_4")
@@ -170,10 +169,7 @@ class Ui_Navigation(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -358, 226, 838))
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 338, 838))
         sizePolicy1.setHeightForWidth(self.scrollAreaWidgetContents.sizePolicy().hasHeightForWidth())
         self.scrollAreaWidgetContents.setSizePolicy(sizePolicy1)
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
@@ -538,13 +534,11 @@ class Ui_Navigation(object):
         self.titleLabel.setText("")
         self.expLabel.setText("")
         self.levelLabel.setText("")
-        self.label_4.setText(QCoreApplication.translate("Navigation", u"API\u5206\u6d41\uff1a", None))
-        self.proxyName.setText("")
-        self.label_6.setText(QCoreApplication.translate("Navigation", u"\u56fe\u7247\u5206\u6d41\uff1a", None))
-        self.proxyImgName.setText("")
         self.label_5.setText(QCoreApplication.translate("Navigation", u"\u79bb\u7ebf\u6a21\u5f0f\uff1a", None))
-        self.label_7.setText(QCoreApplication.translate("Navigation", u"\u5c4f\u853d\u8bcd\uff1a", None))
+        self.label_6.setText(QCoreApplication.translate("Navigation", u"\u56fe\u7247\u5206\u6d41\uff1a", None))
+        self.label_4.setText(QCoreApplication.translate("Navigation", u"API\u5206\u6d41\uff1a", None))
         self.hideButton.setText("")
+        self.label_7.setText(QCoreApplication.translate("Navigation", u"\u5c4f\u853d\u8bcd\uff1a", None))
         self.label.setText(QCoreApplication.translate("Navigation", u"\u7528\u6237", None))
         self.localFavoriteButton.setText(QCoreApplication.translate("Navigation", u"\u672c\u5730\u6536\u85cf", None))
         self.collectButton.setText(QCoreApplication.translate("Navigation", u"\u6211\u7684\u6536\u85cf", None))

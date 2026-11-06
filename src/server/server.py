@@ -7,7 +7,7 @@ from collections import Counter
 from queue import Queue
 
 import curl_cffi.requests.exceptions as exceptions
-from curl_cffi import requests as requests2, CurlOpt
+from curl_cffi import requests as requests2, CurlOpt, CurlInfo
 
 import server.req as req
 import server.res as res
@@ -17,6 +17,7 @@ from task.qt_task import TaskBase
 from tools.log import Log
 from tools.singleton import Singleton
 from tools.status import Status
+from tools.str import Str
 from tools.tool import ToolUtil
 
 host_table = {}
@@ -71,9 +72,9 @@ class ThreadLocalParam:
 
     def Create(self):
         if self.impersonate:
-            return requests2.Session(impersonate=self.impersonate)
+            return requests2.Session(impersonate=self.impersonate, curl_infos=[CurlInfo.STARTTRANSFER_TIME, CurlInfo.TOTAL_TIME])
         else:
-            return requests2.Session()
+            return requests2.Session(curl_infos=[CurlInfo.STARTTRANSFER_TIME, CurlInfo.TOTAL_TIME])
 
     def IsNeedSwitch(self, request: req.ServerReq):
         if not self.session:
@@ -272,6 +273,7 @@ class Server(Singleton):
 
     def _SendAttempt(self, task, index):
         try:
+            ttfb_time = 0
             task.req.resetCnt -= 1
             Log.Info("request{}-> backId:{}, {}".format(index, task.bakParam, task.req))
             if QtOwner().isOfflineModel:
@@ -292,6 +294,8 @@ class Server(Singleton):
                 self.Put(task, index)
             else:
                 return
+            ttfb_time = task.res.raw.infos.get(CurlInfo.STARTTRANSFER_TIME)
+
         except exceptions.DNSError as es:
             task.status = Status.DnsError
             Log.Warn(f"error:{task.req.GetPri()}")
@@ -329,6 +333,16 @@ class Server(Singleton):
         except:
             Log.Error(f"error:{task.req.GetPri()}")
         finally:
+            if task.req.isApi and not isinstance(task.req, (req.SpeedTestReq, req.SpeedTestPingReq, req.SpeedTestPing2Req)) :
+                if task.res.raw:
+                    ttfb_time = task.res.raw.infos.get(CurlInfo.STARTTRANSFER_TIME)
+                    status_code = task.res.raw.status_code
+                else:
+                    ttfb_time = 0
+                    status_code = 0
+                if isinstance(ttfb_time, (int, float)):
+                    TaskBase.taskObj.statuApiBack.emit(ttfb_time, task.status, status_code)
+
             Log.Info("response{}-> backId:{}, {}, st:{}, {}".format(index, task.backParam, task.req.__class__.__name__,
                                                                     task.status, task.res))
 

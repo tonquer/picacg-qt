@@ -10,7 +10,7 @@ from config.setting import Setting
 from interface.ui_navigation import Ui_Navigation
 from qt_owner import QtOwner
 from server import req
-from task.qt_task import QtTaskBase
+from task.qt_task import QtTaskBase, TaskBase
 from tools.log import Log
 from tools.status import Status
 from tools.str import Str
@@ -59,6 +59,29 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.proxyImgName.clicked.connect(self.OpenProxy)
         self.proxyName.clicked.connect(self.OpenProxy)
         self.hideButton.clicked.connect(self.OpenForbidWords)
+        TaskBase.taskObj.statuImgBack.connect(self.StatusImgBack)
+        TaskBase.taskObj.statuApiBack.connect(self.StatusApiBack)
+        self.refresh_timer = QTimer(self)
+        self.refresh_timer.timeout.connect(self.RefreshDisplay)
+        self.refresh_timer.start(2000)
+
+    def RefreshDisplay(self):
+        self.proxyName.refresh_display()
+        self.proxyImgName.refresh_display()
+
+    def StatusImgBack(self, tick, st, status_code):
+        if st != Status.Ok and status_code != 200:
+            self.proxyImgName.update_result(-1)
+        else:
+            self.proxyImgName.update_result(int(tick*1000))
+        return
+
+    def StatusApiBack(self, tick, st, status_code):
+        if st != Status.Ok and status_code != 200:
+            self.proxyName.update_result(-1)
+        else:
+            self.proxyName.update_result(int(tick*1000))
+        return
 
     def IsInFilter(self, categoryList, tagList, title):
         categoryList2 = Converter('zh-hans').convert(categoryList)
@@ -82,6 +105,8 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
 
     def retranslateUi(self, View):
         Ui_Navigation.retranslateUi(self, self)
+        self.proxyName.update_theme()
+        self.proxyImgName.update_theme()
         self.UpdateFilterStr()
 
     def UpdateFilterStr(self):
@@ -302,3 +327,4 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
 
     def Stop(self):
         self.timer.stop()
+        self.refresh_timer.stop()
