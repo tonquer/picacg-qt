@@ -53,6 +53,35 @@ THEMES = {
     }
 }
 
+def format_traffic(num_bytes, compact=True):
+    """把字节数格式化成自适应单位的字符串。
+
+    compact=True 用 B/K/M/G/T/P 这种短单位（磁贴内展示），
+    compact=False 用 B/KB/MB/GB/TB/PB（提示框里展示完整单位）。
+    """
+    if num_bytes is None:
+        return "--"
+
+    units = ("B", "K", "M", "G", "T", "P") if compact else ("B", "KB", "MB", "GB", "TB", "PB")
+    value = float(num_bytes)
+    index = 0
+    while value >= 1023.5 and index < len(units) - 1:
+        value /= 1024
+        index += 1
+    # 提前进位，避免出现 1000K 这类 5 字符
+    if value >= 999.5 and index < len(units) - 1:
+        value /= 1024
+        index += 1
+
+    if index == 0:
+        return f"{int(value)}B" if compact else f"{int(value)} B"
+    if not compact:
+        return f"{value:.2f} {units[index]}"
+    # 磁贴空间有限：最多保留 3 位有效数字、4 个字符
+    if value >= 9.95:
+        return f"{value:.0f}{units[index]}"
+    return f"{value:.1f}{units[index]}"
+
 
 # 微型节点磁贴
 class MiniNodeTileFrame(QFrame):
@@ -64,13 +93,15 @@ class MiniNodeTileFrame(QFrame):
         self.host = ""
         # 最近 N 次探测结果：>=0 为延迟毫秒，-1 为超时/丢包
         self.history = deque(maxlen=HISTORY_SIZE)
+        # 累计总流量（字节），由外部通过 set_traffic() 注入；None 表示暂无数据
+        self.traffic_total = None
         self.current_theme = "light"
 
         # self.setFixedSize(82, 42)
         # self.setToolTip(f"{name}\n{host}")
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(5, 3, 5, 3)
+        layout.setContentsMargins(4, 3, 4, 3)
         layout.setSpacing(1)
 
         # 1. 顶部：圆点 + 节点名
@@ -88,17 +119,21 @@ class MiniNodeTileFrame(QFrame):
         top_layout.addWidget(self.lbl_name, 1)
         layout.addLayout(top_layout)
 
-        # 2. 底部：延迟(左) + 丢包(右)
+        # 2. 底部：延迟(左) + 总流量(中) + 丢包(右)
         bottom_layout = QHBoxLayout()
         bottom_layout.setContentsMargins(0, 0, 0, 0)
         bottom_layout.setSpacing(2)
 
         self.lbl_ping = QLabel("--")
+        self.lbl_traffic = QLabel("--")
+        self.lbl_traffic.setAlignment(Qt.AlignCenter)
         self.lbl_loss = QLabel("0% loss")
         self.lbl_loss.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         bottom_layout.addWidget(self.lbl_ping)
-        bottom_layout.addStretch()
+        bottom_layout.addStretch(1)
+        bottom_layout.addWidget(self.lbl_traffic)
+        bottom_layout.addStretch(1)
         bottom_layout.addWidget(self.lbl_loss)
         layout.addLayout(bottom_layout)
         self.apply_theme(self.current_theme)
@@ -144,7 +179,18 @@ class MiniNodeTileFrame(QFrame):
     def reset_stats(self):
         """清空统计窗口，回到未测试状态。"""
         self.history.clear()
+        self.traffic_total = None
         self.refresh_display()
+
+    def add_traffic(self, total_bytes):
+        """外部注入累计总流量（字节）。
+
+        只更新数据，不触发重绘；界面由 2 秒刷新定时器统一重绘。
+        传 None 表示暂无数据（显示 --）。
+        """
+        if not self.traffic_total:
+            self.traffic_total = 0
+        self.traffic_total += max(0, int(total_bytes))
 
     def valid_samples(self):
         return [v for v in self.history if v >= 0]
@@ -196,6 +242,10 @@ class MiniNodeTileFrame(QFrame):
             self.lbl_loss.setStyleSheet(
                 f"color: {palette['status_down']}; font-size: 9px; font-weight: bold; font-family: Consolas;")
 
+        # 总流量（外部注入，单位自适应；只做数据展示，不参与延迟/丢包计算）
+        self.lbl_traffic.setText(format_traffic(self.traffic_total))
+        self.lbl_traffic.setStyleSheet(f"color: {palette['ping_default']}; font-size: 8px; font-family: Consolas;")
+
         self._update_tooltip(avg, samples, loss_rate)
 
     def _update_tooltip(self, avg, samples, loss_rate):
@@ -207,6 +257,12 @@ class MiniNodeTileFrame(QFrame):
             if samples:
                 lines.append(f"平均: {avg:.1f}ms  最低: {min(samples):.0f}ms  最高: {max(samples):.0f}ms")
             lines.append("最近: " + "  ".join("超时" if v < 0 else f"{v:.0f}ms" for v in itertools.islice(self.history, 1, 10)))
+
+        if self.traffic_total is None:
+            lines.append("总流量: --（等待外部数据）")
+        else:
+            lines.append(f"总流量: {format_traffic(self.traffic_total, compact=False)}（{self.traffic_total:,} 字节）")
+
         self.setToolTip("\n".join(lines))
 
 

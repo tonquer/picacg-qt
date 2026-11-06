@@ -269,6 +269,7 @@ class DownloadBookHandler(object):
         task = backData
         ttfb_time = 0
         status_code = 0
+        result = {"backParam": backData.backParam}
         if backData.status != Status.Ok:
             if backData.backParam:
                 TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, 0, b"")
@@ -282,6 +283,7 @@ class DownloadBookHandler(object):
             request = backData.req
             index = backData.index
             cfHit = False
+            isSpacePic = False
             isFail = False
             getSize = 0
             data = b""
@@ -292,7 +294,6 @@ class DownloadBookHandler(object):
                     # with task.session.get("GET", request.url, headers=request.headers,
                     #                          timeout=backData.timeout, proxies=request.proxy) as r:
 
-                    result = {"backParam": backData.backParam}
                     header_cb, content_cb = DownloadBookHandler.create_handlers(result)
                     r = task.session.get(request.url, headers=request.headers, timeout=backData.timeout,
                                          proxies=request.proxy, content_callback=content_cb)
@@ -306,7 +307,6 @@ class DownloadBookHandler(object):
 
                     status_code = r.status_code
                     cfHit = r.headers.get("cf-cache-status", False)
-                    isSpacePic = False
                     if r.status_code == 404 or r.status_code == 403:
                         ## 404 尝试切换图片地址
                         isReset = backData.req.ResetToSwitchNextUrl()
@@ -433,7 +433,8 @@ class DownloadBookHandler(object):
                     TaskBase.taskObj.downloadBack.emit(backData.backParam, -backData.status, fileSize, b"")
             finally:
                 if task.req.isImg and isinstance(ttfb_time, (int, float)):
-                    TaskBase.taskObj.statuImgBack.emit(ttfb_time, backData.status, status_code)
+                    addSize = result.get("total", 0)
+                    TaskBase.taskObj.statuImgBack.emit(ttfb_time, backData.status, status_code, addSize)
 
 
 @handler(req.DownloadDatabaseReq)

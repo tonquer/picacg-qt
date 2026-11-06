@@ -281,8 +281,9 @@ class Server(Singleton):
             return respose
 
     def _SendAttempt(self, task, index):
+        ttfb_time = 0
+        addSize = 0
         try:
-            ttfb_time = 0
             task.req.resetCnt -= 1
             Log.Info("request{}-> backId:{}, {}".format(index, task.bakParam, task.req))
             if QtOwner().isOfflineModel:
@@ -304,6 +305,7 @@ class Server(Singleton):
             else:
                 return
             ttfb_time = task.res.raw.infos.get(CurlInfo.STARTTRANSFER_TIME)
+            addSize = len(task.res.raw.content)
             # print(f"DNS 解析 (namelookup):   {task.res.raw.infos.get(CurlInfo.NAMELOOKUP_TIME):.4f} s")
             # print(f"TCP 握手 (connect):      {task.res.raw.infos.get(CurlInfo.CONNECT_TIME):.4f} s")
             # print(f"SSL 握手 (appconnect):   {task.res.raw.infos.get(CurlInfo.APPCONNECT_TIME):.4f} s")
@@ -353,7 +355,7 @@ class Server(Singleton):
                 else:
                     status_code = 0
                 if isinstance(ttfb_time, (int, float)):
-                    TaskBase.taskObj.statuApiBack.emit(ttfb_time, task.status, status_code)
+                    TaskBase.taskObj.statuApiBack.emit(ttfb_time, task.status, status_code, addSize)
 
             Log.Info("response{}-> backId:{}, {}, st:{}, {}".format(index, task.backParam, task.req.__class__.__name__,
                                                                     task.status, task.res))

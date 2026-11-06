@@ -69,18 +69,20 @@ class NavigationWidget(QWidget, Ui_Navigation, QtTaskBase):
         self.proxyName.refresh_display()
         self.proxyImgName.refresh_display()
 
-    def StatusImgBack(self, tick, st, status_code):
+    def StatusImgBack(self, tick, st, status_code, size):
         if st != Status.Ok and status_code != 200:
             self.proxyImgName.update_result(-1)
         else:
             self.proxyImgName.update_result(int(tick*1000))
+            self.proxyImgName.add_traffic(size)
         return
 
-    def StatusApiBack(self, tick, st, status_code):
+    def StatusApiBack(self, tick, st, status_code, size):
         if st != Status.Ok and status_code != 200:
             self.proxyName.update_result(-1)
         else:
             self.proxyName.update_result(int(tick*1000))
+            self.proxyName.add_traffic(size)
         return
 
     def IsInFilter(self, categoryList, tagList, title):

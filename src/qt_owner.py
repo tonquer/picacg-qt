@@ -128,6 +128,7 @@ class QtOwner(Singleton):
 
     def UpdateDownFmtRule(self):
         from config.setting import Setting
+        self.downFmtRule = {}
         if not Setting.DownloadConvertFmt.value:
             self.downFmtRule = {}
             return
@@ -154,6 +155,7 @@ class QtOwner(Singleton):
 
     def UpdateConvertFmtRule(self):
         from config.setting import Setting
+        self.convertFmtRule = {}
         if not Setting.DownloadConvertFmt.value:
             self.convertFmtRule = {}
             return
