@@ -147,3 +147,4 @@ src/data/favorite.db
 src/db/book.db*
 src/data/disk_cache.db-journal
 src/data/disk_cache.db
+tests/test_server.py
