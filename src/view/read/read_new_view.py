@@ -71,11 +71,11 @@ class ReadNewView(QtWidgets.QWidget):
         # self.ChangeReadMode(Setting.LookReadMode.value)
         self.qtTool.ChangeReadMode(self.scrollArea._mode.value)
         self.qtTool.turnSpeed.setValue(Setting.TurnSpeed.value / 1000)
+        self.qtTool.turnSpeed.valueChanged.connect(self.SwitchTurnSpeed)
         self.qtTool.scrollSpeed.setValue(Setting.ScrollSpeed.value)
         self.qtTool.scrollInitSpeed.setValue(Setting.ScrollInitSpeed.value)
 
         for binding in (BindSpin(Setting.ScrollInitSpeed, self.qtTool.scrollInitSpeed),
-        BindSpin(Setting.TurnSpeed, self.qtTool.turnSpeed),
         BindSpin(Setting.ScrollSpeed, self.qtTool.scrollSpeed)):
             binding.signal.connect(partial(QtOwner().settingView._SaveSettingBinding, binding))
         # self.qtTool.scrollTime.setValue(Setting.ScrollTime.value)
@@ -91,6 +91,9 @@ class ReadNewView(QtWidgets.QWidget):
         self._prefetchReady = False
         self._prefetchChapterMax = 0
         # QtOwner().owner.WindowsSizeChange.connect(self.qtTool.ClearQImage)
+
+    def SwitchTurnSpeed(self):
+        Setting.TurnSpeed.SetValue(int(self.qtTool.turnSpeed.value() * 1000))
 
     @property
     def curIndex(self):
