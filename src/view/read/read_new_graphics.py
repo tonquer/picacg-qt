@@ -1838,11 +1838,13 @@ class ReadNewGraphics(QGraphicsView):
         if not ReadMode.isScroll(mode):
             # 页模式切方向：不经过滚动条机制，重摆当前页即可
             # （双页的槽位方向跟着变：横排左右并排 <-> ttb 上下叠放）
-            page = self._page
+            # page = self._page
+            idx = self._first_visible_index()
             self._mode = mode
             # 进页模式：清掉亚像素偏移（页模式不用 transform），显示锚点所在页
             self._sub = 0.0
             self._apply_sub_transform()
+            self._page_pan = QPointF(0.0, 0.0)   # 平移复位
             self._cancel_page_gestures()
             self._scroller.stop()
             self._stop_page_auto()
@@ -1851,12 +1853,13 @@ class ReadNewGraphics(QGraphicsView):
             self._apply_policies()
             self._update_cross()
             self._page_pan = QPointF(0.0, 0.0)   # 槽位方向变了，平移复位
-            self._show_page(page, 0)
+            self._show_page(self._page_of_index(idx), 0)
             return
         # 连续模式：记录当前阅读位置占内容的比例（0=第一张图，1=末端），
         # 切换后按比例恢复
         old_total = self._total
         frac = self._scroll_min_s() / old_total if old_total > 1 else 0.0
+        idx = self._first_visible_index()
         self._mode = mode
         self._sub_applied = float("nan")   # 滚动轴变了，强制重设 transform
         self._anchoring = False
@@ -1875,6 +1878,8 @@ class ReadNewGraphics(QGraphicsView):
             self._update_cross()               # 视口宽高互换，cross 要重算
             self._relayout_all()               # 全部 item 按新模式重新摆
             self._pending_scroll_s = frac * self._total
+            if 0 <= idx < len(self._items):
+                self._pending_scroll_s = (self._items[idx]._s if self._items else 0.0)
             self._apply_pending_scroll()       # 按比例恢复阅读位置
             self._load_visible()
 
