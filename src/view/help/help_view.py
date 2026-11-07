@@ -37,7 +37,7 @@ class HelpView(QWidget, Ui_Help, QtTaskBase):
         self.curSubVersion = 0
         self.curUpdateTick = 0
         self.pushButton.clicked.connect(self.OpenUrl)
-        self.version.setText(config.UpdateVersion)
+        self.version.setText(config.RealVersion)
         self.isCheckUp = False
         self.logButton.clicked.connect(self.OpenLogDir)
 

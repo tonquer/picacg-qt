@@ -117,6 +117,11 @@ class ReadNewTool(QtWidgets.QWidget, Ui_ReadImg):
         self.openGLBox.clicked.connect(self.SwitchOpenGL)
         self.animeBox.setChecked(bool(Setting.IsOpenReadAnime.value))
         self.animeBox.clicked.connect(self.SwitchAnime)
+        self.switchDouble.clicked.connect(self.SwitchDouble)
+
+    def SwitchDouble(self):
+        self.scrollArea.change_double_page()
+        self.switchDouble.setChecked(self.scrollArea._is_cover_mode)
 
     def SwitchAnime(self):
         Setting.IsOpenReadAnime.SetValue(int(self.animeBox.isChecked()))

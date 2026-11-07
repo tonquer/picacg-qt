@@ -146,9 +146,10 @@ class ReadNewView(QtWidgets.QWidget):
                 action = popMenu.addAction(Str.GetStr(Str.CloseCurWaifu2x) + "(F2)")
             action.triggered.connect(self.qtTool.curWaifu2x.click)
 
-        menu2 = popMenu.addMenu(Str.GetStr(Str.ReadMode))
-        action = menu2.addAction(Str.GetStr(Str.ToggleDoublePageAlign) + "(F10)")
+        action = popMenu.addAction(Str.GetStr(Str.ToggleDoublePageAlign) + "(F10)")
         action.triggered.connect(self.scrollArea.change_double_page)
+
+        menu2 = popMenu.addMenu(Str.GetStr(Str.ReadMode))
 
         def AddReadMode(name, value):
             action = menu2.addAction(name)

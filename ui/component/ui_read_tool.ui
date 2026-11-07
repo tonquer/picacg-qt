@@ -43,7 +43,7 @@
         <x>0</x>
         <y>0</y>
         <width>483</width>
-        <height>932</height>
+        <height>934</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -514,14 +514,25 @@
           </layout>
          </item>
          <item>
-          <widget class="QCheckBox" name="animeBox">
-           <property name="text">
-            <string>启用翻页动画</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QCheckBox" name="animeBox">
+             <property name="text">
+              <string>启用翻页动画</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="switchDouble">
+             <property name="text">
+              <string>切换双页对齐</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <widget class="Line" name="line_3">
@@ -578,7 +589,7 @@
               </size>
              </property>
              <property name="text">
-              <string>滚动速度（像素）：</string>
+              <string>自动滚动（像素）：</string>
              </property>
             </widget>
            </item>
