@@ -371,8 +371,14 @@ class ToolUtil(object):
                 elif img.format.upper() == "AVIF":
                     mat = "avif"
                 else:
-                    mat = "jpg"
-                return img.width, img.height, mat, isAnima
+                    mat = img.format.lower()
+
+                exif = img.getexif()
+                orientation = exif.get(274, 1)  # 默认值为 1（正常方向）
+                width, height = img.width, img.height
+                if orientation in (5, 6, 7, 8):
+                    width, height = height, width  # 互换宽高
+                return width, height, mat, isAnima
         except Exception as es:
             Log.Error(es)
         return 0, 0, "jpg", False
